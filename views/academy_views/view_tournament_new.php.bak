@@ -1,0 +1,631 @@
+<link href="<?=base_url();?>/css/tour_detail.css" rel="stylesheet" type="text/css" />
+<style>
+/*a.register  {
+   background-image: url('https://a2msports.com/icons/register_green.png');
+   height: 90px;
+   width: 200px;
+   display:block;
+   text-decoration:none;
+}
+
+a.register:hover {
+   background-image: url('https://a2msports.com/icons/register_orange.png');
+   text-decoration:none;
+}*/
+</style>
+<script>
+$(document).ready(function(){
+
+	$('#admin_actions').change(function() {
+		if(this.value != ''){
+			var cur_val = this.value;
+			$("select#admin_actions option[value='']").attr("selected", "selected");
+			window.location.href=cur_val;
+		}
+	});
+
+});
+</script>
+<?php
+$cls = 'container';
+if($is_academy_league){
+$cls = '';
+}
+?>
+<div class="container">
+<div class="row">
+<section id="single_player" class="<?=$cls;?> secondary-page">
+<?php
+if(!$is_academy_league){
+?>
+<!-- Google AdSense -->
+<!-- <div id='google' class='col-md-12'>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+ -->
+<!-- Ad_Horizontal -->
+<!-- <ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-9772177305981687"
+     data-ad-slot="1273487212"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     /*(adsbygoogle = window.adsbygoogle || []).push({});*/
+</script>
+</div> 
+-->
+<!-- Google AdSense -->
+<?php
+}
+?>
+
+<?php
+$users_id = $this->logged_user;
+$is_reg	  = league::user_reg_or_not($users_id, $tour_details->tournament_ID);
+$logged_user_role = 'Visiter';
+
+if($tour_details->Usersid == $users_id or $this->is_super_admin){    /// tournament admin access links
+	$logged_user_role = 'Admin';
+}
+else if($is_logged_user_reg){
+	$logged_user_role = 'RegPlayer';
+}
+
+$data['logged_user_role'] = $logged_user_role;
+
+$team_captains = array();
+
+if($tour_details->tournament_format == 'Teams'){
+$get_reg_team_captains = league::get_tour_registered_teams($tour_details->tournament_ID);
+foreach($get_reg_team_captains as $team){
+$team_captains[$team->Captain] = $team->Team_ID;
+
+$team_captains[$team->Created_by] = $team->Team_ID;
+}
+}
+
+?>
+
+<!-- Team Player Fee pending notification section -->
+<?php
+$num = $this->uri->segment(4);
+
+if($fee_payable and $fee_payable != "0.00"){
+	$team_info = league::get_team($my_reg_team);
+?>
+<form name='tour_reg_fee_pay' method='POST' action='<?=base_url();?>league/fee_pay/<?=$tour_details->tournament_ID;?>'>
+<div class="col-md-12 league-form-bg" style="margin-top:40px; background:#ffff8a; margin-bottom:5px">
+<img src="<?=base_url();?>icons/warning_ico.png" width="30" height="30" border="0" alt="">&nbsp;<span style='font-size:15px;'>
+Your Team <b><?=$team_info['Team_name'];?></b> is participating in this tournament and you were selected by captain. Please pay Fee <b>$<?=$fee_payable;?></b> to participate.&nbsp;&nbsp;&nbsp;</span>
+<input type='submit' name='btn_pay' id='btn_pay' value=' Pay Now ' class="league-form-submit" style='margin-bottom:0px; padding:8px 8px;'/>
+</div>
+</form>
+<?php
+} ?>
+<!-- End of Team Player Fee pending notification section -->
+
+
+
+<div class="col-md-12 league-form-bg" style="margin-top:10px; margin-bottom:20px">
+<!-- <div class="fromtitle">Tournament Details</div> -->
+<div class="col-md-3" style="padding-left:0px">
+<img src="<?php echo base_url(); ?>tour_pictures/<?php 
+if($tour_details->TournamentImage!=""){ echo $tour_details->TournamentImage; }
+else{
+	switch($tour_details->SportsType){
+		case 1:
+			echo "default_tennis.jpg";
+			break;
+		case 2:
+			echo "default_table_tennis.jpg";
+			break;
+		case 3:
+			echo "default_badminton.jpg";
+			break;
+		case 4:
+			echo "default_golf.jpg";
+			break;
+		case 5:
+			echo "default_racquet_ball.jpg";
+			break;
+		case 6:
+			echo "default_squash.jpg";
+			break;
+		case 7:
+			echo "default_pickleball_new.jpg";
+			break;
+		case 8:
+			echo "default_chess.jpg";
+			break;
+		case 9:
+			echo "default_carroms.jpg";
+			break;
+		case 10:
+			echo "default_volleyball.jpg";
+			break;
+		case 11:
+			echo "default_fencing.jpg";
+			break;
+		case 12:
+			echo "default_bowling.jpg";
+			break;
+		case 16:
+			echo "default_cricket.jpg";
+			break;
+		case 18:
+			echo "default_basketball1.jpg";
+			break;
+		default:
+			echo "No Image";
+	}
+}
+?>" alt="" />
+</div><!--Close col-md-3-->
+
+<div class="col-md-6">
+<div style="font-size:25px; color:#ff8a00; font-weight:bold; padding-bottom:20px; line-height:30px"><?php echo $tour_details->tournament_title; ?>
+
+<div class="fb-like" data-href="<?php echo base_url(); ?>league/view/<?php echo $tour_details->tournament_ID; ?>" data-layout="button_count" data-mobile-iframe="true" data-action="like" data-show-faces="false" data-share="true"></div>
+
+</div>
+<div style="line-height:30px">
+<b>When:</b> 
+<?php echo date('M d, Y h:i A', strtotime($tour_details->StartDate)); ?> - 
+<?php echo date('M d, Y h:i A', strtotime($tour_details->EndDate)); ?><br>
+<b>Where:</b> 
+<?php if($tour_details->venue) { echo $tour_details->venue.", "; }?> 
+<?php if($tour_details->TournamentAddress) { echo $tour_details->TournamentAddress.", "; }?> 
+<?php if($tour_details->TournamentCity) { echo $tour_details->TournamentCity.", "; }?>
+<?php echo $tour_details->TournamentState.", ";?> <?php echo $tour_details->PostalCode;?>
+</div>
+</div><!--Close col-md-6-->
+
+<div class="col-md-3" style="padding-right:0px; text-align:right">
+<?php
+	$cdate	  = date('Y-m-d h:i A');
+	$edate	  = date('Y-m-d h:i A', strtotime($tour_details->EndDate)); 
+	$reg_end_date = date('Y-m-d h:i A', strtotime($tour_details->Registrationsclosedon)); 
+	$exp_date = date("Y-m-d h:i A", strtotime($tour_details->EndDate."+7 day"));
+
+	$now	= time();
+	$sdate	= strtotime($tour_details->StartDate);
+
+
+
+if(($tour_details->Usersid == $users_id or $this->is_super_admin) and $cdate <= $exp_date) {   /// tournament admin access links
+?>
+<select name='admin_actions' id='admin_actions' class='form-control' style="width:60%; font-weight:bold;text-align:center;margin-top:70px;border:2px solid #ff8a00" autocomplete='off'>
+<option value="">------ Actions ------</option>
+<option value="<?php echo base_url().$org_url_key;?>league/edit/<?php echo $tour_details->tournament_ID;?>">
+Edit Tournament</option>
+<option value="<?php echo base_url().$org_url_key;?>play/invite/<?php echo $tour_details->tournament_ID;?>">
+Invite Player</option>
+<option value="<?php echo base_url().$org_url_key;?>league/fixtures/<?php echo $tour_details->tournament_ID;?>">
+Create Draws</option>
+
+	<!-- <a style='cursor:pointer;' onclick="myWin_flyer('<?php echo $tour_details->tournament_ID;?>');"><img src="<?php echo base_url();?>images/print-ico.png" alt="Print" title="Print Flyer" /> </a> -->
+<?php 
+	if(!$this->is_team_league) {
+
+		echo "<option value ='" . base_url() .$org_url_key. "play/reg_players/$tour_details->tournament_ID'>Register Players</option>";
+	}
+	else {
+		echo "<option value ='" . base_url() .$org_url_key. "league/reg_teams/$tour_details->tournament_ID'>Register Teams</option>";
+		echo "<option value ='" . base_url() .$org_url_key. "league/scorecard/$tour_details->tournament_ID'> Print Scorecard</option>";
+	}
+}
+else if($is_logged_user_reg and !array_key_exists($this->logged_user, $team_captains)){
+	if($tour_details->tournament_format != 'Teams'){
+     	/*echo "<a href='".base_url()."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer;'><img src=".base_url()."icons/my_events.png alt='My Events' title='My Events' width='40px' /></a>&nbsp;";*/
+    }
+			echo "<option value ='" . base_url() .$org_url_key. "play/invite//$tour_details->tournament_ID'> Invite Friends</option>";
+}
+else if(array_key_exists($this->logged_user, $team_captains)){		// Team Captains Block
+	if($this->is_team_league){
+				echo "<option value ='" . base_url() .$org_url_key. "play/invite//$tour_details->tournament_ID'> Invite Friends</option>";
+echo "<option value ='" . base_url() .$org_url_key. "league/scorecard/$tour_details->tournament_ID'> Print Scorecard</option>";
+	}
+}
+else{
+/*  do something */
+}
+
+echo "</select>";
+
+
+//$now   = time() + 3600;
+$now	 = time();
+$oneday	 = 86400;
+
+if($tour_details->Tournament_type == "Challenge Ladder"){
+$reg_close	= strtotime($tour_details->EndDate);
+}
+else{
+$reg_close  = strtotime(date('Y-m-d H:i:s',strtotime($tour_details->Registrationsclosedon)));
+}
+
+$reg_open   = strtotime(date('Y-m-d H:i:s',strtotime($tour_details->Registrations_Opens_on)));
+//echo $now."<br>";
+//echo $reg_close;
+if($now <= $reg_close and $now >= $reg_open and !$is_logged_user_reg){
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+
+	if($this->logged_user)
+			echo "<a href='".base_url().$org_url_key."league/register_match/$tour_details->tournament_ID'  style='cursor:pointer;margin-right:40px;'><img src='".base_url()."icons/register-now.png' alt='Register Now' title='Register Now' width='200px'></a>";
+	else
+			echo "<a href='#'  style='cursor:pointer;margin-right:40px;' class='member_login' id='register_btn'><img src='".base_url()."icons/register-now.png' alt='Register Now' title='Register Now' width='200px'></a>";
+}
+else if($is_logged_user_reg and $tour_details->tournament_format != 'Teams'){
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+	echo "<br />";
+
+	if($tour_details->Is_League){
+		echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/reg-more.png' alt='Register More' title='Register More'></a>";
+	}
+	else{
+		echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/my_reg_events.png' alt='My Events' title='My Registered Events'></a>";
+	}
+
+}
+?>
+</div><!--Close col-md-3-->
+<script>
+$(document).ready(function(){ 
+	$('#tabs-div').show(); 
+});
+$(window).load(function(){
+	var p = "<?php echo $this->uri->segment(3); ?>";
+	if(p == 8){
+		$('#AdmShowPlayers').trigger('click');
+	}
+});
+</script>
+<div style="clear:both; height:20px;"></div>
+
+<div id='tabs-div' class="tab1" role="tabpanel" style='display:none;'>
+<ul class="nav nav-tabs" role="tablist">
+<?php
+if($logged_user_role == 'Admin' or $this->is_super_admin){
+?>
+<!-- Admin Nav tabs -->
+<li role="presentation" class="active"><a href="#Summary" aria-controls="home" role="tab" data-toggle="tab">Summary</a></li>
+<?php
+if($tour_details->TournamentDescription != NULL and $tour_details->TournamentDescription != ''){
+?>
+<li role="presentation"><a href="#Rules" aria-controls="home" role="tab" data-toggle="tab">Details & Rules</a></li>
+<?php
+}
+if(!$this->is_team_league){?>
+<li role="presentation"><a href="#AdmParticipants" id="ShowAdmParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
+<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<?php
+}
+else if($this->is_team_league){?>
+<li role="presentation"><a href="#AdmParticipants" id="ShowAdmTeams" aria-controls="messages" role="tab" data-toggle="tab">Teams (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$teams_count</span>"; ?>)</a></li>
+<li role="presentation"><a href="#ShowTournTeamPlayers" id="AdmShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players</a></li>
+<?php
+}?>
+<li role="presentation"><a href="#Gallery" id="ShowGallery" aria-controls="messages" role="tab" data-toggle="tab">Gallery</a></li>
+<?php
+if($no_of_brackets > 0 and ($cdate <= $exp_date or $this->is_super_admin)){ ?>
+<li role="presentation"><a href="#AdmAddScore" id="ShowAdmAddScore" aria-controls="home" role="tab" data-toggle="tab">Add Score</a></li>
+<?php } ?>
+
+<li role="presentation"><a href="#DrawsResults" id="ShowDrawsResults" aria-controls="profile" role="tab" data-toggle="tab">Draws / Results</a></li>
+
+<?php 
+if($this->is_team_league and $cdate <= $exp_date){?>
+<li role="presentation"><a href="#TeamStandings" id="ShowStandings" aria-controls="profile" role="tab" data-toggle="tab">Standings</a></li>
+<li role="presentation"> <a href="#ManageTeams" aria-controls="profile" role="tab" data-toggle="tab">Manage Teams</a></li>
+<?php
+}else{
+?>
+<li role="presentation"><a href="#EditWithdraw" id="ShowAdmEditWithdraw" aria-controls="messages" role="tab" data-toggle="tab">
+Edit / WithDraw</a></li>
+<?php
+}
+
+$format = json_decode($tour_details->Singleordouble);
+
+if((in_array("Doubles", $format) or in_array("Mixed", $format)) and ($cdate <= $exp_date)){
+?>
+<li role="presentation"><a href="#ChangePartners" id="ShowChangePartners" aria-controls="messages" role="tab" data-toggle="tab">Change Partners</a></li>
+<?php
+}
+
+}
+else if($logged_user_role == 'RegPlayer'){
+?>
+<!-- RegPlayer Nav tabs -->
+<li role="presentation" class="active"><a href="#Summary" aria-controls="home" role="tab" data-toggle="tab">Summary</a></li>
+<li role="presentation"><a href="#Rules" aria-controls="home" role="tab" data-toggle="tab">Details & Rules</a></li>
+<?php 
+if(!$this->is_team_league){
+?>
+<li role="presentation"><a href="#Participants" id="ShowParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
+<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<?php
+}
+else if($this->is_team_league){
+?>
+<li role="presentation"><a href="#TeamParticipants" id="ShowTeams" aria-controls="messages" role="tab" data-toggle="tab">Teams (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$teams_count</span>"; ?>)</a></li>
+<?php
+}
+?>
+
+<li role="presentation"><a href="#Gallery" id="ShowGallery" aria-controls="messages" role="tab" data-toggle="tab">Gallery </a></li>
+<?php
+if($no_of_brackets > 0 and $cdate <= $edate){
+?>
+<li role="presentation"><a href="#MyMatches" id="ShowMyMatches" aria-controls="home" role="tab" data-toggle="tab">My Matches</a></li>
+<?php
+}?>
+
+<li role="presentation"><a href="#DrawsResults" id="ShowDrawsResults" aria-controls="profile" role="tab" data-toggle="tab">Draws / Results</a></li>
+
+<?php
+if(!$this->is_team_league){
+
+  $today_date	=	date('Y-m-d');
+  $curdate	    =	strtotime($today_date);
+  $RefundDate	=	strtotime($tour_details->RefundDate);
+
+	if($curdate < $RefundDate OR $RefundDate == NULL OR $RefundDate == '1969-12-31 12:00:00.000' OR $this->logged_user == '2440'){
+		echo '<li role="presentation"><a href="#WithDraw" aria-controls="profile" role="tab" data-toggle="tab">WithDraw</a></li>';
+
+	}
+}
+else if($this->is_team_league){
+?>
+<li role="presentation"><a href="#TeamStandings" id="ShowStandings" aria-controls="profile" role="tab" data-toggle="tab">Standings</a></li>
+<?php
+}
+if(array_key_exists($this->logged_user, $team_captains) and $cdate <= $reg_end_date){		// Team Captains Block
+	echo '<li role="presentation" id="mangeteam"><a href="#ManageTeam" aria-controls="profile" role="tab" data-toggle="tab">Manage Team</a></li>';
+	echo '<li role="presentation" ><a href="#LineTracker" aria-controls="profile" role="tab" data-toggle="tab">Line Tracker</a></li>';
+}
+
+}
+else if($logged_user_role == 'Visiter'){
+?>
+<!-- RegPlayer Nav tabs -->
+<li role="presentation" class="active"><a href="#Summary" aria-controls="home" role="tab" data-toggle="tab">Summary</a></li>
+<li role="presentation"><a href="#Rules" aria-controls="home" role="tab" data-toggle="tab">Details & Rules</a></li>
+<?php 
+if(!$this->is_team_league){
+?>
+<li role="presentation"><a href="#Participants" id="ShowParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
+<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<?php
+}
+else if($this->is_team_league){?>
+<li role="presentation"><a href="#TeamParticipants" id="ShowTeams" aria-controls="messages" role="tab" data-toggle="tab">Teams (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$teams_count</span>"; ?>)</a></li>
+<?php
+}?>
+<li role="presentation"><a href="#Gallery" id="ShowGallery" aria-controls="messages" role="tab" data-toggle="tab">Gallery </a></li>
+<li role="presentation"><a href="#DrawsResults" id="ShowDrawsResults" aria-controls="profile" role="tab" data-toggle="tab">Draws / Results</a></li>
+<?php
+	if($this->is_team_league){
+?>
+<li role="presentation"><a href="#TeamStandings" id="ShowStandings" aria-controls="profile" role="tab" data-toggle="tab">Standings</a></li>
+<?php
+	}
+}
+?>
+<?php
+   // Common Links for all the User Roles
+if($tour_details->Sponsors != 'NULL' && $tour_details->Sponsors != '') { ?>
+<!-- <li role="presentation"><a href="#Sponsors" id="ShowSponsors" aria-controls="sponsors" role="tab" data-toggle="tab">Sponsors</a></li> -->
+<?php
+}?>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content tabs">
+
+<div role="tabpanel" class="tab-pane fade in active" id="Summary"><!-- Summary -->
+<?php $this->load->view('tournament/view_tournament_summary', $data); ?>
+</div>
+
+<div role="tabpanel" class="tab-pane fade" id="Rules"><!-- Rules -->
+<?php
+$data['tour_details'] = $tour_details;
+?>
+<?php $this->load->view('tournament/view_tournament_rules', $data); ?>
+</div>
+
+<div role="tabpanel" class="tab-pane fade" id="DrawsResults"></div>
+
+<!-- <div role="tabpanel" class="tab-pane fade" id="Sponsors"></div> -->
+
+<div role="tabpanel" class="tab-pane fade" id="AdmParticipants">
+	<?php
+	/*if(!$this->is_team_league and ($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){*/
+	if(($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){
+	?>
+	<div style="text-align:right;">
+	<a id="show_pay_info" style="cursor:pointer;"><span id='pinfo_label'>Show Payment Info.</span></a>
+	</div>
+	<?php
+	}
+	?>
+	<div id='tourn_participants'></div>
+
+	<div id='tourn_participants_payment' style='display:none;'>
+	<?php
+	if(!$this->is_team_league){
+	$this->load->view('tournament/view_participants_payment', $data);  // Load Tourn Participants Fee Info
+	}
+	else{
+	$this->load->view('teams/view_team_participants_payment', $data);  // Load Team Participants Fee Info 
+	}
+	?>	
+	</div>
+
+</div>
+
+<?php
+if($this->is_team_league){
+?>
+<div role="tabpanel" class="tab-pane fade" id="TeamParticipants"></div>
+<div role="tabpanel" class="tab-pane fade" id="TeamStandings"></div>
+<?php
+}
+else{
+?>
+<div role="tabpanel" class="tab-pane fade" id="Participants"></div>
+<?php
+}
+?>
+
+<div role="tabpanel" class="tab-pane fade" id="ShowPlayers">
+<?php
+if(!$this->is_team_league){
+$this->load->view('academy_views/tournament/view_players');  // Load Tournament Players
+}
+?>
+</div>
+
+<div role="tabpanel" class="tab-pane fade" id="ShowTournTeamPlayers"></div>
+
+<div role="tabpanel" class="tab-pane fade" id="Gallery"></div>
+
+<div role="tabpanel" class="tab-pane fade" id="EditWithdraw"><?php
+//$this->load->view('tournament/view_adm_withdrawnew', $data);  // Load Team Participants view 
+?></div>
+<?php
+if($logged_user_role == 'RegPlayer'){
+?>
+<div role="tabpanel" class="tab-pane fade" id="WithDraw">
+<!-- <h4>EditWithdraw Under Development</h4> -->
+<?php
+if(!$this->is_team_league){
+    $this->load->view('tournament/view_participant_withdraw');
+}
+?>
+</div>
+<?php
+}
+?>
+
+<div role="tabpanel" class="tab-pane fade" id="ChangePartners"></div>
+<div role="tabpanel" class="tab-pane fade" id="AdmAddScore"></div>
+<div role="tabpanel" class="tab-pane fade" id="MyMatches"></div>
+
+<!-- ----------------------------------------------------- -->
+<div role="tabpanel" class="tab-pane fade" id="ManageTeams">
+	<div id='team_div' class="fromtitle">Add / Manage Team Players</div>
+		<div class='col-md-3 control-label'>
+		<p><label>Choose Team:</label>
+		<select class="form-control" id="teamlist" name="team_list">
+		<option value="">Select</option>
+		<?php foreach($tourn_teams as $team){ ?>
+		<option value="<?php echo $team->Team_ID;?>"><?php echo $team->Team_name;?></option>
+		<?php 
+		} 
+		?>
+		</select>
+		</p>
+	</div>
+	<div class='col-md-10' id="load_manage_team"></div>
+</div>
+
+<div role="tabpanel" class="tab-pane fade" id="ManageTeam">
+<input type='hidden' id='tourn_id'   value = "<?php echo $tour_details->tournament_ID; ?>" />
+<input type='hidden' id='team_id'   value = "<?php echo $team_captains[$this->logged_user];?>" />
+</div>
+
+<div  role="tabpanel" class="tab-pane fade" id="LineTracker">
+	<div class="fromtitle">Team Player's Line Tracker</div>
+	<br />
+	<?php
+	$brackets = league::get_bracket_list($tour_details->tournament_ID);
+	?>
+	<select class="form-control" id="brackets_list" style='width:50%' onchange="getlines('<?php echo $team_captains[$this->logged_user];?>');">
+	<option value=''>Select Bracket</option>
+	<?php foreach($brackets as $key=>$bracket){ ?>
+	 <option value="<?php echo $bracket->BracketID;?>" ><?php echo $bracket->Draw_Title;?></option>
+	<?php } ?>
+	</select>
+	<select class="form-control" id="teams_list" style='width:50%' onchange="getlines(this.value);">
+	<option value=''>Select Teams</option>
+	<?php foreach($tourn_teams as $key=>$team){ ?>
+	 <option value="<?php echo $team->Team_ID;?>" ><?php echo $team->Team_name;?></option>
+	<?php } ?>
+	</select>
+</div>
+
+</div> <!-- tab-content -->
+</div> <!-- tab1 -->
+</div><!--Close col-md-12-->
+</section> <!--Close secondary-page-->
+</div>
+</div>
+<!--  -->
+<!-- <script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
+ --><script type="text/javascript">
+$(document).ready(function () {
+	var tourn_id = "<?php echo $tour_details->tournament_ID; ?>";
+	$('#register_btn').click(function(){
+		$('#aca_page').val("league/"+tourn_id);
+	});
+
+/*$(function () {
+$('.accordion').click(function() {
+$(this).next().toggle();
+return false;
+}).next().hide();
+});*/
+	$('#show_pay_info').click(function(){
+		$('#tourn_participants').toggle();
+		$('#tourn_participants_payment').toggle();
+		
+		if($('#pinfo_label').html() == 'Show Payment Info.'){
+				$('#pinfo_label').html('Show Participants');
+		}
+		else{
+				$('#pinfo_label').html('Show Payment Info.');
+		}
+	});
+});
+</script>
+<script src="<?php echo base_url();?>js/jquery-1.10.2.js" type="text/javascript"></script>
+<script>
+var baseurl;
+baseurl = "<?php echo base_url();?>";
+
+var loading_gif;
+loading_gif = "<?php echo base_url().'icons/loading.gif';?>";
+
+var tourn_id;
+tourn_id	= "<?php echo $tour_details->tournament_ID;?>";
+var club_baseurl = "<?php if($this->config->item('club_form_url') != '') { echo base_url(); } else  { echo $this->config->item('proxy_url').'/';  } ?>";
+
+//var club_baseurl3 = "<?php echo $this->config->item('club_form_url'); ?>";
+//var club_baseurl4 = "<?php echo $this->config->item('proxy_url'); ?>";
+
+//alert(club_baseurl3);
+//alert(club_baseurl4);
+
+</script>
+<script src="<?php echo base_url();?>js/custom/league.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/custom/tour_detail.js" type="text/javascript"></script>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+<script src="<?=base_url();?>/assets/tinymce/tinymce.min.js"></script>
+<!--  -->

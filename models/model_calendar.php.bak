@@ -1,0 +1,29 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+	class model_calendar extends CI_Model {
+		
+		public function __construct()
+		{
+			parent:: __construct();
+	
+		}
+
+		public function get_tournaments()
+		{
+		
+			if($this->session->userdata('user')){
+				$lat  = $this->session->userdata('lat');
+				$long = $this->session->userdata('long');
+				$range = 50;
+
+				$query = $this->db->query(" SELECT * , ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat )) + COS( RADIANS( Latitude ) )
+					* COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 AS distance FROM tournament WHERE ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat )) + COS( RADIANS( Latitude ) ) * COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 < {$range}");
+			}
+			else{
+				$query = $this->db->get('tournament');
+			}
+		return $query->result();
+		}
+
+
+	}

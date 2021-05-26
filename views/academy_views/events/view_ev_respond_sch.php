@@ -1,0 +1,413 @@
+<script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function () {
+	$(function () {
+	"use strict";
+	$('.accordion').accordion({ defaultOpen: 'no_section' }); //some_id section1 in demoup_tour_section
+	});
+
+	$('.edit_img').on('click',function(){
+		var tid = $(this).attr('id');
+
+		if($('#stat_edit'+tid).css('display')=='none'){
+			$('#stat_edit'+tid).show();
+			$('#show_stat'+tid).hide();
+		}
+		else {
+			$('#stat_edit'+tid).hide();
+			$('#show_stat'+tid).show();
+		}
+	});
+});
+</script>
+
+<script>
+$(document).ready(function(){
+
+var baseurl = "<?php echo base_url();?>";
+
+//$('.upd_stat').on('click touchend', function(e) {
+$('.upd_stat').on('click', function(e) {
+	var tid = $(this).attr('name');
+	var res = tid.split("stat_edit");
+
+ var c_val = $('#stat_val'+res[1]).val();
+
+//d = new Date();
+
+ if(c_val < 4){
+	 var up_val = (++c_val);
+//alert(up_val);
+		$('#stat_val'+res[1]).val(up_val);
+
+			if(up_val == 1){
+				//$(this).attr('src',baseurl+'images/accept.png?'+d.getTime());
+				$(this).attr('src',baseurl+'images/accept.png');
+			}
+			else if(up_val == 2){
+				//$(this).attr('src',baseurl+'images/decline.png?'+d.getTime());
+				$(this).attr('src',baseurl+'images/decline.png');
+			}
+			else if(up_val == 3){
+				//$(this).attr('src',baseurl+'images/tentative.png?'+d.getTime());
+				$(this).attr('src',baseurl+'images/tentative.png');
+			}
+			else if(up_val == 4){
+				//$(this).attr('src',baseurl+'images/pending.png?'+d.getTime());
+				$(this).attr('src',baseurl+'images/pending.png');
+			}
+}
+else {
+//	alert(c_val);
+
+
+		$('#stat_val'+res[1]).val(1);
+		//$(this).attr('src',baseurl+'images/accept.png?'+d.getTime());
+		$(this).attr('src',baseurl+'images/accept.png');
+}
+
+});
+
+
+$('#save_avail').on('click', function(e) {
+
+//var tid = $(this).attr('name');
+//var res = tid.split("stat_edit");
+
+//alert(res[1]);
+		var upd_avail_list = [];
+        $("input[name='stat_val[]']").each(function(i){
+          upd_avail_list[i] = $(this).val();
+        });
+
+		var ev_rep_ids = [];
+        $("input[name='ev_rep[]']").each(function(i){
+          ev_rep_ids[i] = $(this).val();
+        });
+
+		var ev_id = $('#ev_id').val();
+
+	 $("#loading").show();
+	//alert("loading");
+	 $("#save_avail").hide();
+ 
+	  $.ajax({
+		type: 'POST',
+		url: baseurl+'events/upd_status',
+		data:{ev_rep_ids:ev_rep_ids, upd_avail_list:upd_avail_list, event_id: ev_id},
+		//data: $('#form-op-users').serialize(),
+		success: function(res) {
+
+		  // location.reload();
+		 $("#loading").hide();
+		 $("#save_avail").show();
+		 $("#sub_status").html("<b style='color:blue'>Details are saved!</b>");
+ 		 $("#load_avail_players").html(res);
+
+
+		}
+	  });
+	 // e.preventDefault();
+});
+
+$('#send_comment').on('click', function(e) {
+
+var ev_id = $('#ev_id').val();
+var mes = $('#message').val();
+
+	  $.ajax({
+		type: 'POST',
+		url: baseurl+'events/add_comment',
+		data:{message:mes,event_id: ev_id},
+		success: function(res) {
+		 $('#message').val("");
+		 //$("#sub_status").html("<b style='color:blue'>your comments are submitted!</b>");
+ 		 $("#comments_div").html(res);
+		}
+	  });
+	 // e.preventDefault();
+});
+
+
+$('#showdiv2').click(function(){
+	$('div[id^=div]').hide();
+	$('#div2').show();
+});
+
+});
+</script>
+
+
+<?php 
+//$tourn_id = $get_bracket_details['Tourn_ID'];
+/*
+echo "<pre>";
+print_r($ev_rep_schedule);
+exit;*/
+?>
+  
+<div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:30px;" id="div2">
+
+<table align="center">
+<tr>
+<td><b>Accept</b> - </td>
+<td><img id='img-winner' class='img-winner' name='stat_edit' src="<?php echo base_url();?>images/accept.png" width='20px' height='20px' /></td>
+<td>&nbsp;&nbsp;</td>
+<td><b>Pending</b> - </td>
+<td><img id='img-winner' class='img-winner' name='stat_edit' src="<?php echo base_url();?>images/pending.png" width='20px' height='20px' /></td>
+<td>&nbsp;&nbsp;</td>
+<td><b>Decline</b> - </td>
+<td><img id='img-winner' class='img-winner' name='stat_edit' src="<?php echo base_url();?>images/decline.png" width='20px' height='20px' /></td>
+<td>&nbsp;&nbsp;</td>
+<td><b>Tentative <b>- </td>
+<td><img id='img-winner' class='img-winner' name='stat_edit' src="<?php echo base_url();?>images/tentative.png" width='20px' height='20px' /></td>
+</tr>
+</table>
+<br/>
+
+
+
+<div class="fromtitle">Availability for this Event</div>
+
+<?php if(count($get_ev_users) == 0) 
+{ 
+	echo "No Players are Registered/Added yet."; 
+}
+else
+{
+
+?>
+
+<form class='form-horizontal' method="post" name='form-op-users' id='form-op-users1'>
+<!-- table content -->
+<div align='left' class="col-md-6" id='sub_status'></div>
+<div align='right' class="col-md-6">
+<input type='button' class="league-form-submit1" name='save_avail' id='save_avail' value='Save' />
+<img src='<?php echo base_url();?>images/ajax_loader.gif' width='40px' height='50px' id='loading' style="display:none" />
+</div>
+
+<div style="overflow-x:scroll; width:100%" class='table-responsive'>
+<table class='tab-score' cellpadding='3' cellspacing='3' style="table-layout:responsive;">
+<tr class='top-scrore-table'>
+
+<!-- <td style='height:45px margin-left:2px'><b>Players</b></td>
+ -->
+ <td style="padding-left:5px"><b>Players</b></td> <!--//width="187"-->
+ <?php
+
+foreach($ev_rep_schedule as $rep_sch){
+?>
+<td align='center'><b><?php 
+
+	//$get_rep_sch_det = https://www.google.co.in/maps/place/Jamia+Osmania+Railway+Station;
+
+	$get_loc_det = $this->model_event->get_location_name($rep_sch->Ev_Location);
+	
+	$lat = $get_loc_det['loc_lat']; $long = $get_loc_det['loc_long']; 
+	
+	//$map_url = "http://maps.google.com/maps?q=loc:".$lat.",".$long."";
+
+	$map_url = "https://www.google.co.in/maps/place/".$get_loc_det['loc_address']."+".$get_loc_det['loc_city']."+".$get_loc_det['loc_state']."+".
+		$get_loc_det['loc_country'];
+
+	echo "<a href='".$map_url."' title='".$get_loc_det['loc_address'].", ".$get_loc_det['loc_city'].", ".$get_loc_det['loc_state'].", ".$get_loc_det['loc_country']."' target='_blank'>".$get_loc_det['loc_title']."</a><br>";
+
+	echo date('m/d', strtotime($rep_sch->Ev_Date))."<br>";
+	//echo date('h:i A', strtotime($rep_sch->Ev_Start_Time))." - ".date('h:i A', strtotime($rep_sch->Ev_End_Time));
+
+?>
+</b></td>
+<?php
+}
+?>
+</tr>
+
+<input type='hidden' name='ev_id' id='ev_id' value='<?php echo $ev_det['Ev_ID'];?>' />
+
+<?php
+$i = 1;
+foreach($get_ev_users as $ev_user){
+
+	$get_user = events :: get_user_det($ev_user->Users_Id);
+	$get_user_sch = events :: get_user_schedule($ev_det['Ev_ID'], $ev_user->Users_Id);
+?>
+
+<tr>
+<td style='height:45px padding-left:5px'><b><a href='<?=base_url();?>player/<?=$ev_user->Users_Id;?>'>
+<?php echo ucfirst($get_user['Firstname'])." ".ucfirst($get_user['Lastname']); ?></a></b></td>
+<?php
+foreach($get_user_sch as $sch){
+
+	//if($ev_user->Users_Id != $this->session->userdata('users_id') and $ev_det['Ev_Created_by'] != $this->session->userdata('users_id')){
+	if($ev_user->Users_Id != $this->session->userdata('users_id')){
+?>
+		<td style='height:45px' align='center'><!-- <b><?php //echo $sch->Ev_status; ?></b> -->
+		<!-- <input type='hidden' name='stat_val<?=$i;?>' id='stat_val<?=$i;?>' value='1' /> -->	
+		<?php
+
+		switch($sch->Ev_status){
+
+			case 'Pending':
+				echo "<img id='img-winner' class='img-winner' name='stat_edit".$i."' src='".base_url()."images/pending.png' width='20px' height='20px' />";
+				break;
+			case 'Accept':
+				echo "<img id='img-winner' class='img-winner' name='stat_edit".$i."' src='".base_url()."images/accept.png' width='20px' height='20px' />";
+				break;
+			case 'Decline':
+				echo "<img id='img-winner' class='img-winner' name='stat_edit".$i."' src='".base_url()."images/decline.png' width='20px' height='20px' />";
+				break;
+			case 'Tentative':
+				echo "<img id='img-winner' class='img-winner' name='stat_edit".$i."' src='".base_url()."images/tentative.png' width='20px' height='20px' />";
+				break;
+			default:
+
+				break;
+
+		}
+		?>
+		</td>
+<?php 
+	} else {
+?>
+		<td style='height:45px' align='center'>
+		<span id='show_stat<?=$i;?>'>
+
+		<!-- <input type='hidden' name='stat_val[]' id='stat_val<?=$i;?>' value='1' /> -->
+		<?php 
+		//$sch->Ev_status; 
+		switch($sch->Ev_status){
+
+			case 'Pending':
+				echo "<img style='cursor: pointer;' id='img-winner' class='upd_stat img-winner' name='stat_edit".$i."' src='".base_url()."images/pending.png' width='20px' height='20px' />";
+
+				//echo "<map name='linkmap".$i."'><area shape='rect' coords='0,0,80,80' href='#' alt='Click me' /></map>";
+
+				echo "<input type='hidden' name='ev_rep[]' id='ev_rep".$i."' value='".$sch->Ev_Rep_ID."' />";
+				echo "<input type='hidden' name='stat_val[]' id='stat_val".$i."' value='4' />";
+				break;
+			case 'Accept':
+				echo "<img style='cursor: pointer;' id='img-winner' class='upd_stat img-winner' name='stat_edit".$i."' src='".base_url()."images/accept.png' width='20px' height='20px' />";
+
+				//echo "<map name='linkmap".$i."'><area shape='rect' coords='0,0,80,80' href='#' alt='Click me' /></map>";
+
+				echo "<input type='hidden' name='ev_rep[]' id='ev_rep".$i."' value='".$sch->Ev_Rep_ID."' />";
+				echo "<input type='hidden' name='stat_val[]' id='stat_val".$i."' value='1' />";
+				break;
+			case 'Decline':
+				echo "<img style='cursor: pointer;' id='img-winner' class='upd_stat img-winner' name='stat_edit".$i."' src='".base_url()."images/decline.png' width='20px' height='20px' />";
+
+				//echo "<map name='linkmap".$i."'><area shape='rect' coords='0,0,80,80' href='#' alt='Click me' /></map>";
+
+				echo "<input type='hidden' name='ev_rep[]' id='ev_rep".$i."' value='".$sch->Ev_Rep_ID."' />";
+				echo "<input type='hidden' name='stat_val[]' id='stat_val".$i."' value='2' />";
+				break;
+			case 'Tentative':
+				echo "<img style='cursor: pointer;' id='img-winner' class='upd_stat img-winner' name='stat_edit".$i."' src='".base_url()."images/tentative.png' width='20px' height='20px' />";
+
+				//echo "<map name='linkmap".$i."'><area shape='rect' coords='0,0,80,80' href='#' alt='Click me' /></map>";
+
+				echo "<input type='hidden' name='ev_rep[]' id='ev_rep".$i."' value='".$sch->Ev_Rep_ID."' />";
+				echo "<input type='hidden' name='stat_val[]' id='stat_val".$i."' value='3' />";
+				break;
+			default:
+
+				break;
+		}
+		?></span>
+			<input type='hidden' id='user_id<?=$i;?>' name='user_id' value='<?php echo $ev_user->Users_Id; ?>' />
+			<input type='hidden' id='ev_rep_id<?=$i;?>' name='ev_rep_id' value='<?php echo $sch->Ev_Rep_ID; ?>' />
+
+			<!-- <select class='upd_stat' id='stat_edit<?=$i;?>' name='ev_stat' style="display:none;">
+				<option value=''>Select</option>
+				<option value='Accept'>Accept</option>
+				<option value='Decline'>Decline</option>
+				<option value='Tentative'>Tentative</option>
+			</select>
+		<span id='stat_edit_img<?=$i;?>'>
+		&nbsp;&nbsp;&nbsp;<img id='<?=$i;?>' class='edit_img' src="<?php echo base_url(); ?>/images/edit.png" style="width:20px; height:20px;" />
+		</span> -->
+		</td>
+<?php
+	}
+$i++;
+}
+?>
+</tr>
+<?php
+}
+?>
+
+<tr id='load_avail_players'>
+
+<td width="187" style="padding-left:5px"><b>Available Players</b></td>
+<?php
+foreach($ev_rep_schedule as $rep_sch){
+?>
+<td width="147" align='center'><b><?php 
+
+	$get_accpted_count = $this->model_event->get_res_count($rep_sch->Ev_Tab_ID);
+	
+	echo $get_accpted_count;
+?>
+</b>
+</td>
+<?php
+}
+?>
+</tr>
+
+</table>
+</div>
+		<br /><br />
+
+		<?php if($is_ev_user){?>
+		<div class='col-md-2 form-group internal' valign='middle'>
+		Comments:
+		</div>	
+		<div class='col-md-8 form-group internal'>
+		<input type='text' name="message" id="message" class='form-control col-md-9' />
+		</div>	
+		<div class='col-md-2 form-group internal' align='center'>
+		<input type="button" name='send_comment' id='send_comment' value="Add" class="league-form-submit1"/>
+		</div>	
+	   <?php } ?>
+
+	
+		<div class="col-md-12"><br></div>
+		<div class="col-md-12" style="overflow-y:scroll;height:200px;">
+
+
+		<div id = 'comments_div' class="col-md-12">
+		
+		<?php foreach($get_ev_comments as $comment) { 
+		$name = events :: get_user_det($comment->Users_id);
+		?>
+			<div class='pull-left' style="margin-right:20px"><img style="width:50px !important; height:50px !important;" class='img-circle' src='<?php 
+			if($name['Profilepic']){
+			echo base_url()."profile_pictures/$name[Profilepic]"; }
+			else{
+			echo base_url()."profile_pictures/default-profile.png"; }
+			?>' />
+			</div>
+			<div style="margin-top:5px">
+				<?php echo "<span style='font-weight:bold; color:#464646'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."</span>"; ?> <?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_date))."</span>"; ?>
+				<div style="margin-top:5px;"><?php echo $comment->Comments; ?></div>
+			</div>
+			<div style='clear:both; height:20px'></div>
+
+		<?php
+		} ?>
+		</div>
+		</div>	
+		
+		<!-- end of comments section -->
+
+<!-- table content -->
+</form>
+<?php
+}
+?>
+</div>

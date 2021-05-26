@@ -1,0 +1,280 @@
+<script>
+$('#mf_filter').on('change',function(){
+	var event_type = $(this).val();
+	if(event_type == 'Mixed') {
+		$('#div_doubles_filter').hide();
+		$('#div_mixed_filter').show();
+		var event = $('#mixed_filter').val();
+	}
+	else{
+		$('#div_doubles_filter').show();
+	 	$('#div_mixed_filter').hide();
+		var event = $('#doubles_filter').val();
+	}
+
+	var Tourn_id = $('#tourn_id').val();
+
+	$.ajax({
+	type:'POST',
+	url:baseurl+'league/get_reg_tourn_partner_names/',
+	data:{tourn_id:Tourn_id, event:event},    //{pt:'7',rngstrt:range1, rngfin:range2},
+	success:function(html){
+		$('#dbl-load-users').html(html);
+	}
+	});	
+});
+
+function get_partners_jq(Tourn_id, event){
+		$.ajax({
+			type:'POST',
+			url:baseurl+'league/get_reg_tourn_partner_names/',
+			data:{tourn_id:Tourn_id, event:event},    //{pt:'7',rngstrt:range1, rngfin:range2},
+			success:function(html){
+				$('#dbl-load-users').html(html);
+			}
+		});
+}
+
+$('.event_change').on('change',function(){
+	var event		= $(this).val();
+	var Tourn_id  = $('#tourn_id').val();
+	var f_type		= $(this).val();
+
+	get_partners_jq(Tourn_id, event);
+});
+ 
+$('.double_partner').on('change',function(){
+
+$sel_id = this.id;
+$uid = $sel_id.slice(3,10);
+
+var Player   = $('#player_'+$uid).val();
+var Partner = $(this).val();
+var Event	= $('#event').val();
+
+var Tourn_type = $('#tourn_type').val();
+var Tourn_id		= $('#tourn_id').val();
+
+if(Partner != "" && Partner > 0){
+	var c = confirm("Are you sure to change?");
+	if(c === true){
+		//alert("Updating players");
+		$.ajax({
+			type:'POST',
+			url:baseurl+'league/double_players_change/',
+			data:{ tourn_id:Tourn_id, ttype:Tourn_type, partner:Partner, player:Player, event:Event },    //{pt:'7',rngstrt:range1, rngfin:range2},
+			success:function(html){
+				$('#dbl-load-users').html(html);
+				var cur_sel = $('.event_change').val();
+				get_partners_jq(Tourn_id, cur_sel);
+				alert("Partner updated successfully.");
+			}
+		});
+	}
+	else{
+		$(this).val('');
+	}
+}
+else if(Partner == "-1"){
+	var c = confirm("Are you sure to release the partner?");
+	if(c === true){
+		//alert("Updating players");
+		$.ajax({
+			type:'POST',
+			url:baseurl+'league/double_players_change_nopartner/',
+			data:{ tourn_id:Tourn_id, ttype:Tourn_type, partner:Partner, player:Player, event:Event },    //{pt:'7',rngstrt:range1, rngfin:range2},
+			success:function(html){
+				$('#dbl-load-users').html(html);
+				var cur_sel = $('.event_change').val();
+				get_partners_jq(Tourn_id, cur_sel);
+				alert("Partner updated successfully.");
+			}
+		});
+	}
+}
+
+});
+
+$(document).ready(function(){
+var temp_val = $('#mf_filter').val();
+//alert(temp_val);
+	if(temp_val == 'Doubles'){
+		$('#div_mixed_filter').hide();
+	}
+	else if(temp_val == 'Mixed'){
+		$('#div_doubles_filter').hide();
+	}
+	//
+});
+</script>
+<!-- ---------------------------Tournament Players update -----------------------------------------------  -->
+<div class="col-md-12 league-form-bg" style="margin-top:40px; background:#fff; margin-bottom:20px;" id="div6">
+<!-- <div class="fromtitle">Tournament Players update</div> -->
+<div class='form-group'>
+<?php
+$mfs = array();
+$mfs = json_decode($tour_details->Singleordouble);
+
+$get_mf_type = '';
+if(in_array('Doubles', $mfs)){ $get_mf_type = 'Doubles'; }
+else if(in_array('Mixed', $mfs)){ $get_mf_type = 'Mixed'; }
+
+$tourn_partner_names = league::get_reg_tourn_partner_names($tour_details->tournament_ID, $get_mf_type);
+
+if($tourn_partner_names){
+?>
+<form method='post' enctype='multipart/form-data' action="<?php echo base_url(); ?>league/update_players" role='form'>
+
+<div class='col-md-3 control-label'>
+<select class="form-control" id="mf_filter" name="mf_filter">
+<!-- <option value="">Select</option> -->
+<?php
+$match_format = "";
+if($this->input->post('mf_filter')){
+$sel_mf = $this->input->post('mf_filter');
+}
+?>
+<?php foreach($mfs as $mf){ 
+if($mf != 'Singles'){?>
+<option value="<?php echo $mf;?>" <?php if($sel_mf == $mf){ echo "selected=selected"; } ?> ><?php echo $mf; ?></option>
+<?php }
+} ?>
+</select>
+</div>
+
+<!-- Filters -->
+<?php
+	$doubles_events_list = '';
+	foreach ($revised_doubles_events as $key => $value){
+		$selected = '';
+		if($key == $event){ $selected = "selected='selected'"; }
+	  	  $doubles_events_list .= "<option value='$key' $selected>$value</option>";
+	}
+
+	$mixed_events_list = '';
+	foreach ($revised_mixed_events as $key => $value){
+		$selected = '';
+		if($key == $event){ $selected = "selected='selected'"; }
+	  	  $mixed_events_list .= "<option value='$key' $selected>$value</option>";
+	}
+?>
+<div class='col-md-3 control-label' id="div_doubles_filter">
+ 	<select class="form-control event_change" id="doubles_filter" name="doubles_filter">
+		<!-- <option value="">--Select Doubles Events--</option> -->
+		<?=$doubles_events_list;?>
+	</select>
+</div>
+<div class='col-md-3 control-label' id="div_mixed_filter">
+ 	<select class="form-control event_change" id="mixed_filter" name="mixed_filter">
+		<!-- <option value="">--Select Mixed Events--</option> -->
+		<?=$mixed_events_list;?>
+	</select>
+</div>
+
+<!-- Filters Ends Here. -->
+
+<div class='col-md-12'>
+<br />
+<div id="dbl-load-users" style="overflow-y: scroll;">
+<table class="tab-score">
+<?php
+$abc = $tourn_partner_names;
+if(count(array_filter($tourn_partner_names)) > 0){
+
+$opt_list = '';
+foreach($tourn_partner_names as $pname){
+	if($pname->Users_ID){
+	$partner_div_gender = "";
+	//$partner_div = league::get_username($pname->Reg_Users_ID);
+		if($pname->Gender == 1){
+			$partner_div_gender = "(M)";
+		}
+		else if($pname->Gender == 0){
+			$partner_div_gender = "(F)";
+		}
+	$opt_list .= "<option value='$pname->Users_ID'>$pname->Firstname $pname->Lastname $partner_div_gender</option>";
+	}
+}
+?>
+<tr class="top-scrore-table">
+<td width="15%">Player</td>
+<td width="15%">Partner</td>
+<td width="15%">Change To</td>
+</tr>
+<?php
+foreach($tourn_partner_names as $name)
+{
+?>
+<tr>
+<td><?php 
+$gender = "";
+if($name->Gender == 1){
+	$gender = "(M)";
+}
+elseif($name->Gender == 0){
+	$gender = "(F)";
+}
+echo "<b>".ucfirst($name->Firstname)." ".ucfirst($name->Lastname)." ".$gender."</b>";
+?>
+<input type='hidden' name = 'player_<?php echo $name->Users_ID; ?>' id = 'player_<?php echo $name->Users_ID; ?>' value = "<?php echo $name->Users_ID; ?>" />
+</td>
+<td>
+<?php
+$partners = '';
+if($name->Partners){
+$partners = json_decode($name->Partners, true);
+
+$partner = '';
+	if($partners[$event]){
+	$partner_player = $partners[$event];
+	$partner = league::get_username($partner_player);
+	
+	if($partner['Gender'] == 1){
+		$p_gender = "(M)";
+	}
+	else if($partner['Gender'] == 0){
+		$p_gender = "(F)";
+	}
+
+	echo "<b>".ucfirst($partner['Firstname'])." ".ucfirst($partner['Lastname'])." ".$p_gender."</b>";	}
+}
+?>
+</td>
+<td>
+<select id='sel<?php echo $name->Users_ID; ?>' name='upd_sel_partner[]' class='double_partner form-control' style='width:50%'>
+<!-- disabled='disabled'> -->
+<option value=''>Select</option>
+<option value='-1'>--Release Partner--</option>
+<?=$opt_list;?>
+</select>
+</td>
+<!-- <td><?php //echo $name->Age_Group; ?></td> -->
+</tr>
+<?php
+}
+?>
+<input type='hidden' name='event' id='event' value="<?=$event;?>" />
+<?php
+}
+else{
+?>
+<tr><td colspan='6'><b>No players are registered yet. </b></td></tr>
+<?php } ?>
+</table>
+</div>  
+</div>
+<input type='hidden' id="tourn_id"   name='tourn_id'   value = "<?php echo $tour_details->tournament_ID; ?>" />
+<input type='hidden' id='tourn_type' name='tourn_type' value = "<?php echo $tour_details->Tournament_type; ?>" />
+<!--
+<div class='col-md-3'>
+<input type="submit" id="update_player" name="update_player"  value="Update" class="league-form-submit" style=""/>
+</div>
+-->	   
+</form>
+<?php
+}
+
+?>
+</div>
+</div>
+<!-- ----------------------------------------------------------------------------------------------------  -->

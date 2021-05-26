@@ -1,0 +1,276 @@
+<!--FOOTER-->
+    <section id="footer-tag">
+           <div class="container">
+             <div class="col-md-12">
+              <div class="col-md-4 hidden-xs">
+                 <h3>About Us</h3>
+                 <p>A2M Sports is a social platform for sports lovers, from Amateurs to Masters. It finds other players like you with similar interests, helps you keep track of your scores and manage your progress along the way. At A2M Sports, our mission is to help every player achieve their maximum potential by providing easy and convenient options to play.</p>
+                 
+				 <p>We help sports academies or any business entities to organize variety of leagues or tournaments and keep the data for statistics and ranking purposes.</p>
+
+				<p style="float:right"><a href="<?php echo base_url();?>aboutus"><font color="#ffffff"><u>Read More</u></font></a></p>
+              </div>
+<!--               <div class="col-md-3 cat-footer">
+                
+                <h3 class='last-cat'>Categories</h3>
+                <ul class="last-tips">
+                  <li><a href="index.html">Home</a></li>
+                  <li><a href="create-league.html">Sports</a></li>
+                  <li><a href="member-list.html">Members</a></li>
+                  <li><a href="calendar.html">Calendar</a></li>
+                  <li><a href="help.html">Help</a></li>
+                  <li><a href="contactus.html">Contact us</a></li>
+                </ul>
+              </div>
+ -->              <div class="col-md-4 hidden-xs">
+                 <h3>Latest News</h3>
+				
+				 <?php foreach($results as $row ){ ?>
+
+                 <ul class="footer-last-news">
+                    <li>
+					<?php 
+						$admin_users= array(214,215);
+						$user_id = $this->session->userdata('users_id');
+				 if(in_array($user_id, $admin_users)){ ?>
+					<p style="float:right"><a href=<?php echo base_url()."News/edit/" . $row->News_id ;?>><font color="#ffffff"><u>Edit</u></font></a></p> 
+					<?php }?>
+					<a href=<?php echo base_url()."News/get_news_detail/" . $row->News_id ;?>>
+					
+					<img class="" src="<?php echo base_url(); ?>tour_pictures/<?php 
+						 if($row->SportsType_id == 1){echo "default_tennis.jpg"; }
+					else if($row->SportsType_id == 2){echo "default_table_tennis.jpg"; }
+					else if($row->SportsType_id == 3){echo "default_badminton.jpg"; }
+					else if($row->SportsType_id == 4){echo "default_golf.jpg"; }
+					else if($row->SportsType_id == 5){echo "default_racquet_ball.jpg"; }
+					else if($row->SportsType_id == 6){echo "default_squash.jpg"; }
+					else if($row->SportsType_id == 7){echo "default_pickleball.jpg"; }
+					else if($row->SportsType_id == 8){echo "default_chess.jpg"; }
+					else if($row->SportsType_id == 9){echo "default_carroms.jpg"; }
+					else if($row->SportsType_id == 10){echo "default_volleyball.jpg"; }
+					else if($row->SportsType_id == 11){echo "default_fencing.jpg"; }
+					else if($row->SportsType_id == 12){echo "default_bowling.jpg"; }
+					else if($row->SportsType_id == -1){echo "logo_fb.jpg"; }
+			    ?>" width='108px' height='81px' alt="" />
+
+					<p><?php 
+						 // $s = substr($row->News_content, 0, 75);
+						 // $result = substr($s, 0, strrpos($s, ' '));
+
+						 $abc = strip_tags($row->News_content);
+						  $s = substr($abc, 0, 75);
+						 $result = substr($s, 0, strrpos($s, '.'));
+						 echo strip_tags($s) . "...";
+					?>
+					</p>
+					
+					</li>
+					</a>
+                 </ul>
+				 <li style="clear:both; height:1px; list-style:none"></li>
+				  <?php } ?>
+              </div>
+              <div class="col-md-4 footer-newsletters hidden-xs">
+                <h3>&nbsp;</h3>
+					<div id="loader"><br /><br /><br /><br /><br />
+                        <input type="submit" name='req_demo' id='req_demo' value="Request a Demo"/>
+                    </div>
+              </div>
+              <div class="col-xs-12">
+                <!-- <ul class="social">
+                      <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                      <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                      <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                      <li><a href="#"><i class="fa fa-digg"></i></a></li>
+                      <li><a href="#"><i class="fa fa-rss"></i></a></li>
+                      <li><a href="#"><i class="fa fa-youtube"></i></a></li>
+                      <li><a href="#"><i class="fa fa-tumblr"></i></a></li>
+
+                    </ul> -->
+              </div>
+             </div>
+           </div>
+    </section>
+<footer>
+<div class="content-footer">
+  <div class="container">
+	  <div class="col-md-7"><p>&copy; <?=date('Y');?> a2msports.com. All rights reserved. &nbsp;&nbsp;<a id='priv_policy' style="cursor:pointer;color:#FFF">Privacy Policy</a></p></div>
+	  <!-- <div class="col-md-5"> -->
+	  <div class="fb-like col-md-5" data-href="https://www.a2msports.com/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+	  
+	  <!--<div class="col-md-3" style="padding-right:50px">
+		<a href='https://www.facebook.com/a2msports' target='_blank'><img src = "<?php echo base_url().'images/fb_round.png'; ?>" alt = 'Facebook Page' width = '25px' height='25px' align='right' /></a>
+	  </div>-->
+  </div>
+
+<!-- Google AdSense -->
+<!-- <div id='google' align='center'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({
+google_ad_client: "ca-pub-9772177305981687",
+enable_page_level_ads: true
+});
+</script>
+</div> -->
+<!-- Google AdSense -->
+
+</div>
+</footer>
+
+<!-- Google AdSense -->
+  <div id='google' align='center'>
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<script>
+	  (adsbygoogle = window.adsbygoogle || []).push({
+		google_ad_client: "ca-pub-9772177305981687",
+		enable_page_level_ads: true
+	  });
+	</script>
+  </div>
+<!-- Google AdSense -->
+
+</section>
+<script src="<?php echo base_url();?>js/jquery-1.10.2.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/bootstrap.min.js"></script>
+<script src="<?php echo base_url();?>js/bootstrap-timepicker.min.js"></script>
+<script src="<?php echo base_url();?>js/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/responsive-tabs.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/jquery.simple-dtpicker.js" type="text/javascript"></script>
+<!--MENU-->
+<script src="<?php echo base_url();?>js/menu/modernizr.custom.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/menu/cbpHorizontalMenu.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/tabs.js" type="text/javascript"></script>
+<!--END MENU-->
+
+<!-- Button Anchor Top-->
+<script src="<?php echo base_url();?>js/jquery.ui.totop.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
+    <script>
+		//$('.accordion__content:not(:first)').hide();
+		//$('.accordion__title:first-child').addClass('active');
+		$('.accordion__title').on('click', function () {
+		$('.accordion__content').hide();
+		$(this).next().show().prev().addClass('active').siblings().removeClass('active');
+		});
+      //@ sourceURL=pen.js
+    </script>
+<!--PERCENTAGE-->
+<script>
+    $(function () {
+        "use strict";
+        $('.skillbar-pp').each(function () {
+            $(this).find('.skillbar-bar-pp').width(0);
+        });
+
+        $('.skillbar-pp').each(function () {
+            $(this).find('.skillbar-bar-pp').animate({
+                width: $(this).attr('data-percent')
+            }, 2000);
+        });
+    });
+</script>
+
+<script src="<?php echo base_url(); ?>js/jquery.plugin.js"></script>
+<script src="<?php echo base_url(); ?>js/jquery.datepick.js"></script>
+<script src="<?php echo base_url();?>js/foundation-datepicker.js"></script>
+<script>
+$(function() {
+ $('#sdate').datepick();
+ $('#edate').datepick();
+ $('#reg_closedon').datepick();
+});
+</script>
+
+<script src="<?php echo base_url();?>js/custom.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/jquery.autocomplete.js" type="text/javascript"></script>
+<script src="<?php echo base_url();?>js/jquery-ui-custom.js"></script>
+<script src="<?php echo base_url();?>js/simple-lightbox.js"></script>
+<script src="<?php echo base_url();?>js/simple-lightbox.min.js"></script>
+<script>
+// Ajax post for refresh captcha image.
+$(document).ready(function() {
+
+$("#req_demo").click(function() {
+baseurl = "<?php echo base_url(); ?>";
+window.location.href = baseurl+"help/demo";
+});
+
+$("#reload").click(function() {
+jQuery.ajax({
+type: "POST",
+url: "<?php echo base_url(); ?>" + "home/captcha_refresh",
+success: function(res) {
+if(res)
+{
+jQuery("div.image").html(res);
+}
+}
+});
+});
+});
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110374306-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110374306-1');
+</script>
+
+<!-- jQuery DataTables -->
+<script src="<?php echo base_url(); ?>js/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="<?php echo base_url(); ?>js/DataTables-1.10.16/js/dataTables.bootstrap.min.js"></script>
+<script>
+
+$(document).ready(function() {
+$('#searchtable').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-3 pagepad'i><'col-sm-6'p>>" +
+"<'row'<'col-sm-12'tr>>", searching: false, paging: true, lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]]});
+
+$('#searchchallenge').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-3 pagepad'i><'col-sm-6'p>>" +
+"<'row'<'col-sm-12'tr>>", searching: false, paging: true, lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]]});
+
+$('#searchcoach').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-6'p><'col-sm-3'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: true, lengthMenu: [[10, 25], [10, 25]],  "columns": [ null, null, null, null, { "orderable": false }, { "orderable": false }], language: {"search":"", "searchPlaceholder":"Search"} });
+
+$('#searchlocation').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-3 pagepad'i><'col-sm-6'p>>" +
+"<'row'<'col-sm-12'tr>>", searching: false, paging: true, lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]]});
+
+$('#searchbyname').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-3 pagepad'i><'col-sm-6'p>>" +
+"<'row'<'col-sm-12'tr>>", searching: false, paging: true, lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]]});
+
+$('#searchplayers').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-6'p><'col-sm-3'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: true, lengthMenu: [[10, 25], [10, 25]], aoColumns: [ null, null, { "orderSequence": [ "desc", "asc" ] }, { "orderSequence": [ "desc", "asc" ] }, { "orderSequence": [ "desc", "asc" ] }, { "orderSequence": [ "desc", "asc" ] }, { "orderSequence": [ "desc", "asc" ] }], language: {"search":"", "searchPlaceholder":"Search"} });
+
+$('#searchtournaments').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-6'p><'col-sm-3'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: true, lengthMenu: [[10, 25], [10, 25]],  "order": [[ 3, 'desc' ]], language: {"search":"", "searchPlaceholder":"Search"} });
+
+$('#searchclub').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-6'p><'col-sm-3'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: true, lengthMenu: [[10, 25], [10, 25]],  "columns": [ null, null, null, null, { "orderable": false }], language: {"search":"", "searchPlaceholder":"Search"} });
+
+
+$('#priv_policy').click(function(){
+var baseurl = "<?php echo base_url(); ?>";
+	$.ajax({
+		type: "POST",
+		async:false,
+		url:baseurl+'home/priv_policy/',
+		dataType: "html",
+		success: function(res){
+			var w = window.open('', null, "height=650, width=550, status=yes, toolbar=no, menubar=no, location=no");
+			w.document.open();
+			w.document.write(res);
+			w.document.close();
+		}
+	});
+});
+
+});
+</script>
+<!-- jQuery DataTables -->
+
+</body>
+</html>

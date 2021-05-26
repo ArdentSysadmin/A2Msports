@@ -1,0 +1,978 @@
+<html>
+<head>
+<title>A2MSports</title>
+</head>
+
+<body>
+<table width="700" border="0" cellspacing="0" cellpadding="0" align="center">
+  <tr>
+    <td style="border:2px solid #ff8a00">
+		<table width="696" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+		<td width="172" style="padding:10px">
+		<img class="scale_image" src="<?php echo base_url(); ?>images/logo.png" alt=""  />
+		</td>
+		<td width="524">
+		<div align="center" style="font-size:18px; font-weight:bold"><?php //echo $userName; ?></div>
+		</td>
+		</tr>
+		<tr>
+		<td colspan="2" style="height:6px; background:#81a32b; font-size:6px"></td>
+		</tr>
+		</table>
+
+ <br><br>
+ <div style="margin-left:20px; margin-right:20px; margin-bottom:20px">
+ <table border="0" cellspacing="0" cellpadding="0" align="center" width="660">
+<tr>
+    
+<?php
+// ----------------------------Email body switch cases START here ----------------------------------------------------------------
+switch($page){
+	case "New Registration":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $Firstname . " " . $Lastname  ;?>,
+</div> 
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px"> 
+Thank you for registering with a2msports.com. <br /> Please access given below link to activate your account. <br /> 
+
+<?php $string =  base_url()."register/activate/".$Code;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+			
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> Admin, <br /> A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+<?php
+	case "Request-Demo":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi Admin,
+</div> 
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px"> 
+I am impressed with your A2MSports site. I am here requesting a demo of your site.<br />
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Thank you, <br /><?php echo $name; ?>.
+</div>
+</td>
+<?php
+	break;
+?>
+<?php 
+  case "New Tournament Invitation":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+  <?php echo $message." Here are the details."; ?> 
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px"> 
+
+<b>Tournament</b>: <?php echo $title; ?> <br />
+
+<b>Sport</b>: <?php echo $sport; ?> <br />
+
+<b>Gender</b>: <?php echo $gender; ?> <br />
+
+<b>Start Date</b>: <?php echo $start_date; ?> <br />
+
+<b>Registration closes on</b>: <?php echo $close_date; ?>  <br />
+
+<b>Location</b>: <?php echo $location; ?> <br />
+
+<b>Fees</b>: <?php echo "$" .number_format($fee,2)." (Singles), ". "$" . number_format($extrafee,2)." (Additional Format)";?> <br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please access the below link to register for the Tournament. <br />
+
+<?php $string =  base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $this->session->userdata('user'); ?>, <br /> A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "New Tournament Creation":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+   Hi <?php echo $fname . " " . $lname ; ?>, <br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ A new tournament that may be of interest to you is going to start very soon in your area. Given below are the tournament details.  <br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px"> 
+<b>Tournament</b>: <?php echo $title; ?> <br />
+<b>Sport</b>: <?php echo $sport; ?> <br />
+<b>Gender</b>: <?php echo $gender; ?> <br />
+<b>Start Date</b>: <?php echo $start_date; ?> <br />
+<b>Registration closes on</b>: <?php echo $close_date; ?>  <br />
+<b>Location</b>: <?php echo $location; ?> <br />
+<b>Fees</b>: <?php echo "$" .number_format($fee,2)." (Singles), ". "$" . number_format($extrafee,2)." (Additional Format)";?> <br />
+<b>Organizer</b>: <?php echo $org; ?> <br />
+<b>Contact</b>: <?php echo $contact; ?> </div><br />
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please access the below link  to register for the Tournament. <br />
+
+<?php $string =  base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Thank you, <br /> 
+Admin, <br />
+A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Tournament Match Comments":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi,
+</div> 
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php echo ucfirst($this->session->userdata('user')); ?> has sent a message in tournament <b>(<?php echo $title ;?></b>). <br />
+
+<b>Message</b>: <?php echo $message ;?> <br />
+
+Please access the below link to access the tournament details.<br />
+
+<?php $string = base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>
+<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo ucfirst($this->session->userdata('user')); ?>, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "New Match Invitation":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $firstname . " " . $lastname; ?> ,
+</div> 
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+I have sent a match play invitation to you. <br />
+
+
+<!-- Please <strong><a href="">click here</a></strong> to register for the match if you are intreseted.
+<br /> -->
+
+<?php $string = base_url()."play/register/".$match_id;?>
+please <strong><a href='<?php echo $string;?>'>click here</a></strong> to register for the match if you are intreseted.
+<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $this->session->userdata('user'); ?>, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "New Event Invitation":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $firstname . " " . $lastname; ?> ,
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+A New Event (<?php echo $ev_title; ?>) invitation has been sent to you.</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php $string = base_url()."events/view/".$event_id;?>
+Please <strong><a href='<?php echo $string;?>'>click here</a></strong> to view / respond to the event schedules .<br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $this->session->userdata('user'); ?>, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "New Event Details _ Backup":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+  <?php echo $message." <br>Here are the event details."; ?> 
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+<b>Event Title</b>: <?php echo $ev_title; ?> <br />
+
+<b>Event Type</b>: <?php echo $ev_type_name; ?> <br />
+
+<b>Start Date</b>: <?php echo $ev_sd; ?> <br />
+
+<b>End Date</b>: <?php echo $ev_ed; ?>  <br />
+ 
+<b>Location</b>: <?php echo $loc_title; ?> <br /> <?php echo $location; ?> <br />
+
+<b>Organizer</b>: <?php echo $organizer; ?>  <br />
+
+<b>Contact Number</b>: <?php echo $contact_num; ?>  <br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please access the below link to register. <br />
+
+<?php $string =  base_url()."events/register/".$ev_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $this->session->userdata('user'); ?>, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "New Event Details":
+?>
+<td>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+  <?php echo $message." <br>Here are the event details."; ?> 
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+<b>Event Title</b>: <?php echo $ev_title; ?> <br />
+
+<b>Event Type</b>: <?php echo $ev_type_name; ?> <br />
+
+<b>Start Date</b>: <?php echo $ev_sd; ?> <br />
+
+<b>End Date</b>: <?php echo $ev_ed; ?>  <br />
+ 
+<b>Location</b>: <?php echo $loc_title; ?> <br /> <?php echo $location; ?> <br />
+
+<b>Organizer</b>: <?php echo $organizer; ?>  <br />
+
+<b>Contact Number</b>: <?php echo $contact_num; ?>  <br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please access the below link to register. <br />
+
+<?php $string =  base_url()."events/view/".$ev_id."/".$act_code;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $this->session->userdata('user'); ?>, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "Events Reminder to Players":
+?>
+<td>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php echo "Hi $firstname $lastname, <br>This is an event reminder for the Event '$ev_title'."; ?>
+</div> 
+
+<!-- <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+<b>Event Title</b>: <?php //echo $ev_title; ?> <br />
+<b>Event On</b>: <?php //echo $ev_sd; ?> <br />
+<b>End Date</b>: <?php //echo $ev_ed; ?>  <br />
+<b>Location</b>: <?php //echo $loc_title; ?> <br /> <?php //echo $location; ?> <br />
+<b>Organizer</b>: <?php //echo $organizer; ?>  <br />
+<b>Contact Number</b>: <?php //echo $contact_num; ?>  <br />
+
+</div> -->
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please access the below link to view the details. <br />
+
+<?php $string =  base_url()."events/view/".$ev_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo "Admin";   //$this->session->userdata('user'); ?>, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "Event Availability Status":
+?>
+<td>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo ucfirst($firstname) . " " . ucfirst($lastname); ?>,
+</div>  
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+<b><?php echo $this->session->userdata('user'); ?></b> has updated their availability status for the Event <b><?php echo $title; ?></b>.<br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please access the below link to view the event. <br />
+
+<?php $string =  base_url()."events/view/".$event_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "FM-Register":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $creator_name; ?>,
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+A new match registration has initiated. Given below are the details .</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+<b>Match:</b> <?php echo $title; ?> <br /> 
+<b>Registered by:</b> <?php echo $reg_user_name; ?> <br />
+<?php if($partner_name){?>
+ <?php echo "<b>Partner :</b>". $partner_name; ?> <br /> 
+<?php } ?>
+<b>Play Date:</b> <?php echo $play_date; ?> <br /> 
+<b>Comments:</b> <?php echo $comments; ?> <br /> 
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php
+case "Reset Password":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $firstname . " " . $lastname . ","; ?> 
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+A New password request has been initiated for your A2MSports login. <br />
+Please access the below link to reset the password.<br />
+
+<?php $string =  base_url()."login/reset_password_form/".$code;
+$string = auto_link($string, 'url');
+echo $string;
+?><br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please ignore this email if you were not initiated Password request.<br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+break;
+?>
+
+
+<?php 
+  case "Reset Profile Password":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $p_firstname . " " . $p_lastname . ","; ?> 
+</div> 
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+A new password request has been initiated for one of your linked A2msports profiles.<br />
+Given below are the details<br />
+Name: <?php echo $firstname." ".$lastname; ?><br />
+Username: <?php echo $child_user_name; ?></br><br />
+
+Please access the below link to reset the password.<br />
+
+<?php $string =  base_url()."login/reset_password_form/".$code;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Please ignore this email if you were not initiated Password request.<br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Registration-Singles":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $firstname . " " . $lastname . ","; ?> 
+</div> 
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+You have Successfully registered for <?php echo $title; ?>.<br />
+
+<?php $string =  base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "Tourn-Reg-Doubles":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $partner1; ?> ,<br />
+</div> 
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+You have been selected as a Partner for one of the A2MSports Tournament by <?php echo $user; ?>.
+If you are interested to participate, please access the below link and register for the tournament.<br />
+
+<?php $string =  base_url()."league/register_match/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "Tourn-Reg-Mixed":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $partner2; ?> ,<br />
+</div> 
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+You have been selected as a Partner for one of the A2MSports Tournament by <?php echo $user2; ?>.
+If you are interested to participate, please access the below link and register for the tournament.<br />
+
+<?php $string =  base_url()."league/register_match/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Send Email Registered Players":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $firstname . " " . $lastname; ?> ,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ <?php echo $des; ?><br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Access the below link to view tournament details .<br />
+
+<?php $string =  base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $admin_name;?>, <br /> <?php echo $title;?>, <br /> A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Send Email Event Players":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $firstname . " " . $lastname; ?> ,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ <?php echo $des; ?><br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Access the below link to view Event details .<br />
+
+<?php $string =  base_url()."events/view/".$ev_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Contact-US":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi Admin,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ <?php echo $des; ?><br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Details: <br />
+Email: <?php echo $email; ?> <br /> 
+Phone: <?php echo $phone; ?> <br /> 
+</div>
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $name; ?>, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Add-Score-SE-RR": 
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ <?php echo "Hi, <br> One of your tournament match score was updated. Given below are the details";?><br />
+</div> 
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ <?php echo "Tournament Title:  " . $title ;?><br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ 
+
+<?php if($draw_name){
+		$name = $draw_name." ";
+     }else
+ 	 {
+	    $name = "";
+	 }
+?>
+ <?php echo "Round:  " . $name . $round_title;?><br />
+ <?php echo "Player1:  " . ucfirst($player1_name); if($player1_partner){ echo "; ".ucfirst($player1_partner); } ?><br />
+ <?php echo "Player2:  " . ucfirst($player2_name); if($player2_partner){ echo "; ".ucfirst($player2_partner); } ?><br />
+ <?php echo "Winner:  " . ucfirst($winner); if($winner_partner_name){ echo "; ".ucfirst($winner_partner_name); }  ?><br />
+
+<?php
+if($player1_score !=""){
+$p1=array();$p2=array();
+$p1 = json_decode($player1_score);
+$p2 = json_decode($player2_score);
+
+$cnt = count(array_filter($p1));
+if($cnt > 0){
+		for($i=0; $i<count(array_filter($p1)); $i++)
+		{
+			$score .= "($p1[$i] - $p2[$i]) ";
+		}
+		
+	}
+
+}
+ ?>
+
+
+ <?php echo "Score:  " . $score ;?><br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Access the below link to view tournament details .<br />
+
+<?php $string =  base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+</div>
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Add-Score-WFF":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ <?php echo "Hi, <br> One of your tournament match result was declared by win by forfeit. Given below are the details";?><br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ <?php echo "Tournament Title:  " . $title ;?><br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ 
+ <?php if($draw_name){
+		$name = $draw_name." ";
+     }else
+ 	 {
+	    $name = "";
+	 }
+?>
+ <?php echo "Round: " . $name . $round_title;?><br />
+
+ <?php echo "Winner: " . ucfirst($winner); if($winner_partner_name){ echo "; ".ucfirst($winner_partner_name); } ?><br />
+
+ <?php echo "Score: Win by forfeit"; ?><br />
+
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Access the below link to view tournament details .<br />
+
+<?php $string =  base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+</div>
+
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "New Add Player":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $name;?>,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+A New Profile has been created in A2MSports under your Account. <br />
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Given below are the details.<br />
+ <?php echo "Username:  " . $username ;?><br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Access the below link to login .<br />
+
+<?php $string =  base_url()."login";
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Update Tournament":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $name;?>,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+One of the tournament (<?php echo "<b>".$title."</b>";?>) details are updated in A2MSports. Please go through the below link to view the changes.
+ <br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php $string =  base_url()."league/view/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Contact Player":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $fname;?>  <?php echo $lname;?>,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+
+<?php echo $message; ?>	<br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $from_name; ?>, <br /> 
+
+<?php $string =  base_url()."search/player_details/$from_id";
+$string = auto_link($string, 'url');
+echo $string;
+?>	<br />
+
+A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+<?php 
+  case "Admin Notification":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $firstname . " " . $lastname; ?>,
+</div> 
+
+<span style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php echo $mes?> <br />
+</span>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+Admin, <br />  A2MSports. </div>
+</td>
+<?php
+	break;
+?>
+
+
+<?php 
+  case "Reserve Court Confirmation":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi <?php echo $name;?>,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+This is the confirmation mail for your Court Reservation. Given below are the details.
+<br />
+<b>Location: </b><?php echo $loc_name;?><br />
+<b>Court :</b><?php echo $court_name;?><br />
+<b>Resered on: </b><?php echo date('m/d/Y', strtotime($rdate));?><br />
+<b>From </b><?php echo $from_time;?> <b>To </b><?php echo $to_time;?><br />
+</div>
+
+<?php
+$string =  base_url().$this->short_code.'/courts/reserve/'.date('Y-d-m', strtotime($rdate));
+$string = auto_link($string, 'url');
+echo $string;
+?><br />
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /><br />
+<?php echo "Admin"; ?>, <br /> 
+A2MSports. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php
+default:
+	echo "";
+	break;
+}
+// ----------------------------Email body switch cases END here ----------------------------------------------------------------
+?>
+</tr>
+</table>
+ </div>
+ 
+ <table width="696" border="0" cellspacing="0" cellpadding="0">
+
+  <tr>
+    <td style="background:#81a32b; font-size:12px; padding:6px; color:#ffffff; text-align:center">© 2021 a2msports.com. All rights reserved.</td>
+    </tr>
+</table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>

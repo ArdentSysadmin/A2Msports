@@ -1,0 +1,8 @@
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+	$config['protocol'] = 'smtp';
+	$config['smtp_host'] = 'smtp.office365.com';
+	$config['smtp_port'] =  '587';
+	$config['smtp_user'] = 'hr@fintinc.com';
+	$config['smtp_pass'] =  'Welcome2021#@!';
+	//A2mMobileApp2021! is the new pwd. I just want to stop emails for now as I'm seeing some suspcious activity

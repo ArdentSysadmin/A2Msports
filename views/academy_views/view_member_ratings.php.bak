@@ -1,0 +1,213 @@
+<style>
+.btn-default {
+    color: #fff;
+    background-color: #0b109f;
+    border-color: #0b109f;
+}
+
+table.dataTable>thead .sorting:after, table.dataTable>thead .sorting_asc:after, table.dataTable>thead .sorting_desc:after, table.dataTable>thead .sorting_asc_disabled:after, table.dataTable>thead .sorting_desc_disabled:after {
+    left: 8.0em !important;
+
+	}
+
+table.dataTable>thead .sorting:before, table.dataTable>thead .sorting_asc:before, table.dataTable>thead .sorting_desc:before, table.dataTable>thead .sorting_asc_disabled:before, table.dataTable>thead .sorting_desc_disabled:before {
+    left: 7.5em !important;
+	}
+
+/*table.dataTable thead .sorting_desc {
+    background-image: none !important;
+}*/
+
+</style>
+
+<!-- <div id='MembersLoc'> -->
+<?php $sport_segment = end($this->uri->segment_array()); ?>
+
+<div class="clear"></div>
+<?php
+//if(count($loc_query) > 0 and $this->session->userdata('users_id') == 240){
+?>
+<!-- <input type="button" class="league-form-submit1" name="capture" id="capture" value="Print" style="float:right;" onclick="print('<?=$sport;?>','<?=$search_uname;?>','<?=$country;?>','<?=$state;?>','<?=$gender;?>')" /> -->
+<?php
+//}
+?>
+<div class="container">
+<div class="row">
+<!-- <p style="padding-top:10px"><a href="#"><u>Advanced Search</u></a></p> -->
+<div class="col-md-12" style="margin-top: 50px; margin-left: 0px;">
+<h3 style="color:#0032af;">Players Ratings</h3>
+</div>
+<div id='rating_div' class="col-md-12" style="margin-top: 25px; margin-left: 5px; margin-right: 0px; margin-bottom: -45px !important;">
+<form method="post" id="search_form"  action="<?=$this->config->item('club_form_url');?>/ratings"> 
+<div class='col-md-3 form-group internal' style="padding-left:0px">
+<input class='form-control' id='name' name='name' type='text' placeholder="Player Name" 
+value="<?php echo $name; ?>" size="25" />
+</div>
+
+<div id='ag_grp_div' class='col-md-2 form-group internal'>
+<select name="sel_gend" id="sel_gend" class='form-control'>
+<option value="">Gender</option>
+<option value="1" <?php if($sel_gend == '1'){ echo "selected=selected"; } ?>>Male</option>
+<option value="0" <?php if($sel_gend == '0'){ echo "selected=selected"; } ?>>Female</option>
+</select>
+</div>
+	
+<div id='sport_levels_div' class='col-md-2 form-group internal'>
+<select name="level" id="sp_level" class='form-control'>
+<option value="">Level</option>
+<?php if($sport_levels){ 
+foreach($sport_levels as $row){ ?>
+<option value="<?php echo $row->SportsLevel_ID;?>" <?php if($level == $row->SportsLevel_ID){ echo "selected=selected"; } ?>>
+<?php  echo $row->SportsLevel; ?> 
+</option>
+<?php }
+}?>
+</select>
+</div>
+
+<div id='ag_grp_div' class='col-md-2 form-group internal'>
+<select name="ag_grp" id="ag_grp" class='form-control'>
+<option value="">Age Group</option>
+<?php
+foreach($ag_grp_list as $i => $row) {
+?>
+<option value="<?php echo $i;?>" <?php if($ag_grp == $i){ echo "selected=selected"; } ?>>
+<?php  echo $row; ?> 
+</option>
+<?php } ?>
+</select>
+</div>
+
+<div id='ag_grp_div' class='col-md-2 form-group internal'>
+<select name="rating_type" id="rating_type" class='form-control'>
+<option value="Doubles" <?php if($rating_type == "Doubles"){ echo "selected=selected"; } ?>>Doubles</option>
+<option value="Mixed" <?php if($rating_type == "Mixed"){ echo "selected=selected"; } ?>>Mixed Doubles</option>
+</select>
+</div>
+
+<input class='form-control'  name='org_id' id='org_id' type='hidden' value="<?php echo $org_details['Aca_ID'];?>"  />
+<input type="checkbox" id="academy_status"  name="academy_status" style='display:none;' checked  value="1" />
+
+<div id="register-submit" class="col-md-1 form-group internal" style="padding-left:0px">
+<input type="submit"  class="btn-default" name="search_mem" value=" Search " />
+<!-- <button type="submit" class="btn btn-default" name="search_mem">Submit</button> -->
+</div>
+
+	</form>
+</div>
+
+<div class="col-md-12" style="margin-top: 50px; margin-left: 5px; margin-right: -25px; margin-bottom: 50px !important;">
+<div class="table-responsive" style="margin-left: -15px;">
+<?php 
+if(count($query) == 0)
+{
+?>
+<table class="table">
+<tr class="top-scrore-table">
+<th class="score-position">Player Name</th>
+<th class="score-position">Age Group</th>
+<th class="score-position">Gender</th>
+<?php
+if($rating_type == "Doubles"){
+?>
+<th class="score-position">GPA Rating<br>Doubles</th>
+<?php
+}
+else if($rating_type == "Mixed"){
+?>
+<th class="score-position">GPA Rating<br>Mixed</th>
+<?php
+}
+?>
+<!-- <td class="score-position">City</td> -->
+<!-- <td class="score-position">State</td>  -->
+<!--<td class="score-position">Level</td>-->
+<!-- <th class="score-position">Club Name</th> -->
+</tr>
+<tr>
+<td colspan="5"><h5>No Players Found.</h5></td>
+</tr>
+</table>
+<?php
+}else{
+?>
+<table id="players_rank_rating" class="table table-striped">
+<thead>
+<tr class="top-scrore-table" style="background-color:#dedede">
+<th class="score-position">Player Name</th>
+<th class="score-position">Age Group</th>
+<th class="score-position">Gender</th>
+<?php
+if($rating_type == "Doubles"){
+?>
+<th class="score-position">GPA Rating<br>Doubles</th>
+<?php
+}
+else if($rating_type == "Mixed"){
+?>
+<th class="score-position">GPA Rating<br>Mixed</th>
+<?php
+}
+?>
+
+<!-- <th class="score-position">City</th> -->
+<!-- <th class="score-position">State</th> -->
+<!-- <th class="score-position">Club Name</th> -->
+</tr>
+</thead>
+<tbody>
+<?php
+$k=1;
+//echo "<pre>"; print_r($query);
+foreach($query as $key => $row) {
+//$Sports_Interests = academy::get_user_sport_intrests($row->Users_ID,$sport);
+//$membership_det = academy::get_membership_details($row->Users_ID);
+//$user_a2m = academy::get_user_a2mscore($row->Users_ID, 7);
+$gpa_rating = academy::get_gpa_ratings($row->EmailID);
+//print_r($user_a2m);
+ ?><!-- img-djoko -->
+<tr>
+<!-- <td><?php echo $k;?></td> -->
+<td><a target="_blank" href="<?php echo $this->config->item('club_form_url')."/";?>
+<?php echo "player"; ?>/<?php echo $row->Users_ID;?>">
+<?php echo ucfirst($row->Firstname)." ".ucfirst($row->Lastname); ?></a></td>
+<td><?php echo $row->UserAgegroup;?></td>
+<td><?php if($row->Gender == 1) echo "Male"; else echo "Female";?></td>
+<?php
+if($rating_type == "Doubles"){
+?>
+<td><?php echo $gpa_rating['Doubles_Rating'];?></td>
+<?php
+}
+else if($rating_type == "Mixed"){
+?>
+<td><?php echo $gpa_rating['MixedDoubles_Rating'];?></td>
+<?php
+}
+?>
+<!-- <td><?php echo $row->City;?></td>
+<td><?php echo $row->State;?></td> -->
+<!-- <td> -->
+<?php  
+//$get_club = academy::get_club($membership_det[0]->Club_id);
+//echo $get_club['Aca_name'];?>	
+<!-- </td> -->
+</tr>
+<?php 
+	//if($row->A2MScore != $loc_query[$key+1]->A2MScore){
+	$k++;
+	//}
+} ?>
+</tbody>
+</table>
+<?php 
+}
+?>
+</div>
+</div> <!--  -->
+</div>
+
+</div><!-- row -->
+</div>
+
+<div class="clear"></div>

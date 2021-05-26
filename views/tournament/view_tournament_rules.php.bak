@@ -1,0 +1,50 @@
+<script>
+$(document).ready(function(){
+
+	var baseurl = "<?php echo base_url();?>";
+	$('.edit_desc').click(function (e) {
+
+	$('#desc_view').hide();
+	$('#desc_edit').show();
+	var loading;
+	loading = "<?php echo base_url().'icons/loading.gif';?>";
+	$('#desc_edit').html("<img src='"+loading+"' />");
+
+	$id_val = $(this).attr('name');
+	$arr	= $id_val.split('_');
+
+	  $.ajax({
+		type: 'POST',
+		url: baseurl+'league/load_editdesc',
+		data: {tid:$arr[2]},
+		success: function (res) {
+		   $('#desc_edit').html(res);
+		}
+	  });
+	  e.preventDefault();
+
+	});
+
+	$('#upd_cancel').click(function (e) {
+	   $('#desc_view').show();
+	   $('#desc_edit').html('');
+	   $('#desc_edit').hide();
+	});
+});
+</script>
+
+<div id="tour_details">
+
+	<div id='desc_view'>
+		<?php
+	if($this->logged_user == $tour_details->Usersid or $this->logged_user == '240'){
+	?>
+		<div align='right'><input type="button" class="edit_desc league-form-submit1" name="edit_desc_<?=$tour_details->tournament_ID;?>" value="Edit"></div>
+	<?
+	}?>
+	<?php echo html_entity_decode($tour_details->TournamentDescription);?>
+	</div>
+	<div id='desc_edit'></div>
+</div>
+
+

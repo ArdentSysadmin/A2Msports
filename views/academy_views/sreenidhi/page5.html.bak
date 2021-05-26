@@ -1,0 +1,110 @@
+<link rel="stylesheet" src="https://a2msports.com/assets/club_pages/css/s34_style.css" />
+<!-- Breadcromb Wrapper Start -->
+<div style="background:#ff6600">
+  <div class="container">
+    <div style="text-align:center; padding:30px 0px; color:#fff;"><h3>ETZ - Primary</h3></div>
+  </div>
+</div>
+<!-- Breadcromb Wrapper End --> 
+
+<section>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-9">
+					<div class="title" style="text-align:left; margin-bottom:25px">
+					  <h2>Training Schedule</h2>
+					</div>
+    
+					  <div class="table-responsive">
+       <table class="table table-bordered">
+       <tr>
+			<td class="sritable-head">Booking</td>
+			<td class="sritable-head">Batch</td>
+			<td class="sritable-head">Age</td>
+			<td class="sritable-head">Days Per Week</td>
+			<td class="sritable-head">Time Slot</td>
+			<td class="sritable-head">Sessions</td>
+			<td class="sritable-head">Price</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	  <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+       </table>
+	   </div>
+
+	
+			</div><!-- col-md-9 -->
+
+
+
+			<div class="col-md-3">
+				<div class="srn-col-3">
+					<b>&nbsp;Important information</b><br>
+					<b>&nbsp;Competitions PYP Fest</b>
+						<ul style="margin-left:10px; margin-top:10px">
+							<li><a href="">Basketball</a></li>
+							<li><a href="">Athletics</a></li>
+							<li><a href="">Cricket</a></li>
+							<li><a href="">Football</a></li>
+							<li><a href="">Tennis</a></li>
+							<li><a href="">Swimming</a></li>
+						</ul>
+				</div>
+
+			</div><!-- col-md-3 -->
+
+		</div><!-- row -->
+	</div>
+
+</section>

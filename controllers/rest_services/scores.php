@@ -1,0 +1,105 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+require(APPPATH.'/libraries/REST_Controller.php');
+
+
+// This can be removed if you use __autoload() in config.php OR use Modular Extensions
+/** @noinspection PhpIncludeInspection */
+//require APPPATH . 'libraries/REST_Controller.php';
+
+/**
+ * This is an example of a few basic user interaction methods you could use
+ * all done with a hardcoded array
+ *
+ * @package         CodeIgniter
+ * @subpackage      Rest Server
+ * @category        Controller
+ * @author          Phil Sturgeon, Chris Kacerguis
+ * @license         MIT
+ * @link            https://github.com/chriskacerguis/codeigniter-restserver
+ */
+//class Scores extends REST_Controller {
+class Scores extends REST_Controller {
+
+    public function __construct()
+    {
+        // Construct the parent class
+        parent::__construct();
+
+		//$this->load->helper(array('form', 'url'));
+		$this->load->model('score/model_score','mscore');
+
+    }
+
+	public function add_post(){
+		$match_id   = $this->input->post('match_id');
+		$win_type   = $this->input->post('win_type');
+		$match_date = $this->input->post('match_date');
+
+		$match_info = $this->mscore->get_match_info($match_id);
+
+		if($win_type == 'ADDSCORE' and $match_info){
+		$p1_score = $this->input->post('p1_score');
+		$p2_score = $this->input->post('p2_score');
+		$add_score  = $this->mscore->add_score($match_id, $p1_score, $p2_score, $match_date, $match_info);
+		}
+		
+		if($win_type == 'WFF' and $match_info){
+		$winner = $this->input->post('winner');
+		$add_score  = $this->mscore->add_wff($match_id, $winner, $match_date, $match_info);
+		}
+		
+		if($add_score){
+			$this->response('Success', 200);
+		}
+		else{
+			$this->response('Invalid Details', 404);
+		}
+	}
+
+	public function addNewMatch_post(){
+
+			$post_data = json_decode(trim(file_get_contents('php://input')), true);
+			
+			$user_id			= $data['users_id'] 		  = trim($post_data['user_id'], '"');
+			$match_title   = $data['Match_Title']  = trim($post_data['match_title'], '"');
+			$mdate			= $data['Match_Date']  = trim($post_data['date'], '"');
+			$data['Match_created_on']			 = trim($post_data['date'], '"');
+			$sport		   = $data['Sports']		 = trim($post_data['sport'], '"');
+			$match_type = $data['Match_Type'] = trim($post_data['match_type'], '"');
+			$status		   = $data['Status']		 = 'Completed';
+
+			if($post_data['player1_partner'])
+			$player1_partner = $data['Player1_Partner'] = trim($post_data['player1_partner'], '"');
+
+			$player2		= $data2['Opponent'] = trim($post_data['player2'], '"');
+
+			if($post_data['player2_partner'])
+			$player2_partner	 = $data2['Player2_Partner'] = trim($post_data['player2_partner'], '"');
+
+			$match_title		= $data2['Play_Title']			= trim($post_data['match_title'], '"');
+			$rdate				= $data2['Reg_Date']			= trim($post_data['date'], '"');
+			$pdate				= $data2['Play_Date']			= trim($post_data['date'], '"');
+			$player1_score	= $data2['Player1_Score']    = $post_data['player1_score'];
+			$player2_score	= $data2['Opponent_Score'] = $post_data['player2_score'];
+
+		if($user_id and $player2 and count($player1_score) and count($player2_score)){
+			$gen_match_id = $this->mscore->addNewGenMatch1($data);
+		//$gen_match_id = 1113;
+			if($gen_match_id){
+				$data2['GeneralMatch_ID'] = $gen_match_id;
+				$cr_match = $this->mscore->addNewGenMatch2($data, $data2);
+				if($cr_match)
+				    $this->response('Success:Scores Added', 200);
+				else
+					$this->response('Error:Unable to add scores! please check the data', 400);
+			}
+			else{
+				$this->response('Error:Something went wrong!', 400);
+			}
+		}
+		else{
+			$this->response('Invalid Details', 404);
+		}
+	}
+
+}

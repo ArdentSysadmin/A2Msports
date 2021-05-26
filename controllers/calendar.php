@@ -1,0 +1,68 @@
+
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+	
+	
+	class Calendar extends CI_Controller {
+		
+		public function __construct()
+		{
+			parent:: __construct();
+			$this->load->model('model_calendar');
+			$this->load->model('model_news');
+			$this->load->model('model_general', 'general');
+
+			$this->load->library('session');
+		}
+	
+		public function index()
+		{
+		    $data['results'] = $this->model_news->get_news();
+		    $this->load->model('model_calendar');
+		    $this->load->view('view_calendar',$data);
+			/*$this->load->view('includes/view_right_column',$data);
+			$this->load->view('includes/footer');*/
+		}
+			
+		public function process()
+		{
+			$events = array();
+
+			$query = $this->model_calendar->get_tournaments();
+
+			foreach($query as $fetch)
+			{
+				$e = array();
+
+				$e['id'] = $fetch->tournament_ID;
+				$e['title'] = $fetch->tournament_title;
+				$e['start'] = $fetch->StartDate;
+				$e['end'] = $fetch->EndDate;
+
+				$allday = ($fetch->Visibility == "public") ? "true" : "false";
+				$e['allDay'] = $allday;
+				$e['type'] = "tournament";
+				array_push($events, $e);
+			}
+			$query = $this->model_calendar->get_events($org_id);
+			
+			foreach($query as $fetch)
+			{
+				$e = array();
+
+				$e['id']	= $fetch->ev_id;
+				$e['title'] = $fetch->Ev_Title;
+				$e['start'] = $fetch->Ev_Date."T".$fetch->Ev_Start_Time;
+				$e['end']	= $fetch->Ev_Date."T".$fetch->Ev_End_Time;
+
+				$allday		 = "false";
+				$e['allday'] = $allday;
+				$e['type'] = "event";
+				array_push($events, $e);
+			}
+			
+			echo json_encode($events);
+			exit;
+		}
+	}
+
+?>

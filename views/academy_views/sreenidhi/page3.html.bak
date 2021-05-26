@@ -1,0 +1,89 @@
+<link rel="stylesheet" src="https://a2msports.com/assets/club_pages/css/s34_style.css" />
+<!-- Breadcromb Wrapper Start -->
+<div style="background:#ff6600">
+  <div class="container">
+    <div style="text-align:center; padding:30px 0px; color:#fff;"><h3>Individual Community Page</h3></div>
+  </div>
+</div>
+<!-- Breadcromb Wrapper End --> 
+
+<section class="blog-wrapper" style="background:#fff">
+  <div class="container">
+    <div class="title" style="margin-bottom:30px">
+      <h2>My HOME AVATAR: Schedule and Activities Offffered</h2>
+      <div><span></span></div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+		<div class="table-responsive">
+       <table class="table table-bordered">
+       <tr>
+			<td class="sritable-head">Booking</td>
+			<td class="sritable-head">Batch</td>
+			<td class="sritable-head">Age</td>
+			<td class="sritable-head">Days Per Week</td>
+			<td class="sritable-head">Time Slot</td>
+			<td class="sritable-head">Sessions</td>
+			<td class="sritable-head">Price</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	  <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+	   <tr>
+			<td>Book Now</td>
+			<td>Batch 4</td>
+			<td>12-18</td>
+			<td>Tu/Th/Sa</td>
+			<td>04:30 PM - 05:30 PM</td>
+			<td>12 Sessions</td>
+			<td>999</td>
+       </tr>
+       </table>
+	   </div>
+	 </div>
+      
+    </div>
+  </div>
+</section>

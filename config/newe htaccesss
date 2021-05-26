@@ -1,0 +1,19 @@
+RewriteEngine on
+
+Options -Indexes
+
+
+
+RewriteCond $1 !^(index\.php?|resources|robots\.txt)
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ index.php?/$1 [QSA]
+
+
+
+#RewriteCond %{HTTP_HOST} ^a2msports
+
+#RewriteRule ^(.*)$ http://192.168.1.39/br/a2msports/$1 [R=301]
