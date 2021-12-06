@@ -19,8 +19,19 @@ $(document).ready(function(){
 
 <div class='col-md-8'>
 <div><label>Tournament:</label> <?php echo $tour_details->tournament_title; ?></div>
-<div><label>Tournament Director:</label> <?php echo $tour_details->OrganizerName; ?></div>
-<div><label>Contact #:</label> <?php echo $tour_details->ContactNumber; ?></div>
+<div><label>Director:</label> <?php
+$get_director = league::get_username($tour_details->Usersid); 
+echo $get_director['Firstname']." ".$get_director['Lastname']; echo " (<i class='fa fa-mobile' aria-hidden='true'></i> ".$get_director['Mobilephone'].")"; ?></div>
+
+<?php
+if($tour_details->Usersid != $tour_details->Tournament_Director){ ?>
+<div><label>Organizer:</label> <?php echo $tour_details->OrganizerName; 
+echo " (<i class='fa fa-mobile' aria-hidden='true'></i> ".$tour_details->ContactNumber.")";
+?></div>
+<?php
+}
+?>
+<!-- <div><label>Contact #:</label> <?php echo $tour_details->ContactNumber; ?></div> -->
 <?php if($tour_details->Registrations_Opens_on != NULL){ ?>
 <div><label>Registration Opens On:</label> <?php echo date ('M d, Y h:i A', strtotime($tour_details->Registrations_Opens_on)); ?></div>
 <?php } ?>
@@ -247,7 +258,10 @@ if($numItems > 0)
 foreach($option_array as $group){
 $age_grp_label = $this->config->item($group, 'age_values');
 
-echo $age_grp_label;
+if($age_grp_label == 'Adults')
+	echo $age_grp_label."/ Open";
+else
+	echo $age_grp_label;
 
 if(++$i!=count($option_array)){
 echo ", ";
@@ -364,8 +378,13 @@ echo $currency."0.00";
 			?>' />
 			</div>
 			<div style="margin-top:5px; display:table">
-				<?php echo "<span style='font-weight:bold; color:#464646'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."&nbsp;&nbsp;</span>"; ?> <?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
-				<?php echo $comment->Comments; ?>
+				<?php echo "<span style='font-weight:bold; color:#464646'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."&nbsp;&nbsp;</span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
+				<?php 
+			$text = strip_tags($comment->Comments);
+$textWithLinks = preg_replace('@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@', '<a href="$1" target="_blank" rel="nofollow">$1</a>', $text);
+echo $textWithLinks;
+
+			//echo $comment->Comments; ?>
 			</div>
 			<div style='clear:both; height:20px'></div>
 		<?php

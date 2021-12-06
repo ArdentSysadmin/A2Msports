@@ -128,7 +128,7 @@
 
 				    $data['results'] = $this->model_news->get_news();
 				
-					if($this->session->userdata('redirect_to')){
+					if($this->session->userdata('redirect_to') and !$this->input->post('token')){
 						if($academy){
 							redirect($shortcode."?st=1");
 						}
@@ -356,6 +356,19 @@
 
 	}
 
+	public function ajax_email_verify($email_id = '')
+	{
+		$email_id =  $this->input->post('email_id');				
+			$query = $this->reg_model->ajax_check_email($email_id);
+			
+			$status = "";
+		if($query){
+			$status = $query['Users_ID']."-".$query['EmailID'];
+		}   
+		
+		echo $status;
+	}
+
 	public function org_url_check($org_url = '')
 	{
 		$org_url =  $this->input->post('org_url');				
@@ -565,6 +578,7 @@
 				exit;
 		 }
 
+/*
 		public function instant_register(){
 		//echo "<pre>"; print_r($_POST); exit;
 			if($this->input->post('email')){
@@ -601,6 +615,42 @@
 				}
 			}
 		}
+*/
+
+		public function instant_register(){
+		//echo "<pre>"; print_r($_POST); exit;
+			if($this->input->post('email')){
+				$check_user_exists = $this->reg_model->get_email($this->input->post('email'));
+				if($check_user_exists){
+					echo "User with this email id already exists!";
+					exit;
+				}
+			}
+				
+                $data['latt'] = $this->get_lang_latt();
+			
+				$ins_user = $this->reg_model->instant_register($data);
+
+				if(!empty($ins_user)){
+					$fname			= $ins_user['firstname'];
+					$lame			= $ins_user['lastname'];
+					$phone			= $ins_user['phone'];
+					$users_id		= $ins_user['users_id'];
+
+					if($this->input->post('tourn_id')){
+					   $ins_user['tourn_id'] = $this->input->post('tourn_id');
+					}
+					
+					$this->instant_user_email($ins_user);
+					
+					$name = $fname.' '.$lame.'|'.$users_id.'|'.$phone;
+					echo $name;
+				}
+				else{
+					echo 0;
+				}
+		}
+
 
 		public function instant_clubmember(){
 		

@@ -252,7 +252,7 @@ var id_val = $(this).attr('id');
 		data: $('#form-addscore'+id_val).serialize(),
 		success: function (res) {
 			//location.reload();
-			alert('Scores were added successfully');
+			alert('Scores are added successfully');
 			$('#tr_'+id_val).html(res);
 			$('#score'+id_val).hide();
 		}
@@ -303,7 +303,7 @@ var id_val = $(this).attr('id');
 		data: $('#cd_form-addscore'+id_val).serialize(),
 		success: function (res) {
 		   //location.reload();
-		   alert('Scores were added successfully, it will reflect only after page refresh');
+		   alert('Scores are added successfully, it will reflect only after page refresh');
 		   $('#score'+id_val).hide();
 		   $('#ctr_'+id_val).html(res);
 		}

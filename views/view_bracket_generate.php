@@ -397,7 +397,8 @@ $prev_round_games = $process_res[1];
 else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>' />
 <input type='hidden' name='age_group' value="<?php echo $this->input->post('type_gen'); ?>" />
 <input type='hidden' name='ttype' value="<?php echo $ttype; ?>" />
-<input type='hidden' name='is_publish_draw' value="<?php echo $is_publish_draw; ?>" />
+<input type='hidden' name='is_publish_draw'	value="<?php echo $is_publish_draw; ?>" />
+<input type='hidden' name='num_of_sets'			value="<?php echo $num_of_sets; ?>" />
 <input type='hidden' name='br_game_day' value="<?php echo $br_game_day; ?>" />
 <input type="hidden" name="draw_format"  id="draw_format"  value='<?=$draw_format;?>' />
 

@@ -50,6 +50,8 @@ foreach($res as $i => $match){
 //echo "<pre>";
 //print_r($res);
 //print_r($courts_arr);
+
+sort($court_titles);
 ?>
 <br />
 <br />

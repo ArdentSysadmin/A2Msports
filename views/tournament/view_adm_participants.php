@@ -45,6 +45,9 @@ $(".header").click(function () {
 });
 /* ------------------------- Collapse and Expand in Participants ---------------------- */
 
+var club_baseurl = "<?php echo $club_url; ?>";
+
+
 $("#select_all_chk").click(function(){
    $(".tourn_participants_cls").prop("checked", $("#select_all_chk").prop("checked"))
    $(".tm_participants_cls").prop("checked", $("#select_all_chk").prop("checked"))
@@ -94,9 +97,10 @@ $("form#send_mail_frm").submit(function(){
    var msg_body = tinymce.get("message").getContent();
    formData.append('msg', msg_body);
    formData.append('player_id', player_id);
+   formData.append('sub', $('#subject').val());
    //alert(msg_body);die();
     $.ajax({
-        url: baseurl+'league/sendmail_tm_participants',
+        url: club_baseurl+'league/sendmail_tm_participants',
         type: 'POST',
         data: formData,
         async: false,
@@ -179,7 +183,7 @@ if($this->logged_user == 240){
     $genderkey  = $evntarr[1];
     $fr         = $evntarr[2];
     $lv         = $evntarr[3];
-	
+	//echo count($reg_users); exit;
 	if(count($reg_users) > 0){
 	$get_level	= league::get_level_name($tour_details->SportsType, $lv);
 	//$users			= league::in_array_r($k, $reg_users);
@@ -188,13 +192,13 @@ if($this->logged_user == 240){
 //echo "<pre>"; echo $k."<br />--------<br />"; print_r($users); echo "<br />--------<br />"; //exit;
 }
 	}
-//if($this->logged_user == 240){
+if($this->logged_user == 240){
 	//echo "<pre>"; print_r($reg_users); //exit;
 	//echo "<pre>"; print_r($user_partners); //exit;
-	//echo "<pre>"; print_r($users); //exit;
+	//echo "<pre>"; print_r($users); exit;
 	//	$users			= league::in_array_r_sort($k, $reg_users, $user_partners);
 	//echo "<pre>"; print_r($users); //exit;
-//}
+}
 	$event_label = $evnt;
 	$event_key = $k;
 
@@ -272,9 +276,10 @@ $inverse_pp_comb = $user;
   else{
     $wtlst_style = "";
   }
-
+//echo "<pre>"; print_r($displayed_users);
 if(!in_array($pp_comb, $displayed_comb, TRUE) and !in_array($inverse_pp_comb, $displayed_comb, TRUE) and 
-	(strpos($event_label, 'Doubles') or strpos($event_label, 'Mixed') or strpos($event_key, 'Doubles') or strpos($event_key, 'Mixed'))){
+	(strpos($event_label, 'Doubles') or strpos($event_label, 'Mixed') or strpos($event_key, 'Doubles') or strpos($event_key, 'Mixed')) and !in_array($user, $displayed_users)){
+
 	$player					= league::get_username($user);
 	$user_a2msocre	= league::get_a2mscore($user, $tour_details->SportsType);
 	$user_score			= $user_a2msocre['A2MScore'];
@@ -296,8 +301,44 @@ if(in_array($user, $displayed_users) and (strpos($event_label, 'Doubles') or str
 $repeated = "<img src='".base_url()."icons/exclamation.png' style='width:18px; height:15px;' {$tooltip} />";
 }
 
-//echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a> $repeated";
-echo "<a>".$player['Firstname'] . " " .$player['Lastname']."</a> $repeated";
+//echo "<a>".$player['Firstname'] . " " .$player['Lastname']."</a> $repeated";
+$p1 = league :: get_user($user);
+
+	$age_group = '';
+	if($p1['DOB']) {		
+			$birthdate	= new DateTime($p1['DOB']);
+			$today		= new DateTime('today');
+			$age			= $birthdate->diff($today)->y;
+
+			switch ($age) {
+                case ($age >= 40 and $age < 50):
+                   $age_group = "({$p1['UserAgegroup']} <b>40+</b>)";
+                   break;
+                case ($age >= 50 and $age < 60):
+                   $age_group = "({$p1['UserAgegroup']} <b>50+</b>)";
+                   break;
+                case ($age >= 60 and $age < 70):
+                   $age_group = "({$p1['UserAgegroup']} <b>60+</b>)";
+                   break;
+                case ($age >= 70 and $age < 80):
+                   $age_group = "({$p1['UserAgegroup']} <b>70+</b>)";
+                   break;
+                case ($age >= 80 and $age < 90):
+                   $age_group = "({$p1['UserAgegroup']} <b>80+</b>)";
+                   break;
+                case ($age >= 90 and $age < 100):
+                   $age_group = "({$p1['UserAgegroup']} <b>90+</b>)";
+                   break;
+			    default:
+				   $age_group = "({$p1['UserAgegroup']})";
+				   break;
+			}
+	}
+
+
+echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a> ".$age_group; 
+
+
 //echo '$user_partners[$user][$k] '.var_dump($user_partners[$user][$k]).'<br />';
 if($user_partners[$user][$k] and $user_partners[$user][$k] != ""){
 	$player_partner	= league::get_username($user_partners[$user][$k]);
@@ -318,8 +359,41 @@ if($user_partners[$user][$k] and $user_partners[$user][$k] != ""){
 	$repeated = "<img src='".base_url()."icons/exclamation.png' style='width:18px; height:15px;' {$tooltip} />";
 	}
 
-	//echo " - "."<a {$style} {$tooltip} href='".base_url()."player/{$user_partners[$user][$k]}'>" . $player_partner['Firstname'] . " " .$player_partner['Lastname']."</a> $repeated";
-	echo " - "."<a {$style} {$tooltip}>" . $player_partner['Firstname'] . " " .$player_partner['Lastname']."</a> $repeated";
+$p2 = league :: get_user($user_partners[$user][$k]);
+
+	$age_group = '';
+	if($p2['DOB']) {		
+			$birthdate	= new DateTime($p2['DOB']);
+			$today		= new DateTime('today');
+			$age			= $birthdate->diff($today)->y;
+
+			switch ($age) {
+                case ($age >= 40 and $age < 50):
+                   $age_group = "({$p2['UserAgegroup']} <b>40+</b>)";
+                   break;
+                case ($age >= 50 and $age < 60):
+                   $age_group = "({$p2['UserAgegroup']} <b>50+</b>)";
+                   break;
+                case ($age >= 60 and $age < 70):
+                   $age_group = "({$p2['UserAgegroup']} <b>60+</b>)";
+                   break;
+                case ($age >= 70 and $age < 80):
+                   $age_group = "({$p2['UserAgegroup']} <b>70+</b>)";
+                   break;
+                case ($age >= 80 and $age < 90):
+                   $age_group = "({$p2['UserAgegroup']} <b>80+</b>)";
+                   break;
+                case ($age >= 90 and $age < 100):
+                   $age_group = "({$p2['UserAgegroup']} <b>90+</b>)";
+                   break;
+			    default:
+				   $age_group = "({$p2['UserAgegroup']})";
+				   break;
+			}
+	}
+
+	echo " - "."<a {$style} {$tooltip} href='".base_url()."player/{$user_partners[$user][$k]}'>" . $player_partner['Firstname'] . " " .$player_partner['Lastname']."</a> $repeated  ".$age_group;
+	//echo " - "."<a {$style} {$tooltip}>" . $player_partner['Firstname'] . " " .$player_partner['Lastname']."</a> $repeated";
 
 	$user_score = $user_a2msocre['A2MScore_Doubles'];
 	$avg_score  = $user_score;
@@ -401,17 +475,51 @@ if($get_user_usatt_rating){
 			$event_entry_count[$k] = 1;
 
 }
-else if(!strpos($event_label, 'Doubles') and !strpos($event_label, 'Mixed') and !strpos($event_key, 'Doubles') and !strpos($event_key, 'Mixed')){
+else if(!strpos($event_label, 'Doubles') and !strpos($event_label, 'Mixed') and !strpos($event_key, 'Doubles') and !strpos($event_key, 'Mixed') and !in_array($user, $displayed_users, TRUE)){
 $player					= league::get_username($user);
 $user_a2msocre  = league::get_a2mscore($user, $tour_details->SportsType);
 $user_score			= $user_a2msocre['A2MScore'];
+
+$p1 = league :: get_user($user);
+
+	$age_group = '';
+	if($p1['DOB']) {		
+			$birthdate	= new DateTime($p1['DOB']);
+			$today		= new DateTime('today');
+			$age			= $birthdate->diff($today)->y;
+
+			switch ($age) {
+                case ($age >= 40 and $age < 50):
+                   $age_group = "({$p1['UserAgegroup']} <b>40+</b>)";
+                   break;
+                case ($age >= 50 and $age < 60):
+                   $age_group = "({$p1['UserAgegroup']} <b>50+</b>)";
+                   break;
+                case ($age >= 60 and $age < 70):
+                   $age_group = "({$p1['UserAgegroup']} <b>60+</b>)";
+                   break;
+                case ($age >= 70 and $age < 80):
+                   $age_group = "({$p1['UserAgegroup']} <b>70+</b>)";
+                   break;
+                case ($age >= 80 and $age < 90):
+                   $age_group = "({$p1['UserAgegroup']} <b>80+</b>)";
+                   break;
+                case ($age >= 90 and $age < 100):
+                   $age_group = "({$p1['UserAgegroup']} <b>90+</b>)";
+                   break;
+			    default:
+				   $age_group = "({$p1['UserAgegroup']})";
+				   break;
+			}
+	}
+
  ?>
 <tr style='<?php echo $wtlst_style;?>'>
  <td style='padding-bottom:5px;'><input type='checkbox' name='prtcpnts_mail_check' class="tm_participants_cls tm_participants_cls_<?php echo $keys;?>" id="tm_participants_<?php echo $player['Users_ID'];?>"  value="<?php echo $player['Users_ID'];?>" ></td>
 <td class="score-position" valign="center" align="center">
 <?php
-//echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a>"; 
-echo "<a>".$player['Firstname']. " " .$player['Lastname']."</a>"; 
+echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a>  ".$age_group;
+//echo "<a>".$player['Firstname']. " " .$player['Lastname']."</a>"; 
 if($wtlst_style != ''){
 echo "&nbsp;&nbsp;<b>W.L # ".$waitlistuserids[$user]."</b>"; 
 }

@@ -56,10 +56,10 @@ foreach($get_images as $i => $row) { ?>
 
 <div class="col-md-3" style="margin-top:30px;">
 
-<img class="img-responsive" src="<?php echo base_url(); ?>events_pictures/<?php echo $row->Ev_id; ?>/<?php if($row->Image_file!=""){echo $row->Image_file; }
+<img class="img-responsive" src="<?php echo base_url(); ?>events_pictures/<?php //echo $row->Ev_id; ?>/<?php if($row->Image_file!=""){echo $row->Image_file; }
 else { echo "";} ?>" alt="" height="205px" width="205px" />
 
-<input type="hidden" value="<?php echo base_url();?>events_pictures/<?php echo $row->Ev_id;?>/<?php echo $row->Image_file;?>" name="filename<?=$i;?>" id="">
+<input type="hidden" value="<?php echo base_url();?>events_pictures/<?php //echo $row->Ev_id;?>/<?php echo $row->Image_file;?>" name="filename<?=$i;?>" id="">
 
 <br />
 <label for="">Rotate image ?</label>

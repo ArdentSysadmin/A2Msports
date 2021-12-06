@@ -176,10 +176,10 @@
 		public function save_user_data()
 		{
 			//echo "Testing"; 
-			/*echo "<pre>";
-			print_r($_POST);
-			exit;*/
-			//echo $this->session->userdata('redirect_to');
+			//echo "<pre>";
+			//print_r($_POST);
+			//exit;
+		//echo $this->session->userdata('redirect_to');
 			//exit;
 			if($this->input->post('reg_user')){
 		
@@ -187,16 +187,18 @@
 
 			if($email_id == ''){ echo "Please provide Email ID"; exit; }
 
-			$data['aca_id']			= $academy	= $this->input->post('academy');
+			$data['aca_id']		= $academy	= $this->input->post('academy');
 			$data['shortcode']	= $shortcode	= $this->input->post('shortcode');
 
 			$query  = $this->reg_model->get_email($email_id);
+			//$query  = 0;
 			$status  = '';
 
  				if($query){
 				 	$err_msg = $email_id." is already exists! Please choose another Email ID.";
-					$this->session->set_flashdata('err_msg', $err_msg);
-					redirect('register');
+					echo $err_msg; exit;
+					//$this->session->set_flashdata('err_msg', $err_msg);
+					//redirect('register');
 				}
 				else{
 				 $filename		= 'Profilepic';
@@ -263,6 +265,7 @@
 						$data['latt']		= $this->get_lang_latt();
 			
 					$res	 = $this->reg_model->insert_user($data);
+					//$res	 =array('auth_code' => 'bab5f05c4f65cab8', 'Users_ID' => 10886);
 
 					// --------------------------------------------------------------------------------------------------------------
 					if($this->input->post('mem_subscr') == '1' and $this->input->post('mem_plan') != '') {
@@ -281,6 +284,7 @@
 
 								$pp_data['User_ID'] = $ins_user;
 
+							if($pp_data['Frequency_Code'] != 'O'){
 							$ins_ot_pay_id = '';
 							if($mem_det['ActivationFee'] > 0){
 							$data9 = array('Club_ID' => $academy, 'User_ID' => $ins_user, 'Membership_Code' => $mem_det['Membership_ID'], 'Type' => 'OT', 'Pay_Status' => 'NOT PAID', 'Created_On' => date('Y-m-d H:i:s'));
@@ -301,6 +305,17 @@
 								$this->paypal_subscr($ins_subscr_pay_id);
 								exit;
 							}
+							else{
+							$data9 = array('Club_ID' => $academy, 'User_ID' => $ins_user, 'Membership_Code' => $mem_det['Membership_ID'], 'Type' => 'OTC', 'Pay_Status' => 'NOT PAID', 'Created_On' => date('Y-m-d H:i:s'));
+
+							$ins_ot_pay_id = $this->general->insert_table_data('Membership_PaymentLinks', $data9);
+
+								if($ins_ot_pay_id)
+								$this->paypal_otc($ins_ot_pay_id);
+
+							}
+
+							}
 					}
 		// ---------------------------------------------------
 					else{
@@ -309,12 +324,12 @@
 
 				    $data['results'] = $this->model_news->get_news();
 		
-					if($this->session->userdata('redirect_to') or $academy){
-						if($academy and $this->config->item('proxy_url') == ''){
+					if($this->session->userdata('redirect_to') or $this->input->post('red_uri')){
+						/*if($academy and $this->config->item('proxy_url') == ''){
 							redirect($shortcode."?st=1");
-						}
-						if($academy and $this->config->item('proxy_url') != ''){
-							redirect($this->config->item('proxy_url')."?st=1");
+						}*/
+						if($this->input->post('red_uri') != ''){
+							redirect($this->input->post('red_uri')."?st=1");
 						}
 						else{
 							$red = $this->session->userdata('redirect_to').'/8';
@@ -438,29 +453,34 @@
 
 		public function user_email($res)
 		{
+				$aca_info  = $this->model_academy->get_academy_details($this->academy_id);
+
+				$data['aca_logo']	= $aca_info['Aca_logo'];
+				$data['aca_name']	= $aca_name = $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+
 			$first_name = $this->input->post('Firstname');
 			$last_name	= $this->input->post('Lastname');
 			$email		= $this->input->post('EmailID');
 
 			$xx = $res;
 			$activation_code = $xx['auth_code'];
-			
+			//print_r($data); exit;
 			$this->load->library('email');
 			$this->email->set_newline("\r\n");
 		
-			$this->email->from(FROM_EMAIL, 'A2MSports');
+			$this->email->from(FROM_EMAIL, ucwords($aca_name));
 			$this->email->to($email); 
-			$this->email->subject('Activate your account at A2MSports!');
+			$this->email->subject('Activate your account ('.ucwords($aca_name).')');
 
-			$data = array(
-             'Firstname'=> $first_name,
-			 'Lastname'=> $last_name,
-			 'Code' => $activation_code,
-			 'page'=> 'New Registration'
-			);
+			$data['Firstname']	= $first_name;
+			$data['Lastname']	= $last_name;
+			$data['Code']			= $activation_code;
+			$data['page']			= 'New Registration';
 
-			$body = $this->load->view('view_email_template.php',$data,TRUE);
+			$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 			$this->email->message($body);   
+			//echo $body;	exit;
 			$stat = $this->email->send();
 			
 			return $stat;
@@ -468,6 +488,9 @@
 
 		public function user_email_pp_subscr($res, $pp_data, $ot_id, $subscr_id)
 		{
+			$aca_info		= $this->model_academy->get_academy_details($this->academy_id);
+			$aca_name  = $aca_info['Aca_name'];
+
 			$first_name	= $this->input->post('Firstname');
 			$last_name	= $this->input->post('Lastname');
 			$email				= $this->input->post('EmailID');
@@ -479,21 +502,25 @@
 			$this->load->library('email');
 			$this->email->set_newline("\r\n");
 		
-			$this->email->from(FROM_EMAIL, 'A2MSports');
+			$this->email->from(FROM_EMAIL, ucwords($aca_name));
 			$this->email->to($email); 
-			$this->email->subject($club_name." account activation mail!");
+			$this->email->subject('Activate your account ('.ucwords($aca_name).')');
 
 			$data = array(
-             'Firstname'=> $first_name,
-			 'Lastname'=> $last_name,
-			 'Code' => $activation_code,
+             'Firstname'	=> $first_name,
+			 'Lastname'	=> $last_name,
+			 'Code'			=> $activation_code,
 			 'club_name' => $club_name,
-			 'mem_info'		=> $pp_data,
-			 'ot_id'		=> $ot_id,
-			 'subscr_id'		=> $subscr_id,
+			 'mem_info'	=> $pp_data,
+			 'ot_id'			=> $ot_id,
+			 'subscr_id'	=> $subscr_id,
 			 'page'			=> 'New Club Registration with PayNow');
 
-			$body = $this->load->view('view_email_template.php', $data, TRUE);
+				$data['aca_logo']			= $aca_info['Aca_logo'];
+				$data['aca_name']		= $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+
+			$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 			/*echo "<pre>"; 
 			print_r($data);
 			echo $body; 
@@ -507,6 +534,9 @@
 
 		public function admin_email_new_user($res, $pp_data, $ot_id, $subscr_id)
 		{
+			$aca_info		= $this->model_academy->get_academy_details($this->academy_id);
+			$aca_name  = $aca_info['Aca_name'];
+
 			$first_name	= $this->input->post('Firstname');
 			$last_name	= $this->input->post('Lastname');
 			$club_name	= $this->input->post('shortcode');
@@ -525,9 +555,9 @@
 			$this->load->library('email');
 			$this->email->set_newline("\r\n");
 		
-			$this->email->from(FROM_EMAIL, 'A2MSports');
+			$this->email->from(FROM_EMAIL, ucwords($aca_name));
 			$this->email->to($email); 
-			$this->email->subject("New User Registration - ".$club_name);
+			$this->email->subject("New User Registration - ".ucwords($aca_name));
 
 			$data = array(
              'Firstname'	=> $first_name,
@@ -539,7 +569,11 @@
 			 'subscr_id'		=> $subscr_id,
 			 'page'				=> 'New Club Registration - Admin');
 
-			$body = $this->load->view('view_email_template.php', $data, TRUE);
+				$data['aca_logo']			= $aca_info['Aca_logo'];
+				$data['aca_name']		= $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+
+			$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 			/*echo "<pre>"; 
 			print_r($data);
 			echo $body; 
@@ -580,7 +614,7 @@
 		}
 	
 
-		public function activate($activation_code){
+		public function activate($short_code, $activation_code){
 		
 		$this->session->sess_destroy();
 
@@ -588,8 +622,8 @@
 		$is_activated = $this->reg_model->is_activated($activation_code);
 			
 		if($is_activated){
-			$this->session->set_flashdata('redirect_page', 'Play');
-			redirect('login');
+			//$this->session->set_flashdata('redirect_page', 'Play');
+			redirect($this->config->item('club_pr_url')."?st=2");
 		}
 		else{
 			$split = explode('_', $activation_code);
@@ -616,12 +650,13 @@
 				$code = trim($activation_code);
 				
 				$validated = $this->reg_model->validate_code($code);
-				$data = array('act_stat' => "Activation Completed. Please login to access the website");
-			
+				//$data = array('act_stat' => "Activation Completed. Please login to access the website");
+
 				if($validated === true){
-					$this->load->view('includes/header');
-					$this->load->view('view_login', $data);
-					$this->load->view('includes/footer');
+					//$this->load->view('includes/header');
+					//$this->load->view('view_login', $data);
+					//$this->load->view('includes/footer');
+					redirect($this->config->item('club_pr_url')."?st=2");
 				} 
 				else{
 					// this should never happen 
@@ -757,6 +792,7 @@
 					$phone      = $ins_user['phone'];
 					$users_id   = $ins_user['users_id'];
 
+
 					if($this->input->post('tourn_id')){
 					   $ins_user['tourn_id'] = $this->input->post('tourn_id');
 					}
@@ -820,7 +856,8 @@
 			if(isset($user_det['tourn_id'])){
                $tourn_id = $user_det['tourn_id'];
                $page = "Instant Registration By Admin";
-			}else{
+			}
+			else{
 				$tourn_id = "";
 				$page = "Instant Registration";
 			}
@@ -989,6 +1026,42 @@
 				$paypalURL			= SANDBOX_PAYPAL_URL; //PayPal api url
 				$logo = base_url().'images/logo.png';
 				$url	   = base_url().$this->uri->segment(1);
+
+				$returnURL = $url.'/paypal/ot_user?sub_type=ot&club_id='.$get_pay['Club_ID'].'&reg_user='.$get_ot['User_ID'];
+
+				$cancelURL = $url.'/paypal/ot_cancel';	//payment cancel url
+				$notifyURL  = $url.'/paypal/ot_ipn';			//ipn url
+				$this->paypal_lib->add_field('business', $paypal_id);
+				//$this->paypal_lib->add_field('cmd', "_xclick-subscriptions");
+				$this->paypal_lib->add_field('return', $returnURL);
+				$this->paypal_lib->add_field('cancel_return', $cancelURL);
+				$this->paypal_lib->add_field('currency_code', $currency_code);
+				$this->paypal_lib->add_field('notify_url', $notifyURL);
+				$this->paypal_lib->add_field('on0', $get_ot['User_ID']);
+				$this->paypal_lib->add_field('item_number',  $get_pay['Membership_ID']);
+				$this->paypal_lib->add_field('item_name',  $get_pay['Membership_ID'].'-'.$get_pay['Membership_Type'].'-One Time Setup');
+				$this->paypal_lib->add_field('amount', $get_pay['ActivationFee']);
+				$this->paypal_lib->image($logo);
+				
+				$this->paypal_lib->test_paypal_auto_form();		
+			}
+			else{
+				echo "Invalid Access!";
+			}
+		}
+
+		public function paypal_otc($ot_pay_id){
+			$get_ot		= $this->general->get_onerow('Membership_PaymentLinks', 'tab_id', $ot_pay_id);
+			$get_pay = $this->general->get_onerow('Membership_Types', 'Membership_ID', $get_ot['Membership_Code']);
+
+			if($get_ot['User_ID'] and $get_pay){
+					$this->load->library('paypal_lib');
+
+				$paypal_id			= SANDBOX_PAYPAL_ID;
+				$currency_code	= 'USD';
+				$paypalURL			= SANDBOX_PAYPAL_URL; //PayPal api url
+				$logo					= base_url().'images/logo.png';
+				$url						= base_url().$this->uri->segment(1);
 
 				$returnURL = $url.'/paypal/ot_user?sub_type=ot&club_id='.$get_pay['Club_ID'].'&reg_user='.$get_ot['User_ID'];
 

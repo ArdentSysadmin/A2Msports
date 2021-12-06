@@ -48,17 +48,18 @@ class Profile extends REST_Controller {
 		$data['State']					= trim($post_data['state'], '"');
 		$data['City']						= trim($post_data['city'], '"');
 		$data['Zipcode']				= trim($post_data['zip_code'], '"');
-		if($post_data['gender'])
+		if($post_data['gender'] == 1 or $post_data['gender'] == 0 or $post_data['gender'] == '1' or $post_data['gender'] == '0'){
 		$data['Gender'] = trim($post_data['gender'], '"');
+		}
 
 		if($post_data['dob']){
 			$dob				= trim($post_data['dob'], '"');
 			$data['DOB']	= $dob;
 			$dob				= date('Y-m-d', strtotime($this->input->post('txt_dob')));
 			
-			$birthdate	= new DateTime($dob);
+			$birthdate		= new DateTime($dob);
 			$today			= new DateTime('today');
-			$age			= $birthdate->diff($today)->y;
+			$age				= $birthdate->diff($today)->y;
 			
 			switch (true) {
                 case $age <= 9:
@@ -272,6 +273,10 @@ class Profile extends REST_Controller {
 				$get_user_token = $this->muser->get_userToken($to_user);
 //echo "<pre>"; print_r($get_user_token); exit;
 				
+			$get_from	= $this->muser->get_user_details($from_user);
+			$get_to		= $this->muser->get_user_details($to_user);
+			$from_name  = ucfirst($get_from['Firstname'])." ".ucfirst($get_from['Lastname']);
+
 				$is_mob_alert_send = 0;
 
 				if($get_user_token){
@@ -307,13 +312,9 @@ class Profile extends REST_Controller {
 		$this->response($res2);
 	}
 
-public function send_user_email($from_user, $to_user, $message){
-
-			$get_from	= $this->muser->get_user_details($from_user);
-			$get_to		= $this->muser->get_user_details($to_user);
+public function send_user_email($get_from, $get_to, $message){
 
 				$from_email = "admin@a2msports.com";
-
 				$from_name  = ucfirst($get_from['Firstname'])." ".ucfirst($get_from['Lastname']);
 				$to_email		 = $get_to['EmailID'];
 

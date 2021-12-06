@@ -1,6 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Paypal extends CI_Controller 
-{
+
+class Paypal extends CI_Controller {
+
      function  __construct(){
         parent::__construct();
         $this->load->library('paypal_lib');
@@ -12,32 +13,32 @@ class Paypal extends CI_Controller
 		$this->load->model('model_news');
      }
      
-	 function get_username($user_id)
-	 {
+	 function get_username($user_id){
 		return $this->model_general->get_user($user_id);
 	 }
 
 	 function msuccess(){
-       $this->session->unset_userdata('tour_reg_fee');
+        $this->session->unset_userdata('tour_reg_fee');
 		$this->session->unset_userdata('reg_tour_id');
 
         //get the transaction data
         $paypalInfo = $this->input->get();
-//echo "<pre>"; print_r($paypalInfo); exit;
+		//echo "<pre>"; print_r($paypalInfo); exit;
         $data['item_number']	= $paypalInfo['item_number']; 
         $data['txn_id']			= $paypalInfo["tx"];
-        $data['payment_amt']	= $paypalInfo["amt"];
+        $data['payment_amt']		= $paypalInfo["amt"];
         $data['currency_code']	= $paypalInfo["cc"];
-        $data['status']			= $paypalInfo["st"];
-        if($this->input->get('ttype') == 'Indv'){		
-			$data['player']		= $user_id		= $this->input->get('player');
-			$data['tourn_id']	= $tourn_id		= $this->input->get('tourn_id');
+        $data['status']				= $paypalInfo["st"];
+
+        if($this->input->get('ttype') == 'Indv') {		
+			$data['player']		= $user_id			= $this->input->get('player');
+			$data['tourn_id']	= $tourn_id			= $this->input->get('tourn_id');
 			$data['age_group']	= $age_group	= $this->input->get('age_group');
 			$data['mtypes']		= $match_types	= $this->input->get('mtypes');
 			//$data['partner1']	= $partner1		= $this->input->get('partner1');
 			//$data['partner2']	= $partner2		= $this->input->get('partner2');
-			$data['level']		= $level		= $this->input->get('level');
-			$data['events']     = $reg_events   = $this->input->get('events');
+			$data['level']			= $level				= $this->input->get('level');
+			$data['events']		= $reg_events   = $this->input->get('events');
 
 			$res = $this->model_league->reg_more_tourn_with_fee($data);
 
@@ -186,9 +187,9 @@ echo "Transaction complete!";
 
         //get the transaction data
         $paypalInfo = $this->input->get();
-		/*echo "<pre>";
+		echo "<pre>";
 		print_r($paypalInfo);
-		exit;*/
+		//exit;
 		$data = array();
 
 			$data['item_number']	= $this->input->get('item_number');
@@ -200,43 +201,62 @@ echo "Transaction complete!";
 			$data['txn_id']			= $this->input->get('token');
 			}
 
-			$data['payment_amt']	= $this->input->get('amt');
-			$data['currency_code']	= $this->input->get('cc');
-			$data['status']			= $this->input->get('st');
+			$data['payment_amt']		= $this->input->get('amt');
+			$data['currency_code']		= $this->input->get('cc');
+			$data['status']					= $this->input->get('st');
 
 			$data['coup_code']	= $this->input->get('coup_code');
 			$data['coup_disc']	= $this->input->get('coup_disc');
 
 		 if($this->input->get('ttype') == 'Teams'){
-			$data['team']		= $team_id		= $this->input->get('team');
-			$data['player']		= $user_id		= $this->input->get('reg_user');
-			$data['team_players']= $team_players= $this->input->get('team_players');
-			$data['tourn_id']	= $tourn_id		= $this->input->get('tourn_id');
-			$data['age_group']	= $age_group	= $this->input->get('age_group');
-			$data['level']		= $level		= $this->input->get('level');
-			$data['hc_loc_id']	= $hc_loc		= $this->input->get('hc_loc');
-			$data['tsize']		= $tsize		= $this->input->get('tsize');
+			$data['team']					= $team_id			= $this->input->get('team');
+			$data['player']				= $user_id			= $this->input->get('reg_user');
+			$data['team_players']	= $team_players	= $this->input->get('team_players');
+			$data['tourn_id']			= $tourn_id			= $this->input->get('tourn_id');
+			$data['age_group']		= $age_group		= $this->input->get('age_group');
+			$data['level']					= $level				= $this->input->get('level');
+			$data['hc_loc_id']			= $hc_loc				= $this->input->get('hc_loc');
+			$data['tsize']					= $tsize				= $this->input->get('tsize');
 			$data['note_to_admin'] = $note_to_admin	= $this->input->get('nte_to_admin');
 
 			$res = $this->model_league->team_reg_tourn_with_fee($data);
 		 }
 		 else if($this->input->get('ttype') == 'Indv'){		
-			$data['player']		= $user_id		= $this->input->get('player');
-			$data['tourn_id']	= $tourn_id		= $this->input->get('tourn_id');
+			$data['player']			= $user_id		= $this->input->get('player');
+			$data['tourn_id']		= $tourn_id		= $this->input->get('tourn_id');
 			$data['age_group']	= $age_group	= $this->input->get('age_group');
-			$data['mtypes']		= $match_types	= $this->input->get('mtypes');
-			$data['partners']	= $partners		= $this->input->get('partners');
+			$data['mtypes']			= $match_types	= $this->input->get('mtypes');
+			$data['partners']		= $partners		= $this->input->get('partners');
 			//$data['partner2']	= $partner2		= $this->input->get('partner2');
-			$data['level']		= $level		= $this->input->get('level');
-			$data['hc_loc_id']	= $hc_loc		= $this->input->get('hc_loc');
-			$data['tsize']		= $tsize		= $this->input->get('tsize');
-			$data['events']     = $reg_events   = $this->input->get('events');
+			$data['level']				= $level		= $this->input->get('level');
+			$data['hc_loc_id']		= $hc_loc		= $this->input->get('hc_loc');
+			$data['tsize']				= $tsize		= $this->input->get('tsize');
+			$data['events']			= $reg_events   = $this->input->get('events');
 			$data['note_to_admin'] = $note_to_admin	= $this->input->get('nte_to_admin');
-			$data['school_info'] = $school_info	= $this->input->get('school_info');
+			$data['school_info']		= $school_info			= $this->input->get('school_info');
 
 			$data['occr'] = $occr	= "";
 			if($this->input->get('occr')){
 			$data['occr'] = $occr	= $this->input->get('occr');
+			}
+			else if($this->input->get('option_name3')){
+				$a = json_decode(trim($this->input->get('option_name3')));
+
+				if(is_array($a)){
+				$data['occr'] = $occr	= $this->input->get('option_name3');
+				}
+			}
+
+			$data['est_usatt_rating'] = '';
+			if($this->input->get('est_usatt_rating')){
+			$data['est_usatt_rating'] = $est_rating	= $this->input->get('est_usatt_rating');
+			}
+			else if($this->input->get('option_name3')){
+				$a = json_decode(trim($this->input->get('option_name3')));
+
+				if(is_numeric($a)){
+					$data['est_usatt_rating']	= $est_rating	= $this->input->get('option_name3');
+				}
 			}
 
 			$res = $this->model_league->reg_tourn_with_fee($data);
@@ -262,7 +282,7 @@ echo "Transaction complete!";
 						'tourn_id'			=> $this->input->get('tourn_id'),
 						'team'				=> $this->input->get('team'),
 						'paypal_vals'		=> print_r($paypalInfo, true),
-						'paypal_vals2'		=> print_r($_GET, true),
+						'paypal_vals2'	=> print_r($_GET, true),
 						'page'				=> 'A2M Paypal values - Developer');
 
 		$this->email_to_player($dev_email, $dev_subject, $data);
@@ -310,7 +330,9 @@ echo "Transaction complete!";
                $users_cnt[$evnt] = count($users);
 			}
 
-			$tourn_events_limit = json_decode($tour_det->Event_Reg_Limit,true);
+			if($tour_det->Event_Reg_Limit){
+
+			$tourn_events_limit = json_decode($tour_det->Event_Reg_Limit, TRUE);
 
 			foreach ($tourn_events_limit as $event => $limit) {
 				//$limits[]=array_key_exists($event, $users_cnt);
@@ -324,16 +346,18 @@ echo "Transaction complete!";
 					}
                 }
 			}
+
+			}
 		}
 			//	print_r($categories);
 //exit;
-				$tourn_det  = $this->model_league->getonerow($tourn_id);   //tournament details
-				$title		= $tourn_det->tournament_title;               
-				$subject	= "Tournament Registration {$title} - A2MSports";
+				$tourn_det	= $this->model_league->getonerow($tourn_id);   //tournament details
+				$title				= $tourn_det->tournament_title;               
+				$subject		= "Tournament Registration {$title} - A2MSports";
 
 				$user_reg_date = $user_categories['Reg_date'];
                 //$reg_date = date('m-d-Y', strtotime($user_reg_date));
-                $reg_date	   = date('m-d-Y h:i:s');
+                $reg_date	   = date('m-d-Y H:i:s');
 
 				$data = array(
 				'firstname'	=> $row->Firstname,
@@ -352,7 +376,7 @@ echo "Transaction complete!";
                 $tourn_admin_firstname = $userdat['Firstname'];
                 $tourn_admin_lastname  = $userdat['Lastname'];
 
-                $reg_date = date('m-d-Y h:i:s');
+                $reg_date = date('m-d-Y H:i:s');
 				$data	= array(
 								'firstname'	=> $row->Firstname,
 								'lastname'	=> $row->Lastname,
@@ -367,6 +391,7 @@ echo "Transaction complete!";
 							);
 
                 $this->email_to_player($tourn_admin_email, $subject, $data);
+                $this->email_to_player("npradkumar@gmail.com", $subject, $data);
 				
 				/*if(preg_match('[Doubles|Mixed]', $match_types)) { 
 					
@@ -535,17 +560,29 @@ echo "Transaction complete!";
 
         $paypalInfo    = $this->input->post();
 
-        $data['users_id']		= trim($paypalInfo['option_name1']);
+        $data['users_id']			= trim($paypalInfo['option_name1']);
         $data['reg_events']		= trim($paypalInfo['option_name2']);
-        $data['tourn_id']		= trim($paypalInfo["item_number"]);
-        $data['txn_id']			= $paypalInfo["txn_id"];
+
+		if($paypalInfo['option_name3']){
+			$a = json_decode(trim($paypalInfo['option_name3']));
+
+			if(is_array($a)){
+				$data['reg_occrs']				= trim($paypalInfo['option_name3']);
+			}
+			else if(is_numeric($a)){
+				$data['est_usatt_rating']	= trim($paypalInfo['option_name3']);
+			}
+		}
+
+        $data['tourn_id']			= trim($paypalInfo["item_number"]);
+        $data['txn_id']				= $paypalInfo["txn_id"];
         $data['payment_gross']	= $paypalInfo["payment_gross"];
         //$data['currency_code']	= $paypalInfo["mc_currency"];
-        $data['payer_email']		= $paypalInfo["payer_email"];
-        $data['payment_status'] = $paypalInfo["payment_status"];
+        $data['payer_email']			= $paypalInfo["payer_email"];
+        $data['payment_status']	= $paypalInfo["payment_status"];
         $data['payment_date']	= $paypalInfo["payment_date"];
-        $data['currency']		= $paypalInfo["mc_currency"];
-        $data['pp_charges']	= $paypalInfo["mc_fee"];
+        $data['currency']			= $paypalInfo["mc_currency"];
+        $data['pp_charges']		= $paypalInfo["mc_fee"];
 
 		//$paypalInfo["abc"] = $x;
 
@@ -560,11 +597,11 @@ echo "Transaction complete!";
 		}
 
 	 	$dev_email	 = "pradeepkumar.namala@gmail.com";
-		$dev_subject = "A2M Paypal Vals - Production";
+		$dev_subject  = "A2M Paypal Vals - Production";
 		$data		 = array(
-						'firstname'	   => "Developer",
-						'paypal_vals'  => print_r($paypalInfo, true),
-						'page'	       => 'A2M Paypal values - Developer');
+									'firstname'	     => "Developer",
+									'paypal_vals'   => print_r($paypalInfo, true),
+									'page'	         => 'A2M Paypal values - Developer');
 
 		$this->email_to_player($dev_email, $dev_subject, $data);
 
@@ -579,14 +616,16 @@ echo "Transaction complete!";
         $paypalInfo    = $this->input->post();
 
         $data['users_id']		= trim($paypalInfo['option_name1']);
-        $data['tourn_id']		= trim($paypalInfo["item_number"]);
-        $data['txn_id']			= $paypalInfo["txn_id"];
+        $data['reg_events']		= trim($paypalInfo['option_name2']);
+
+        $data['tourn_id']			= trim($paypalInfo["item_number"]);
+        $data['txn_id']					= $paypalInfo["txn_id"];
         $data['payment_gross']	= $paypalInfo["payment_gross"];
         //$data['currency_code']	= $paypalInfo["mc_currency"];
-        $data['payer_email']	= $paypalInfo["payer_email"];
-        $data['payment_status'] = $paypalInfo["payment_status"];
+        $data['payer_email']			= $paypalInfo["payer_email"];
+        $data['payment_status']	= $paypalInfo["payment_status"];
         $data['payment_date']	= $paypalInfo["payment_date"];
-        $data['currency']		= $paypalInfo["mc_currency"];
+        $data['currency']			= $paypalInfo["mc_currency"];
         $data['pp_charges']		= $paypalInfo["mc_fee"];
 
 		//$paypalInfo["abc"] = $x;

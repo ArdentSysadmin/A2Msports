@@ -71,11 +71,11 @@ echo strip_tags($s) . "...";
 <footer>
 <div class="content-footer">
 <div class="container">
-<div class="col-md-7">
+<div class="col-md-10">
 <p>&copy; <?=date('Y');?> a2msports.com. All rights reserved. &nbsp;&nbsp;<a id='priv_policy' style="cursor:pointer;color:#FFF">Privacy Policy</a></p>
 </div>
 <!-- <div class="col-md-5"> -->
-<div class="fb-like col-md-5" data-href="https://www.a2msports.com/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+<div class="fb-like col-md-2" data-href="https://www.a2msports.com/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
 <!--<div class="col-md-3" style="padding-right:50px">
 <a href='https://www.facebook.com/a2msports' target='_blank'><img src = "<?php echo base_url().'images/fb_round.png'; ?>" alt = 'Facebook Page' width = '25px' height='25px' align='right' /></a>
@@ -225,7 +225,7 @@ else {
 <script>
 $(document).ready(function() {
 $('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
 });
 </script>
 <?php
@@ -287,27 +287,6 @@ var baseurl = "<?php echo base_url(); ?>";
 });
 </script>
 <!-- jQuery DataTables -->
-<script>
-(function(d, s, id) {
-var js, fjs = d.getElementsByTagName(s)[0];
-if (d.getElementById(id)) return;
-js = d.createElement(s); js.id = id;
-js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
-fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
-</script>
-<!-- Facebook Pixel Code -->
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '636569003561353');
-  fbq('track', 'PageView');
-</script>
+<script type="text/javascript" src="<?php echo base_url(); ?>js/wickedpicker.js"></script>
 </body>
 </html>

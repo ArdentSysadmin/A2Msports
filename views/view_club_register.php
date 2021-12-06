@@ -15,6 +15,32 @@ function check(input){
 $(document).ready(function(){    
 $('#EmailID').val("");
 
+$(document).on('click', '#reset_pwd', function() {
+	var baseurl	= "<?php echo base_url();?>";
+	var email_id = $('#temp_email').val();
+	var uid			= $('#temp_uid').val();
+	$('#reset_pwd').html("Please wait...");
+if(email_id && uid){
+	$.ajax({
+	type:'POST',
+	url:baseurl+'login/reset_email_pwd',
+	data:{req_email:email_id, user:uid},
+	success:function(res){
+		if(res){
+			alert("Reset Password link sent to your email.")
+			window.location.replace(baseurl+"login");
+		}
+		else{
+			alert("Something wrong! please try after some time.");
+			$('#reset_pwd').html("Reset Password ?");
+		}
+	}
+	}); 
+}
+
+});
+
+
 $('#EmailID').blur(function(){
 var baseurl = "<?php echo base_url();?>";
 var email_id = $(this).val();
@@ -22,17 +48,24 @@ var email_id = $(this).val();
 if(email_id!=""){
 	$.ajax({
 	type:'POST',
-	url:baseurl+'register/email_check/',
+	url:baseurl+'register/ajax_email_verify/',
 	data:'email_id='+email_id,
 	success:function(html){
 	var stat = html;
-	if(stat!=""){
-		$('#email_stat').html(stat);
-		$('#EmailID').val("");
-	}
-	else {
-		$('#email_stat').html("");
-	}
+		if(stat!=""){
+			var sp = stat.split('-');
+			$('#email_stat').html(sp[1] + " already exists! <br />want to <a id='reset_pwd' style='cursor:pointer;'><b>Reset Password</b>?</a>");
+			//$('#email_stat').html(stat);
+			$('#temp_uid').val(sp[0]);
+			$('#temp_email').val(sp[1]);
+
+			$('#EmailID').val("");
+		}
+		else {
+			$('#email_stat').html("");
+			$('#temp_uid').val('');
+			$('#temp_email').val('');
+		}
 	}
 	}); 
 }
@@ -394,8 +427,8 @@ return false;
 
 <div class="col-md-6">
 <label for="email">* Email:</label><div class="clear"></div>
-<input class='form-control' id="EmailID" name="EmailID"  type="email" oninvalid="check(this)" required />
-<div id="email_stat" style="color:red;"><?php echo $this->session->flashdata('err_msg');?></div>
+<input class='form-control' id="EmailID" name="EmailID"  type="email" oninvalid="check(this)" autocomplete="off" required />
+<div id="email_stat" style="color:red; margin-bottom:15px;"><?php echo $this->session->flashdata('err_msg');?></div>
 </div>
 
 <div class="col-md-6">
@@ -790,6 +823,9 @@ $(document).ready(function(){
 	});
 });
 </script>
+
+<input type='hidden' name='temp_uid'		id='temp_uid'	 value='' />
+<input type='hidden' name='temp_email'	id='temp_email' value='' />
 
 <div class="col-md-12" style="padding-top:10px">
 <input type="checkbox" name="recommend" id="recommend" value="1" />&nbsp;

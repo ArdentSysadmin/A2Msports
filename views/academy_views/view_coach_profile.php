@@ -94,8 +94,10 @@ if(count($coaches_list) == 0)
 }
 else
 {
-
-foreach($coaches_list as $row){ ?><!-- img-djoko -->
+//echo "<pre>"; print_r($coaches_list); exit;
+foreach($coaches_list as $row){ 
+	if(count($coaches_list) == 1 or $row->Users_ID == $coach_id){
+?><!-- img-djoko -->
 <tr style="background-color:#eeefee">
 
 <td>
@@ -139,7 +141,7 @@ foreach($coaches_list as $row){ ?><!-- img-djoko -->
 <br />
 	<h3 style="color:#123176;"><b>Profile<b></h3>
 <?php 
-	if($row->coach_profile != ""){
+	if($row->coach_profile){
 		echo $row->coach_profile; 
 	}
 	else{
@@ -151,7 +153,10 @@ foreach($coaches_list as $row){ ?><!-- img-djoko -->
 </tr>
 <tr><td colspan='2'><hr /></td></tr>
 
-<?php } }?>
+<?php
+}
+}
+}?>
 </table>
 </div>
 

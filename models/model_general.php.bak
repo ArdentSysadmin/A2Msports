@@ -125,10 +125,8 @@
 
 
 		public function get_user($uid){
-			$data = array('Users_ID'=>$uid);
-			$query = $this->db->get_where('Users',$data);
-			//echo $this->db->last_query(); exit;
-			//echo ""; print_r($query->row_array()); exit;
+			$data = array('Users_ID' => $uid);
+			$query = $this->db->get_where('Users', $data);
 			return $query->row_array();
 		}
 
@@ -136,7 +134,15 @@
 			$data = array('Users_ID'=>$uid);
 			$query = $this->db->get_where('Users',$data);
 			$p = $query->row_array();
-			$name = "<a href='".base_url()."player/{$p['Users_ID']}'>".ucfirst($p['Firstname'])." ".ucfirst($p['Lastname'])."</a>";
+			//echo $this->config->item('club_pr_url'); exit;
+			if($_SERVER['HTTP_X_FORWARDED_HOST'] != ''){
+				$url = $_SERVER['HTTP_X_REQUEST_SCHEME']."://".$_SERVER['HTTP_X_FORWARDED_HOST'].'/';
+			}
+			else{
+				$url = base_url();
+			}
+				$name = "<a href='".$url."player/{$p['Users_ID']}'>".ucfirst($p['Firstname'])." ".ucfirst($p['Lastname'])."</a>";
+
 			return $name;
 		}
 
@@ -148,7 +154,7 @@
 			$data		= array('Users_ID'=>$pid);
 			$query2	= $this->db->get_where('Users',$data);
 			$pp			= $query2->row_array();
-			$name		= "<a href='".base_url()."player/{$p['Users_ID']}'>".ucfirst($p['Firstname'])." ".ucfirst($p['Lastname'])."</a>; "."<a href='".base_url()."player/{$pp['Users_ID']}'>".ucfirst($pp['Firstname'])." ".ucfirst($pp['Lastname'])."</a>";
+			$name		= "<a href='".$this->config->item('club_pr_url')."/player/{$p['Users_ID']}'>".ucfirst($p['Firstname'])." ".ucfirst($p['Lastname'])."</a>; "."<a href='".$this->config->item('club_pr_url')."/player/{$pp['Users_ID']}'>".ucfirst($pp['Firstname'])." ".ucfirst($pp['Lastname'])."</a>";
 			return $name;
 		}
 
@@ -175,7 +181,7 @@
 		}
 
 		public function get_bracket_firstmatch($bid){
-			$query = $this->db->query("select * from Tournament_Matches WHERE BracketID = {$bid} and Match_Num = 1");
+			$query = $this->db->query("select * from Tournament_Matches WHERE BracketID = {$bid} and Match_DueDate IS NOT NULL");
 			//echo $this->db->last_query(); exit;
 			return $query->row_array();
 		}
@@ -495,7 +501,7 @@
 						$a2m = $get_user_a2m->row_array();
 						$st = '';
 
-	//$upd = $this->db->query("UPDATE A2MScore SET A2MScore=".$a2m['A2MScore_Doubles'].",A2MScore_Doubles=".$a2m['A2MScore']."  WHERE A2MScore_ID = '".$a2m['A2MScore_ID']."'");
+						//$upd = $this->db->query("UPDATE A2MScore SET A2MScore=".$a2m['A2MScore_Doubles'].",A2MScore_Doubles=".$a2m['A2MScore']."  WHERE A2MScore_ID = '".$a2m['A2MScore_ID']."'");
 
 						//if($upd)
 						//	$st = "Done";
@@ -515,4 +521,103 @@
 			}
 
 		}
+
+		public function upd_tbl(){
+
+$upd_arr = array('22309','
+22310','
+22311','
+22312','
+22313','
+22314','
+22315','
+22316','
+22317','
+22318','
+22319','
+22320','
+22354','
+22355','
+22332','
+22333','
+22334','
+22335','
+22356','
+22357','
+22358','
+22359','
+22336','
+22337','
+22338','
+22360','
+22388','
+22396','
+22391','
+22392','
+22393');
+
+foreach($upd_arr as $ar){
+		$get_qry = $this->db->query("SELECT * FROM Tournament_Matches WHERE Tourn_match_id = $ar");
+		$data_arr = $get_qry->row_array();
+
+		$prev_dt = date('Y-m-d', strtotime($data_arr['Match_DueDate']));
+		$prev_tm = date('H:i', strtotime($data_arr['Match_DueDate']));
+		$new_dt  = date('Y-m-d H:i', strtotime('2021-07-09 '.$prev_tm));
+		echo $new_dt." = ". $prev_dt." ".$prev_tm."<br>";
+		$get_qry = $this->db->query("UPDATE Tournament_Matches SET Match_DueDate = '{$new_dt}' WHERE Tourn_match_id = $ar");
+		}
+		}
+
+		public function get_a2msocre($sport, $user_id){
+			$data = array('SportsType_ID'=>$sport , 'Users_ID'=>$user_id);
+			$get_level = $this->db->get_where('A2MScore',$data);
+			return $get_level->row_array();
+		}
+
+		public function search_autocomplete($data){			
+			$key = $data['key'];
+			$gender = $data['gender'];
+			$tid = $data['tid'];
+			if($tid){
+				   $qr_check = $this->db->query("SELECT * FROM Users WHERE (Firstname LIKE '%$key%' OR Lastname LIKE '%$key%') AND Users_ID IN (SELECT Users_ID FROM RegisterTournament WHERE Tournament_ID = {$tid}) ");
+			}
+			else{
+				if($gender === '1' || $gender === '0'){
+				   $qr_check = $this->db->query("SELECT * FROM Users WHERE Gender = $gender AND (Firstname  LIKE '%$key%' OR  Lastname LIKE '%$key%')");
+				}
+				else{
+				   $qr_check = $this->db->query("SELECT * FROM Users WHERE Firstname LIKE '%$key%' OR Lastname LIKE '%$key%'");
+				}
+			}
+			
+			return $qr_check->result();
+		}
+
+		public function city_autocomplete($data){
+			$key = $data['key'];
+			
+			$this->db->select('*');
+			$this->db->from('US_Cities');
+			$this->db->like('city', $key); 
+			//$this->db->or_like('short_code', $key);
+			
+			$query = $this->db->get();
+			return $query->result();
+			//$this->db->like('title', 'match', 'both'); 
+		}
+		
+		public function state_autocomplete($data){
+			$key = $data['key'];
+			
+			$this->db->select('*');
+			$this->db->from('US_States');
+			$this->db->like('state', $key); 
+			$this->db->or_like('short_code', $key);
+			
+			$query = $this->db->get();
+			return $query->result();
+			//$this->db->like('title', 'match', 'both'); 
+		}
+
+
 }	

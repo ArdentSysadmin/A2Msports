@@ -140,8 +140,8 @@ var origin   = window.location.origin;				// Returns base URL (https://example.c
 </style>
 <style>
 .li_disabled {
-    pointer-events:none; //This makes it not clickable
-    opacity:0.6;         //This grays it out to look disabled
+    pointer-events:none;	 /*This makes it not clickable*/
+    opacity:0.6;					/*This grays it out to look disabled*/
 }
 </style>
 <script src="<?php echo base_url();?>js/bootsnav.js"></script>

@@ -269,8 +269,9 @@
 			$data['user_tournment_matches'] = $this->model_members->get_user_tournment_matches($user_id);
 			$data['num_matches']  = $this->model_members->get_num_matches($user_id);
 			$data['results']	  = $this->model_news->get_news();
+			$data2['noIndex'] = 1;
 
-			$this->load->view('includes/header');
+			$this->load->view('includes/header', $data2);
 			$this->load->view('view_player_details',$data);
 			$this->load->view('includes/view_right_column');
 			$this->load->view('includes/footer');

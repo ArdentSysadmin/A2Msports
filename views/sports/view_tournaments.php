@@ -91,20 +91,20 @@ echo ucfirst($event->Ev_Organizer)."<br>".$phone;
 <?php
 foreach($leagues as $league) { 
 	if($league->TournamentImage!=""){$tour_image = $league->TournamentImage; }
-	else if($sport == 1){  $tour_image = "default_tennis.jpg";		 }
+	else if($sport == 1){  $tour_image = "default_tennis.jpg";			 }
 	else if($sport == 2){  $tour_image = "default_table_tennis.jpg"; }
 	else if($sport == 3){  $tour_image = "default_badminton.jpg";	 }
-	else if($sport == 4){  $tour_image = "default_golf.jpg";		 }
+	else if($sport == 4){  $tour_image = "default_golf.jpg";				 }
 	else if($sport == 5){  $tour_image = "default_racquet_ball.jpg"; }
 	else if($sport == 6){  $tour_image = "default_squash.jpg";		 }
 	else if($sport == 7){  $tour_image = "default_pickleball_new.jpg";	 }
-	else if($sport == 8){  $tour_image = "default_chess.jpg";		 }
+	else if($sport == 8){  $tour_image = "default_chess.jpg";			 }
 	else if($sport == 9){  $tour_image = "default_carroms.jpg";		 }
-	else if($sport == 10){ $tour_image = "default_volleyball.jpg";   }
+	else if($sport == 10){ $tour_image = "default_volleyball.jpg";	 }
 	else if($sport == 11){ $tour_image = "default_fencing.jpg";		 }
 	else if($sport == 12){ $tour_image = "default_bowling.jpg";		 }
 	else if($sport == 16){ $tour_image = "default_cricket.jpg";		 }
-	else if($sport == 18){ $tour_image = "default_basketball1.jpg";		 }
+	else if($sport == 18){ $tour_image = "default_basketball1.jpg";	 }
 ?>
 <tr>
 <td valign="center" style="padding-left:2px; font-size:14px;">

@@ -120,18 +120,18 @@ h1, h2, h3, h4, h5, h6 {
 <section class="inner-page-wrapper course-list-wrapper tournaments-bg1" style="padding: 15px;">
   <div id='events' class="container">
     <div class="title">
-      <h2>Featured Tournaments/ Leagues</h2>
+      <h2>Featured Tournaments / Leagues / Events</h2>
       <div><span></span></div>
     </div>
     <div class="row">
 		<div class="caltext"><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events"><!-- <i class="fa fa-calendar" aria-hidden="true"></i> --> More Events</a></div>
  
  <?php 
-if(count($club_leagues) == 0)
+if(count($club_leagues) == 0 and count($club_events) == 0)
 {
 ?>
     <div class="col-md-12 col-sm-12">
-		 No Events are listed yet!
+		 No Tournaments / Events are listed yet!
 	</div><!-- col-md-4 -->
 <?php
 }
@@ -196,13 +196,21 @@ foreach($club_leagues as $row) {
 			<div class="course-body">
 				<div class="course-desc" style="min-height: 115px;">
 					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>"><?php echo $row->tournament_title;?></a></h4>
-					  <p><b>Sport:</b> <?php 
+					  <p style="line-height: 23px;"><b>Sport:</b> <?php 
 						$get_sport = academy::get_sport($row->SportsType);
 						echo $get_sport['Sportname'];
 						?><br>
 						<!-- <b>Registration closed on:</b> <?php //echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br> -->
 						<b>Starts on:</b> <?php echo date('m/d/Y',strtotime(substr($row->StartDate,0,10))); ?><br>
-						<b>Location:</b> <?php echo $row->TournamentCity. ',' . $row->TournamentState; ?></p>
+						<b>Location:</b> <?php echo $row->TournamentCity. ',' . $row->TournamentState; ?><br>
+						<?php 
+						$now		  = strtotime("now");
+						$end_date = strtotime($row->EndDate);
+
+						if($end_date < $now){ ?>
+						<b style="background-color:#2de033; padding:0px;">COMPLETED</b>
+						<?php } ?>
+						</p>
 				</div>
 			</div>
 		</div><!-- Tournaments-item -->
@@ -213,6 +221,98 @@ foreach($club_leagues as $row) {
 }
 ?>
  
+  <?php 
+if(count($club_events) > 0){
+
+foreach($club_events as $row) { 
+?>
+	<div class="col-md-3 col-sm-6">
+	<!-- <div class="text-center col-md-3 col-md-offset-3"> -->
+		 <div class="course-item">
+			<div class="course-img">
+			<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>">
+			<img src="<?php echo base_url(); ?>events_pictures/<?php if($row->EventImage!=""){echo $row->EventImage; }
+			else {
+			switch($row->Ev_Sport) {
+			case 1:
+			echo "default_tennis.jpg";
+			break;
+			case 2:
+			echo "default_table_tennis.jpg";
+			break;
+			case 3:
+			echo "default_badminton.jpg";
+			break;
+			case 4:
+			echo "default_golf.jpg";
+			break;
+			case 5:
+			echo "default_racquet_ball.jpg";
+			break;
+			case 6:
+			echo "default_squash.jpg";
+			break;
+			case 7:
+			echo "default_pickleball.jpg";
+			break;
+			case 8:
+			echo "default_chess.jpg";
+			break;
+			case 9:
+			echo "default_carroms.jpg";
+			break;
+			case 10:
+			echo "default_volleyball.jpg";
+			break;
+			case 11:
+			echo "default_fencing.jpg";
+			break;
+			case 12:
+			echo "default_bowling.jpg";
+			break;
+			case 18:
+			echo "default_basketball1.jpg";
+			break;
+			default:
+			echo "";
+			}
+			}
+			?>" alt="" style="width:261px; height:157px;" />
+			</a>
+			</div>
+			<div class="course-body">
+				<div class="course-desc" style="min-height: 115px;">
+					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>"><?php echo $row->Ev_Title;?></a></h4>
+					  <p style="line-height: 23px;"><b>Sport:</b> <?php 
+						$get_sport = academy::get_sport($row->Ev_Sport);
+						echo $get_sport['Sportname'];
+						?><br>
+						<!-- <b>Registration closed on:</b> <?php //echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br> -->
+						<b>Starts on:</b> <?php echo date('m/d/Y',strtotime(substr($row->Ev_Start_Date,0,10))); ?><br>
+						<?php 
+						$get_loc = academy::get_location($row->Ev_Location);
+						?>
+						<b>Location:</b> <?php echo $get_loc['loc_city']. ', ' .$get_loc['loc_state']; ?><br>
+						<?php 
+						$now		  = strtotime("now");
+						$end_date = strtotime($row->Ev_End_Date);
+
+						if($end_date < $now){ ?>
+						<b style="background-color:#2de033; padding:0px;">COMPLETED</b>
+						<?php } ?>
+						</p>
+				</div>
+			</div>
+		</div><!-- Tournaments-item -->
+	</div><!-- col-md-4 -->
+
+<?php
+}
+}
+?>
+ 
+
+
       
     </div><!-- row -->
   </div>
@@ -452,9 +552,11 @@ foreach($sp_list as $tourn_id => $sponsors){
 				<p>
 				<?php 
 				$abc 	= strip_tags($row->News_content);
-				$result = substr($abc, 0, strpos($abc, '.'));
+				//$result = substr($abc, 0, strpos($abc, '.'));
+				$result = substr($abc, 0, 300);
 
 				echo $result . "...";
+				//exit;
 				?>
 				</p>
 			<a class="read-more" href="<?=$this->config->item('club_form_url');?>/news/view/<?=$row->News_id;?>">Read more <i class="fa fa-long-arrow-right"></i> </a> </div>

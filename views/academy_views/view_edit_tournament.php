@@ -40,6 +40,43 @@ var multiEvent_indexs = [];
 <script>
 $(document).ready(function(){
 
+
+var baseurl = "<?php echo base_url();?>";
+
+$("#tourn_dir").autocomplete({
+
+source: function( request, response ) {
+$.ajax({
+url: baseurl+'search/autocomplete',
+dataType: "json",
+method: 'post',
+data: {
+name_startsWith: request.term,
+type: 'users',
+row_num : 1
+},
+success: function( data ) {
+response( $.map( data, function( item ) {
+var code = item.split("|");
+return {
+label: code[0]+' ('+code[1]+' | '+code[2]+')',
+value: code[0],
+data : item
+}
+}));
+}
+});
+},
+autoFocus: true,	      	
+minLength: 1,
+select: function( event, ui ){
+var names = ui.item.data.split("|");					
+$('#tourn_dir_id').val(names[1]);
+$('#org_contact').val(names[6]);
+}	      	
+});
+
+
 //	$("#Combinations").click(function(){
 		//function alertMessage(){
 	$("#selected_events").html('');
@@ -582,13 +619,14 @@ $(document).ready(function(){
               <input class='form-control' id='title' name='title' type='text' value="<?php echo $tournament_details->tournament_title; ?>" required />
             </div>
           </div>
-		  
-          <div class='form-group'>
+	          <div class='form-group'>
             <label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Organizer Name<br />(Company / Individual) </label>
             <div class='col-md-6 form-group internal'>
-              <input class='form-control' id='organizer' name='organizer' type='text' value="<?php echo $tournament_details->OrganizerName;?>" required />
+              <input class='form-control' id='tourn_dir' name='organizer' type='text' value="<?php echo $tournament_details->OrganizerName;?>" required />
+			<input class='form-control' id='tourn_dir_id' name='organizer_id' type='hidden' value="<?php echo $tournament_details->Tournament_Director;?>" />
             </div>
           </div>
+
           <div class='form-group'>
             <label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Contact Number </label>
             <div class='col-md-6 form-group internal'>
@@ -1420,6 +1458,18 @@ $(document).ready(function(){
     });
 });
 </script>
+
+<div class="col-md-12 league-form-bg" style="margin-top:30px;">
+<div class="fromtitle">Publish </div>
+Do you want to publish the tournament?&nbsp;
+<label for="is_publish_yes">
+<input type="radio" id="is_publish_yes" name="is_publish" value="1" <?php if($tournament_details->Is_Publish==1){ echo "checked"; } ?>  /> Yes
+</label>&nbsp;&nbsp;
+<label for="is_publish_no">
+<input type="radio" id="is_publish_no" name="is_publish" value="0" <?php 
+if($tournament_details->Is_Publish==0){ echo "checked"; } ?> /> No
+</label>
+</div>
 
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:20px;">
 <div class="fromtitle">Review & Submit</div>

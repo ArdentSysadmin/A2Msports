@@ -55,7 +55,8 @@ var baseurl = "<?php echo base_url();?>";
 <h3>Round Robin Matches (Switch Doubles)</h3>
 <div class="col-md-12">
 
-<form method="post" id="myform" action='<?=$this->club_form_url;?>league/bracket_save' class="col-md-12 login-page"> 
+<form method="post" id="myform" action='<?=$this->club_form_url;?>league/bracket_save' 
+class="col-md-12 login-page"> 
 
 <label>Draw Title*</label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
 <input class="form-control" type="text" name="draw_title" id="draw_title" required />
@@ -90,16 +91,7 @@ $index = 1;
 foreach($matches as $match => $games){
 //echo "<tr align='center'><td colspan='4'><b>Match {$match}</b>&nbsp;&nbsp;<input type='text' placeholder='Date' name='match_date{$round}{$match}' id='match_date{$round}{$match}' value='' />";
 ?>
-<script>
-var rid = "<?php echo $round.$match; ?>";
 
-$('#match_date'+rid).fdatepicker({
-	format: 'mm/dd/yyyy hh:ii',
-	disableDblClickSelection: true,
-	language: 'en',
-	pickTime: true
-});
-</script>
 </td></tr>
 
 <?php
@@ -113,7 +105,7 @@ $('#match_date'+rid).fdatepicker({
 	$rr_p2  = $games[2][0];
 	$rr_p2p = $games[2][1];
 
-$mdate = "<input type='text' placeholder='Date' name='game_date{$index}' id='game_date{$index}' value='' />";
+$mdate = "<input type='text' placeholder='Date' name='game_date{$index}' id='match_date{$round}{$match}' value='' />";
 
 if($tformat == 'Teams' or $tformat == 'TeamSport'){
 	$team1  = league :: get_team(intval($rr_p1));		
@@ -157,13 +149,14 @@ if($rr_p2p){
 }
 ?>
 <script>
-var mid = "<?php echo $index; ?>";
-  $('#game_date'+mid).fdatepicker({
-		format: 'mm/dd/yyyy hh:ii',
-		disableDblClickSelection: true,
-		language: 'en',
-		pickTime: true
-	});
+var rid = "<?php echo $round.$match; ?>";
+
+$('#match_date'+rid).fdatepicker({
+	format: 'mm/dd/yyyy hh:ii',
+	disableDblClickSelection: true,
+	language: 'en',
+	pickTime: true
+});
 </script>
 <?php
 $index++;
@@ -189,8 +182,8 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 <input type='hidden' name='ttype' value="<?php echo $this->input->post('ttype'); ?>" />
 <input type='hidden' name='tformat' value="<?php echo $this->input->post('tformat'); ?>" />
 <input type='hidden' name='is_publish_draw' value="<?php echo $this->input->post('is_publish_draw'); ?>" />
-<input type='hidden' name='br_game_day'   value="<?php echo $this->input->post('br_game_day'); ?>" />
-<input type='hidden' name='draw_format'    value="<?php echo $this->input->post('draw_format'); ?>" />
+<input type='hidden' name='br_game_day'	value="<?php echo $br_game_day; ?>" />
+<input type="hidden" name="draw_format"  id="draw_format"  value='<?=$draw_format;?>' />
 
 <?php
 if($this->input->post('tformat') == 'Teams'){?>

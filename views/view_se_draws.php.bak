@@ -129,14 +129,18 @@ $tour_id		= $get_bracket['Tourn_ID'];
 $filter_events	= json_decode($get_bracket['Filter_Events']);
 $is_doubles		= 0;
 $events			= array();
-foreach ($filter_events as $key => $event){
-	$eventArr = explode('-', $event);
-	$events[] = $event;
-		//if($eventArr[2]	== 'Doubles' or $eventArr[2] == 'Mixed'){
-		if(strpos($event, 'Doubles') or strpos($event, 'Mixed')){
-			$is_doubles	= 1;
-		}
+
+if(count($filter_events) >0 ){
+	foreach ($filter_events as $key => $event){
+		$eventArr = explode('-', $event);
+		$events[] = $event;
+			//if($eventArr[2]	== 'Doubles' or $eventArr[2] == 'Mixed'){
+			if(strpos($event, 'Doubles') or strpos($event, 'Mixed')){
+				$is_doubles	= 1;
+			}
+	}
 }
+echo "<pre>"; print_r($squad); exit;
 
 $list_matches	= $get_tourn_matches->result();
 /*
@@ -170,14 +174,21 @@ print_r($tourn_reg_players[1]);*/
 			foreach($tourn_reg_players[0] as $key => $val){
 				$players[] = $key;
 			}
+//echo "<pre>"; print_r($tourn_reg_players); exit;
 	}
+	//echo "<pre>"; print_r($players); exit;
+
 ?>
+
+<div class="brackets-mobile">	<!-- Mobile DIV -->
+<div class="brackets-mobile-child"> <!-- Mobile child DIV -->
+
 <div class = "brackets" id="brackets">
 	<div>
 <?php
-if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+if($tour_details->Usersid == $this->logged_user or $tour_details->Tournament_Director == $this->logged_user or $this->is_super_admin){
 ?>
-<input class="form-control" type="text" name="draw_title" id="draw_title" style="width:25%;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
+<input class="form-control" type="text" name="draw_title" id="draw_title" style="width:25%; display:inline;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
 <input type="submit" class="league-form-submit1" style="margin-left: 100px;" name="update_draw" id="update_draw" 
 value=" Update " />
 <?php
@@ -259,7 +270,9 @@ else
 </span>
 <br />
 <?php
-if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+if($tour_details->Usersid == $this->logged_user 
+	or $tour_details->Tournament_Director == $this->logged_user 
+	or $this->is_super_admin){
 ?>
 
 <!-- <input type = "text" class = 'form-control' placeholder = "Date" id = "sdate_round<?php echo $round; ?>" name = "round_date<?php echo $round; ?>" value = "<?php if($round_dates[$round] != "")
@@ -319,7 +332,9 @@ $get_username2 = "";
 	echo $match_num;
 		
 
-if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+if($tour_details->Usersid == $this->logged_user 
+	or $tour_details->Tournament_Director == $this->logged_user 
+	or $this->is_super_admin){
 ?>
 <!-- <input  type="text" class='form-control' placeholder="Date" id="sdate<?php echo $match_num; ?>" name="match_date<?php echo $match_num; ?>" 
 value = "<?php if($list_matches[$m]->Match_DueDate != "")
@@ -367,7 +382,7 @@ else {
 	<span class="teama">
 	<?php
 	$sp = 1;
-	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $this->is_super_admin)){
+	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $tour_details->Tournament_Director == $this->logged_user or $this->is_super_admin)){
 		echo "<select style='width:110px;' class='swap_player' id='{$list_matches[$m]->Player1}' name='p1_{$list_matches[$m]->Match_Num}'>";
 		echo "<option value=''>Player</option>";
 		foreach($players as $p1){
@@ -404,7 +419,7 @@ else {
 			}
 			
 		
-	} else if($sp) { echo "----"; }
+	} else if($sp) { if($round == 1) echo "Bye"; else echo "----"; }
 	
 	$seed = '';
 		if($round == 1 and $s_p1 != '---') {
@@ -444,7 +459,7 @@ else {
 	</span>
 	<span class="teamb">
 	<?php
-	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $this->is_super_admin)){
+	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $tour_details->Tournament_Director == $this->logged_user or $this->is_super_admin)){
 		echo "<select style='width:110px;' class='swap_player' id='{$list_matches[$m]->Player2}' name='p2_{$list_matches[$m]->Match_Num}'>";
 		echo "<option value=''>Player</option>";
 		foreach($players as $p2){
@@ -555,7 +570,7 @@ else {
 	if($match_num == -1)
 	echo "3rd Place Match<br>";
 		
-if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+if($tour_details->Usersid == $this->logged_user or $tour_details->Tournament_Director == $this->logged_user or $this->is_super_admin){
 ?>
 <!-- <input  type="text" class='form-control' placeholder="Date" id="sdate<?php echo $match_num; ?>" name="match_date<?php echo $match_num; ?>" 
 value = "<?php if($list_matches[0]->Match_DueDate != "")
@@ -601,7 +616,7 @@ else {
 	</span>
 	<span class="teama">
 	<?php
-	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $this->is_super_admin)){
+	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $tour_details->Tournament_Director == $this->logged_user or $this->is_super_admin)){
 		echo "<select style='width:110px;' class='swap_player' id='{$list_matches[0]->Player1}' name='p1_{$list_matches[0]->Match_Num}'>";
 		echo "<option value=''>Player</option>";
 		foreach($players as $p1){
@@ -647,7 +662,7 @@ else {
 	</span>
 	<span class="teamb">
 	<?php
-	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $this->is_super_admin)){
+	if($round == 1 and ($tour_details->Usersid == $this->logged_user or $tour_details->Tournament_Director == $this->logged_user or $this->is_super_admin)){
 		echo "<select style='width:110px;' class='swap_player' id='{$list_matches[0]->Player2}' name='p2_{$list_matches[0]->Match_Num}'>";
 		echo "<option value=''>Player</option>";
 		foreach($players as $p2){
@@ -887,4 +902,8 @@ else {
 ?>
 </div>
 </div>
+
+</div> <!-- Child Mobile DIV -->
+</div>	<!-- Mobile DIV -->
+
 </form>

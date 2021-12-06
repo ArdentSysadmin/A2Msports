@@ -448,16 +448,13 @@ class Profile extends CI_Controller {
 		//Update the normal user details in profile tab .....
 
 			public function update_user_data()
-			{	
-	
+			{
 				$data['latt'] = $this->get_lang_latt();
 				
 				$res = $this->profile->update_profile_data($data);
-				if($res)
-				{
+				if($res)	{
 					redirect('profile');
 				}
-
 		    }
 
 			public function update_user_sports()
@@ -493,20 +490,19 @@ class Profile extends CI_Controller {
 	
 
 		//change the profile picture 
-		public function upload_pic()
-		{
+		public function upload_pic(){
 
-			$status='';
-			$msg='';
-			$filename = 'Profilepic';
+			$status		=	'';
+			$msg		=	'';
+			$filename =	'Profilepic';
 
 			 $config = array(
-					'upload_path' => "./profile_pictures/",
-					'allowed_types' => "gif|jpg|png|jpeg|pdf",
-					'overwrite' => FALSE,
-					'max_size' => "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
-					'max_height' => "5000",
-					'max_width' => "8000"
+					'upload_path'	 => "./profile_pictures/",
+					'allowed_types'  => "gif|jpg|png|jpeg|pdf",
+					'overwrite'			 => FALSE,
+					'max_size'			 => "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+					'max_height'		 => "5000",
+					'max_width'		 => "8000"
 					);
 
 			$this->load->library('upload', $config);
@@ -514,74 +510,74 @@ class Profile extends CI_Controller {
 
 			$this->upload->initialize($config);
 			
-			if($this->upload->do_upload($filename)) 
-			{
-				
-				$data['profile_pic_data'] = $this->upload->data();
-				$upload_data = $data['profile_pic_data'];
+			if($this->input->post('Profilepic_ajax') != '') {
+				//if($this->upload->do_upload($filename)) {
+					$data['file_name'] = $this->input->post('Profilepic_ajax');
+					//$data['profile_pic_data'] = $this->upload->data();
+					//$upload_data = $data['profile_pic_data'];
 
-				//to resize upload profile picture 
-				$resize_conf =	
-					array(
-						'upload_path'  => "./profile_pictures/thumbs/",
-						'source_image' => $upload_data['full_path'], 
-						//'new_image'    => './tour_pictures/$tourn_id/thumbs/'.$upload_data['file_name'],
-						'new_image'    => $upload_data['file_path'].'thumbs/'.$upload_data['file_name'],
-						'width'        => '200',
-						'height'       => '239'
-					);
+					//to resize upload profile picture 
+					/*$resize_conf =	
+						array(
+							'upload_path'	=> "./profile_pictures/thumbs/",
+							'source_image' => $upload_data['full_path'], 
+							//'new_image'   => './tour_pictures/$tourn_id/thumbs/'.$upload_data['file_name'],
+							'new_image'		=> $upload_data['file_path'].'thumbs/'.$upload_data['file_name'],
+							'width'				=> '200',
+							'height'				=> '239'
+							);
 
-					$this->load->library('image_lib');  
-					$this->image_lib->initialize($resize_conf);
+						$this->load->library('image_lib');  
+						$this->image_lib->initialize($resize_conf);
+						
+						// do it!
+						if (!$this->image_lib->resize()) {
+							// if got fail.
+							$error['resize'] = $this->image_lib->display_errors();		
+						}
+						else {
+							$data_to_store['userfile'] = $upload_data['file_name'];						
+							$data1['userfile']				= $upload_data['file_name'];
+							//exit;
+						}
+					*/
+					//end resize of profile picture 
 					
-					// do it!
-					if ( ! $this->image_lib->resize()){
-						// if got fail.
-						$error['resize'] = $this->image_lib->display_errors();		
+					// Deleting of Old Profile Pic
+					$get_user			= $this->profile->get_user_data();
+					$data['del_pic'] = $get_user['Profilepic'];
+					$this->load->helper("url");
+					
+					$path	= './profile_pictures/'.$data['del_pic'];
+					$path1 = './profile_pictures/thumbs/'.$data['del_pic'];
+					unlink($path);
+					unlink($path1);
+
+					// Update the table with new Profile pic name
+					$res = $this->profile->update_picture($data);
+					
+					if($res) {
+						/*$data['user_details'] = $this->profile->get_user_id();
+						$data['sports_details'] = $this->profile->get_intrests();
+						$data['user_sports_intrests'] = $this->profile->get_user_sport_intrests();
+						$data['results'] = $this->model_news->get_news();
+						$data['num_matches'] = $this->profile->get_num_matches();
+
+						$data['user_matches'] = $this->profile->get_user_matches();
+						$data['user_tournment_matches'] = $this->profile->get_user_tournment_matches();
+					
+						//$data['pic'] = "Your profile picture Updated Successfully.";
+						
+						$this->load->view('includes/header');
+						$this->load->view('view_profile', $data);
+						$this->load->view('includes/view_right_column');
+						$this->load->view('includes/footer');*/
+						redirect("profile");
 					}
-					else{
-						$data_to_store['userfile'] = $upload_data['file_name'];						
-						$data1['userfile'] = $upload_data['file_name'];
-						//exit;
-					}	
-
-				//end resize of profile picture 
-				
-				// Deleting of Old Profile Pic
-				$get_user = $this->profile->get_user_data();
-				$data['del_pic'] = $get_user['Profilepic'];
-				$this->load->helper("url");
-				
-				$path = './profile_pictures/'.$data['del_pic'];
-				$path1 = './profile_pictures/thumbs/'.$data['del_pic'];
-				unlink($path);
-				unlink($path1);
-
-				// Update the table with new Profile pic name
-				$res = $this->profile->update_picture($data);
-				
-				if($res)
-				{
-					$data['user_details'] = $this->profile->get_user_id();
-					$data['sports_details'] = $this->profile->get_intrests();
-					$data['user_sports_intrests'] = $this->profile->get_user_sport_intrests();
-					$data['results'] = $this->model_news->get_news();
-					$data['num_matches'] = $this->profile->get_num_matches();
-
-					$data['user_matches'] = $this->profile->get_user_matches();
-					$data['user_tournment_matches'] = $this->profile->get_user_tournment_matches();
-				
-					//$data['pic'] = "Your profile picture Updated Successfully.";
-					
-					$this->load->view('includes/header');
-					$this->load->view('view_profile',$data);
-					$this->load->view('includes/view_right_column');
-					$this->load->view('includes/footer');
-				}
-				else 
-				{
-					unlink($data['full_path']);
-				}
+					else {
+						unlink($data['full_path']);
+					}
+				//}
 			}
 			else
 			{
@@ -599,6 +595,26 @@ class Profile extends CI_Controller {
 				$this->load->view('includes/view_right_column');
 				$this->load->view('includes/footer');
 			}
+		}
+
+		public function upload_pic_ajax() {
+
+			if($this->input->post('image')) {
+				$data = $this->input->post('image');
+
+				$image_array_1 = explode(";", $data);
+				$image_array_2 = explode(",", $image_array_1[1]);
+
+				$data = base64_decode($image_array_2[1]);
+
+				$image_name = 'new_' . time() . '.png';
+				$path = './profile_pictures/'.$image_name;
+
+				file_put_contents($path, $data);
+
+				echo base_url().'profile_pictures/'.$image_name;
+			}
+
 		}
 
 		public function change_password()
@@ -739,7 +755,8 @@ class Profile extends CI_Controller {
 		 }
 
 
-		 public function update_membership(){			
+		 public function update_membership(){		
+			 //error_reporting(-1);
 				$res = $this->profile->update_membership_details();
 				if($res > 0){
 					//redirect('profile');
@@ -902,6 +919,28 @@ echo $opt;
 		}
 		else{
 			echo "Invalid Request!";
+		}
+	}
+	
+	public function crop_img(){
+		echo $this->load->view('view_img_process');
+
+	}
+
+	public function upload_crop_profimg(){
+		if($this->input->post('image')){
+			$data = $this->input->post('image');
+
+			$image_array_1 = explode(";", $data);
+			$image_array_2 = explode(",", $image_array_1[1]);
+
+			$data = base64_decode($image_array_2[1]);
+			$fn = rand(1,1000) . '_'.time() . '.png';
+			$image_name = './profile_pictures/' . $fn;
+
+			file_put_contents($image_name, $data);
+
+			echo $fn;
 		}
 	}
 

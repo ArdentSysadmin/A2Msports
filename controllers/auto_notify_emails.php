@@ -103,15 +103,37 @@ class auto_notify_emails extends CI_Controller {
 		 /* Start of Tournment Participants Notifications */
 
        $get_trn_prt_notify  = $this->auto_notify->Get_tournmnetpartcpnts_Notfy();
-      
+      //echo "<pre>"; print_r($get_trn_prt_notify); exit;
         if(count($get_trn_prt_notify) > 0){
 			foreach($get_trn_prt_notify as $notify){
-				$players_arr = json_decode($notify->players);	
+				$players_arr	= json_decode($notify->players);	
                 $message     = html_entity_decode($notify->message);
-                $subject     = $notify->subject;
+                $subject		= $notify->subject;
+				$exist_notified_players = array();
+				//echo var_dump($notify->notified_to_players);
+				//exit;
+				if($notify->notified_to_players and $notify->notified_to_players != 'null')
+				$exist_notified_players = json_decode($notify->notified_to_players, TRUE);
+				
+				$is_academy = 0;
+				$academy_id = '';
+				if($notify->is_academy){
+				$is_academy = $notify->is_academy;
+				$academy_id = $notify->academy_id;
+				}
 
-				$success_arr = $this->send_email_user_attachments($players_arr, $subject, $message, $notify->attachments_file, $notify->tourn_id);
-				$upd_notif   = $this->auto_notify->update_tm_prtcpnts_notif_stat($notify->mid);
+				$notified_players = $this->tm_send_email_user_attachments($players_arr, $subject, $message, $notify->attachments_file, $notify->tourn_id, $is_academy, $academy_id);
+				
+				$tobe_notified		 = array_diff($players_arr, $notified_players);
+				$new_notified_plrs  = array_merge($exist_notified_players, $notified_players);
+
+				if($tobe_notified){
+					$tobe_notified_temp = array_values($tobe_notified);
+					$upd_notif   = $this->auto_notify->update_tobe_notified_prtcpnts($notify->mid, $tobe_notified_temp, $new_notified_plrs);
+				}
+				else{
+					$upd_notif   = $this->auto_notify->update_tm_prtcpnts_notif_stat($notify->mid, $new_notified_plrs);
+				}
 			}
 		}
 		 /* End of Tournment Participants Notifications */
@@ -123,10 +145,10 @@ class auto_notify_emails extends CI_Controller {
 	   $get_prtusers_notify  = $this->auto_notify->GetPortal_AdmUsersNotfy();
 
        if(count($get_prtusers_notify) > 0){
-		   $notified_players = array();
+		   $notified_players		= array();
 			foreach($get_prtusers_notify as $notify){
-				$players_arr	   = json_decode($notify->players, true);
-				$players_count	   = count($players_arr);
+				$players_arr	    = json_decode($notify->players, true);
+				$players_count  = count($players_arr);
 				$limit = 30;
 				//$limit = 15;
 				if($notify->attachments_file){
@@ -146,7 +168,7 @@ class auto_notify_emails extends CI_Controller {
 
 				if(!empty($failed_players)){
 					$remaining_players  = array_merge($remaining_players, $failed_players);
-					$players_arr		= array_diff($players_arr, $failed_players);
+					$players_arr			  = array_diff($players_arr, $failed_players);
 				}
 
 				if($notify->notified_to_players == NULL){
@@ -167,10 +189,10 @@ class auto_notify_emails extends CI_Controller {
 					$remaining_players = json_encode($remaining_players);
 				}
 			
-			$data['players']			 = $remaining_players;
-			$data['notified_to_players'] = $notified_players;
-			$data['is_notified']		 = $is_notified;
-			$data['notified_on']		 = date('Y-m-d H:i');
+			$data['players']					 = $remaining_players;
+			$data['notified_to_players']  = $notified_players;
+			$data['is_notified']				 = $is_notified;
+			$data['notified_on']				 = date('Y-m-d H:i');
 			
 			/*echo "<pre>";
 			print_r($data);
@@ -314,8 +336,9 @@ class auto_notify_emails extends CI_Controller {
 
 		echo $body."<br>";
 		echo $user_email."<br>";
+		if(filter_var($user_email, FILTER_VALIDATE_EMAIL)){
 		$s_email = $this->email->send();
-
+		}
 		if($s_email)
 			{ echo "Success<br/>"; }
 		else { 
@@ -334,9 +357,11 @@ class auto_notify_emails extends CI_Controller {
           $tadmin	 = ucwords($tourn_det['OrganizerName']);
 		  $get_user = $this->general->get_onerow('Users', 'Users_ID', $tourn_det['Usersid']);
 			  if($get_user['EmailID'])
-			  $reply_to = $get_user['EmailID'];
+			    $reply_to = $get_user['EmailID'];
+			  else if($get_user['AlternateEmailID'])
+			    $reply_to = $get_user['AlternateEmailID'];
 			  else
-			  $reply_to = $get_user['AlternateEmailID'];
+				$reply_to = "";
 		}
 		else{
 		  $ctype  = "Portal";
@@ -387,7 +412,7 @@ class auto_notify_emails extends CI_Controller {
 			}
 		    $this->email->set_newline("\r\n");
 		    $this->email->set_crlf("\r\n");
-			$this->email->from(FROM_EMAIL, 'A2M Sports');
+			$this->email->from(FROM_EMAIL, 'A2MSports');
 			$this->email->to($user_email);
 			if($reply_to)
 				$this->email->reply_to($reply_to);
@@ -396,7 +421,9 @@ class auto_notify_emails extends CI_Controller {
 			
 			$body = $this->load->view('view_email_template', $data, TRUE);
 			$this->email->message($body);
+			if(filter_var($user_email, FILTER_VALIDATE_EMAIL)){
 			$s_email = $this->email->send();
+			}
 			//$s_email = 1;
 
 			if($s_email){ 
@@ -404,13 +431,135 @@ class auto_notify_emails extends CI_Controller {
 				$notified_players[] = $player;
 			}
 			else{ 
-				echo $this->email->print_debugger();
+				//echo $this->email->print_debugger();
 				echo "Fail<br/>";
 				//$failed_players[] = $player;
 			}
         }		// end of for
 
 	return $failed_players;
+	}
+
+
+	public function tm_send_email_user_attachments($player_arr, $subject, $message, $file, $tourn_id, $is_academy, $academy_id){
+
+		if($tourn_id){
+		  $ctype	 = "Tournament";
+          $tourn_det = $this->general->get_tour_info($tourn_id);
+		  $get_user = $this->general->get_onerow('Users', 'Users_ID', $tourn_det['Usersid']);
+
+          $title	 = ucwords($tourn_det['tournament_title']);
+          //$tadmin	 = ucwords($tourn_det['OrganizerName']);
+          $tadmin	 = ucwords($get_user['Firstname']." ".$get_user['Lastname']);
+			  if($get_user['EmailID'])
+			   $reply_to = $get_user['EmailID'];
+			  else if($get_user['AlternateEmailID'])
+			   $reply_to = $get_user['AlternateEmailID'];
+			  else
+			   $reply_to = "";
+		}
+		else{
+		  $ctype  = "Portal";
+		  $title  = "";
+		  $tadmin = "";
+		  $reply_to = '';
+		}
+
+        $this->load->library('email');
+		$this->email->clear();
+
+        $page = 'Admin Notification';
+		$failed_players = array();
+		$tobe_notified = array();
+		$notified_players = array();
+$i = 1;
+
+       foreach($player_arr as $key => $player){
+
+          $sql	  = "SELECT * FROM Users WHERE Users_ID = '$player'";
+		  $result  = $this->db->query($sql);
+		  $row	  = $result->row();
+
+			if($subject == NULL || $subject == ""){
+               $subj = "Message from ".$ctype." Admin - " . $title;
+            }
+			else{
+          	   $subj = $subject;
+            }
+
+		    if($row->EmailID != "" and $row->EmailID != "null"){
+			  $user_email = trim($row->EmailID);
+		    }
+		    else if($row->AlternateEmailID != "" and $row->AlternateEmailID != "null"){
+			  $user_email = trim($row->AlternateEmailID);
+		    }
+			else{
+			  $user_email = NULL;
+			}
+            
+            $data = array(
+						 'firstname'=> $row->Firstname,
+						 'lastname'	=> $row->Lastname,
+						 'title'	=> $title,
+						 'tourn_id' => $tourn_id,
+						 'mes'		=> $message,
+						 'tadmin'	=> $tadmin,
+						 'page'		=> $page
+					);
+
+            // echo "fiel = ". $file;
+			if($file != '' and $file != NULL){
+            $this->email->attach($file);
+			}
+		    $this->email->set_newline("\r\n");
+		    $this->email->set_crlf("\r\n");
+			$this->email->to($user_email);
+			if($reply_to)
+				$this->email->reply_to($reply_to);
+
+			$this->email->subject($subj);
+
+			if($is_academy){
+				$aca_info  = $this->auto_notify->get_academy($academy_id);
+				$data['aca_logo']	= $aca_info['Aca_logo'];
+				$data['aca_name']	= $aca_name = $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+
+				$this->email->from(FROM_EMAIL, ucwords($aca_name));
+				$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
+			}
+			else{
+				$this->email->from(FROM_EMAIL, 'A2MSports');
+				$body = $this->load->view('view_email_template', $data, TRUE);
+			}
+
+			$this->email->message($body);
+			//echo $body;exit;
+			$s_email = 0;
+			//if($i <= 4){
+			if($i <= 20){
+				//echo $player. "test <br>";
+				if(filter_var($user_email, FILTER_VALIDATE_EMAIL)){
+					$s_email = $this->email->send();
+				}
+			$notified_players[] = $player;
+			}
+			//$s_email = 1;
+
+			if($s_email){ 
+				echo $player." - Success<br/>";
+				//$notified_players[] = $player;
+			}
+			else{ 
+				//echo $this->email->print_debugger();
+				echo $player." - Fail<br/>";
+				//$failed_players[] = $player;
+			}
+
+			$i++;
+        }		// end of for
+
+	return $notified_players;
 	}
 
 	public function ReCaliculate_DOB(){

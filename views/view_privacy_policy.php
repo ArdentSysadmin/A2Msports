@@ -7,16 +7,15 @@
   body  { font-size: 100%; }
 </style>
 <title>A2MSports - Privacy Policy</title>
-<link rel="stylesheet" href="<?php echo base_url();?>css/grids/print/grid_<?=$total_rounds;?>.css">
-<link href="<?php echo base_url();?>css/foundation-datepicker.css" rel="stylesheet">
-<script src="<?php echo base_url();?>js/foundation-datepicker.js"></script>
 </head>
 <body>
 <!-- header -->
 <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" align="center">
 <tr>
-<!-- <td style="border:2px solid #ff8a00;background:url('<?=base_url();?>images/logo-watermark.gif')" valign="top">
- --><td style="border:2px solid #ff8a00;" valign="top">
+<!-- 
+<td style="border:2px solid #ff8a00;background:url('<?=base_url();?>images/logo-watermark.gif')" valign="top">
+ -->
+ <td style="border:2px solid #ff8a00;" valign="top">
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -47,6 +46,9 @@ You can post comments on any tournaments and those comments are publicly availab
 If you sign up on our mobile app, we will send you notifications for any updates regarding the sports of your interest or if someone tries to communicate with you on our platform. We won't send any information about the sports that you have not expressed an interest. If for some reason, you don't want to get any notifications for a particular sport, you can easily update your Sports Interests on your profile. Though we don't recommend, you do have an option to completely turn the notifications off on your phones. If you do so, you will not receive any updates on your mobile phones. 
 We'll send you an email if there is any significant change in our privacy policy. However, we recommend you read the Privacy Policy periodically and understand your rights.
 </p>
+<p>
+If you want your data to be removed, please send us an email to admin@a2msports.com. We will review it, take appropriate action in a timely manner. If you played in a tournament/ league and you want the results information to be removed or modified, you need to get the approval from the Tournament or League Director. If you are a member of a club and want your membership data to be removed from the club, you need to get an approval from the Club first and we will take action on our end. Please email us to admin@a2msports.com if you have any questions regarding this. </p>
+
 </div> 
 </section>
 

@@ -176,10 +176,10 @@
 		public function save_user_data()
 		{
 			//echo "Testing"; 
-			/*echo "<pre>";
-			print_r($_POST);
-			exit;*/
-			//echo $this->session->userdata('redirect_to');
+			//echo "<pre>";
+			//print_r($_POST);
+			//exit;
+		//echo $this->session->userdata('redirect_to');
 			//exit;
 			if($this->input->post('reg_user')){
 		
@@ -187,16 +187,18 @@
 
 			if($email_id == ''){ echo "Please provide Email ID"; exit; }
 
-			$data['aca_id']			= $academy	= $this->input->post('academy');
+			$data['aca_id']		= $academy	= $this->input->post('academy');
 			$data['shortcode']	= $shortcode	= $this->input->post('shortcode');
 
 			$query  = $this->reg_model->get_email($email_id);
+			//$query  = 0;
 			$status  = '';
 
  				if($query){
 				 	$err_msg = $email_id." is already exists! Please choose another Email ID.";
-					$this->session->set_flashdata('err_msg', $err_msg);
-					redirect('register');
+					echo $err_msg; exit;
+					//$this->session->set_flashdata('err_msg', $err_msg);
+					//redirect('register');
 				}
 				else{
 				 $filename		= 'Profilepic';
@@ -263,6 +265,7 @@
 						$data['latt']		= $this->get_lang_latt();
 			
 					$res	 = $this->reg_model->insert_user($data);
+					//$res	 =array('auth_code' => 'bab5f05c4f65cab8', 'Users_ID' => 10886);
 
 					// --------------------------------------------------------------------------------------------------------------
 					if($this->input->post('mem_subscr') == '1' and $this->input->post('mem_plan') != '') {
@@ -438,29 +441,34 @@
 
 		public function user_email($res)
 		{
+				$aca_info  = $this->model_academy->get_academy_details($this->academy_id);
+
+				$data['aca_logo']	= $aca_info['Aca_logo'];
+				$data['aca_name']	= $aca_name = $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+
 			$first_name = $this->input->post('Firstname');
 			$last_name	= $this->input->post('Lastname');
 			$email		= $this->input->post('EmailID');
 
 			$xx = $res;
 			$activation_code = $xx['auth_code'];
-			
+			//print_r($data); exit;
 			$this->load->library('email');
 			$this->email->set_newline("\r\n");
 		
-			$this->email->from(FROM_EMAIL, 'A2MSports');
+			$this->email->from(FROM_EMAIL, ucwords($aca_name));
 			$this->email->to($email); 
-			$this->email->subject('Activate your account at A2MSports!');
+			$this->email->subject('Activate your account ('.ucwords($aca_name).')');
 
-			$data = array(
-             'Firstname'=> $first_name,
-			 'Lastname'=> $last_name,
-			 'Code' => $activation_code,
-			 'page'=> 'New Registration'
-			);
+			$data['Firstname']	= $first_name;
+			$data['Lastname']	= $last_name;
+			$data['Code']			= $activation_code;
+			$data['page']			= 'New Registration';
 
-			$body = $this->load->view('view_email_template.php',$data,TRUE);
+			$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 			$this->email->message($body);   
+			//echo $body;	exit;
 			$stat = $this->email->send();
 			
 			return $stat;
@@ -468,6 +476,9 @@
 
 		public function user_email_pp_subscr($res, $pp_data, $ot_id, $subscr_id)
 		{
+			$aca_info		= $this->model_academy->get_academy_details($this->academy_id);
+			$aca_name  = $aca_info['Aca_name'];
+
 			$first_name	= $this->input->post('Firstname');
 			$last_name	= $this->input->post('Lastname');
 			$email				= $this->input->post('EmailID');
@@ -479,21 +490,25 @@
 			$this->load->library('email');
 			$this->email->set_newline("\r\n");
 		
-			$this->email->from(FROM_EMAIL, 'A2MSports');
+			$this->email->from(FROM_EMAIL, ucwords($aca_name));
 			$this->email->to($email); 
-			$this->email->subject($club_name." account activation mail!");
+			$this->email->subject('Activate your account ('.ucwords($aca_name).')');
 
 			$data = array(
-             'Firstname'=> $first_name,
-			 'Lastname'=> $last_name,
-			 'Code' => $activation_code,
+             'Firstname'	=> $first_name,
+			 'Lastname'	=> $last_name,
+			 'Code'			=> $activation_code,
 			 'club_name' => $club_name,
-			 'mem_info'		=> $pp_data,
-			 'ot_id'		=> $ot_id,
-			 'subscr_id'		=> $subscr_id,
+			 'mem_info'	=> $pp_data,
+			 'ot_id'			=> $ot_id,
+			 'subscr_id'	=> $subscr_id,
 			 'page'			=> 'New Club Registration with PayNow');
 
-			$body = $this->load->view('view_email_template.php', $data, TRUE);
+				$data['aca_logo']			= $aca_info['Aca_logo'];
+				$data['aca_name']		= $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+
+			$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 			/*echo "<pre>"; 
 			print_r($data);
 			echo $body; 
@@ -507,6 +522,9 @@
 
 		public function admin_email_new_user($res, $pp_data, $ot_id, $subscr_id)
 		{
+			$aca_info		= $this->model_academy->get_academy_details($this->academy_id);
+			$aca_name  = $aca_info['Aca_name'];
+
 			$first_name	= $this->input->post('Firstname');
 			$last_name	= $this->input->post('Lastname');
 			$club_name	= $this->input->post('shortcode');
@@ -525,9 +543,9 @@
 			$this->load->library('email');
 			$this->email->set_newline("\r\n");
 		
-			$this->email->from(FROM_EMAIL, 'A2MSports');
+			$this->email->from(FROM_EMAIL, ucwords($aca_name));
 			$this->email->to($email); 
-			$this->email->subject("New User Registration - ".$club_name);
+			$this->email->subject("New User Registration - ".ucwords($aca_name));
 
 			$data = array(
              'Firstname'	=> $first_name,
@@ -539,7 +557,11 @@
 			 'subscr_id'		=> $subscr_id,
 			 'page'				=> 'New Club Registration - Admin');
 
-			$body = $this->load->view('view_email_template.php', $data, TRUE);
+				$data['aca_logo']			= $aca_info['Aca_logo'];
+				$data['aca_name']		= $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+
+			$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 			/*echo "<pre>"; 
 			print_r($data);
 			echo $body; 
@@ -580,7 +602,7 @@
 		}
 	
 
-		public function activate($activation_code){
+		public function activate($short_code, $activation_code){
 		
 		$this->session->sess_destroy();
 
@@ -588,8 +610,8 @@
 		$is_activated = $this->reg_model->is_activated($activation_code);
 			
 		if($is_activated){
-			$this->session->set_flashdata('redirect_page', 'Play');
-			redirect('login');
+			//$this->session->set_flashdata('redirect_page', 'Play');
+			redirect($this->config->item('club_pr_url')."?st=2");
 		}
 		else{
 			$split = explode('_', $activation_code);
@@ -616,12 +638,13 @@
 				$code = trim($activation_code);
 				
 				$validated = $this->reg_model->validate_code($code);
-				$data = array('act_stat' => "Activation Completed. Please login to access the website");
-			
+				//$data = array('act_stat' => "Activation Completed. Please login to access the website");
+
 				if($validated === true){
-					$this->load->view('includes/header');
-					$this->load->view('view_login', $data);
-					$this->load->view('includes/footer');
+					//$this->load->view('includes/header');
+					//$this->load->view('view_login', $data);
+					//$this->load->view('includes/footer');
+					redirect($this->config->item('club_pr_url')."?st=2");
 				} 
 				else{
 					// this should never happen 
@@ -757,6 +780,7 @@
 					$phone      = $ins_user['phone'];
 					$users_id   = $ins_user['users_id'];
 
+
 					if($this->input->post('tourn_id')){
 					   $ins_user['tourn_id'] = $this->input->post('tourn_id');
 					}
@@ -820,7 +844,8 @@
 			if(isset($user_det['tourn_id'])){
                $tourn_id = $user_det['tourn_id'];
                $page = "Instant Registration By Admin";
-			}else{
+			}
+			else{
 				$tourn_id = "";
 				$page = "Instant Registration";
 			}

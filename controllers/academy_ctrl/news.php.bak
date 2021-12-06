@@ -76,14 +76,19 @@
 			return $data['authUrl'];
 		}
 
-			public function get_club_menu($org_id){
+		public function get_club_menu($org_id){
 			$get_menu = $this->general->get_club_menu($org_id);
 			$club_menu = array();
 
 			if($get_menu)
 				$club_menu = json_decode($get_menu['Active_Menu_Ids'], TRUE);
 			return $club_menu;
-		}	
+		}
+
+		public function get_onerow($table, $column, $val){
+			return $this->general->get_onerow($table, $column, $val);
+		}
+
 		// viewing league page ...
 		public function index($org_id = '')
 		{
@@ -113,8 +118,7 @@
 			return $data;
 		}
 
-		public function get_news_detail($news_id = '', $org_id = '')
-		{
+		public function get_news_detail($news_id = '', $org_id = '') {
 
 			$data = $this->get_org_details($this->org_id);
 
@@ -127,8 +131,7 @@
 			$this->load->view($this->footer_tpl);	
 		}
 
-		public function add()
-		{
+		public function add()	{
 			
 		  // $admin_users = array(214,215);
 		    $user_id = $this->session->userdata('users_id'); 

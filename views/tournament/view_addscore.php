@@ -15,14 +15,13 @@ $is_no_draws = 0;
 foreach($brackets as $bk)
 {
 
-if($tour_details->Usersid != $users_id and $users_id){
-
-if($this->is_team_league){
-$check_user = league::check_team_is_user_exists($tour_details->tournament_ID, $bk->BracketID, $tour_details->SportsType);
-}
-else{
-$check_user = league::check_is_user_exists($tour_details->tournament_ID, $bk->BracketID, $tour_details->SportsType);
-}
+if(($tour_details->Usersid != $users_id and $tour_details->Tournament_Director != $users_id) and $users_id){
+	if($this->is_team_league){
+	$check_user = league::check_team_is_user_exists($tour_details->tournament_ID, $bk->BracketID, $tour_details->SportsType);
+	}
+	else{
+	$check_user = league::check_is_user_exists($tour_details->tournament_ID, $bk->BracketID, $tour_details->SportsType);
+	}
 }
 //echo 'check_user '.$check_user; exit;
 
@@ -37,6 +36,17 @@ if($check_user and !$this->is_team_league){
 <input type="button" class="show_matches league-form-submit1" name="list_draw_matches<?=$bk->BracketID;?>" 
 id='<?=$bk->BracketID;?>' value="Show Matches" />
 </td>
+
+<?php
+if($this->is_super_admin or $this->logged_user_role == "Admin"){
+	$check_draw_complete = league::is_draw_complete($bk->BracketID);
+
+	if(!$check_draw_complete)
+		echo "<td><span style='background-color:green; font-size:12px;'>Completed</span></td>";
+	else
+		echo "<td><span style='background-color:red; font-size:12px;'>Incomplete</span></td>";
+}
+?>
 
 </form>
 </tr>
@@ -59,6 +69,7 @@ id='<?=$bk->BracketID;?>' value="Show Matches" />
 </tr>
 <?php
 }
+
 }
 
 if($is_no_draws == 0)

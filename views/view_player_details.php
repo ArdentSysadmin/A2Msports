@@ -1202,6 +1202,65 @@ else{
 </div>
 <!-- New Statistics area -->
 
+<!-- Basketball Statistics Area -->
+<?php 
+$get_bb_matches = search :: basketball_matches($user_details['Users_ID']);
+if($get_bb_matches){
+?>
+<div class="table-responsive scrollit" style="margin-top: 35px;">
+
+<table id="standings" cellpadding="8" cellspacing="8" border="0" class="tab-score" scrolltab>
+<thead>  	            	         				                   
+<tr class='top-scrore-table' style="background-color: #f68b1c; color:#fff; font-size:14px; padding:3px">
+	<th class="text-center">Sport</th>
+	<th class="text-center">GP</th>
+	<th class="text-center">Pos</th>
+	<th class="text-center">FG</th>
+	<th class="text-center">3P</th>
+	<th class="text-center">2P</th>
+	<th class="text-center">FT</th>
+	<th class="text-center">ORB</th>
+	<th class="text-center">DRB</th>
+	<th class="text-center">AST</th>
+	<th class="text-center">ST</th>
+	<th class="text-center">BLK</th>
+	<th class="text-center">PTS</th>
+</tr>
+</thead>
+<?php
+if(0){
+
+}
+else{
+?>
+<tr>
+<td>&nbsp;<b>Basketball</b></td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+<td align="center">-</td>
+</tr>
+<?php
+}
+?>
+</table>
+</div>
+<?php
+}
+?>
+<p style="font-size:10px; color:#605e5e;margin-top: 5px;">
+GP: Games Played, Pos: Position, FG: Field Goals, 3P: 3point, 2P: 2Point, FT: Free Throw, ORB: Offensive Rebound, DRB: Defensive Rebound, AST: Assist, ST: Steals, BLK: Blocks, PTS: Points
+</p>
+<!-- Basketball Statistics Area -->
+
 </dd>
 
 <dt class="accordion__title">Memberships</dt>

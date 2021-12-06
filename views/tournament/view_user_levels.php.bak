@@ -40,7 +40,7 @@ $(".changelvl").on("click", function(){
         data:{singles:singles,doubles:doubles,mixed:mixed,selected_ocrs:ocr_ids,not_selected_ocrs:none_ocr_ids,tourn_id:tourn_id,player:player},
         success:function(html){
           
-            if(html==true){
+          /*  if(html==true){
               alert("Events are updated successfully");
                 $.ajax({
                   type: 'POST',
@@ -53,7 +53,7 @@ $(".changelvl").on("click", function(){
                   }
                 });
               //window.location.reload();
-            }
+            } */
         }
     });
 });
@@ -109,8 +109,8 @@ foreach($levels as $level=>$types){
               <tr style="<?php echo $class;?>">
                    <td style="padding-left:50px;" ><input type="checkbox" style="<?php echo $class;?>" value="<?=$ocr_id; ?>" name="user_ocr_ids[]" class="occr_sel_<?=$player; ?>"  <?=$ocr_checked;?>>
 				   <?=date('M d, Y H:i', strtotime($occrs)); ?>
-                  </td> 
-              </tr>			
+                  </td>
+              </tr>
 			<?php
 				  }
 			  }

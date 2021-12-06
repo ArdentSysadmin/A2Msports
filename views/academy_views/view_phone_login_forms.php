@@ -1,13 +1,24 @@
 <form id="form-phone" class="form-signin" accept="#" style="display:none;">
-	<h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
-	
+	<!-- <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1> -->
+	<?php
+	//exit;
+	?>
 	<div id='phone-input' style="text-align: center;">
-	<input type="text" id="inputPhone" class="form-control" placeholder="+919999999999 (Enter number with country code)" required="" autofocus="" style="width: 65%;margin-left: 92px;">
+	<!-- <input type="text" id="inputPhone" class="form-control" placeholder="+919999999999 (Enter number with country code)" required="" autofocus="" style="width: 65%;margin-left: 92px;"> -->
+	
+		<div style="display:flex;">
+		<select class="form-control" name='ph_country_code' id='ph_country_code' style="width:23%; margin-bottom:10px; margin-right:10px;">
+			<option value='+1'>U.S.A</option><option value='+91'>India</option>
+		</select>
+		<input type="text" id="inputPhone" class="form-control" placeholder="Enter your 10 digits Mobile Number" required="" autofocus="" style="width:75%;" />
+		</div>
+
 	<div id="recaptcha-container"></div>
 	<button class="ph_otp" type="button" id="phoneloginbtn" style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00"><i class="fas fa-sign-in-alt"></i> SEND OTP</button>
+	<button type="button" id="phone_login_cancel" style="margin-left:20px; padding: 5px 30px;color: #fff;font-weight: bold;margin-top:10px;border:#ff8a00;background-color: #8a8580;">Cancel</button>
 	</div>
 	<div id='otp-input' style="display:none; text-align: center;">
-	<input type="otp" id="inputOtp" class="form-control" placeholder="OTP" required="">
+	<input type="otp" id="inputOtp" class="form-control" placeholder="Enter One Time Password" required>
 	<button class="ph_otp" type="button" id="verifyotp" style="background-color: #ff8a00; margin:15px;"><i class="fas fa-sign-in-alt"></i> VERIFY OTP</button>
 	</div>
 </form>
@@ -21,12 +32,15 @@
 <!-- Multi Users (Phone Login) window content -->
 <div style='margin-bottom:25px;'>
 <h4><b>We found that below users are linked with the given mobile number. Please select a profile to continue...</b></h4></div>
-<form method="post" id="myform2" action="<?php echo base_url(); ?>login/phone_login" onsubmit="return checkChecked('myform');" class="register-form"> 
+<form method="post" id="myform2" action="<?php echo base_url().$org_details['Aca_URL_ShortCode'];?>/login/phone_login" onsubmit="return checkChecked('myform');" class="register-form"> 
 <input name="Mobilephone" id="ph_new_reg_mobile" type="hidden" value=''  />
 <input name="token" id="ph_new_reg_token" type="hidden" value=''  />
 <div id='exist_users_list'></div>
 
 <div class="col-md-12" align="center">
+<input name="academy"  type="hidden" value="<?=$org_details['Aca_ID'];?>" />
+<input name="shortcode" type="hidden" value="<?=$org_details['Aca_URL_ShortCode'];?>" />
+<input name="aca_page" id="aca_page" type="hidden" value="" />
 <input name="cont_login" id="cont_login" type="submit" value="Continue" 
 style="padding: 10px 30px; font-weight: bold; margin-top:20px; border:#81a32b; background-color:#81a32b" />
 </div>

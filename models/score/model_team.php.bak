@@ -81,7 +81,23 @@ class model_team extends CI_Model {
 				$sel_country = "'United States','USA','United States of America','United States Of America','US','U.S','U.S.A'";
 			}
 
-			$qry_check = $this->db->query("SELECT * FROM Teams AS tm WHERE tm.Home_loc_id IN (SELECT hcl_id FROM Home_Court_Locations WHERE hcl_country IN ($sel_country)) ORDER BY Team_name ASC OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+			$sport_intr = '(';
+			$get_user_sp  = $this->db->query("SELECT * FROM Sports_Interests WHERE users_id = {$user_id}");
+			$sp_int			= $get_user_sp->result();
+			
+			if($get_user_sp->num_rows() > 0){
+				$i = 1;
+				foreach($sp_int as $int){
+					$sport_intr .= $int->Sport_id;
+					if(count($sp_int) != $i)
+					$sport_intr .= ", ";
+					$i++;
+				}
+			}
+
+			$sport_intr .= ')';
+echo $sport_intr; exit;
+			$qry_check = $this->db->query("SELECT * FROM Teams AS tm WHERE tm.Home_loc_id IN (SELECT hcl_id FROM Home_Court_Locations WHERE hcl_country IN ($sel_country)) AND Sport IN {$sport_intr} ORDER BY Team_name ASC OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
 			$qry_total = $this->db->query("SELECT * FROM Teams AS tm WHERE tm.Home_loc_id IN (SELECT hcl_id FROM Home_Court_Locations WHERE hcl_country IN ($sel_country)) ORDER BY Team_name ASC");
 		}
@@ -117,9 +133,7 @@ class model_team extends CI_Model {
 	}
 
 	public function is_team_auth($team_id, $user_id) {
-		$qry_check = $this->db->query("SELECT * FROM Teams WHERE Team_ID = '".$team_id." AND (Created_by = '".$user_id."'' OR Captain = '".$user_id."')");
-		echo $this->db->last_query();
-		exit;
+		$qry_check = $this->db->query("SELECT * FROM Teams WHERE Team_ID = ".$team_id." AND (Created_by = ".$user_id." OR Captain = ".$user_id.")");
 		return $qry_check->row_array();
 	}
 
@@ -201,6 +215,7 @@ class model_team extends CI_Model {
 		public function search_autocomplete_users($data)
 		{			
 			$key = $data['key'];
+			$club_id = $data['club_id'];
 			
 			/*$this->db->select('*');
 			$this->db->from('users');
@@ -209,8 +224,12 @@ class model_team extends CI_Model {
 			$this->db->or_like(CONCAT('Firstname' + ' ' + 'Lastname') AS fullname, $key);
 			
 			$query = $this->db->get();*/
-			
-			$query = $this->db->query("SELECT * FROM Users u where u.Firstname+' '+u.Lastname like '%{$key}%'");
+			if($club_id){
+			$query = $this->db->query("SELECT * FROM Users u WHERE u.Firstname+' '+u.Lastname LIKE '%{$key}%' AND Users_ID IN (SELECT Users_id FROM User_memberships WHERE Club_id = {$club_id} AND Member_Status = 1)");
+			}
+			else{
+			$query = $this->db->query("SELECT * FROM Users u WHERE u.Firstname+' '+u.Lastname LIKE '%{$key}%'");
+			}
 			return $query->result();
 		}
 		

@@ -40,6 +40,43 @@ var multiEvent_indexs = [];
 <script>
 $(document).ready(function(){
 
+
+var baseurl = "<?php echo base_url();?>";
+
+$("#tourn_dir").autocomplete({
+
+source: function( request, response ) {
+$.ajax({
+url: baseurl+'search/autocomplete',
+dataType: "json",
+method: 'post',
+data: {
+name_startsWith: request.term,
+type: 'users',
+row_num : 1
+},
+success: function( data ) {
+response( $.map( data, function( item ) {
+var code = item.split("|");
+return {
+label: code[0]+' ('+code[1]+' | '+code[2]+')',
+value: code[0],
+data : item
+}
+}));
+}
+});
+},
+autoFocus: true,	      	
+minLength: 1,
+select: function( event, ui ){
+var names = ui.item.data.split("|");					
+$('#tourn_dir_id').val(names[1]);
+$('#org_contact').val(names[6]);
+}	      	
+});
+
+
 //	$("#Combinations").click(function(){
 		//function alertMessage(){
 	$("#selected_events").html('');
@@ -450,7 +487,7 @@ $(document).ready(function(){
 </script>
 
 <!-- view start -->
-<section id="single_player" class="secondary-page">
+<section id="single_player" class="secondary-page" style="padding-top:0px;">
 <div class='container'>
 <div class='row'>
            <div class="col-md-9">
@@ -582,13 +619,14 @@ $(document).ready(function(){
               <input class='form-control' id='title' name='title' type='text' value="<?php echo $tournament_details->tournament_title; ?>" required />
             </div>
           </div>
-		  
-          <div class='form-group'>
+	          <div class='form-group'>
             <label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Organizer Name<br />(Company / Individual) </label>
             <div class='col-md-6 form-group internal'>
-              <input class='form-control' id='organizer' name='organizer' type='text' value="<?php echo $tournament_details->OrganizerName;?>" required />
+              <input class='form-control' id='tourn_dir' name='organizer' type='text' value="<?php echo $tournament_details->OrganizerName;?>" required />
+			<input class='form-control' id='tourn_dir_id' name='organizer_id' type='hidden' value="<?php echo $tournament_details->Tournament_Director;?>" />
             </div>
           </div>
+
           <div class='form-group'>
             <label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Contact Number </label>
             <div class='col-md-6 form-group internal'>

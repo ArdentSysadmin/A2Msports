@@ -4062,15 +4062,27 @@ echo "Winner AddScore -". $add_score_points."<br>";
 //------------------------------------------------------------------------------------------------------
 
 
-		public function get_a2mscore($user, $sport){
+		public function get_a2mscore($user, $sport, $mformat = ''){
 
 			$data			= array('SportsType_ID'=>$sport, 'Users_ID'=>$user);
 			$qry_a2mscore	= $this->db->get_where('A2MScore',$data);
 			$qry_fetch		= $qry_a2mscore->row_array();
 
+			$user_a2mscore = '';
+			if($mformat == 'Singles'){
 			$user_a2mscore	= $qry_fetch['A2MScore'];
+			}
+			elseif($mformat == 'Doubles'){
+			$user_a2mscore	= $qry_fetch['A2MScore_Doubles'];
+			}
+			elseif($mformat == 'Mixed'){
+			$user_a2mscore	= $qry_fetch['A2MScore_Mixed'];
+			}
+			else{
+			$user_a2mscore	= $qry_fetch['A2MScore'];
+			}
 
-				return $user_a2mscore;
+			return $user_a2mscore;
 		}
 
 		public function evaluate_winner($player1_user, $opp_user, $player1_partner, 
@@ -4138,115 +4150,48 @@ echo "Winner AddScore -". $add_score_points."<br>";
 		return $data;
 		}
 
+// ----- newly added
 
 		public function get_a2m_diff($player1_user, $opp_user, $player1_a2mscore, $player1_part_a2mscore, 
 			$player2_a2mscore, $player2_part_a2mscore, $winner){
 
-			if($winner == $player1_user){
+					$p1_avg	=  ($player1_a2mscore + $player1_part_a2mscore) / 2;
+					$p2_avg	=  ($player2_a2mscore + $player2_part_a2mscore) / 2;
 
-				if($player1_a2mscore > $player1_part_a2mscore){
-
-					($player2_a2mscore > $player2_part_a2mscore) ? 
-								$winner_a2m_diff	= abs($player1_a2mscore - $player2_a2mscore) :
-								$winner_a2m_diff	= abs($player1_a2mscore - $player2_part_a2mscore);
-
-					($player2_a2mscore > $player2_part_a2mscore) ? 
-								$winner_part_a2m_diff = abs($player1_part_a2mscore - $player2_part_a2mscore) :
-								$winner_part_a2m_diff = abs($player1_part_a2mscore - $player2_a2mscore);
-				}
-				else {
-
-					($player2_a2mscore < $player2_part_a2mscore) ? 
-								$winner_a2m_diff = abs($player1_a2mscore - $player2_a2mscore) :
-								$winner_a2m_diff = abs($player1_a2mscore - $player2_part_a2mscore);
-
-					($player2_a2mscore < $player2_part_a2mscore) ? 
-								$winner_part_a2m_diff = abs($player1_part_a2mscore - $player2_part_a2mscore) :
-								$winner_part_a2m_diff = abs($player1_part_a2mscore - $player2_a2mscore);
-				}
-
-			}
-
-			else if($winner == $opp_user){
-
-				if($player2_a2mscore > $player2_part_a2mscore){
-
-					($player1_a2mscore > $player1_part_a2mscore) ? 
-								$winner_a2m_diff	= abs($player2_a2mscore - $player1_a2mscore) :
-								$winner_a2m_diff	= abs($player2_a2mscore - $player1_part_a2mscore);
-
-					($player1_a2mscore > $player1_part_a2mscore) ? 
-								$winner_part_a2m_diff = abs($player2_part_a2mscore - $player1_part_a2mscore) :
-								$winner_part_a2m_diff = abs($player2_part_a2mscore - $player1_a2mscore);
-				}
-				else {
-
-					($player1_a2mscore < $player1_part_a2mscore) ? 
-								$winner_a2m_diff = abs($player2_a2mscore - $player1_a2mscore) :
-								$winner_a2m_diff = abs($player2_a2mscore - $player1_part_a2mscore);
-
-					($player1_a2mscore < $player1_part_a2mscore) ? 
-								$winner_part_a2m_diff = abs($player2_part_a2mscore - $player1_part_a2mscore) :
-								$winner_part_a2m_diff = abs($player2_part_a2mscore - $player1_a2mscore);
-				}
-			}
-
+					$winner_a2m_diff	=  abs($p1_avg - $p2_avg);
 
 		$data = array('winner_a2m_diff'		 => $winner_a2m_diff, 
-					  'winner_part_a2m_diff' => $winner_part_a2m_diff);
-
-		return $data;
+					  'winner_part_a2m_diff' => $winner_a2m_diff);
+//echo "winner_a2m_diff = ".$winner_a2m_diff;
+//echo "<br>";
+//echo "<pre>A2M Diff <br>"; print_r($data);
+			return $data;
 		}
 
 		public function get_max_a2m_players($player1_user, $player1_partner, $opp_user, $opp_user_partner, $player1_a2mscore, $player1_part_a2mscore, $player2_a2mscore, $player2_part_a2mscore){
+			
+			$p1_a2m = $player1_a2mscore + $player1_part_a2mscore;
+			$p2_a2m = $player2_a2mscore + $player2_part_a2mscore;
 
+			if($p1_a2m >= $p2_a2m){
+				$max_a2m_player   = $player1_user;
+				$max_a2m_partner = $player1_partner;
+			}
+			else{
+				$max_a2m_player   = $opp_user;
+				$max_a2m_partner = $opp_user_partner;
+			}
 
-		if($player1_a2mscore > $player1_part_a2mscore){
-			$max_a2m_p1			= $player1_user;
-			$max_a2m_p1_score	= $player1_a2mscore;
-
-			$min_a2m_p1			= $player1_partner;
-			$min_a2m_p1_score	= $player1_part_a2mscore;
-		}
-		else{
-			$max_a2m_p1			= $player1_partner;
-			$max_a2m_p1_score	= $player1_part_a2mscore;
-
-			$min_a2m_p1			= $player1_user;
-			$min_a2m_p1_score	= $player1_a2mscore;
-		}
-
-
-		if($player2_a2mscore > $player2_part_a2mscore){
-			$max_a2m_p2			= $opp_user;
-			$max_a2m_p2_score	= $player2_a2mscore;
-
-			$min_a2m_p2			= $opp_user_partner;
-			$min_a2m_p2_score	= $player2_part_a2mscore;
-		}
-		else{
-			$max_a2m_p2			= $opp_user_partner;
-			$max_a2m_p2_score	= $player2_part_a2mscore;
-
-			$min_a2m_p2			= $opp_user;
-			$min_a2m_p2_score	= $player2_a2mscore;
-		}
-
-
-		($max_a2m_p1_score > $max_a2m_p2_score) ?
-			$max_a2m_player = $max_a2m_p1 : $max_a2m_player = $max_a2m_p2;
-
-
-		($min_a2m_p1_score > $min_a2m_p2_score) ?
-			$max_a2m_partner = $min_a2m_p1 : $max_a2m_partner = $min_a2m_p2;
-
-
-		$data = array('max_a2m_player'	=> $max_a2m_player, 
+			$data = array('max_a2m_player'	=> $max_a2m_player, 
 					  'max_a2m_partner' => $max_a2m_partner);
+//echo "<pre>Max A2M User <br>"; print_r($data);
 
 		return $data;
+		
 		}
 
+
+// ----- newly added
 
 		public function calc_player_scores($p1_score_post, $p2_score_post){
 
@@ -5535,22 +5480,43 @@ exit;*/
 		{
 			/* Gather all post variables */
 			$tourn_match_id		= $match_id;
-			$tourn_id			= $match_info['Tourn_ID'];
+			$tourn_id					= $match_info['Tourn_ID'];
 			$draw_name			= $match_info['Draw_Type'];
-			$round_num			= $match_info['Round_Num'];
+			$round_num				= $match_info['Round_Num'];
 
-			$player1_user		= $match_info['Player1'];
-			$player1_partner	= $match_info['Player1_Partner'];
+			$player1_user			= $match_info['Player1'];
+			$player1_partner		= $match_info['Player1_Partner'];
 
-			$opp_user			= $match_info['Player2'];
+			$opp_user				= $match_info['Player2'];
 			$opp_user_partner	= $match_info['Player2_Partner'];		
 			
 			$p1_score_post		= $p1_score;
 			$p2_score_post		= $p2_score;
 
 			$bracket_id				= $match_info['BracketID'];
-			$match_num			= $match_info['Match_Num'];
+			$match_num				= $match_info['Match_Num'];
 			/* Gather all post variables */
+
+			$qry_bracket = $this->db->query("SELECT * FROM Brackets WHERE BracketID = {$bracket_id}");
+			$get_backet  = $qry_bracket->row_array();
+
+			if($get_backet){
+				if($get_backet['Draw_Format'] == 'singles'){
+					$mformat = "Singles";
+				}
+				else if($get_backet['Draw_Format'] == 'doubles'){
+					$mformat = "Doubles";
+				}
+				else if($get_backet['Draw_Format'] == 'mixed'){
+					$mformat = "Mixed";
+				}
+				else{
+					$mformat = $this->calculate_match_format($player1_user, $player1_partner);
+				}
+			}
+			else{
+				$mformat = $this->calculate_match_format($player1_user, $player1_partner);
+			}
 
 
 		/* ------------------- A2MScore Calculation Section ---------------- */
@@ -5564,15 +5530,15 @@ exit;*/
 
 			$match_sport		= $match_init_user['SportsType'];
 
-			$player1_a2mscore	= $this->get_a2mscore($player1_user, $match_sport);
-			$player2_a2mscore	= $this->get_a2mscore($opp_user, $match_sport);
+			$player1_a2mscore	= $this->get_a2mscore($player1_user, $match_sport, $mformat);
+			$player2_a2mscore	= $this->get_a2mscore($opp_user, $match_sport, $mformat);
 
 			$player1_part_a2mscore	= "";
 			$player2_part_a2mscore	= "";
 
 			if($player1_partner or $opp_user_partner){			// If the Tournament is Double format
-				$player1_part_a2mscore	= $this->get_a2mscore($player1_partner, $match_sport);
-				$player2_part_a2mscore	= $this->get_a2mscore($opp_user_partner, $match_sport);
+				$player1_part_a2mscore	= $this->get_a2mscore($player1_partner, $match_sport, $mformat);
+				$player2_part_a2mscore	= $this->get_a2mscore($opp_user_partner, $match_sport, $mformat);
 			}
 			
 		/*--------------- Sets score calculation start --------------*/
@@ -5665,12 +5631,25 @@ exit;*/
 			$looser_a2mscore_updated		=  - intval($winner_add_score_points) +  intval($looser_win_points);
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
-			// A2MScore Table Update
-			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport);
-			$this->a2mscore_update($winner_partner, $winner_part_a2mscore_updated, $match_sport);
 
-			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport);
-			$this->a2mscore_update($looser_partner, $looser_part_a2mscore_updated, $match_sport);
+			if($match_sport == 7){
+				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
+				$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
+
+				$winner_a2mscore_updated	  = $winner_exc_points;
+				$winner_part_a2mscore_updated = $winner_exc_points;
+
+				$looser_a2mscore_updated	  = -$winner_exc_points;
+				$looser_part_a2mscore_updated = -$winner_exc_points;
+			}
+
+
+			// A2MScore Table Update
+			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport, $mformat);
+			$this->a2mscore_update($winner_partner, $winner_part_a2mscore_updated, $match_sport, $mformat);
+
+			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport, $mformat);
+			$this->a2mscore_update($looser_partner, $looser_part_a2mscore_updated, $match_sport, $mformat);
 
 			$this->update_player_standings($winner, $tourn_id, $bracket_id, $winner_a2mscore_updated);
 			$this->update_player_standings($winner_partner, $tourn_id, $bracket_id, $winner_part_a2mscore_updated);
@@ -5700,9 +5679,16 @@ exit;*/
 			$winner_a2mscore_updated =    intval($winner_add_score_points) + intval($winner_win_points);
 			$looser_a2mscore_updated =  - intval($winner_add_score_points) + intval($looser_win_points);
 
+			if($match_sport == 7){
+				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
+
+				$winner_a2mscore_updated = $winner_exc_points;
+				$looser_a2mscore_updated = -$winner_exc_points;
+			}
+
 			// A2MScore Table Update 
-			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport);
-			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport);
+			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport, $mformat);
+			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport, $mformat);
 
 			$this->update_player_standings($winner, $tourn_id, $bracket_id, $winner_a2mscore_updated);
 			$this->update_player_standings($looser, $tourn_id, $bracket_id, $looser_a2mscore_updated);
@@ -5922,12 +5908,10 @@ if($draw_name == "Main"){
 							Draw_Type = 'Main' AND 
 							Round_Num = 1");
 
-						if($check_looser_played_count->num_rows() > 0)		// Looser has Bye Match in Round 1
-						{
+						if($check_looser_played_count->num_rows() > 0) {		// Looser has Bye Match in Round 1
 							$this->update_cons_sources($bracket_id, $match_num, $looser, $loser_partner);
 						}
-						else
-						{
+						else{
 							$this->cancel_esclating_looser_cons($bracket_id, $match_num, $looser, $loser_partner);
 						}
 
@@ -6977,24 +6961,47 @@ if($draw_name == "Main"){
 			return array('0'=>$add_win_points_p1, '1'=>$add_win_points_p2);		
 		}
 
-		public function a2mscore_update($user_id, $a2mscore, $sport){
+		public function a2mscore_update($user_id, $a2mscore, $sport, $mformat){
 
 			if($user_id){
 				$data = array('Users_ID' => $user_id, 'SportsType_ID' => $sport);
 				$qry_a2m = $this->db->get_where('A2MScore', $data);
 				$get_a2m = $qry_a2m->row_array();
 
+				if($mformat == 'Singles'){
 				$exist_a2m = $get_a2m['A2MScore'];
+				}
+				elseif($mformat == 'Doubles'){
+				$exist_a2m	= $get_a2m['A2MScore_Doubles'];
+				}
+				elseif($mformat == 'Mixed'){
+				$exist_a2m	= $get_a2m['A2MScore_Mixed'];
+				}
+				else{
+				$exist_a2m	= $get_a2m['A2MScore'];
+				}
 
 				$updated_a2m = $exist_a2m + $a2mscore;
 
-					if($updated_a2m < 75){
+				if($sport != 7) {
+					if($updated_a2m < 75) {
 						$updated_a2m = 75; 
 					}
+				}
 
-					//echo "<br>".$user_id." - ".$updated_a2m;
-
+				if($mformat == 'Singles'){
 				$data = array ('A2MScore' => $updated_a2m);
+				}
+				elseif($mformat == 'Doubles'){
+				$data = array ('A2MScore_Doubles' => $updated_a2m);
+				}
+				elseif($mformat == 'Mixed'){
+				$data = array ('A2MScore_Mixed' => $updated_a2m);
+				}
+				else{
+				$data = array ('A2MScore' => $updated_a2m);
+				}
+
 				
 				$this->db->where('Users_ID', $user_id);
 				$this->db->where('SportsType_ID', $sport);
@@ -8579,5 +8586,44 @@ if($draw_name == "Main"){
 				}
 
 		}
+
+		public function calc_picball_addscore_points($score_diff, $winner, $max_a2mscore_user){
+//echo var_dump($score_diff);
+//echo "<br>".$score_diff." : ".$winner." : ".$max_a2mscore_user;
+//if ($score_diff >= 0 and $score_diff < 0.05) { echo "test"; }
+
+
+if($score_diff >= 0 and $score_diff < 0.05){
+	($winner == $max_a2mscore_user) ? $add_score_points = 0.008 : $add_score_points = 0.008;
+}
+else if($score_diff >= 0.05 and $score_diff < 0.10){
+	 ($winner == $max_a2mscore_user) ? $add_score_points = 0.007 : $add_score_points = 0.01;
+}
+else if($score_diff >= 0.10 and $score_diff < 0.15){
+	 ($winner == $max_a2mscore_user) ? $add_score_points = 0.006 : $add_score_points = 0.015;
+}
+else if($score_diff >= 0.15 and $score_diff < 0.20){
+	($winner == $max_a2mscore_user) ? $add_score_points = 0.005 : $add_score_points = 0.020;
+}
+else if($score_diff >= 0.20 and $score_diff < 0.25){
+	  ($winner == $max_a2mscore_user) ? $add_score_points = 0.004 : $add_score_points = 0.025;
+}
+else if($score_diff >= 0.25 and $score_diff < 0.30){
+	 ($winner == $max_a2mscore_user) ? $add_score_points = 0.003 : $add_score_points = 0.030;
+}
+else if($score_diff >= 0.30 and $score_diff < 0.35){
+	 ($winner == $max_a2mscore_user) ? $add_score_points = 0.002 : $add_score_points = 0.040;
+}
+else if($score_diff >= 0.35 and $score_diff < 0.40){
+	 ($winner == $max_a2mscore_user) ? $add_score_points = 0.001 : $add_score_points = 0.050;
+}
+else if($score_diff >=0.40){
+	 ($winner == $max_a2mscore_user) ? $add_score_points = 0 : $add_score_points = 0.1;
+}
+
+//echo "<br>".$add_score_points; exit;
+				return $add_score_points;
+		}
+
 
 	}

@@ -62,17 +62,18 @@ $('.btn_register').click(function(){
 
 var baseurl       = "<?php echo base_url();?>";
 var tournament_id = $("#tournament_id").val();
-var sportstype    = $("#sportstype").val();
-var lname	      = $("#txtlname").val();
-var email	      = $("#txtemail").val();
-var gender        = $("input[name='gender']:checked").val();
-var zipcode       = $("#zipcode").val();
+var sportstype    = $("#rpform #sportstype").val();
+var lname	      = $("#rpform #txtlname").val();
+var email	      = $("#rpform #txtemail").val();
+var gender        = $("#rpform input[name='gender']:checked").val();
+var zipcode       = $("#rpform #zipcode").val();
 //alert(tournament_id);die();
+var phone	= $("#rpform #txtphone").val();
 
-if(lname != "" && email != "" && zipcode != ""){
+//if(lname != "" && email != "" && zipcode != ""){
+if(lname != "" && phone != "" && zipcode != ""){
 
-var fname	= $("#txtfname").val();
-var phone	= $("#txtphone").val();
+var fname	= $("#rpform #txtfname").val();
 
 		$('#btn_register').prop("disabled", true);
 		$('#btn_register').attr('value', 'Please wait...');
@@ -94,7 +95,7 @@ $.ajax({
 });
 }
 else {
-  alert("Last Name, Email & Zipcode should not be empty!");
+  alert("Last Name, Phone & Zipcode should not be empty!");
 }
 
 });
@@ -181,25 +182,57 @@ $('.format').click(function(){
 	$('#'+ft+'_levels_div').toggle();	
 });
 
+$('.get_occr').click(function(){
+	/*if($(this).prop("checked") == true){
+	$(".tr_"+$(this).val()).show();
+	}
+	else{
+	$(".tr_"+$(this).val()).hide();
+	$(".tr_"+$(this).val()+' .get_occr_fee').removeAttr('checked');
+	}*/
+});
+
+  $('.get_occr_fee').change(function() {
+
+    if($(this).is(':checked')) {
+      var currentRow = $(this).closest('tr');
+      var targetedRow = currentRow.prevAll('.parent').first();
+      var targetedCheckbox = targetedRow.find(':checkbox');
+      targetedCheckbox.prop('checked', false).trigger('click');
+    }
+	else {
+      var currentRow		= $(this).closest('tr');
+      var targetedRow		= currentRow.prevAll('.parent').first();
+      var targetedCheckbox = targetedRow.find(':checkbox');
+	      if(!$('.get_occr_fee:checked').length)
+		  targetedCheckbox.prop('checked', true).trigger('click');
+	}
+
+  });
+
 });
 </script>
 
-<section id="single_player" class="container secondary-page">
-
+<section id="single_player" class=" secondary-page">
+<div class='container'>
+<div class='row'>
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:20px">
-<div class="fromtitle">Register Players - <?php echo $r->tournament_title; ?></div>
+<div class="fromtitle" style="font-size: 16px;"><b>Register Players - <a href="<?=$profile_base; ?>league/<?php echo $r->tournament_ID ;?>"><span><?php echo $r->tournament_title; ?></span></a></b></div>
 
 <?php if($this->session->userdata('user')=="") { ?>
 <p style="line-height:5px; font-size:13px">Please <a href='<?php echo base_url()."login"; ?>'><b>Login</b> </a>to register for a tournament</p>
 <?php  } ?>
-<?php if($this->session->userdata('user')!="") { ?>
-<?php 
-if(isset($reg_status)) { ?>
+<?php
+if($this->session->userdata('user')!="") {
+
+if(isset($reg_status)) {
+?>
    <div class="name" align='left'>
 	 <label for="name_login" style="color:green"><?php echo $reg_status; ?></label>
    </div>
 <?php
-} else {
+}
+else {
 ?>
 <!-- <form class="form-horizontal" id='myform' method='post' role="form"  action="<?php echo base_url(); ?>league/register_trnmt"> -->
 <form class="form-horizontal" id='myform' method='post' role="form" action="<?php echo $profile_base; ?>play/reg_players/<?php echo $r->tournament_ID ;?>">
@@ -209,9 +242,12 @@ if(isset($reg_status)) { ?>
 <input type="hidden" name="id" value="<?php echo $r->tournament_ID ;?>"/> 
 <p><label>Tournament:</label> <?php echo $r->tournament_title; ?></p>
 <p><label>Period:</label> <?php echo date('m/d/Y',strtotime(substr($r->StartDate,0,10))); ?> - <?php echo date('m/d/Y',strtotime(substr($r->EndDate,0,10))); ?></p>
-
-<p><label>Sport:</label> <?php 
+<?php 
 $current_class = $this->router->class;
+
+if($r->Is_League != 1){ ?>
+<p><label>Sport:</label> <?php 
+
 $get_sport = $current_class::get_sport($r->SportsType);
 echo $get_sport['Sportname'];
 ?></p>
@@ -220,6 +256,7 @@ if($r->Gender == "all"){ echo "Open to all";} else if($r->Gender == "1"){ echo "
 ?></p>
 
 <?php 
+}
 $option_array = array();
 if($r->Age!="")
 {
@@ -343,11 +380,12 @@ else
 //print_r($event_format);
 
         echo "<label>";
-		echo "<b>* Select Format</b>";
+		echo "<b>* Select Event</b>";
 		echo "</label>";
 		echo "<div class='col-md-12 form-group internal text1'>";
 		echo "<table style='padding:1px;'>";
 		$eventformats = $current_class::regenerate_events($event_format);
+		//echo "<pre>"; print_r($lg_occr);exit;
 		foreach($eventformats as $key => $event)
 		{
 			$event_time = '';
@@ -358,7 +396,11 @@ else
 			        }
 		        
 		   	}
-		    echo "<tr><td><input type='checkbox' class='event_format' name='events[]' value='".$key."'/> ".$event.' '.$event_time."</td></tr>";
+		    echo "<tr class='parent'><td><input type='checkbox' class='event_format get_occr' name='events[]' value='".$key."' /> ".$event.' '.$event_time."</td></tr>";
+
+			 foreach($lg_occr[$key] as $occr){
+				echo "<tr class='tr_".$key."' style='display:block;'><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee' id='occr_".$occr[0]."' name='occr_ids[]' value='".$occr[0].":".$key."' autocomplete='off' />&nbsp;"."<label for='occr_".$occr[0]."'>".date("M d, Y H:i", strtotime($occr[1]))."</label>"."</td></tr>";
+			}
 		}
 		echo "</table>";
 
@@ -379,7 +421,7 @@ else
 <!-- Register a new Player by tournament admin -->
 
 <p><b>Note:</b> Click <b>
-	<input type="button" id="rp" value="Register Player" class="reg_player league-form-submit1"></b> if you want to add a new player to our site.
+	<input type="button" id="rp" value="Register Player" class="reg_player league-form-submit1"></b> If you want to add a new player to our site.
 
 	<div class='form-group' id="rpform" style="display:none">
 			
@@ -400,8 +442,8 @@ else
 		<div class='form-group'>
 			<label class='control-label col-md-4' for='id_accomodation'>Gender </label>
 			<div class='col-md-5 form-group internal'>
-			<input type="radio" name="gender" value="1" checked/>Male
-			<input type="radio" name="gender" value="0" />Female
+			<input type="radio" name="gender" value="1" checked/>&nbsp;Male
+			<input type="radio" name="gender" value="0" />&nbsp;Female
 			</div>
 		</div>
 
@@ -456,7 +498,7 @@ var anyBoxesChecked = false;
     });
 
     if (anyBoxesChecked == false) {
-        alert('Choose atleast one Event to Register!');
+        alert('Choose an Event to Register!');
         return false;
     }else{
   	    return true;
@@ -586,7 +628,7 @@ var anyBoxesChecked = false;
 </div>
 
 <div class='col-md-7 form-group internal' style="margin-top:10px">
-<input name="bulk_register" type="submit" value="Register" class="league-form-submit1"/>
+<input id="reg_players" name="bulk_register" type="submit" value="Register" class="league-form-submit1"/>
 </div>
 
 
@@ -625,4 +667,8 @@ if(!isset($reg_status)) {
 <!-- end main body -->
 </div>
 </div><!--Close Top Match-->
+
+
+</div>
+</div>
 </section>

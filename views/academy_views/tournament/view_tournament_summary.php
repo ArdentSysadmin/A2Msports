@@ -1,0 +1,470 @@
+<script>
+$(document).ready(function(){
+ 	 $("#MoreEvents").hide();
+	 $("#ShowLessEvents").click(function(){
+		$("#MoreEvents").hide();
+		$("#LessEvents").show();
+		$("#ShowMoreEvents").toggle();
+		$("#ShowLessEvents").toggle();
+	 });
+
+	 $("#ShowMoreEvents").click(function(){
+		$("#LessEvents").hide();
+		$("#MoreEvents").show();
+		$("#ShowMoreEvents").toggle();
+		$("#ShowLessEvents").toggle();
+	 });
+});
+</script>
+
+<div class='col-md-8'>
+<div><label>Tournament:</label> <?php echo $tour_details->tournament_title; ?></div>
+<div><label>Director:</label> <?php
+$get_director = league::get_username($tour_details->Usersid); 
+echo $get_director['Firstname']." ".$get_director['Lastname']; 
+echo " (<i class='fa fa-mobile' aria-hidden='true'></i> ".$get_director['Mobilephone'].")"; ?></div>
+<?php
+if($tour_details->Usersid != $tour_details->Tournament_Director){ ?>
+<div><label>Organizer:</label> <?php echo $tour_details->OrganizerName;
+echo " (<i class='fa fa-mobile' aria-hidden='true'></i> ".$tour_details->ContactNumber.")";
+?></div>
+<?php
+}
+?>
+<!-- <div><label>Contact #:</label> <?php echo $tour_details->ContactNumber; ?></div> -->
+<?php if($tour_details->Registrations_Opens_on != NULL){ ?>
+<div><label>Registration Opens On:</label> <?php echo date ('M d, Y h:i A', strtotime($tour_details->Registrations_Opens_on)); ?></div>
+<?php } ?>
+<div><label>Registration Closes On:</label>  <?php echo date ('M d, Y h:i A', strtotime($tour_details->Registrationsclosedon)); ?></div>
+<div><label>Withdraw or Refund Date:</label> <?php echo date ('M d, Y h:i A', strtotime($tour_details->RefundDate)); ?></div>
+<div><label>Sport:</label> <?php
+$getUser = league::get_username($tour_details->Usersid);
+echo $get_sport['Sportname']; ?>
+<input type='hidden' name='sp_type' id='sp_type' value="<?php echo $tour_details->SportsType; ?>" />
+</div>
+
+<!-- <div>
+<label>Gender:</label>
+<?php
+/*
+if($tour_details->Gender == "all" or $tour_details->Gender == "All"){ echo "Open to all";} else if($tour_details->Gender == "1"){ echo "Male";}else if($tour_details->Gender == "0"){echo "Female";}else {echo "Not provided";}
+*/
+?>
+</div> -->
+
+
+<!-- <div><label>Levels:</label> 
+<?php
+$level_array = array();
+if($tour_details->Sport_levels != "") {
+	$level_array = json_decode($tour_details->Sport_levels);
+	$numItems	 = count($level_array);
+
+	if($numItems > 0) {
+		foreach($level_array as $i => $level) {
+		$get_level = league::get_level_name($tour_details->SportsType,$level);
+		echo $get_level['SportsLevel']; 
+			if(++$i != count($level_array)) {
+			echo ", ";
+			}
+		}
+	}
+}
+?>
+
+</div> -->
+
+<?php 
+if($tour_details->SportsType != '4' and $tour_details->tournament_format != 'Teams'){
+?>
+<div><label>Game Format:</label>
+<?php
+$match_array = array();
+
+if($tour_details->Singleordouble != "")
+{
+$match_array = json_decode($tour_details->Singleordouble);
+$numItems = count($match_array);
+
+if($numItems > 0)
+{
+foreach($match_array as $i => $group)
+{
+echo $group;
+if(++$i!=count($match_array)){
+echo ", ";
+}
+}
+}
+}
+
+?>
+</div>
+<?php
+} ?>
+
+<?php
+if(!$this->is_team_league){
+?>
+<div>
+<label>Events:&nbsp;&nbsp;&nbsp;</label>
+<b>
+<a id="ShowMoreEvents" style="cursor:pointer;">Show More</a>
+<a id="ShowLessEvents" style="display:none;cursor:pointer;">Show Less</a>
+</b>
+</div>
+<div class='col-md-12' id="MoreEvents">
+<?php
+$multi_events = array();
+$numItems = 0;
+if($tour_details->Multi_Events != "" and $tour_details->Multi_Events != NULL)
+{
+$multi_events = json_decode($tour_details->Multi_Events);
+
+$events_arr = league::regenerate_events($multi_events);
+$numItems = count($events_arr);
+//echo "<pre>";
+//print_r($events_arr);
+//ksort($events_arr);
+//print_r($events_arr);
+
+
+
+$k=0;
+if($numItems > 0){
+echo "<ul style='list-style:none;' class='col-md-6'>";
+foreach($events_arr as $i => $ev){
+	if($i == 'Adults-2-Mixed-44'){
+		echo "<li>Adults Mixed Doubles Championship</li>";
+	}
+	else{
+		echo "<li>".$ev."</li>";
+	}
+if($numItems > 10){
+if(ceil($numItems/2) == ($k+1)){
+echo "</ul><ul style='list-style:none;' class='col-md-6'>";
+}
+}
+$k++;
+}
+echo "</ul>";
+}
+}
+else{
+
+$events = league::GetTournamentEvents($tour_details);
+$tourn_events = league::array_flatten($events);
+
+ksort($tourn_events);
+
+$event_format = league::regenerate_events($tourn_events);
+$k=0;
+$numItems = count($event_format);
+if($numItems > 0){
+echo "<ul style='list-style:none;' class='col-md-6'>";
+foreach($event_format as $i => $ev){
+	echo "<li>".$ev."</li>";	
+if($numItems > 10){
+if(ceil($numItems/2) == ($k+1)){
+echo "</ul><ul style='list-style:none;' class='col-md-6'>";
+}
+}
+$k++;
+}
+echo "</ul>";
+}
+
+}
+?>
+</div>
+
+<!-- Code To Show Less Events -->
+
+<div class='col-md-12' id="LessEvents">
+<?php
+$multi_events = array();
+$numItems = 0;
+if($tour_details->Multi_Events != "" and $tour_details->Multi_Events != NULL)
+{
+$multi_events = json_decode($tour_details->Multi_Events);
+
+$events_arr = league::regenerate_events($multi_events);
+//echo "<pre>"; print_r($events_arr);
+
+$numItems = count($events_arr);
+$k=0;
+if($numItems > 0){
+echo "<ul style='list-style:none;' class='col-md-6'>";
+ $j=0;
+foreach($events_arr as $i => $ev){
+	$j++;
+	if($i == 'Adults-Mixed-44'){
+	echo "<li>Adults Mixed Doubles Championship</li>";
+	}
+	else{
+	echo "<li>".$ev."</li>";
+	}
+
+	if($j==10)
+	break;
+}
+echo "</ul>";
+}
+}
+else{
+
+$events = league::GetTournamentEvents($tour_details);
+$tourn_events = league::array_flatten($events);
+
+ksort($tourn_events);
+
+$event_format = league::regenerate_events($tourn_events);
+
+$k=0;
+$numItems = count($event_format);
+if($numItems > 0){
+echo "<ul style='list-style:none;' class='col-md-6'>";
+$j=0;
+foreach($event_format as $i => $ev){
+	$j++;
+	echo "<li>".$ev."</li>";
+
+	if($j==10)
+	break;
+}
+echo "</ul>";
+}
+
+}
+?>
+</div>
+<!-- End of code To Show Less Events -->
+<?php
+echo "<br />";
+}
+?>
+
+<div><label>Age Group:</label> 
+<?php 
+$option_array = array();
+if($tour_details->Age != "")
+{
+$option_array = json_decode($tour_details->Age);
+$numItems = count($option_array);
+$i = 0;
+
+if($numItems > 0)
+{
+foreach($option_array as $group){
+$age_grp_label = $this->config->item($group, 'age_values');
+
+echo $age_grp_label;
+
+if(++$i!=count($option_array)){
+echo ", ";
+}
+}
+}
+}
+?></div>
+
+<div><label>Bracket Type:&nbsp;</label><?php echo $tour_details->Tournament_type;?></div> 
+
+<div><label>Fees:&nbsp;</label>
+<?php
+$null_values = array('NULL','null','false','0');
+
+$currency = "&#36;";
+
+if($tour_details->TournamentCountry == 'India')
+$currency = "&#8377;";
+
+if($tour_details->Event_Reg_Fee != NULL){
+$event_reg_fee	= json_decode($tour_details->Event_Reg_Fee,true);
+$events_arr		= league::regenerate_events($event_reg_fee);
+$numItems		= count($events_arr);
+if($this->logged_user == 237){
+//echo "<pre>"; print_r($events_arr); 
+}
+if($numItems > 0){
+	$c = 0;
+	echo "<ul style='list-style:none;'>";
+	foreach($events_arr as $ev => $fee){
+		if($fee != NULL){
+		echo "<li>$ev: {$currency}";
+		echo $fee; 
+		//else{ echo 0.00; }
+		echo "</li>";
+		$c++;
+		}
+	}
+
+	echo "</ul>";
+}
+if($c == 0){ echo "Free Entry";}
+}
+else if($tour_details->is_mult_fee == 0 and $tour_details->Tournamentfee == 1){
+echo "$" .number_format($tour_details->TournamentAmount,2)." (Singles), ". $currency . number_format($tour_details->extrafee,2)." (Additional Format)";
+} 
+else if($tour_details->is_mult_fee == 1 and $tour_details->Tournamentfee == 1){
+$addln_event = '';
+$pay_type	 = '';
+if($tour_details->tournament_format != 'Teams'){ 
+$pay_type    = 'First Event'; 
+$addln_event = '<td>Additional Events</td>'; 
+}
+if($tour_details->Fee_collect_type != '' and $tour_details->tournament_format == 'Teams'){ 
+$pay_type = 'Per ' . $tour_details->Fee_collect_type; 
+}
+
+echo "<table class='imagetable' border='1' cellpadding='10' cellspacing = '10'><tr><td>Age Group</td><td>{$pay_type}</td>{$addln_event}</tr>";
+
+$age_grp  = json_decode($tour_details->Age);
+$numItems = count($age_grp);
+$i = 0;
+
+if($numItems > 0){
+$mult_fee_array     = json_decode($tour_details->mult_fee_collect);
+$addn_mult_fee_array  = json_decode($tour_details->addn_mult_fee_collect);
+
+foreach($age_grp as $i=>$ag){
+echo "<tr><td>";
+
+$agegrp_label = $this->config->item($ag, 'age_values');
+echo $agegrp_label;
+
+$addln_event_fee = '';
+if($tour_details->tournament_format != 'Teams'){ 
+$addln_event_fee = "<td>" . number_format($addn_mult_fee_array[$i], 2) . "</td>"; 
+}
+
+echo "</td><td>" . number_format($mult_fee_array[$i], 2) . "</td>{$addln_event_fee}</tr>";
+}
+}
+echo "</table>";
+}
+else{
+echo $currency."0.00";
+}
+?></div>
+</div>
+       <div class="col-md-4" align='center'><h4 style="margin-top:25px;">Tourney Talk</h4>
+		<?php if($this->logged_user){?>
+		<div class='col-md-9 form-group internal' style='padding-right:0px'>
+		<input type='text' name="message" id="message" placeholder="Talk to your fellow players" class='form-control col-md-9' />
+		</div>
+		<div class='col-md-3 form-group internal' align='center'>
+		<input type="button" name='send_comment' id='send_comment' value="Add" class="league-form-submit1" style="padding:8px;22px;"/>
+		</div>
+	   <?php } ?>
+
+		<div class="col-md-12"><br></div>
+		<div class="col-md-12" style="overflow-y:scroll;height:270px;">
+
+		<div id="comments_div" class="col-md-12">
+		<?php
+		if($tourn_comments){
+		foreach($tourn_comments as $comment){ 
+		$name = league :: get_user($comment->Users_Id);
+		?>
+			<div class='pull-left' style="margin-right:20px"><img style="width:50px !important; height:50px !important;" class='img-circle' src='<?php 
+			if($name['Profilepic'] != "" and $name['Profilepic'] != 'NULL'){
+			echo base_url()."profile_pictures/$name[Profilepic]"; }
+			else{
+			echo base_url()."profile_pictures/default-profile.png"; }
+			?>' />
+			</div>
+			<div style="margin-top:5px; display:table">
+				<?php echo "<span style='font-weight:bold; color:#464646'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."&nbsp;&nbsp;</span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
+				<?php 
+			$text = strip_tags($comment->Comments);
+$textWithLinks = preg_replace('@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@', '<a href="$1" target="_blank" rel="nofollow">$1</a>', $text);
+echo $textWithLinks;
+
+			//echo $comment->Comments; ?>
+			</div>
+			<div style='clear:both; height:20px'></div>
+		<?php
+		}
+		}
+		else{
+		?>		
+			No comments added yet!
+		<?php 
+		}?>
+		</div>
+		</div>	
+	</div>
+
+<!-- Sponsor Section -->
+<div  class="col-md-12" align='center'>
+<h3>Sponsors</h3>
+<style> 
+ .imgContainer{
+    float:left;
+	padding: 7px;
+}
+</style> 
+<?php
+$sponsors = array();
+$sponsorsjsn = $tour_details->Sponsors;
+ 
+if($sponsorsjsn != ""){
+  $sponsors = json_decode($sponsorsjsn, true);
+}
+?>   
+<!-- <div align='center'> -->
+<div align='right' style="margin-bottom:30px;">
+<a href="<?=$this->config->item('club_pr_url')?>/#contact" style='cursor:pointer;margin-right:40px;' target='_blank'>
+<img src='<?=base_url();?>icons/want_to_sponsor.png' alt='Want to Sponsor?' title='Want to Sponsor?' width='200px'>
+</a>
+</div>
+
+<div class="row" style="margin-top:5px;">
+<?php 
+ 	foreach ($sponsors as $sponsor => $sponsor_addr_link)
+	{
+	if($sponsor_addr_link){
+		if (!preg_match("~^(?:f|ht)tps?://~i", $sponsor_addr_link)) {
+		$sponsor_addr_link = "http://" . $sponsor_addr_link;
+		}
+	?>
+	 <div class="col-md-3" style="margin-bottom:20px; min-height: 150px;">  
+	 <a target="_blank" href="<?php echo $sponsor_addr_link; ?>" style="cursor:pointer;">
+	 <img src="<?php echo base_url();?>tour_pictures/<?php echo $tour_details->tournament_ID;?>/sponsors/<?php echo $sponsor;?>" width="200" alt="" /></a>
+	 </div>
+	 <?php
+	 
+  	}
+	else{
+	?>
+	<div class="col-md-3" style="margin-bottom:20px; min-height: 150px;">
+	  <img src="<?php echo base_url();?>tour_pictures/<?php echo $tour_details->tournament_ID;?>/sponsors/<?php echo $sponsor;?>" width="200" alt="" /> 
+	</div>
+	<?php
+	} 
+	}?>
+</div>
+<?php
+//echo "test ".count($sponsor_details);
+//exit;
+if($sponsor_details != ""){
+	foreach($sponsor_details as $details){
+	  if($details->Sponsor_Image != ""){
+?>
+ <div class="col-md-4" style="margin-bottom:25px;">
+		 <a target="_blank" href="http://<?php echo $details->Sponsor_URL;?>" style="cursor:pointer;">
+		 <img src="<?php echo base_url();?>tour_pictures/ext_sponsors/<?php echo $details->Sponsor_Image;?>" width="200" alt="<?php echo $details->Sponsor_Name;?>" /></a>
+</div>
+<?php }
+	  else{ ?>
+	<div class="col-md-4" style="margin-bottom:25px;">
+ 		<h3><?php echo $details->Sponsor_Name;?></h3> 
+	</div>
+<?php		
+	  }
+	}
+}
+?>
+</div>
+<!-- Sponsor section ends here -->

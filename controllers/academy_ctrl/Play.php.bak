@@ -31,10 +31,17 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			$this->load->model('model_play');
 			$this->load->model('model_general', 'general');
 			$this->load->model('model_news');
+			$this->load->model('academy_mdl/model_general2', 'aca_general');
+			$this->load->model('academy_mdl/model_academy');
+
 			//$this->logged_user = $this->session->userdata('users_id');
 
-						$this->is_super_admin = 0;
-			$this->short_code		= $this->uri->segment(1);
+			$this->is_super_admin = 0;
+
+			$this->short_code			= $this->uri->segment(1);
+			$this->academy_admin	= $this->aca_general->get_org_admin($this->short_code);
+			$this->academy_id			= $this->aca_general->get_orgid($this->short_code);
+
 			//echo $this->short_code; exit;
 			if($this->session->userdata('users_id')){
 				$this->logged_user = $this->session->userdata('users_id');
@@ -49,7 +56,66 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			}
 
 		}
+
+	
 		
+		public function get_fb_login(){
+			//$returnURI = array('redirect' => $_SERVER['HTTP_X_FORWARDED_HOST']."/login/verify_user");
+			//$login  = $this->facebook->getLoginUrl($returnURI);
+			$login  = $this->facebook->getLoginUrl();
+			//echo $login; exit;
+			return $login;
+		}
+
+		public function get_google_login(){
+
+		// Store values in variables from project created in Google Developer Console
+		$client_id			= '170374605326-p02hhgiia6fqncck0982i401madv6n72.apps.googleusercontent.com';
+		$client_secret		= 'XyOwkQkScXXca0wG4paTUx6A';
+		$redirect_uri		= 'https://a2msports.com/login/auth_check';
+		$simple_api_key = 'AIzaSyC0JNMWyyW6t1fSNyrprBJC2bWKG4btytc';
+
+		include_once APPPATH."libraries/google_login_api_HRWNdR/src/Google_Client.php";
+		include_once APPPATH."libraries/google_login_api_HRWNdR/src/contrib/Google_Oauth2Service.php";
+        
+        // Google Project API Credentials
+        $clientId	   = $client_id;
+        $clientSecret = $client_secret;
+        $redirectUrl   = $redirect_uri;
+        
+        // Google Client Configuration
+        $gClient = new Google_Client();
+        $gClient->setApplicationName('A2MSports');
+        $gClient->setClientId($clientId);
+        $gClient->setClientSecret($clientSecret);
+        $gClient->setRedirectUri($redirectUrl);
+
+		//$gclient->setDefaultOption('verify', false); // Can be removed
+        $google_oauthV2 = new Google_Oauth2Service($gClient);
+        $token				 = $this->session->userdata('token');
+
+       // if (!empty($token)) {
+        if ($token != "") {
+            $gClient->setAccessToken($token);
+        }
+
+        $data['authUrl'] = $gClient->createAuthUrl();
+		return $data['authUrl'];
+		}
+
+		public function get_club_menu($org_id){
+			$get_menu = $this->general->get_club_menu($org_id);
+			$club_menu = array();
+
+			if($get_menu)
+				$club_menu = json_decode($get_menu['Active_Menu_Ids'], TRUE);
+			return $club_menu;
+		}
+
+		public function get_onerow($table, $column, $val){
+			return $this->general->get_onerow($table, $column, $val);
+		}
+
 		// load all the tournments ...... and //load  the nearest tournments to the user 
 		public function index($data="")
 		{
@@ -450,15 +516,26 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 			$data['results'] = $this->model_news->get_news();
 
-			$this->load->view('includes/header');
-			$this->load->view('view_invitation_users',$data);
-			$this->load->view('includes/view_right_column',$data);
-			$this->load->view('includes/footer');	
+			$org_id = $this->academy_id;
+			$data['menu_list']			= $this->model_academy->get_menu_list();
+			$data['act_menu_list']	= $this->model_academy->get_act_menu_list($org_id);
+					$org_details			= $this->model_academy->get_academy_details($org_id);
+					$data['org_details']	= $org_details;
+
+					$this->load->view('academy_views/includes/academy_header', $data);
+					$this->load->view('academy_views/view_invitation_users', $data);
+					$this->load->view('academy_views/includes/academy_right_column',$data);
+					$this->load->view('academy_views/includes/academy_footer');
 		}
 
 		public function reg_players($tourn_id)
 		{
 			$details = $this->model_play->getonerow($tourn_id);
+			$org_id = $this->academy_id;
+			$data['menu_list']			= $this->model_academy->get_menu_list();
+			$data['act_menu_list']	= $this->model_academy->get_act_menu_list($org_id);
+					$org_details			= $this->model_academy->get_academy_details($org_id);
+					$data['org_details']	= $org_details;
 
 			if(!$this->input->post('bulk_register'))
 			{
@@ -469,15 +546,24 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 					$data['results'] = $this->model_news->get_news();
 					$data['optimum_users'] = $this->model_play->get_tourbased_users($tourn_id);
 
-					$this->load->view('includes/header');
+					if($details->Is_League){
+						$lg_occr = $this->model_play->get_league_occr($tourn_id);
+						foreach($lg_occr as $ocr){
+							$ev_occr[$ocr->Event][] = array($ocr->OCR_ID, $ocr->Game_Date);
+						}
+						//echo "<pre>"; print_r($ev_occr);
+						$data['lg_occr'] = $ev_occr;
+					}
 
+					$this->load->view('academy_views/includes/academy_header', $data);
+//echo "<pre>"; print_r($data);exit;
 					if($details->Tournament_type == 'Flexible League')
-						$this->load->view('view_reg_players_flex',$data);
+						$this->load->view('view_reg_players_flex', $data);
 					else
 						$this->load->view('view_reg_players',$data);
 
 					//$this->load->view('includes/view_right_column',$data);
-					$this->load->view('includes/footer');
+					$this->load->view('academy_views/includes/academy_footer');
 				}
 				else{
 					echo "<h4>Unauthorized Access!</h4>";
@@ -485,11 +571,12 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			}
 			else
 			{
-				//print_r($_POST); exit;
-					//if($details->Tournament_type == 'Flexible League')
-						//$details = $this->model_play->bulk_reg_players_flex();
-					//else
-						//$details = $this->model_play->bulk_reg_players();
+				//echo "<pre>";print_r($_POST); exit;
+					if($details->Tournament_type == 'Flexible League')
+						$details = $this->model_play->bulk_reg_players_flex();
+					else
+						$details = $this->model_play->bulk_reg_players();
+
 				if($this->config->item('club_form_url') != "")
 					redirect($this->config->item('club_form_url')."/league/$tourn_id");
 				else
@@ -586,10 +673,16 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			$tourn_id = $this->input->post('tourn_id');
 			$data['tourn_id'] = $tourn_id;
 
-			$this->load->view('includes/header');
-			$this->load->view('view_invitation_users',$data);
-			$this->load->view('includes/view_right_column',$data);
-			$this->load->view('includes/footer');
+			$org_id = $this->academy_id;
+			$data['menu_list']			= $this->model_academy->get_menu_list();
+			$data['act_menu_list']	= $this->model_academy->get_act_menu_list($org_id);
+					$org_details			= $this->model_academy->get_academy_details($org_id);
+					$data['org_details']	= $org_details;
+
+					$this->load->view('academy_views/includes/academy_header', $data);
+					$this->load->view('academy_views/view_invitation_users', $data);
+					$this->load->view('academy_views/includes/academy_right_column',$data);
+					$this->load->view('academy_views/includes/academy_footer');
 			//}
 		}
 

@@ -54,6 +54,7 @@ var tab_row_id = $(this).attr('name');
 	else{
 	$("#escore"+tab_row_id).hide();
 	$("#forfeit"+tab_row_id).hide();
+	tab_row_id = '';
 	}
 
 

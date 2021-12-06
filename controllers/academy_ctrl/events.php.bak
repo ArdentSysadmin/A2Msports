@@ -1,17 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-
-	//Events controller ..
+//Events controller ..
 class events extends CI_Controller {
 
-	public $header_tpl	   = "academy_views/includes/academy_header";
-	public $right_col_tpl   = "academy_views/includes/academy_right_column";
-	public $footer_tpl	   = "academy_views/includes/academy_footer";
+	public $header_tpl		= "academy_views/includes/academy_header";
+	public $right_col_tpl		= "academy_views/includes/academy_right_column";
+	public $footer_tpl			= "academy_views/includes/academy_footer";
 
 	public $logged_user;
 	public $short_code;
 	public $academy_admin;
-
 
 	public function __construct()
 	{
@@ -30,9 +28,10 @@ class events extends CI_Controller {
 		$this->load->model('academy_mdl/model_news', 'model_news');
 		$this->load->model('academy_mdl/model_academy', 'model_academy');
 
-		$this->short_code  = $this->uri->segment(1);
-		$this->academy_admin = $this->general->get_org_admin($this->short_code);
-		$this->logged_user	 = $this->session->userdata('users_id');
+		$this->short_code			= $this->uri->segment(1);
+		$this->academy_admin	= $this->general->get_org_admin($this->short_code);
+		$this->academy_id			= $this->general->get_orgid($this->short_code);
+		$this->logged_user		= $this->session->userdata('users_id');
 
 		$this->admin_menu_items = array('0'=>'');
 		 if($this->logged_user != $this->academy_admin)
@@ -116,8 +115,11 @@ class events extends CI_Controller {
 
 	//echo "<pre>"; print_r($data); exit;
 		$data['event_types']		= $this->model_event->get_event_types();
-		$data['club_leagues']	= $this->model_academy->get_club_tournments($data['creator']); 
+		$data['club_leagues']	= $this->model_academy->get_club_tournments($data['creator']);
+		$data['club_events']		= $this->model_academy->get_user_create_events($data['creator']);
+
 		$data['results']				= $this->model_news->get_news();
+	echo "<pre>"; print_r($data); exit;
 
 		$this->load->view($this->header_tpl, $data);
 		$this->load->view('academy_views/view_league_list',  $data);
@@ -151,8 +153,8 @@ class events extends CI_Controller {
 		$data = './static_pages/gpa_leagues.php';	// it is the path of the text files 
 
 		//$urls = file_put_contents($data, $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
-		echo $txt;
-		exit;
+		//echo $txt;
+		//exit;
 		$urls = file_put_contents($data, $txt);
 		redirect('/testclub9/gpaleagues');
 	}
@@ -296,14 +298,16 @@ class events extends CI_Controller {
 		}
 	}
 
-	public function send_event()
+	public function send_event($short_code = '')
 	{
+				$aca_info		= $this->model_academy->get_academy_details($this->academy_id);
+				$aca_name = $aca_info['Aca_name'];
 
-		if($this->input->post('btn_event_match'))
-		{
+		if($this->input->post('btn_event_match')){
 			
 		$event_id = $this->input->post('ev_id');
 		$sel_players = $this->input->post('sel_user');
+		$adm_msg = $this->input->post('ev_message');
 		$rep_events = $this->model_event->get_rep_events($event_id);
 
 		$ev_det = $this->model_event->getonerow($event_id);
@@ -313,7 +317,6 @@ class events extends CI_Controller {
 		$full_name = ucfirst($name['Firstname'])." ".ucfirst($name['Lastname']);
 
 		$this->load->library('email');
-		$this->email->set_newline("\r\n");
 
 		foreach($sel_players as $user_id)
 		{
@@ -338,7 +341,9 @@ class events extends CI_Controller {
 				$result = $this->db->query($sql);
 				$row = $result->row();
 
-				$this->email->from('admin@a2msports.com', 'A2mSports');
+				$this->email->set_newline("\r\n");
+
+				$this->email->from(FROM_EMAIL, ucwords($aca_name));
 
 				if($row->EmailID != ""){
 					$this->email->to($row->EmailID);
@@ -347,30 +352,32 @@ class events extends CI_Controller {
 				}
 
 				
-				$subject = "Invitation for ". $ev_title ." Event from ".$full_name;
+				$subject = "Invitation for Event - ".$ev_title;
 			
 				$this->email->subject($subject);
 
 				$data = array(
 					 'event_id'=> $event_id,
 					 'ev_title'=> $ev_title,
+					 'ev_msg'=> $adm_msg,
 					 'firstname'=> $row->Firstname,
 					 'lastname'=> $row->Lastname,
 					 'page'=> 'New Event Invitation'
 					);
 
+				$data['aca_logo']			= $aca_info['Aca_logo'];
+				$data['aca_name']		= $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
 
-				$body = $this->load->view('academy_views/view_email_template.php',$data,TRUE);
+				$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 
 				$this->email->message($body);   
-
 				$this->email->send();
 			}
 		}
-		redirect($this->short_code."/events/view/$event_id/2");
+		redirect($this->short_code."/events/$event_id/2");
 		}
-		else
-		{
+		else{
 		echo "Invalid Access!";
 		}
 	}
@@ -463,15 +470,20 @@ class events extends CI_Controller {
 			$name = $this->general->get_user($comment->Users_id);
 			$full_name = ucfirst($name['Firstname'])." ".ucfirst($name['Lastname']);
 
-			$op .= "<div class='pull-left' style='margin-right:20px'><img class='img-circle' src='".base_url()."profile_pictures/".$name['Profilepic']."' width='50px' height='50px' /></div>
-			<div style='margin-top:5px'>
-				<span style='font-weight:bold; color:#464646'>".$full_name."</span>
+			if($name['Profilepic'] != ''){
+			$prof_pic = base_url()."profile_pictures/{$name['Profilepic']}";
+			}
+			else{
+			$prof_pic = base_url()."profile_pictures/default-profile.png";
+			}
+
+			$op .= "<div class='pull-left' style='margin-right:20px'><img class='img-circle' src='{$prof_pic}' width='50px' height='50px' /></div><div style='margin-top:5px'><span style='font-weight:bold;color:#464646'>".$full_name."</span>
 				<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_date))."</span>
 				<div style='margin-top:5px;'>$comment->Comments</div>
 			</div>
 			<div style='clear:both; height:20px'></div>";
-
 		}
+
 		echo $op;
 
 			//redirect("events/view/$ev_id/4");
@@ -806,10 +818,9 @@ class events extends CI_Controller {
 
 	public function activate_users()
 	{
-		
-		$event_id = $this->input->post('ev_id');
-		$child_id = $this->input->post('child_user_id');
-		$act_code = $this->input->post('act_code');
+		$event_id		= $this->input->post('ev_id');
+		$child_id		= $this->input->post('child_user_id');
+		$act_code	= $this->input->post('act_code');
 
 		$data['user'] = $child_id;
 		$data['event_id'] = $event_id;
@@ -821,87 +832,79 @@ class events extends CI_Controller {
 			$rep_events = $this->model_event->get_rep_events($event_id);
 			   foreach($rep_events as $obj){           
 
-					$data['user'] = $child_id;
-					$data['event_id'] = $event_id;
-					$data['ev_rep_id'] = $obj->Ev_Tab_ID;
-					
+					$data['user']				= $child_id;
+					$data['event_id']		= $event_id;
+					$data['ev_rep_id']		= $obj->Ev_Tab_ID;
+				
 					//echo $data['ev_rep_id'];echo $data['user'];echo "<br />";
 
-					$create_inv = $this->model_event->ins_ev_invite($data);
-					
+					$create_inv = $this->model_event->ins_ev_invite($data);	
 			   }
 
-			   $user_stat = $this->model_event->update_non_reg_user_status($event_id,$act_code);
+			 $user_stat = $this->model_event->update_non_reg_user_status($event_id,$act_code);
 
 			 redirect($this->short_code."/events/view/$event_id/6");
 		}
-		else
-		{
+		else{
 			redirect($this->short_code."/events/view/$event_id/5");
-
 		}
 	
 	}
 
 
 
-	public function view($ev_id, $act_code = "", $org_id = '')
+	//public function view($ev_id, $act_code = "", $org_id = '')
+	public function view($short_code, $ev_id, $act_code = "")
 	{
-		$data = $this->get_org_details($org_id);
+		$data = $this->get_org_details($this->academy_id);
 
 		$data['actcode_det'] = "";
 
 		if($act_code != ""){
-		  $get_actcode_det = $this->model_event->check_is_valid_actcode($act_code);    //check the status of non registered user
+		  $get_actcode_det = $this->model_event->check_is_valid_actcode($act_code);   
+		  //check the status of non registered user
 		  $data['actcode_det'] = $get_actcode_det;
 		}
 
-
 		//print_r($data);
 		$is_ev_user = $this->model_event->check_is_invited($ev_id);
-
 		$data['is_ev_user'] = $is_ev_user;
 		
 		$is_have_players = $this->model_event->is_have_players($ev_id);
-
 		$ev_det = $this->model_event->getonerow($ev_id);
 
 		//print_r($ev_det);
 
-		$data['ev_det'] = $ev_det;
+		$data['ev_det']			 = $ev_det;
 		//print_r($data);
-		$data['results'] = $this->model_news->get_news();
+		$data['results']			 = $this->model_news->get_news($this->academy_id);
 		$data['num_players'] = $is_have_players;
 
+		if(count($is_ev_user) > 0){
+			$get_ev_reps			= $this->model_event->get_ev_reps($ev_id);
+			$get_ev_users			= $this->model_event->get_ev_users($ev_id);
+			$get_ev_comments  = $this->model_event->get_ev_comments($ev_id);
 
-		if(count($is_ev_user) > 0)
-		{
-			$get_ev_reps = $this->model_event->get_ev_reps($ev_id);
-			$get_ev_users = $this->model_event->get_ev_users($ev_id);
-			$get_ev_comments = $this->model_event->get_ev_comments($ev_id);
-
-			$data['ev_rep_schedule'] = $get_ev_reps;
-			$data['get_ev_users'] = $get_ev_users;
-			$data['get_ev_comments'] = $get_ev_comments;
+			$data['ev_rep_schedule']		= $get_ev_reps;
+			$data['get_ev_users']			= $get_ev_users;
+			$data['get_ev_comments']	= $get_ev_comments;
 		}
-		else
-		{	
-			$get_ev_reps	 = $this->model_event->get_ev_reps($ev_id);
-			$get_ev_users	 = $this->model_event->get_ev_users($ev_id);
-			$get_ev_comments = $this->model_event->get_ev_comments($ev_id);
+		else{	
+			$get_ev_reps			= $this->model_event->get_ev_reps($ev_id);
+			$get_ev_users			= $this->model_event->get_ev_users($ev_id);
+			$get_ev_comments	= $this->model_event->get_ev_comments($ev_id);
 
-			$data['ev_rep_schedule'] = $get_ev_reps;
-			$data['get_ev_users']	 = $get_ev_users;
-			$data['get_ev_comments'] = $get_ev_comments;
+			$data['ev_rep_schedule']		= $get_ev_reps;
+			$data['get_ev_users']			= $get_ev_users;
+			$data['get_ev_comments']	= $get_ev_comments;
 
-			$data['users']			= "";
-			$data['sport_intrests'] = $this->general->get_user_sport_intrests();
-			$data['sport_levels']	=  $this->model_event->get_sport_levels();
+			$data['users']				= "";
+			$data['sport_intrests']	= $this->general->get_user_sport_intrests();
+			$data['sport_levels']		=  $this->model_event->get_sport_levels();
 
 			$data['range']	= 50;
-			$srch_res		= $this->model_event->get_optimum_users($data);
+			$srch_res			= $this->model_event->get_optimum_users($data);
 			$data['users']	= $srch_res;
-
 		}
 			
 			$this->load->view($this->header_tpl, $data);
@@ -910,9 +913,10 @@ class events extends CI_Controller {
 			$this->load->view($this->footer_tpl);
 	}
 
-
-	public function invite_players()
+	public function invite_players($short_code = '')
 	{
+				$aca_info		= $this->model_academy->get_academy_details($this->academy_id);
+				$aca_name = $aca_info['Aca_name'];
 
 		if($this->input->post('event_send'))
 		{
@@ -955,6 +959,10 @@ class events extends CI_Controller {
 		//print_r($explode);
 		//exit;
 
+
+
+		$this->load->library('email');
+
 		foreach($explode as $to_email){
 
 			$data['email'] = $to_email;
@@ -968,13 +976,13 @@ class events extends CI_Controller {
 
 			$create_inv = $this->model_event->insert_non_reg_users($data);    /// non registered users send invitation 
 
-			$this->load->library('email');
+			
 			$this->email->set_newline("\r\n");
 
-			$this->email->from('admin@a2msports.com', 'A2mSports');
+			$this->email->from(FROM_EMAIL, ucwords($aca_name));
 			$this->email->to($to_email);
 				
-			$this->email->subject( "New Event(" . $ev_title . ") Invitation - A2MSports");
+			$this->email->subject( "New Event (".$ev_title.") Invitation.");
 
 			$data = array(
 			 'message'=> $mes,
@@ -990,15 +998,18 @@ class events extends CI_Controller {
 			 'act_code' => $act_code,
 			 'page'=> 'New Event Details'
 			);
+				$data['aca_logo']			= $aca_info['Aca_logo'];
+				$data['aca_name']		= $aca_info['Aca_name'];
+				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
 
-			$body = $this->load->view('academy_views/view_email_template.php',$data,TRUE);
+			$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 
 			$this->email->message($body);   
 			$res = $this->email->send();
 
 		}
 		
-		 redirect($this->short_code."/events/view/$event_id/2");
+		 redirect($this->short_code."/events/$event_id/2");
 
 		}
 		else
@@ -1347,5 +1358,210 @@ class events extends CI_Controller {
 			
 		 }
 
+	public function reg_user(){
+		$users_id = $this->session->userdata('users_id');
+		if(!$users_id){ echo "Invalid Request!"; exit; }
+		
+		$reg_stat = $this->input->post('reg_stat');
+		$event_id = $this->input->post('ev_id');
+
+		switch($reg_stat){
+			case "Attending":
+				$status = 'Accept';
+			break;
+			case "NOT ATTENDING":
+				$status = 'Decline';
+			break;
+			case "TENTATIVE":
+				$status = 'Tentative';
+			break;
+			default:
+				$status = 'Pending';
+			break;
+		}
+
+		$data['event_id'] = $event_id;
+//echo "<pre>"; print_r($_POST); print_r($data); exit;
+		$is_ev_user = $this->model_event->check_is_invited_user($data);
+		
+		if(!$is_ev_user){
+
+			//$ev_det = $this->model_event->getonerow($event_id);
+
+			/*if($ev_det['Fee'] != '' and $ev_det['Fee'] != NULL and $status == 'Accept'){
+
+				$this->event_payment_process($ev_det);
+				exit;
+			}*/
+			
+			$rep_events = $this->model_event->get_rep_events($event_id);
+			   foreach($rep_events as $obj){
+					$data['user']	   = $users_id;
+					$data['event_id']  = $event_id;
+					$data['ev_rep_id'] = $obj->Ev_Tab_ID;
+					$data['ev_status'] = $status;
+
+					$create_inv = $this->model_event->ins_ev_invite($data);
+			   }
+			   //$user_stat = $this->model_event->update_non_reg_user_status($event_id,$act_code);
+
+			echo "Your Response is sent successfully.";
+		}
+		else{
+			echo "You were already registered for this Event!";
+		}
+	}
+
+
+	public function reg_user2($short_code = ''){
+		//print_r($_POST); exit;
+		$users_id = $this->session->userdata('users_id');
+		if(!$users_id){ echo "Invalid Request!"; exit; }
+		
+		$reg_stat = $this->input->post('reg_stat');
+		$event_id = $this->input->post('ev_id');
+
+		switch($reg_stat){
+			case "Attending":
+				$status = 'Accept';
+			break;
+			case "Not Attending":
+				$status = 'Decline';
+			break;
+			case "Tentative":
+				$status = 'Tentative';
+			break;
+			default:
+				$status = 'Pending';
+			break;
+		}
+
+		$data['user']		 = $users_id;
+		$data['event_id'] = $event_id;
+//echo "<pre>"; print_r($_POST); print_r($data); exit;
+
+		$is_ev_user = $this->model_event->check_is_invited_user($data);
+		
+		if(!$is_ev_user){
+			$ev_det = $this->model_event->getonerow($event_id);
+
+			if($ev_det['Fee'] != '' and $ev_det['Fee'] != NULL and $ev_det['Fee'] > 0 and $status == 'Accept'){
+				$this->event_payment_process($ev_det);
+				exit;
+			}
+			else{
+				//echo "testing";
+				//exit;
+			$rep_events = $this->model_event->get_rep_events($event_id);
+			//echo "<pre>"; print_r($rep_events); exit;
+
+			   foreach($rep_events as $obj){
+					$data['user']	   = $users_id;
+					$data['event_id']  = $event_id;
+					$data['ev_rep_id'] = $obj->Ev_Tab_ID;
+					$data['ev_status'] = $status;
+					$create_inv = $this->model_event->ins_ev_invite($data);
+			   }
+			   //$user_stat = $this->model_event->update_non_reg_user_status($event_id,$act_code);
+
+			redirect($this->config->item('club_pr_url')."/events/$event_id/6");
+			}
+		}
+		else{
+			redirect($this->config->item('club_pr_url')."/events/$event_id/5");
+		}
+	}
+
+		public function event_payment_process($ev_det){
+			$users_id = $this->session->userdata('users_id');
+			$this->load->library('paypal_lib');
+			$ev_id	  = $ev_det['Ev_ID'];
+			$ev_title = $ev_det['Ev_Title'];
+			$ev_fee	  = $ev_det['Fee'];
+
+			if(!$users_id){
+				echo "Your Logged Session Timeout! Please <a href='".base_url()."login'>Login</a> and Register again. Thanks you.";
+				exit;
+			}		
+
+			$currency_code = 'USD';
+
+			//Set variables for paypal form
+			$paypalURL = PAYPAL_URL;  //PayPal api url
+			$paypalID  = PAYPAL_ID;  //business email
+
+			$returnURL = base_url().'paypal/ev_success?ev_id='.$ev_id.'&reg_user='.$users_id; 
+			//payment success url
+
+			$cancelURL = base_url().'paypal/cancel'; //payment cancel url
+			$notifyURL = base_url().'paypal/ipn';	 //ipn url
+
+			$logo = base_url().'images/logo.png';
+			
+			$this->paypal_lib->add_field('business', $paypalID);
+			$this->paypal_lib->add_field('return', $returnURL);
+			$this->paypal_lib->add_field('cancel_return', $cancelURL);
+			$this->paypal_lib->add_field('notify_url', $notifyURL);
+			$this->paypal_lib->add_field('event_id', $ev_id);
+			//$this->paypal_lib->add_field('player', $this->logged_user);
+			$this->paypal_lib->add_field('on0', $users_id);
+			$this->paypal_lib->add_field('item_number',  $ev_id);
+			$this->paypal_lib->add_field('item_name',  $ev_title);
+			$this->paypal_lib->add_field('amount', $ev_fee);        
+			$this->paypal_lib->image($logo);
+			
+			$this->paypal_lib->paypal_auto_form();
+		}
+
+		public function pay_now($ev_id){
+			$users_id = $this->session->userdata('users_id');
+			$this->load->library('paypal_lib');
+			$ev_det   = $this->model_event->getonerow($ev_id);
+			$ev_id	  = $ev_det['Ev_ID'];
+			$ev_title = $ev_det['Ev_Title'];
+			$ev_fee	  = $ev_det['Fee'];
+
+			if(!$users_id){
+				echo "Your Logged Session Timeout! Please <a href='".base_url()."login'>Login</a> and Register again. Thanks you.";
+				exit;
+			}
+
+			$currency_code = 'USD';
+
+			//Set variables for paypal form
+			$paypalURL = PAYPAL_URL;  //PayPal api url
+			$paypalID  = PAYPAL_ID;  //business email
+
+			$returnURL = base_url().'paypal/ev_success?ev_id='.$ev_id.'&reg_user='.$users_id; 
+			//payment success url
+
+			$cancelURL = base_url().'paypal/cancel'; //payment cancel url
+			$notifyURL = base_url().'paypal/ipn';	 //ipn url
+
+			$logo = base_url().'images/logo.png';
+			
+			$this->paypal_lib->add_field('business', $paypalID);
+			$this->paypal_lib->add_field('return', $returnURL);
+			$this->paypal_lib->add_field('cancel_return', $cancelURL);
+			$this->paypal_lib->add_field('notify_url', $notifyURL);
+			$this->paypal_lib->add_field('event_id', $ev_id);
+			//$this->paypal_lib->add_field('player', $this->logged_user);
+			$this->paypal_lib->add_field('on0', $users_id);
+			$this->paypal_lib->add_field('item_number',  $ev_id);
+			$this->paypal_lib->add_field('item_name',  $ev_title);
+			$this->paypal_lib->add_field('amount', $ev_fee);        
+			$this->paypal_lib->image($logo);
+			
+			$this->paypal_lib->paypal_auto_form();
+		}
+
+		public function get_tshirt_count($tid, $ev_id){
+			$get_count = $this->model_event->get_ts_count($tid, $ev_id);
+			return $get_count['ts_count'];
+		}
+
+		public function get_location($ev_loc_id){
+			return $this->general->get_location_name($ev_loc_id);
+		}
 
 }	

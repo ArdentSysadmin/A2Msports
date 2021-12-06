@@ -68,25 +68,25 @@ exit;*/
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:30px;display:none;" id="div3">
 
 <div class="fromtitle">Invited Players</div>
-
-<?php if(count($get_ev_users) == 0) 
-{ 
+<?php
+if(count($get_ev_users) == 0){ 
 	echo "No Players are invited yet."; 
 }
-else
-{
+else{
 ?>
-
-<form class='form-horizontal' id='myform' name='form-op-users'  method="post" action="<?php echo base_url();?>events/send_email_reg_players">
-<!-- table content -->
+<form class='form-horizontal' id='myform' name='form-op-users'  method="post" 
+action="<?php echo $this->config->item('club_pr_url'); ?>/events/send_email_reg_players">
+<!-- Table Content -->
 
 <div style="overflow-x:scroll; width:807px">
 <table class='tab-score' cellpadding='3' cellspacing='3' style="table-layout:fixed;">
 <tr class='top-scrore-table'>
 
-<td width="187" style="padding-left:5px"><b><input type='checkbox' name="sel_all3" id="sel_all3" /> Players</b></td>
-<?php
+<td width="187" style="padding-left:5px">
+<b><input type='checkbox' name="sel_all3" id="sel_all3" /> Players</b>
+</td>
 
+<?php
 foreach($ev_rep_schedule as $rep_sch){
 ?>
 <td width="147" align='center'><b><?php 
@@ -94,8 +94,7 @@ foreach($ev_rep_schedule as $rep_sch){
 	//$get_rep_sch_det = https://www.google.co.in/maps/place/Jamia+Osmania+Railway+Station;
 
 	$get_loc_det = $this->model_event->get_location_name($rep_sch->Ev_Location);
-	
-	$lat = $get_loc_det['loc_lat']; $long = $get_loc_det['loc_long']; 
+	$lat				= $get_loc_det['loc_lat']; $long = $get_loc_det['loc_long']; 
 	
 	//$map_url = "http://maps.google.com/maps?q=loc:".$lat.",".$long."";
 

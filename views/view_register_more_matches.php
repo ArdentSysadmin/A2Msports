@@ -995,7 +995,7 @@ $now =  time();
 $reg_close = strtotime($r->Registrationsclosedon);
 $reg_open  = strtotime($r->Registrations_Opens_on);
 
-if($now < $reg_close){
+if($now < $reg_close or $this->logged_user == 237){
       ?>
         <div class="form-group">
 			<div class='form-group internal text1'>
@@ -1023,7 +1023,7 @@ if($now < $reg_close){
    		$event_time = '';
    	}
 
-      echo "<tr><td><input type='checkbox' class='".$fee_class."' name='events[]' value='".$key."'/>".$value.' '.$event_time."</td></tr>";
+      echo "<tr><td><input type='checkbox' class='".$fee_class."' name='events[]' value='".$key."'/>&nbsp;".$value.' '.$event_time."</td></tr>";
    }
    }else{
    	  echo "<tr><td>No Eligible Events</td></tr>";

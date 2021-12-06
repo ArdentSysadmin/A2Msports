@@ -1,6 +1,6 @@
 <script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
 
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function () {
@@ -97,6 +97,24 @@ $("#rr_escore"+pid).hide();
 }
 });
 
+
+$(".add_stats").click(function(){
+var pid = $(this).attr('name');
+
+	if($("#rr_stats"+pid).css('display')=='none'){
+		$("#rr_stats"+pid).show();
+		$("#forfeit"+pid).hide();
+		$("#comment"+pid).hide();
+		$("#score"+pid).hide();
+	}
+	else{
+		$("#forfeit"+pid).hide();
+		$("#score"+pid).hide();
+		$("#rr_stats"+pid).hide();
+		$("#comment"+pid).hide();
+	}
+});
+
 });
 
 </script>
@@ -168,6 +186,27 @@ alert("Scores, added successfully!");
 e.preventDefault();
 
 });
+
+$('.add_stats_ajax').click(function (e) {
+
+var id_val = $(this).attr('id');
+
+$.ajax({
+type: 'POST',
+url: baseurl+'league/view_matches',
+data: $('#form-rr-addstats'+id_val).serialize(),
+success: function(res){
+//location.reload(res);
+alert("Stats are added successfully!");
+
+   $('#rr_stats'+id_val).hide();
+   //$('#tr_stat'+id_val).html(res);
+}
+});
+e.preventDefault();
+
+});
+
 });
 </script>
 
@@ -410,8 +449,10 @@ echo "<a href='".$map_url."' title='".$get_loc['hcl_address'].", ".$get_loc['hcl
 <?php if($rr_matches[$m]->Winner == "") {?>
 
 <td style="padding-left:15px;">
-<a id='add' class='add_score' href='#reg_matches' name='<?php echo $tm_id; ?>'>Add Score </a><!-- / 
-<a id="wff_add" class="wff_score" href="#reg_matches" name="<?php echo $tm_id; ?>">Win by Forfeit</a> -->
+<a id='add' class='add_score' href='#reg_matches' name='<?php echo $tm_id; ?>'>Add Score </a>&nbsp;|&nbsp;
+<a id='stats' class='add_stats' href='#reg_matches' name='<?php echo $tm_id; ?>'>Add Statistics </a>
+<!-- <a id="wff_add" class="wff_score" href="#reg_matches" name="<?php echo $tm_id; ?>">
+Win by Forfeit</a> -->
 </td>
 <?php } else { ?>
 <td style="padding-left:15px;">
@@ -446,6 +487,8 @@ if($tour_details->Usersid == $sess_id){
 ?>
 <?php echo "\t"; ?><img src='<?php echo base_url()."images/ico-images/Edit.png"; ?>' id='img-winner' class='rr_edit_score img-winner' 
 href='#edit_score' name='<?php echo $tm_id; ?>' width='30px' height='30px' style='cursor:pointer' />
+&nbsp;<a id='stats' class='add_stats' href='#reg_matches' name='<?php echo $tm_id; ?>'>Add Statistics </a>
+
 <?php }
 ?>
 </td>
@@ -865,6 +908,113 @@ name="player2_user_partner" type='hidden' />
 </tr>
 <!-- -------------------------End of edit score block ------------------------- -->
 
+<!-- -------------------------Add Stats block ------------------------- -->
+<tr id="rr_stats<?php echo $rr_matches[$m]->Tourn_match_id; ?>" class="tourn_match" style="display:none;">
+<td colspan='3'>
+<div style="width: 1100px; overflow-y: hidden; overflow-x: auto; ">
+<form name="form-rr-addstats" id="form-rr-addstats<?php echo $rr_matches[$m]->Tourn_match_id; ?>">
+<?php
+$get_reg_players1	= league::get_reg_team_players($tourn_id, $rr_matches[$m]->Player1);
+$team1_players		= json_decode($get_reg_players1['Team_Players']);
+
+$get_reg_players2	= league::get_reg_team_players($tourn_id, $rr_matches[$m]->Player2);
+$team2_players		= json_decode($get_reg_players2['Team_Players']);
+//echo "<pre>";
+//print_r($team1_players);
+//print_r($team2_players);
+//exit;
+
+$stats_params = array('Season' => 'Season' , 'Age' => 'Age', 'Tm' => 'Tm', 'Lg' => 'Lg', 'Pos' => 'Pos', 'G' => 'G', 'GS' => 'GS', 'MP' => 'MP', 'FG' => 'FG', 'FGA' => 'FGA', 'FG%' => 'FGPer', '3P' => 'ThreeP', '3PA' => 'ThreePA', '3P%' => 'ThreePPer', '2P' => 'TwoP', '2PA' => 'TwoPA', '2P%' => 'TwoPPer', 'eFG%' => 'eFGPer', 'FT' => 'FT', 'FTA' => 'FTA', 'FT%' => 'FTPer', 'ORB' => 'ORB', 'DRB' => 'DRB', 'TRB' => 'TRB', 'AST' => 'AST', 'STL' => 'STL', 'BLK' => 'BLK', 'TOV' => 'TOV', 'PF' => 'PF', 'PTS' => 'PTS');
+
+/*$stats_params = array('Tm', 'Lg', 'Pos', 'G', 'GS', 'MP', 'FG', 'FGA', 'FGPer', 'ThreeP', 'ThreePA', 'ThreePPer', 'TwoP', 'TwoPA', 'TwoPPer', 'eFGPer', 'FT', 'FTA', 'FTPer', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS');*/
+?>
+<div class='form-group table-responsive'>
+	<table class="score-cont">
+	<tr>
+	<th>Player</th>
+	<?php
+	foreach($stats_params as $key => $param){
+	?>
+	<th><?=$key;?></th>
+	<?php
+	}
+	?>
+	</tr>
+	<?php
+	if($team1_players){
+		$i = 0;
+		foreach($team1_players as $p1){
+		$get_name1 = league::get_username($p1); 
+		if($i % 2 == 0)
+		$bgcolor = '#d6f38b';
+		else
+		$bgcolor = '#f3ffd3';
+
+	?>
+	<tr style="background:<?=$bgcolor;?>">
+	<td>&nbsp;<b><?php echo $get_name1['Firstname'].'<br>'.$get_name1['Lastname']; ?></b></td>
+		<?php
+	foreach($stats_params as $key => $param){
+	?>
+	<td><input id='set1_1_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[<?=$p1;?>][<?=$param;?>]' style = "width:30px;" type='text' maxlength='6' /></td>
+	<?php
+	}
+	?>
+	</tr>
+	<?php
+		$i++;
+		}
+	}
+	if($team2_players){
+		$i = 0;
+		foreach($team2_players as $p2){
+		$get_name2 = league::get_username($p2);
+		if($i % 2 == 0)
+		$bgcolor = '#fcdebe';
+		else
+		$bgcolor = '#fffaf4';
+	?>
+	<tr style="background:<?=$bgcolor;?>">
+	<td>&nbsp;<b><?php echo $get_name2['Firstname'].'<br>'.$get_name2['Lastname']; ?></b></td>
+		<?php
+	foreach($stats_params as $key => $param){
+	?>
+	<td><input id='set1_1_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[<?=$p2;?>][<?=$param;?>]' style = "width:30px;" type='text' maxlength='6' /></td>
+	<?php
+	}
+	?>
+	</tr>
+	<?php
+		$i++;
+		}
+	}
+	?>
+	</table>
+</div>
+<div>
+
+<input class='form-control' value="TS_ADDSTATS" name="score_type" type='hidden'> 
+<input class='form-control' value="<?php echo $rr_matches[$m]->Player1;?>" id="player1_user" name="player1_user" type='hidden'>
+<input class='form-control' value="<?php echo $rr_matches[$m]->Player1_Partner;?>" id="player1_user_partner" name="player1_user_partner" type='hidden'>
+
+<input class='form-control' value="<?php echo $rr_matches[$m]->Player2; ?>" id="player2_user" name="player2_user" type='hidden'>
+<input class='form-control' value="<?php echo $rr_matches[$m]->Player2_Partner; ?>" id="player2_user_partner" name="player2_user_partner" type='hidden'>
+
+<input class='form-control' value="<?php echo $rr_matches[$m]->Tourn_ID;?>" id="tourn_id" name="tourn_id" type='hidden'>
+<input class='form-control' value="<?php echo $rr_matches[$m]->BracketID;?>" id="bracket_id" name="bracket_id" type='hidden'>
+<input class='form-control' value="<?php echo $rr_matches[$m]->Match_Num;?>" id="match_num" name="match_num" type='hidden'>
+<input class='form-control' value="<?php echo $match_type;?>" id="match_type" name="match_type" type='hidden'>
+<input class='form-control' value="<?php echo $rr_matches[$m]->Tourn_match_id;?>" id="tourn_match_id" name="tourn_match_id" type='hidden'>
+<input class='form-control' value="<?php echo $round;?>" id="round_title" name="round_title" type='hidden'>
+<input class='form-control' value="" id="" name="draw_name" type='hidden'>
+</div>
+
+<div class='col-md-12' style='text-align:center;'><input name="add_rr_stats" id="<?php echo $rr_matches[$m]->Tourn_match_id;?>" type="submit" value="Add" class="add_stats_ajax league-form-submit"></div>
+</form>
+</div>
+</td>
+</tr>
+<!-- -------------------------End of Add Stats block ------------------------- -->
 
 
 <?php

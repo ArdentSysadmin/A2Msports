@@ -153,3 +153,4 @@ foreach($coaches_list as $row){ ?><!-- img-djoko -->
 </div><!-- row -->
 </div>
 </div>
+</section>

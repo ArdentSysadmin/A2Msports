@@ -26,10 +26,10 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			$this->load->model('academy_mdl/model_general', 'general');
 			$this->load->model('academy_mdl/model_news');
 
-			$this->short_code		= $this->uri->segment(1);
+			$this->short_code			= $this->uri->segment(1);
 			$this->academy_admin	= $this->general->get_org_admin($this->short_code);
-			$this->academy_id		= $this->general->get_orgid($this->short_code);
-			$this->logged_user		= $this->session->userdata('users_id');
+			$this->academy_id			= $this->general->get_orgid($this->short_code);
+			$this->logged_user			= $this->session->userdata('users_id');
 			//echo "L ".$this->logged_user;
 //echo "<pre>";print_r( $http_response_header ); exit;
 /*print_r($this->session->userdata);
@@ -129,15 +129,15 @@ exit;*/
 		
 		public function get_org_details($org_id)
 		{
-			$org_details			= $this->model_academy->get_academy_details($org_id); 
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
 			$data['org_details']	= $org_details; 
 
-			$data['creator']		= $org_details['Aca_User_id'];
+			$data['creator']				= $org_details['Aca_User_id'];
 
-			$data['menu_list']		= $this->model_academy->get_menu_list();
+			$data['menu_list']			= $this->model_academy->get_menu_list();
 			$data['act_menu_list']	= $this->model_academy->get_act_menu_list($org_id);
-			$data['results']		= $this->model_academy->get_news($org_id);
-			$data['sport_levels']	= $this->model_academy->get_tennis_levels();
+			$data['results']				= $this->model_academy->get_news($org_id);
+			$data['sport_levels']		= $this->model_academy->get_tennis_levels();
 
 			return $data;
 		}
@@ -174,9 +174,10 @@ exit;*/
 
 		public function details($org_id)
 		{
-			if($_GET['st'] == '1'){
+			if($_GET['st'] == '1' or $_GET['st'] == '2' or $_GET['st'] == '3' or $_GET['st'] == '4'){
 					$org_details			= $this->model_academy->get_academy_details($org_id);
 					$data['org_details']	= $org_details;
+					$data['pg']				= $_GET['st'];
 
 					$this->load->view('academy_views/view_reg_popup', $data);
 			}
@@ -195,9 +196,10 @@ exit;*/
 			if($org_details['POM'])
 			$data['pom_user'] 		= $this->model_academy->get_user($org_details['POM']);
 		
-			$data['menu_list']		= $this->model_academy->get_menu_list();
+			$data['menu_list']			= $this->model_academy->get_menu_list();
 			$data['act_menu_list']	= $this->model_academy->get_act_menu_list($org_id);
-			$data['tourn_list']		= $this->model_academy->get_user_create_tournments($data['creator']);
+			$data['tourn_list']			= $this->model_academy->get_user_create_tournments($data['creator']);
+			$data['events_list']		= $this->model_academy->get_user_create_events($data['creator']);
 			
 			//$data['past_tournments'] = $this->model_academy->get_user_past_tournments($data['creator']); 
 
@@ -206,21 +208,28 @@ exit;*/
 			
 			//$club_leagues = array_merge($data['tourn_list'], $data['past_tournments']);
 			$club_leagues = $data['tourn_list'];
+			$club_events	  = $data['events_list'];
 			//echo "<pre>"; print_r($club_leagues); exit;
 			$data['club_leagues'] = array_splice($club_leagues, 0, 4);
+			$data['club_events']   = array_splice($club_events, 0, 4);
 			//echo "<pre>"; print_r($data['club_members']); exit;
 			//$data['results'] = $this->model_news->get_news();
 			$data['results']		 = $this->model_academy->get_news($org_id);
 			$data['sport_levels'] = $this->model_academy->get_tennis_levels();
 			$data['club_testimonials'] = $this->model_academy->get_testimonials($org_id);
 	
-			$facility_details					= $this->model_academy->get_club_facility($org_id); 
+			$facility_details				= $this->model_academy->get_club_facility($org_id); 
 			$data['facility_details']	= $facility_details;
+			$data['org_id']				= $org_id;
 
 			$this->load->view('academy_views/includes/academy_header', $data);
 			if($org_id == 1176){
-			$data['gpa_members'] = $this->model_academy->get_members_list($org_id);
+			$data['gpa_members'] = $this->model_academy->get_top_members_list($org_id);
 			$this->load->view('academy_views/view_gpa_home', $data);
+			}
+			else if($org_id == 1166){
+			//$data['gpa_members'] = $this->model_academy->get_members_list($org_id);
+			$this->load->view('academy_views/view_sreenidhi_home', $data);
 			}
 			else{
 			$this->load->view('academy_views/view_academy_details', $data);
@@ -399,7 +408,7 @@ exit;*/
 		
 			$news_id_det			= $this->model_academy->get_news_detail($news_id);
 			$data['news_id_det']	= $news_id_det;
-			$org_id					= $news_id_det['Org_Id'];
+			$org_id						= $news_id_det['Org_Id'];
 
 			$data['org_id']			= $org_id;
 
@@ -608,11 +617,13 @@ exit;*/
 			$data['menu_list'] = $this->model_academy->get_menu_list();
 			$data['act_menu_list'] = $this->model_academy->get_act_menu_list($org_id);
 			
-			$this->load->view('academy_views/includes/academy_header',$data);
+			$this->load->view('academy_views/includes/academy_header', $data);
+
 			if(count($data['coaches_list']) == 1)
-			$this->load->view('academy_views/view_coach_profile',$data);
+			$this->load->view('academy_views/view_coach_profile', $data);
 			else
-			$this->load->view('academy_views/view_academy_coaches',$data);
+			$this->load->view('academy_views/view_academy_coaches', $data);
+
 			//$this->load->view('academy_views/includes/academy_right_column',$data);
 			$this->load->view('academy_views/includes/academy_footer');
 		}
@@ -621,6 +632,7 @@ exit;*/
 			$data['coach_name']  = "";
 			$org_id = $this->academy_id;
 			$data['org_id'] = $org_id;
+			$data['coach_id'] = $coach_id;
 			$data['coaches_list'] = $this->model_academy->get_coaches_list($org_id);
 			
 			$org_details = $this->model_academy->get_academy_details($org_id); 
@@ -727,13 +739,13 @@ exit;*/
 
 			$data['view_type']	= 'grid';
 
-			$this->load->view('academy_views/includes/academy_header',$data);
-			$this->load->view('academy_views/view_academy_members',$data);
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/view_academy_members', $data);
 			//$this->load->view('academy_views/includes/academy_right_column',$data);
 			$this->load->view('academy_views/includes/academy_footer');
 		}
 
-		public function rankings($org_id){
+		public function rankings($org_id) {
 			$data['org_id'] = $org_id;
 			//$data['club_results'] = $this->model_academy->get_assoc_clubs($org_id);
 
@@ -742,7 +754,18 @@ exit;*/
 			$data['org_details']		= $org_details; 
 
 			$this->load->view('academy_views/includes/academy_header', $data);
-			$this->load->view('academy_views/view_coming_soon', $data);
+			$this->load->view('academy_views/view_gpa_rankings', $data);
+			$this->load->view('academy_views/includes/academy_footer');
+		}
+
+		public function rankings2($org_id) {
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']	= $this->general->get_sports(); 
+			$data['org_details']	= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/view_gpa_rankings', $data);
 			$this->load->view('academy_views/includes/academy_footer');
 		}
 
@@ -927,6 +950,7 @@ exit;*/
 				$data['ag_grp']			= $this->input->post('ag_grp');
 				$data['sel_gend']		= $this->input->post('sel_gend');
 				$data['range']			= $this->input->post('range');
+				$data['stat_search']			= $this->input->post('stat_search');
 
 				$data['lat']			    = $this->session->userdata('lat');
 				$data['long']			= $this->session->userdata('long');
@@ -971,6 +995,9 @@ exit;*/
 				$this->load->view('academy_views/view_academy_members',$data);
 				//$this->load->view('academy_views/includes/academy_right_column',$data);
 				$this->load->view('academy_views/includes/academy_footer');
+			}
+			else{
+				echo "Error: Please contact admin!"; exit;
 			}
 		}
 
@@ -1414,9 +1441,12 @@ if ($err) {
 			$output = '';
 			
 			if(count($get_list) > 0){
-			$output .= "<option value=''>Select</option>";
+				$output .= "<option value=''>Select</option>";
 				foreach($get_list as $list){
-				$output .= "<option value='" . $list->Membership_ID . "'>" . $list->Membership_ID . ' - ' . $list->Membership_Type . ' - ' . $list->Frequency . ' - ' . number_format($list->Fee, 2) . "</option>";
+					if($list->Frequency_Code == 'O')
+						$output .= "<option value='" . $list->Membership_ID . "'>" . $list->Membership_ID . ' - ' . $list->Membership_Type . ' - ' . number_format($list->Fee, 2) . "</option>";
+					else
+						$output .= "<option value='" . $list->Membership_ID . "'>" . $list->Membership_ID . ' - ' . $list->Membership_Type . ' - ' . $list->Frequency . ' - ' . number_format($list->Fee, 2) . "</option>";
 				}
 			}
 
@@ -1557,17 +1587,17 @@ if ($err) {
 			return $stat;
 		}
 
-		public function send_user_email($email, $reply_to, $subject, $data)
-		{
+		public function send_user_email($email, $reply_to, $subject, $data) {
 			$this->load->library('email');
 			$this->email->set_newline("\r\n");
 		
-			$this->email->from(FROM_EMAIL, 'A2MSports');
+			$this->email->from(FROM_EMAIL, $data['club']);
 			$this->email->to($email); 
+			//$this->email->to("pradeepkumar.namala@gmail.com"); 
 			$this->email->reply_to($reply_to);
 			$this->email->subject($subject);
 
-			$body = $this->load->view('view_email_template.php', $data, TRUE);
+			$body = $this->load->view('academy_views/view_email_template.php', $data, TRUE);
 
 			$this->email->message($body);   
 			$stat = $this->email->send();
@@ -1695,7 +1725,7 @@ if ($err) {
 			$org_details = $this->model_academy->get_academy_details($org_id); 
 			$email			= $adm_det['EmailID'];
 			$reply_to		= $this->input->post('contactus_email');
-			$subject		= "User contact message - ".$org_details['Aca_name'];
+			$subject		= "Contact Message - ".$org_details['Aca_name'];
 
 			$user_name =  $this->input->post('contactus_name');
 			$user_email =  $this->input->post('contactus_email');
@@ -1718,23 +1748,83 @@ if ($err) {
 				exit;
 			}
 
-				$data = array(
-							'name'			=> $this->input->post('contactus_name'),
-							'user_email'	=> $this->input->post('contactus_email'),
-							'subject'			=> $this->input->post('contactus_subject'),
-							'club'				=> $org_details['Aca_name'],
-							'message'		=> $this->input->post('contactus_msg'),
-							'page'			=> 'Contact Us - Club'
-							);
+			$data = array('name'		=> $this->input->post('contactus_name'),
+								'user_email'	=> $this->input->post('contactus_email'),
+								'subject'		=> $this->input->post('contactus_subject'),
+								'club'				=> $org_details['Aca_name'],
+								'message'		=> $this->input->post('contactus_msg'),
+								'page'			=> 'Contact Us - Club');
+
+			$data['aca_logo']			= $org_details['Aca_logo'];
+			$data['aca_name']		= $org_details['Aca_name'];
+			$data['aca_proxy_url']	= $org_details['A2M_Proxy_URL'];
 
 			$send_mail = $this->send_user_email($email, $reply_to, $subject, $data);
 			if($send_mail){
+				$this->session->set_flashdata('contact_success', 'Your Message sent to club admin, Thank you.');
+			}
+			else{
+				$this->session->set_flashdata('contact_success', 'Something went wrong! Please try after sometime. Thank you.');
+			}
+
+			redirect($this->input->post('contact_redirect'));
+		}
+
+		public function send_epf(){
+			$org_id			= $this->academy_id;
+			$adm_det		= $this->model_academy->get_user($this->academy_admin);
+			$org_details = $this->model_academy->get_academy_details($org_id); 
+			$email			= $adm_det['EmailID'];
+			//$email		= "pradeepkumar.namala@gmail.com";
+			$reply_to		= $this->input->post('mail');
+			$subject		= "Elite Program Enquiry - ".$org_details['Aca_name'];
+
+
+			/*if($user_name == ""){
+				$this->session->set_flashdata('contact_success', 'Please provide us your name');
+				redirect($this->input->post('contact_redirect')."#contact");
+				exit;
+			}
+			else if($user_email == ""){
+				$this->session->set_flashdata('contact_success', 'Please provide us your email');
+				redirect($this->input->post('contact_redirect')."#contact");
+				exit;
+			}
+			else if($user_msg == ""){
+				$this->session->set_flashdata('contact_success', 'Please let us know your message');
+				redirect($this->input->post('contact_redirect')."#contact");
+				exit;
+			}*/
+
+				$data = array(
+							'club'				=> $org_details['Aca_name'],
+							'page'			=> 'Elite Program - Sreenidhi'
+							);
+
+			$data['aca_logo']			= $org_details['Aca_logo'];
+			$data['aca_name']		= $org_details['Aca_name'];
+			$data['aca_proxy_url']	= $org_details['A2M_Proxy_URL'];
+
+			$data['name']		=  $this->input->post('name');
+			$data['gender']		=  $this->input->post('gender');
+			$data['mobile']		=  $this->input->post('mobile');
+			$data['age']			=  $this->input->post('age');
+			$data['user_email']	=  $this->input->post('mail');
+			$data['sports']				= implode(', ', $this->input->post('sports'));
+			$data['program_level']	=  $this->input->post('program_level');
+			$data['message']				=  $this->input->post('notes');
+
+
+			$send_mail = $this->send_user_email($email, $reply_to, $subject, $data);
+
+			/*if($send_mail){
 			$this->session->set_flashdata('contact_success', 'Your Message sent to club admin, Thank you.');
 			}
 			else{
 			$this->session->set_flashdata('contact_success', 'Something went wrong! Please try after sometime. Thank you.');
 			}
-			redirect($this->input->post('contact_redirect'));
+			redirect($this->input->post('contact_redirect'));*/
+
 		}
 
 		public function get_user_sport_intrests($user_id,$sport){	
@@ -1795,7 +1885,7 @@ if ($err) {
 		 }
 
 		 public function page1($org_id){
-			$data['org_id'] = $org_id;
+			$data['org_id']			= $org_id;
 			$org_details				= $this->model_academy->get_academy_details($org_id); 
 			$data['sports_list']		= $this->general->get_sports(); 
 			$data['org_details']		= $org_details; 
@@ -1806,18 +1896,18 @@ if ($err) {
 		 }
 
 		 public function page2($org_id){
-			$data['org_id'] = $org_id;
+			$data['org_id']			= $org_id;
 			$org_details				= $this->model_academy->get_academy_details($org_id); 
 			$data['sports_list']		= $this->general->get_sports(); 
 			$data['org_details']		= $org_details; 
 
 			$this->load->view('academy_views/includes/academy_header', $data);
-			$this->load->view('academy_views/sreenidhi/page2.html');
+			$this->load->view('academy_views/sreenidhi/etz_plus.html');
 			$this->load->view('academy_views/includes/academy_footer');
 		 }
 
 		 public function page3($org_id){
-			$data['org_id'] = $org_id;
+			$data['org_id']			= $org_id;
 			$org_details				= $this->model_academy->get_academy_details($org_id); 
 			$data['sports_list']		= $this->general->get_sports(); 
 			$data['org_details']		= $org_details; 
@@ -1828,18 +1918,18 @@ if ($err) {
 		 }
 
 		 public function page4($org_id){
-			$data['org_id'] = $org_id;
+			$data['org_id']			= $org_id;
 			$org_details				= $this->model_academy->get_academy_details($org_id); 
 			$data['sports_list']		= $this->general->get_sports(); 
 			$data['org_details']		= $org_details; 
 
 			$this->load->view('academy_views/includes/academy_header', $data);
-			$this->load->view('academy_views/sreenidhi/page4.html');
+			$this->load->view('academy_views/sreenidhi/etz-school');
 			$this->load->view('academy_views/includes/academy_footer');
 		 }
 
 		 public function page5($org_id){
-			$data['org_id'] = $org_id;
+			$data['org_id']			= $org_id;
 			$org_details				= $this->model_academy->get_academy_details($org_id); 
 			$data['sports_list']		= $this->general->get_sports(); 
 			$data['org_details']		= $org_details; 
@@ -1850,7 +1940,7 @@ if ($err) {
 		 }
 
 		 public function page6($org_id){
-			$data['org_id'] = $org_id;
+			$data['org_id']			= $org_id;
 			$org_details				= $this->model_academy->get_academy_details($org_id); 
 			$data['sports_list']		= $this->general->get_sports(); 
 			$data['org_details']		= $org_details; 
@@ -1860,4 +1950,161 @@ if ($err) {
 			$this->load->view('academy_views/includes/academy_footer');
 		 }
 
+		 public function mha($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/myhomeavatar.php');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function mhv($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/myhomevihanga.php');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function pbl($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']	= $this->general->get_sports(); 
+			$data['org_details']	= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/pabel_city.php');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function etz_primary($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/etz-primary-school.php');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function etz_secondary($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/etz-secondary-school.php');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function elite_prog($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/elite_prog');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function virtual_training($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/virtual_training.html');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function vt_basketball($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/vt_basketball');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function vt_squash($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/vt_squash');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function vt_tennis($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/vt_tennis');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function vt_martialarts($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/vt_martialarts');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function vt_chess($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/vt_chess');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function vt_fitness($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/vt_fitness');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+
+		 public function sn_about_us($org_id){
+			$data['org_id']			= $org_id;
+			$org_details				= $this->model_academy->get_academy_details($org_id); 
+			$data['sports_list']		= $this->general->get_sports(); 
+			$data['org_details']		= $org_details; 
+
+			$this->load->view('academy_views/includes/academy_header', $data);
+			$this->load->view('academy_views/sreenidhi/about_us');
+			$this->load->view('academy_views/includes/academy_footer');
+		 }
+		
+		public function get_location($ev_loc_id){
+			return $this->general->get_location_name($ev_loc_id);
+		}
 	}

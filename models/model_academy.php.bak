@@ -268,8 +268,8 @@
 				}
 			}
 			
-			print_r($this->db->last_query());
-			exit;
+			//print_r($this->db->last_query());
+			//exit;
 
 			return $query->result();
 		}
@@ -371,6 +371,7 @@
 			$this->db->order_by("Modified_on", "desc");
 			$this->db->limit($limit);
 			$query=$this->db->get();
+			echo $this->db->last_query(); exit;
 			return $query->result();
 		}
 

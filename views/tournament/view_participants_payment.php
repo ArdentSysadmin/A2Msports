@@ -119,7 +119,8 @@ checkboxes.style.display = "block";
 <th width="35%">Name</th>
 <th width="15%">Contact#</th>
 <th width="20%">Amount Paid($)</th>
-<th width="20%">Status</th>
+<th width="10%">Status</th>
+<th width="25%">Date</th>
 <?php if($tour_details->Is_Coupon){ ?>
 <th width="20%">Coupon Code</th>
 <?php } ?>
@@ -169,7 +170,8 @@ echo "<a href='".base_url()."player/".$name->Users_ID."' target='_blank'>" . ucf
 <td style="padding-left:10px">
 <div>
 <?php
-$paid = ($gross - $pp_charges) + $extra_paid;
+//$paid = ($gross - $pp_charges) + $extra_paid;
+$paid = ($gross - $pp_charges);
 
 if($name->Status == 'Completed' or $name->Status == 'Paid'){
 $total += $paid;
@@ -182,6 +184,13 @@ echo number_format($paid, 2);
 <div>
 <?php
 echo $name->Status;
+?>
+</div>
+</td>
+<td style="padding-left:10px">
+<div>
+<?php
+echo date('M d, Y H:i', strtotime($name->Reg_date));
 ?>
 </div>
 </td>
@@ -211,24 +220,96 @@ echo number_format($refund_amt, 2);
 </div>
 </td>
 </tr>
+
 <?php
+	if(count($add_payments) > 0){
+
+		foreach($add_payments as $pay){
+			if($pay->Transaction_id != $name->Transaction_id){
+?>
+<tr>
+<td style="padding-left:10px">
+<?php
+$player = league::get_username($pay->Users_ID);
+echo "<a href='".base_url()."player/".$pay->Users_ID."' target='_blank'>" . ucfirst($player['Firstname']) . " " . ucfirst($player['Lastname']) . "</a>";
+?>
+</td>
+
+<td style="padding-left:10px"><?php echo $player['Mobilephone']; ?></td>
+
+<td style="padding-left:10px">
+<div>
+<?php
+//$paid = ($gross - $pp_charges) + $extra_paid;
+
+if($pay->Status == 'Completed' or $pay->Status == 'Paid'){
+//$total += $paid;
 }
+//echo number_format($paid, 2);
+echo number_format($pay->Amount, 2);
+?>
+</div>
+</td>
+<td style="padding-left:10px">
+<div>
+<?php
+echo $pay->Status;
+?>
+</div>
+</td>
+<td style="padding-left:10px">
+<div>
+<?php
+echo date('M d, Y H:i', strtotime($pay->pay_date));
+?>
+</div>
+</td>
+
+<?php if($tour_details->Is_Coupon){ ?>
+
+<td style="padding-left:10px">
+<div><?php
+//echo $name->Coupon_Applied;
+?></div>
+</td>
+<?php } ?>
+
+<td style="padding-left:10px; font-weight:400;">
+<div>
+<?php
+//$get_refunds = league::get_refund_trans($name->RegisterTournament_id);
+//$refund_amt = 0;
+//foreach($get_refunds as $refund){
+//	$refund_amt += $refund->Ref_Amt;
+//}
+//$total_refund += $refund_amt;
+//echo number_format($refund_amt, 2);
+?>
+</div>
+</td>
+</tr>
+
+<?php
+		 } // end of ID 
+		} // end of paytrans FOR
+	}
+} // end of tour reg FOR
 ?>
 <tr>
 <td colspan='2' style="padding-right:10px" align='right'>Total Pay</td>
-<td colspan='3' style="padding-left:10px">
+<td colspan='5' style="padding-left:10px">
 <div><?=number_format($total, 2); ?></div>
 </td>
 </tr>
 <tr>
 <td colspan='2' style="padding-right:10px" align='right'>Refunds</td>
-<td colspan='3' style="padding-left:10px">
-<div><?echo " - "; echo number_format($total_refund, 2); ?></div>
+<td colspan='5' style="padding-left:10px">
+<div><?php  echo " - "; echo number_format($total_refund, 2); ?></div>
 </td>
 </tr>
 <tr>
 <td colspan='2' style="padding-right:10px" align='right'>Net Pay</td>
-<td colspan='3' style="padding-left:10px">
+<td colspan='5' style="padding-left:10px">
 <div><? echo number_format(($total - $total_refund), 2); ?></div>
 </td>
 </tr>
@@ -236,7 +317,7 @@ echo number_format($refund_amt, 2);
 }
 else {
 ?>
-<tr><td colspan='6'><b>No Players are Registered yet. </b></td></tr>
+<tr><td colspan='7'><b>No Players are Registered yet. </b></td></tr>
 <?php
 }
 ?>

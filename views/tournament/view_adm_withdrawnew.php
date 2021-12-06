@@ -264,7 +264,9 @@ print_r($reg_events_array1);*/
 <form name='frm_<?=$name->Users_ID;?>' method = 'POST' action = '<?=base_url();?>Payments_pro/Refund_transaction'>
 <table class="tab-score">
 <tr>
-  <td id="existing_events_<?=$name->Users_ID;?>"><!-- Loads Dynamic Content of Players selected Formats --></td>
+  <td id="existing_events_<?=$name->Users_ID;?>">
+  <!-- Loads Dynamic Content of Players selected Formats -->
+  </td>
   <td>
     <label>Amount Paid:</label> $<?=number_format($name->Fee, 2);?>&nbsp;
 	<?php if($name->Transaction_id){ echo "(Trans#: $name->Transaction_id)"; } else { echo "(Trans#: Not Available)"; } ?>
@@ -300,6 +302,7 @@ print_r($reg_events_array1);*/
 		}
 	}
 	?>
+<input name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url')."/league";?>" />
 	<input type="hidden" name="trans_id"	 id="trans_id<?=$name->Users_ID;?>"		value="<?=$name->Transaction_id;?>" />
 	<input type="hidden" name="refund_type"  id="refund_type<?=$name->Users_ID;?>"  value="Full" />
 	<input type="hidden" name="currencycode" id="currencycode<?=$name->Users_ID;?>" value="<?=$name->Currency_Code;?>" />

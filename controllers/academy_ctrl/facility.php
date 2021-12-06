@@ -130,9 +130,9 @@ mkdir($club_fac_dir, 0777, true);
 /* ***************** Code to upload Tournment Image Form Starts Here. *********************** */
 $config = array(
 'upload_path'	=> $club_fac_dir,
-'allowed_types' => "gif|jpg|png|jpeg",
+'allowed_types' => "gif|jpg|png|jpeg|mp4",
 'overwrite'		=> FALSE,
-'max_size'		=> "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+'max_size'		=> "100000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
 'max_height'	=> "5000",
 'max_width'	=> "8000"
 );
@@ -335,6 +335,101 @@ redirect($this->input->post('redirect_page'));
 
 }
 
+public function add_lt_team($org_id){
+$org_id = $this->academy_id;
+if(!$this->is_club_admin){ echo "Unauthorised Access!"; exit; }
+if(!$org_id){
+echo "Something went wrong!";
+exit;
+}
+
+/*echo "<pre>";
+print_r($_POST);
+print_r($_FILES);
+exit;*/
+
+$lt_name = $this->input->post('lt_name');
+$lt_role    = $this->input->post('lt_role');
+$lt_desc  = $this->input->post('lt_desc');
+$lt_prev_imgs  = $this->input->post('lt_prev_imgs');
+$files		= $_FILES;
+
+$doc_root		= $_SERVER['DOCUMENT_ROOT'];			
+$club_dir		= $doc_root.'\assets\club_facility\\'.$org_id;
+
+if (!file_exists($club_dir)){
+mkdir($club_dir, 0777, true);
+}
+
+$club_lt_dir = $doc_root.'\assets\club_facility\\'.$org_id.'\lt_team';
+//echo $club_ps_dir; exit;
+if (!file_exists($club_lt_dir)){
+mkdir($club_lt_dir, 0777, true);
+}
+
+
+$mem_name = $lt_name;
+$mem_role    = $lt_role;
+$mem_sum   = $lt_desc;
+$img_name   = $lt_prev_imgs;
+//echo $re_name;exit;
+if($files['lt_imgs']['name']) {
+$_FILES['lt_imgs']['name']		= $files['lt_imgs']['name'];
+$_FILES['lt_imgs']['type']		= $files['lt_imgs']['type'];
+$_FILES['lt_imgs']['tmp_name']	= $files['lt_imgs']['tmp_name'];
+$_FILES['lt_imgs']['error']		= $files['lt_imgs']['error'];
+$_FILES['lt_imgs']['size']		= $files['lt_imgs']['size'];
+
+$fileName = 'lt_imgs';
+
+$config = array(
+'upload_path'	=> $club_lt_dir,
+'allowed_types' => "gif|jpg|png|jpeg",
+'overwrite'		=> TRUE,
+'max_size'		=> "10000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
+'max_height'	=> "8000",
+'max_width'		=> "10000");
+
+$this->load->library('upload',$config);  
+$this->upload->initialize($config);
+
+if($this->upload->do_upload($fileName)){
+$upload_data = $this->upload->data();
+$img_name = $upload_data['file_name'];
+}
+}
+
+$revised_teams[] = array(
+								'img'		=> $img_name,
+								'name'	=> $mem_name,
+								'role'		=> $mem_role,
+								'desc'   => $mem_sum
+								);
+
+/*echo "<pre>";
+print_r($revised_teams);*/
+$pre_lt_team = $this->input->post('pre_lt_team');
+
+if($pre_lt_team != null and $pre_lt_team != 'null'){
+	$prev_arr		= json_decode($pre_lt_team, true);
+	$upd_imgs	= array_merge($prev_arr, $revised_teams);
+	$r_teams		= json_encode($upd_imgs);
+}
+else{
+	$r_teams		= json_encode($revised_teams);
+}
+
+
+$data['Aca_ID']						 = $org_id;
+$data['Facility_Leadership']  = $r_teams;
+//echo "<pre>"; print_r($data); exit;
+$upd_details							 = $this->model_academy->update_facility_lt_teams($data); 
+
+redirect($this->input->post('redirect_page'));
+
+}
+
+
 public function delete_ps($org_id){
 	if(!$this->is_club_admin){ echo "Unauthorised Access!"; exit; }
 	if(!$org_id){ echo "Something went wrong!"; exit; }
@@ -361,6 +456,38 @@ else
 	$data['Facility_Partner_Sponsors']  = NULL;
 
 	$upd_details = $this->model_academy->update_facility_ps_teams($data); 
+}
+
+
+public function delete_lt($short_code){
+
+	$org_id = $this->academy_id;
+
+	if(!$this->is_club_admin){ echo "Unauthorised Access!"; exit; }
+	if(!$org_id){ echo "Something went wrong!"; exit; }
+
+	$del_images  = $this->input->post('sel_ps');
+	$all_images   = json_decode($this->input->post('all_ps'), true);
+
+	foreach($del_images as $index){
+			unset($all_images[$index]);
+	}
+	$upd_imgs = array_values($all_images);
+
+	/*echo "<pre>";
+	print_r($_POST);
+	print_r($this->input->post('sel_ps'));
+	print_r($this->input->post('all_ps'));
+	print_r($upd_imgs);
+	exit;*/
+
+	$data['Aca_ID']			   = $org_id;
+	if(!empty($upd_imgs))
+		$data['Facility_Leadership']  = json_encode($upd_imgs);
+	else
+		$data['Facility_Leadership']  = NULL;
+//echo "<pre>"; print_r($data); exit;
+	$upd_details = $this->model_academy->update_facility_lt_teams($data); 
 }
 
 public function add_hv(){

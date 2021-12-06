@@ -42,6 +42,40 @@
 			//$data['sp_list']					=  $sp_list;
 			$this->load->view('view_home', $data);
 		}
+		
+		public function a2m_new(){
+		$sport = $this->general->get_sports();
+			
+			$games = array();
+			$i = 1;
+			foreach($sport as $row){
+				if($i <= count($sport)) {  // Added this condition to avoid disturbing in home page layout with 7 tournaments
+				$game = $row->SportsType_ID;
+				$data['games'][$i] = $this->home->get_specific_sport($game);
+				}
+			$i++;
+			}
+
+			/*$get_sponsors = $this->general->get_sponsors();
+
+			foreach($get_sponsors as $sponsor){
+				$sp = json_decode($sponsor->Sponsors, true);
+
+				$sp_list[$sponsor->tournament_ID] = $sp; 
+			}*/
+
+			$limit = 8;
+			$data['results']					= $this->model_news->get_news($limit);
+			$data['members']				=  $this->home->get_count_members();
+			$data['tourns']					=  $this->home->get_count_tourns();
+			$data['gen_matches']		=  $this->home->get_count_matches();
+			$data['tourn_matches']	=  $this->home->get_count_tourn_matches();
+			//$data['sp_list']					=  $sp_list;
+
+			$this->load->view('includes/view_home_header');
+			$this->load->view('view_home2', $data);
+			$this->load->view('includes/view_home_footer');
+		}
 
 		public function test_home()
 		{

@@ -135,7 +135,7 @@ var user = $('#txt_ac_pom_id').val();
  <!-- -------------Player of month end section------------------------------------ -->
 			<!-- <br> -->
 			<!-- -------------Latest News start Section-------------------------------------- -->
-           <div class="top-score-title right-title hidden-xs">
+           <div class="top-score-title right-title hidden-xs" style="padding-left:20px;">
 
 				 <?php if($org_details['Aca_ID']){ ?> 
                 <h3> <a href="<?php echo base_url().$this->short_code;?>/news">Latest News </a>
@@ -163,13 +163,15 @@ var user = $('#txt_ac_pom_id').val();
 						 $res = substr($s, 0, strrpos($s, ' '));
 
 						 echo $res . "...";
+						 //exit;
 					?>
 					</a>
 					</p>
                     <p class="txt-right">
 					<?php 
 						$abc = strip_tags($row->News_content);
-						$result = substr($abc, 0, strpos($abc, '.'));
+						//$result = substr($abc, 0, strpos($abc, '.'));
+						$result = substr($abc, 0, 300);
 
 						echo $result . "...";
 					?>

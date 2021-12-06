@@ -630,7 +630,7 @@ $prev_round_games = $process_res[1];
 <!-- </div> -->
 
 <input type="hidden" id="tourn_id" name="tourn_id" value="<?php echo $this->input->post('tourn_id'); ?>" />
-<input type='hidden' name='br_game_day'	value="<?php $br_game_day; ?>" />
+<input type='hidden' name='br_game_day'	value="<?php echo $br_game_day; ?>" />
 
 <input type='hidden' name='match_type' value="<?php echo $this->input->post('types'); ?>" />
 <input type='hidden' name='age_group' value="<?php echo $this->input->post('type_gen'); ?>" />

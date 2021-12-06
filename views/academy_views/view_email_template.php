@@ -1,19 +1,48 @@
 <html>
 <head>
+<?php
+if($aca_name){
+?>
+<title><?=ucwords($aca_name);?></title>
+<?php
+}
+else{
+?>
 <title>A2MSports</title>
+<?php
+}
+?>
+<style>
+img[class='logo']{
+	width:auto;
+	height: 80px;
+}
+</style>
+
 </head>
 
 <body>
 <table width="700" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr>
     <td style="border:2px solid #ff8a00">
-		<table width="696" border="0" cellspacing="0" cellpadding="0">
+		<table width="700" border="0" cellspacing="0" cellpadding="0">
 		<tr>
 		<td width="172" style="padding:10px">
-		<img class="scale_image" src="<?php echo base_url(); ?>images/logo.png" alt=""  />
+		<?php
+		if($aca_logo){
+		?>
+		<img style='width:auto; height:80px;' class="logo scale_image" src="<?php echo base_url(); ?>org_logos/<?=$aca_logo;?>" alt=""  />
+		<?php
+		}
+		else {
+		?>
+		<!-- <img class="scale_image" src="<?php echo base_url(); ?>images/logo.png" alt=""  /> -->
+		<?php
+		}
+		?>
 		</td>
-		<td width="524">
-		<div align="center" style="font-size:18px; font-weight:bold"><?php //echo $userName; ?></div>
+		<td width="524" valign="bottom">
+		<div align="left" style="font-size:18px; font-weight:bold"><h3><?php echo ucwords($aca_name); ?></h3></div>
 		</td>
 		</tr>
 		<tr>
@@ -37,20 +66,95 @@ switch($page){
  Hi <?php echo $Firstname . " " . $Lastname  ;?>,
 </div> 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px"> 
-Thank you for registering with a2msports.com. <br /> Please access given below link to activate your account. <br /> 
+Thank you for registering with us. <br /> Please access the below link to activate your account. <br /> 
 
-<?php $string =  base_url()."register/activate/".$Code;
+<?php 
+if($aca_proxy_url)
+	$string =  $aca_proxy_url."/register/activate/".$Code;
+else
+	$string =  base_url()."register/activate/".$Code;
+	
 $string = auto_link($string, 'url');
 echo $string;
 ?>	<br />
 			
 </div>
-<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> Admin, <br /> A2MSports. </div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> <b>Admin</b>, <br /> <?php echo "<b>".ucwords($aca_name)."</b>"; ?>. </div>
 
 </td>
 <?php
 	break;
 ?>
+
+<?php
+case "New Club Registration with PayNow":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Hi <?php echo $Firstname . " " . $Lastname  ;?>,
+</div> 
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px"> 
+<?php
+$string =  $aca_proxy_url."/register/activate/".$Code;
+?>
+Thank you for registering with us. <br /> 
+Click <a href='<?php echo $string; ?>' style="color: #fff; background-color: #337ab7; padding: 6px 12px; font-size: 14px; border-radius: 4px; text-decoration: none;font-family: Helvetica Neue,Helvetica,Arial,sans-serif;"> Activate </a>  to activate your account. 
+<br /><br />
+You have chosen the Subscription 
+<b><?=$mem_info['Membership_Type'].' '.$mem_info['Frequency'];?></b>.
+<br />
+Please access the below links to Pay and complete your subscription. (Ignore this, if already paid)
+<br />
+<?php
+$burl = $this->config->item('club_form_url');
+if($this->config->item('club_form_url') == '')
+	$burl = $_SERVER['HTTP_X_FORWARDED_HOST'];
+
+if($mem_info['Act_Fee'] > 0) {
+?>
+One Time Activation Fee:&nbsp;&nbsp;<a href='<?php echo $burl."/membership/paynow/".$ot_id; ?>' style="color: #fff; background-color: #337ab7; padding: 6px 12px; font-size: 14px; border-radius: 4px; text-decoration: none;font-family: Helvetica Neue,Helvetica,Arial,sans-serif;"> Pay Now </a>
+<?php
+}
+?>
+
+<br />
+Subscription:&nbsp;&nbsp;<a href='<?php echo $burl."/membership/paynow/".$subscr_id; ?>' style="color: #fff; background-color: #337ab7; padding: 6px 12px; font-size: 14px; border-radius: 4px; text-decoration: none;font-family: Helvetica Neue,Helvetica,Arial,sans-serif;"> Pay Now </a>
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Thank you, <br /> <b>Admin</b>, <br /> <?php echo "<b>".ucwords($aca_name)."</b>"; ?>.
+</div>
+</td>
+<?php
+break;
+?>
+
+
+<?php
+case "New Club Registration - Admin":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Hi Admin,
+</div> 
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px"> 
+A New user <b><?=$Firstname . " " . $Lastname;?></b>, registered with <b><?=$club_name;?></b>. 
+<br /><br /><br />
+Enrolled for the Subscription 
+<b><?=$mem_info['Membership_Type'].' '.$mem_info['Frequency'];?></b>.
+<br />
+
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Thank you, <br />  <?php echo "<b>".ucwords($aca_name)."</b>"; ?>.
+</div>
+</td>
+<?php
+break;
+?>
+
+
 <?php
 	case "Request-Demo":
 ?>
@@ -229,15 +333,27 @@ please <strong><a href='<?php echo $string;?>'>click here</a></strong> to regist
 </div> 
 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
-A New Event (<?php echo $ev_title; ?>) invitation has been sent to you.</div> 
-
+An Invitation for Event (<?php echo $ev_title; ?>) has sent to you.</div> 
+<?php
+if($ev_msg != ''){ ?>
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
-<?php $string = base_url()."events/view/".$event_id;?>
-Please <strong><a href='<?php echo $string;?>'>click here</a></strong> to view / respond to the event schedules .<br />
+<b>Admin Message:</b>  <?php echo $ev_msg; ?></div> 
+<?php
+}
+?>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php 
+if($aca_proxy_url)
+	$string =  $aca_proxy_url."/events/".$event_id;
+else
+	$string = base_url()."events/".$event_id;
+?>
+
+Please <strong><a href='<?php echo $string;?>'>click here</a></strong> to view/respond to the event schedules.<br />
 </div>
 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
-<?php echo $this->session->userdata('user'); ?>, <br />  A2MSports. </div>
+<?php echo $this->session->userdata('user'); ?>, <br /><b>Admin</b>, <br /> <?php echo "<b>".ucwords($aca_name)."</b>"; ?>.</div>
 
 </td>
 <?php
@@ -318,14 +434,20 @@ echo $string;
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
 Please access the below link to register. <br />
 
-<?php $string =  base_url()."events/view/".$ev_id."/".$act_code;
+<?php
+if($aca_proxy_url)
+	$string =  $aca_proxy_url."/events/".$ev_id."/".$act_code;
+else
+	$string =  base_url()."events/".$ev_id."/".$act_code;
+
 $string = auto_link($string, 'url');
 echo $string;
-?>	<br />
+
+?><br />
 
 </div>
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
-<?php echo $this->session->userdata('user'); ?>, <br />  A2MSports. </div>
+<b>Admin</b>, <br /> <?php echo "<b>".ucwords($aca_name)."</b>"; ?>.</div>
 
 </td>
 <?php
@@ -442,25 +564,30 @@ case "Reset Password":
 <td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
- Hi <?php echo $firstname . " " . $lastname . ","; ?> 
+ Hi <?php echo $Firstname . " " . $Lastname . ","; ?> 
 </div> 
 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
-A New password request has been initiated for your A2MSports login. <br />
+A new password request has been requested at <?php echo ucwords($aca_name); ?> for your account. <br />
 Please access the below link to reset the password.<br />
 
-<?php $string =  base_url()."login/reset_password_form/".$code;
+<?php
+if($aca_proxy_url)
+	$string =  $aca_proxy_url."/login/reset/".$code;
+else
+	$string =  base_url()."login/reset_password_form/".$code;
+
 $string = auto_link($string, 'url');
 echo $string;
 ?><br />
 </div>
 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
-Please ignore this email if you were not initiated Password request.<br />
+Please ignore this email, if you were not initiated password reset request.<br />
 </div>
 
-<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
-Admin, <br />  A2MSports. </div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Thank you, <br /><b>Admin</b>, <br /><?php echo "<b>".ucwords($aca_name)."</b>"; ?>. </div>
 
 </td>
 <?php
@@ -896,25 +1023,50 @@ A2MSports. </div>
 <?php
 	break;
 ?>
-
 <?php 
-  case "Admin Notification":
+case "Admin Notification":
 ?>
 <td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
- Hi <?php echo $firstname . " " . $lastname; ?>,
+Hi <?php echo $firstname . " " . $lastname; ?>,
 </div> 
 
-<span style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
-<?php echo $mes?> <br />
+<span style="margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;margin-bottom: 25px">
+<?php echo $mes;?> <br />
 </span>
 
-<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
-Admin, <br />  A2MSports. </div>
+<?php
+if($tourn_id and $tourn_id != NULL and $tourn_id != ''){
+	if($aca_proxy_url)
+		$string =  $aca_proxy_url."/league/$tourn_id";
+	else
+		$string =  base_url()."league/$tourn_id";
+
+$string = auto_link($string, 'url');
+echo $string;
+}
+?><br /><br />
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, 
+<br /> 
+<?php
+if($tadmin and $tadmin != NULL and $tadmin != ''){
+echo $tadmin.",<br />";
+}
+if($title and $title != NULL and $title != ''){
+echo $title.",<br />";
+}
+else{
+echo "Admin, <br />";
+}
+
+echo ucwords($aca_name);
+?>
+</div>
 </td>
 <?php
-	break;
+break;
 ?>
 
 
@@ -951,6 +1103,66 @@ A2MSports. </div>
 	break;
 ?>
 
+<?php 
+  case "Elite Program - Sreenidhi":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+ Hi Admin,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Given below are the Elite Program Inquire details.
+<br /><br />
+<b>Student Name: </b><?php echo $name;?><br />
+<b>Student Email: </b><?php echo $user_email;?><br />
+<b>Phone: </b><?php echo $mobile;?><br />
+<b>Gender: </b><?php echo $gender;?><br />
+<b>Age: </b><?php echo $age;?><br />
+<b>Sports Inquired: </b><?php echo $sports;?><br />
+<b>Program Level: </b><?php echo $program_level;?><br />
+<b>Notes: </b><?php echo $message;?><br />
+</div>
+
+<br />
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /><br />
+<?php echo $aca_name;?>. </div>
+
+</td>
+<?php
+	break;
+?>
+
+
+<?php
+case "Contact Us - Club":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Hi Admin,<br />
+You got a enquiry message from portal <?=$club;?>
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Name: <?php echo $name; ?><br />
+Email: <?php echo $user_email; ?><br />
+Message: <?php echo $message; ?><br />
+
+<br />
+</div>
+
+<div style="Margin-top:0;color:#565656;font-family:Georgia,serif;font-size:16px;line-height:25px;Margin-bottom:25px">
+Thank you,<br /> 
+Admin.<br />
+</div>
+</td>
+<?php
+break;
+?>
+
 
 <?php
 default:
@@ -966,7 +1178,7 @@ default:
  <table width="696" border="0" cellspacing="0" cellpadding="0">
 
   <tr>
-    <td style="background:#81a32b; font-size:12px; padding:6px; color:#ffffff; text-align:center">© 2021 a2msports.com. All rights reserved.</td>
+    <td style="background:#81a32b; font-family: Georgia,serif; font-size:12px; padding:6px; color:#ffffff; text-align:center">Powered By <a href="https://a2msports.com"><!-- <img src="<?php echo base_url(); ?>assets/club_pages/images/a2mlogo.png" alt=""> --><b>A2MSports</b></a></td>
     </tr>
 </table>
 

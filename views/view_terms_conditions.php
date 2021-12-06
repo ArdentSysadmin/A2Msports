@@ -51,7 +51,7 @@ function closeWin(){
 <body>
 <table width="700" border="0" cellspacing="0" cellpadding="0" align="center">
    <tr>
-     <td style="border:2px solid #ff8a00">
+     <td style="border:2px solid #ff8a00; padding: 10px;">
     	<table width="696" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td width="172" style="padding:10px">
@@ -146,7 +146,7 @@ function closeWin(){
  <table width="696" border="0" cellspacing="0" cellpadding="0">
 
   <tr>
-    <td style="background:#81a32b; font-size:12px; padding:6px; color:#ffffff; text-align:center">© 2016 a2msports.com. All rights reserved.</td>
+    <td style="background:#81a32b; font-size:12px; padding:6px; color:#ffffff; text-align:center">&copy; 2021 a2msports.com. All rights reserved.</td>
     </tr>
  </table>
 

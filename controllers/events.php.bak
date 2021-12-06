@@ -146,9 +146,7 @@ class events extends CI_Controller {
 
 	public function create()
 	{
-	/*	echo "<pre>";
-		print_r($_POST);
-		exit;*/
+		//echo "<pre>"; print_r($_POST); exit;
 
 		 $filename = 'EventImage';  
 
@@ -325,15 +323,21 @@ class events extends CI_Controller {
 			$name = $this->general->get_user($comment->Users_id);
 			$full_name = ucfirst($name['Firstname'])." ".ucfirst($name['Lastname']);
 
-			$op .= "<div class='pull-left' style='margin-right:20px'><img class='img-circle' src='".base_url()."profile_pictures/".$name['Profilepic']."' width='50px' height='50px' /></div>
-			<div style='margin-top:5px'>
-				<span style='font-weight:bold; color:#464646'>".$full_name."</span>
+			if($name['Profilepic'] != ''){
+			$prof_pic = base_url()."profile_pictures/{$name['Profilepic']}";
+			}
+			else{
+			$prof_pic = base_url()."profile_pictures/default-profile.png";
+			}
+
+
+			$op .= "<div class='pull-left' style='margin-right:20px'><img class='img-circle' src='{$prof_pic}' width='50px' height='50px' /></div><div style='margin-top:5px'><span style='font-weight:bold;color:#464646'>".$full_name."</span>
 				<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_date))."</span>
 				<div style='margin-top:5px;'>$comment->Comments</div>
 			</div>
 			<div style='clear:both; height:20px'></div>";
-
 		}
+
 		echo $op;
 
 			//redirect("events/view/$ev_id/4");
@@ -363,7 +367,8 @@ class events extends CI_Controller {
 
 		$event_location = $add . " " .$city . " " . $state . " " . $country;
 		
-		$data['latt'] = $this->get_lang_latt($event_location);
+		//$data['latt'] = $this->get_lang_latt($event_location);
+		$data['latt'] = '0'.'@'.'0';
 
 		$ins_location = $this->model_event->create_location($data);
 		 
@@ -461,7 +466,7 @@ class events extends CI_Controller {
 					});
 					</script>";
 
-			$op .= "<div class='form-group' align='center'>
+			/*$op .= "<div class='form-group' align='center'>
 					<label class='control-label col-md-2' for='id_accomodation' align='right'></label>
 					<div class='col-md-10 form-group internal'>
 					<table><tr>
@@ -470,6 +475,17 @@ class events extends CI_Controller {
 					<td><select class='form-control' name='ev_st[]' id='ev_st'>".$options1."</select></td>
 					<td><select class='form-control' name='ev_et[]' id='ev_et'>".$options2."</select></td>
 					{$show_loc}
+					</tr></table>
+					</div></div><br>";*/
+			$op .= "<div class='form-group' align='center'>
+					<label class='control-label col-md-2' for='id_accomodation' align='right'></label>
+					<div class='col-md-10 form-group internal'>
+					<table><tr>
+					<!-- <td>".$x."&nbsp;&nbsp;</td> -->
+					<td><input type='text' style='width:80%' class='form-control datepicker' name='ev_dt[]' value = '".$ev_date."'></td>
+					<td><input type='time' class='form-control' name='ev_st[]' id='ev_st' value='{$st}' /></td>
+					<td><input type='time' class='form-control' name='ev_et[]' id='ev_et' value='{$et}' /></td>
+					 {$show_loc}
 					</tr></table>
 					</div></div><br>";
 
@@ -580,7 +596,7 @@ class events extends CI_Controller {
 					</script>";
 
 			
-			$op .= "<div class='form-group' align='center'>
+			/*$op .= "<div class='form-group' align='center'>
 					<label class='control-label col-md-2' for='id_accomodation' align='right'></label>
 					<div class='col-md-10 form-group internal'>
 					<table><tr>
@@ -588,6 +604,17 @@ class events extends CI_Controller {
 					<td><input type='text' style='width:80%' class='form-control datepicker' name='ev_dt[]' value = '".$ev_date."'></td>
 					<td><select class='form-control' name='ev_st[]' id='ev_st'>".$options1."</select></td>
 					<td><select class='form-control' name='ev_st[]' id='ev_et'>".$options2."</select></td>
+					{$show_loc}
+					</tr></table>
+					</div></div><br>";*/
+			$op .= "<div class='form-group' align='center'>
+					<label class='control-label col-md-2' for='id_accomodation' align='right'></label>
+					<div class='col-md-10 form-group internal'>
+					<table><tr>
+					<!-- <td>".$x."&nbsp;&nbsp;</td> -->
+					<td><input type='text' style='width:80%' class='form-control datepicker' name='ev_dt[]' value = '".$ev_date."'></td>
+					<td><input type='time' class='form-control' name='ev_st[]' id='ev_st' value='{$st}' /></td>
+					<td><input type='time' class='form-control' name='ev_et[]' id='ev_et' value='{$et}' /></td>
 					{$show_loc}
 					</tr></table>
 					</div></div><br>";
@@ -797,7 +824,7 @@ class events extends CI_Controller {
 
 		$data['user']	  = $users_id;
 		$data['event_id'] = $event_id;
-
+//echo "<pre>"; print_r($_POST); print_r($data); exit;
 		$is_ev_user = $this->model_event->check_is_invited_user($data);
 		
 		if(!$is_ev_user){
@@ -813,12 +840,13 @@ class events extends CI_Controller {
 				//echo "testing";
 				//exit;
 			$rep_events = $this->model_event->get_rep_events($event_id);
+			//echo "<pre>"; print_r($rep_events); exit;
+
 			   foreach($rep_events as $obj){
 					$data['user']	   = $users_id;
 					$data['event_id']  = $event_id;
 					$data['ev_rep_id'] = $obj->Ev_Tab_ID;
 					$data['ev_status'] = $status;
-
 					$create_inv = $this->model_event->ins_ev_invite($data);
 			   }
 			   $user_stat = $this->model_event->update_non_reg_user_status($event_id,$act_code);
@@ -843,10 +871,10 @@ class events extends CI_Controller {
 			case "Attending":
 				$status = 'Accept';
 			break;
-			case "Not Attending":
+			case "NOT ATTENDING":
 				$status = 'Decline';
 			break;
-			case "Tentative":
+			case "TENTATIVE":
 				$status = 'Tentative';
 			break;
 			default:
@@ -855,7 +883,7 @@ class events extends CI_Controller {
 		}
 
 		$data['event_id'] = $event_id;
-
+//echo "<pre>"; print_r($_POST); print_r($data); exit;
 		$is_ev_user = $this->model_event->check_is_invited_user($data);
 		
 		if(!$is_ev_user){
@@ -1185,6 +1213,7 @@ $simple_api_key = 'AIzaSyC0JNMWyyW6t1fSNyrprBJC2bWKG4btytc';
 
 			}
 				echo json_encode($data_new);
+				exit;
 		 }
 
 		 public function Sport_levels($sport_id = '')

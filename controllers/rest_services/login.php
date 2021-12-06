@@ -284,4 +284,25 @@ class login extends REST_Controller {
 
 		}
 
+		public function loginTest_post(){
+				$post_data = json_decode(file_get_contents('php://input'), true);
+
+				$un	 = $post_data['user_name'];
+				$pwd = $post_data['user_pwd'];
+//echo "<pre>"; print_r($post_data);
+				//$un	 = $this->input->post('user_name');
+				//$pwd = $this->input->post('user_pwd');
+
+				if($un == 'testuser' and $pwd == 'testuser'){
+					$res = array('status' => 'Success', 'user_id' => 237, 'user_name' => 'Test User');
+					$this->response($res, 200);
+					exit;
+				}
+				else{
+					$res = array('Error: ' . "Invalid Login!");
+					$this->response($res, 400);
+					exit;
+				}
+		}
+
 }

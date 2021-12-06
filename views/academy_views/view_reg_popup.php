@@ -47,16 +47,107 @@ var shrt = "<?php echo $org_details['Aca_URL_ShortCode']; ?>";
 </div>
 </div>
 
+
+<div class="modal fade" id="act_modal" role="dialog">
+<div class="modal-dialog modal-lg mobile-modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header" style='border:0px;'>
+<!-- Login window content -->
+<form>
+	<div style='margin-bottom:5px;'>
+	<h5><b>Account is activated successfully. Please login with your credentials. Thank you </b> &nbsp;&nbsp;&nbsp;&nbsp;<input type='button' id='act_ok_btn' value=' Ok ' /></h5>
+	</div>
+</form>
+<!-- Login window content -->
+	</div>
+	</div>
+</div>
+</div>
+
+<div class="modal fade" id="upd_pwd_modal" role="dialog">
+<div class="modal-dialog modal-lg mobile-modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header" style='border:0px;'>
+<!-- Login window content -->
+<form>
+	<div style='margin-bottom:5px;'>
+	<h5><b>Password updated successfully. Please login with your credentials. Thank you </b> &nbsp;&nbsp;&nbsp;&nbsp;<input type='button' id='upd_pwd_ok_btn' value=' Ok ' /></h5>
+	</div>
+</form>
+<!-- Login window content -->
+	</div>
+	</div>
+</div>
+</div>
+
+
+<div class="modal fade" id="fr_pwd_modal" role="dialog">
+<div class="modal-dialog modal-lg mobile-modal-dialog">
+	<div class="modal-content">
+	<div class="modal-header" style='border:0px;'>
+<!-- Login window content -->
+<form>
+	<div style='margin-bottom:5px;'>
+	<h5><b>Password reset link has sent to your email. Thank you</b>
+	&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' id='fr_pwd_ok_btn' value=' Ok ' /></h5>
+	</div>
+</form>
+<!-- Login window content -->
+	</div>
+	</div>
+</div>
+</div>
+
+
+<?php
+if($pg == '1'){
+?>
 <script>
 $(document).ready(function(){
-	
 	$("#login_modal").modal();
-	
 	$('#ok_btn').click(function(){
 		window.location.replace(baseurl);
 	});
 });
 </script>
-
+<?php
+}
+else if($pg == '2'){
+?>
+<script>
+$(document).ready(function(){
+	$("#act_modal").modal();
+	$('#act_ok_btn').click(function(){
+		window.location.replace(baseurl);
+	});
+});
+</script>
+<?php
+}
+else if($pg == '3'){
+?>
+<script>
+$(document).ready(function(){
+	$("#upd_pwd_modal").modal();
+	$('#upd_pwd_ok_btn').click(function(){
+		window.location.replace(baseurl);
+	});
+});
+</script>
+<?php
+}
+else if($pg == '4'){
+?>
+<script>
+$(document).ready(function(){
+	$("#fr_pwd_modal").modal();
+	$('#fr_pwd_ok_btn').click(function(){
+		window.location.replace(baseurl);
+	});
+});
+</script>
+<?php
+}
+?>
 </body>
 </html>

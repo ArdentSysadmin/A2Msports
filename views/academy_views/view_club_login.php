@@ -13,8 +13,7 @@ var club_baseurl = "<?php echo $this->config->item('club_form_url'); ?>";
 width:50%;
 }
 
-@media only screen and (max-width: 780px) 
-{
+@media only screen and (max-width: 780px) {
 	.mobile-modal-dialog{
 	width:100% !important;
 	}
@@ -94,21 +93,26 @@ var baseurl = "<?php echo base_url(); ?>";
 <div id="login-submit" style="line-height:25px">
 <input name="academy"  type="hidden" value="<?=$org_details['Aca_ID'];?>" />
 <input name="shortcode" type="hidden" value="<?=$org_details['Aca_URL_ShortCode'];?>" />
+<?php if($ev_id){ ?>
+<input name="aca_page" id="aca_page" type="hidden" value="events/<?=$ev_id;?>" />
+<?php }
+else { ?>
 <input name="aca_page" id="aca_page" type="hidden" value="" />
-
+<?php }
+?>
 <input type="submit" id='submit_web_login' name='submit_web_login'  value="  Login  " style="display:none;" /> 
 <input type="button" id='btn_web_login' name='btn_web_login'  value="  Login  " style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00" /> 
 &nbsp;&nbsp; | <a href="#" id="new_member">New User?</a>&nbsp;&nbsp; 
-<?php if($org_details['Aca_URL_ShortCode'] == 'testclub9' or $org_details['Aca_URL_ShortCode'] == 'sba'){ ?>
+<?php //if($org_details['Aca_URL_ShortCode'] == 'testclub9' or $org_details['Aca_URL_ShortCode'] == 'sba'){ ?>
 | <a href="#" id="forgot_pwd">Forgot Password?</a>
 <?php
-}?>
+//}?>
 </div>
-<br /> <h4 style="padding-bottom:10px; padding-top:10px">Or...<br /><br />
+<!-- <br /> <h4 style="padding-bottom:10px; padding-top:10px">Or...<br /><br />
 <div id="phone-login" style="line-height:25px;"> 
 <a href="#" id="phone_login" class="btn btn-info" role="button" style="margin-bottom: 20px;background-color: #81a32b;border-color: #81a32b;">
 Login with Mobile Number</a>
-</div>
+</div> -->
 
 </div>
 
@@ -134,7 +138,7 @@ height="40px" width="245px" /></a><br /><br />
 <!-- Login window content -->
 
 <?php
-$this->load->view("academy_views/view_phone_login_forms");
+//$this->load->view("academy_views/view_phone_login_forms");
 ?>
 
 <?php

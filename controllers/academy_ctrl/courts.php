@@ -1,6 +1,6 @@
 <?php
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+//error_reporting(-1);
       // session_start(); 
 
 	class Courts extends CI_Controller {
@@ -48,7 +48,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			$this->org_id	     = $this->general->get_orgid($this->short_code);
 			$this->academy_admin = $this->general->get_org_admin($this->short_code);
 			$det = $this->general->check_is_member($this->org_id, $this->logged_user);
-			$this->is_club_member = ($det['tab_id']) ? 1 : 0;
+			$this->is_club_member = ($det['tab_id'] and $det['Member_Status']) ? 1 : 0;
 			
 			$this->admin_menu_items = array('0'=>'');
 			if($this->logged_user != $this->academy_admin)
@@ -114,6 +114,11 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			$this->load->view($this->footer_tpl);
 		}
 
+		public function get_min_max_court_time($loc_id){
+			$min_max = $this->model_courts->get_min_max_court_time($loc_id);
+			return $min_max;
+		}
+
 		public function courts_list($data = "")
 		{	
 			$this->check_log_status();
@@ -141,20 +146,18 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 		public function add_court()
 		{
-			/*echo "<pre>";
-			print_r($_POST);
-			exit;*/
-			if($this->input->post('submit_location')){
+			//echo "<pre>"; print_r($_POST); exit;
 
-				$get_long			= $this->get_lang_latt();
+			if($this->input->post('submit_location')){
+				$get_long				= $this->get_lang_latt();
 				$data['long_latt']	= $get_long;
 				
-				$ins_data			= $this->model_courts->add_court($data);
+				$ins_data				= $this->model_courts->add_court($data);
 				//$ins_data			= $this->model_courts->add_court_test($data);
 
 				$data				= $this->get_org_details($this->org_id);
 				$data['results']	= $this->model_news->get_news($this->org_id);
-				$data['courts']		= $this->model_courts->get_locations($this->org_id);
+				$data['courts']	= $this->model_courts->get_locations($this->org_id);
 
 				$this->load->view($this->header_tpl, $data);
 				$this->load->view('academy_views/view_courts_list', $data);
@@ -217,13 +220,44 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 		}
 
+public function get_next_dates(){
+		$court = $this->input->post('court'); // court id
+		$rd = $this->input->post('rd'); // reserve date
+		$from_time = $this->input->post('rt');	// time
+		$bd = $this->input->post('bd'); // number of days / weeks
+		$tp =  $this->input->post('tp'); // is it a days / weeks
+		$slt =  $this->input->post('slt');	// duration
+
+		$court_det = $this->model_courts->get_court_det($court);
+		$mins = ($duration * 60) * $court_det['slot_duration'];
+		$to_time	= date('H:i', strtotime('+'.$mins.' minutes', strtotime($from_time))); 
+
+		$str = '';
+		for($i = 1; $i<=$bd; $i++){
+			$nxt = date('M d, Y', strtotime('+'.$i." {$tp}", strtotime($rd)));
+			$nxt_date = date('Y-m-d', strtotime($nxt));
+			$check_avail = $this->model_courts->is_nxt_avail($court, $nxt_date, $from_time, $to_time);
+			if($check_avail)
+				$str .= "<b style='color:#012a75'>" . $nxt . "</b>";
+			else
+				$str .= "<i class='fa fa-exclamation-triangle' aria-hidden='true' title='Bookings are exists on this date & slot!'></i><b style='color:red'>" . $nxt . "</b>";
+
+			if($i != $bd)
+				$str .= '; ';
+		}
+
+		echo "<b style='color:red'>Note:</b> Additional booking dates will be: ".$str;
+}
+
 		public function block_court()
 		{
-			/*echo "<pre>";
-			//print_r($court_name);
-			//print_r($_POST);
-			echo "Testing";
-			exit;*/
+			/*if($this->logged_user == 240){
+				echo "<pre>";
+				print_r($court_name);
+				print_r($_POST);
+				echo "Testing";
+				exit;
+			}*/
 
 			$stat  = $this->model_courts->check_court_avail();
 			$price = $this->input->post('book_price_val');
@@ -237,19 +271,28 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			
 			 if($stat == 1 and $price != '')
 			 {
-				$court_id = $this->input->post('court');
+				$court_id  = $this->input->post('court');
+				$loc_id		= $this->input->post('loc_id');
+
 				$check_is_payable = $this->model_courts->check_payable($court_id);
+
 				//$fee = number_format($check_is_payable['book_price_val'],2);
 				$fee = number_format($this->input->post('book_price_val'),2);
 //echo $fee;
 //exit;
-					$court_id		= $this->input->post('court');
-					$loc_id			= $this->input->post('loc_id');
 
+			$court_durations		= $this->model_courts->get_court_durations($loc_id, $court_id);
+			$sd	= $court_durations['slot_duration'];
+			
+			$res_date	 = explode(" ",$this->input->post('res_date'));
+			$res_time	 = $this->input->post('res_time');
+			
+			//if(!$res_date[1]){
+			//$res_date = explode("T", $this->input->post('res_date'));
+			//}
 					if($block_all_day and ($this->logged_user == $this->academy_admin)){
 						$get_court_times = $this->model_courts->getCourtsTimesFees($court_id);
 						//echo "<pre>"; print_r($get_court_times[0]->Start_Time); exit;
-						$res_date		= explode(" ",$this->input->post('res_date'));
 						$hrs				= $this->input->post('book_hours');
 			
 						$rdate			= date('Y-m-d', strtotime($res_date[0]));
@@ -257,21 +300,25 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 						$to_time		= date('H:i', strtotime($get_court_times[0]->End_Time)); 
 					}
 					else{
-						$res_date		= explode(" ",$this->input->post('res_date'));
-						$hrs			= $this->input->post('book_hours');
-
+						//$hrs				= $this->input->post('book_hours');
+						$mins				= ($this->input->post('book_hours') * 60) * $sd;
+//echo $mins;
 						$rdate			= date('Y-m-d', strtotime($res_date[0]));
-						$from_time		= date('H:i', strtotime($res_date[1])); 
+						$from_time	= date('H:i', strtotime($res_time)); 
 
-						if($hrs > 19){
+						/*if($hrs > 19){
 						$to_time		= date('H:i', strtotime('+'.$hrs.' minutes', strtotime($res_date[1]))); 
 						}
 						else{
 						$to_time		= date('H:i', strtotime('+'.$hrs.' hours', strtotime($res_date[1])));
-						}
+						}*/
+						$to_time		= date('H:i', strtotime('+'.$mins.' minutes', strtotime($res_time))); 
+
 					}
-					$loc_name			= $this->model_courts->get_loc_name($loc_id);
-					$court_name		= $this->model_courts->get_court_name($court_id);
+					//echo $rdate."-".$from_time."-".$to_time;
+					//exit;
+					$loc_name		= $this->model_courts->get_loc_name($loc_id);
+					$court_name	= $this->model_courts->get_court_name($court_id);
 					$reserved_by	= $this->logged_user;
 
 					$match_format	= $this->input->post('match_format');
@@ -281,29 +328,27 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 					$players		= json_encode($this->input->post('players'));
 
 
-				if($fee != '0.00')
-				 {
+				if($fee != '0.00'){
 					/* ------------------------------------------------------------------------------ */
-
-					//Set variables for paypal form
+					//set variables for paypal form
 					//$paypalURL = 'https://www.sandbox.paypal.com/cgi-bin/webscr'; //test PayPal api url
 					//$paypalID = 'busi@exitrow.com'; //business email
 
-//					$get_court_det = 
+					//$get_court_det = 
 					$payment_info = $this->model_courts->get_court_det($court_id);
 					$gateway	 = 'paypal';
 					if($payment_info){
-						$gateway	 = $payment_info['gateway_name'];
+						$gateway		= $payment_info['gateway_name'];
 						$pay_ref_id  = $payment_info['payment_ref_id'];
 						
 						if($gateway == 'paypal'){
 							$get_paypal_info = $this->model_courts->get_paypal_info($pay_ref_id);
 							
 							if($get_paypal_info){
-								$paypalID = $get_paypal_info['paypal_merch_id'];						//business email
+								$paypalID = $get_paypal_info['paypal_merch_id'];	 //business email
 							}
 							else{
-								$paypalID = 'admin@a2msports.com';						//business email
+								$paypalID = 'admin@a2msports.com';						 //business email
 							}
 						}
 						else if($gateway == 'paytm'){
@@ -431,20 +476,85 @@ else{
 				 }
 				 else
 				 {
+					 $is_multi_occr = 0;
+					 $multi_weeks = 0;
+					 $multi_days = 0;
+
+					 if($this->input->post('repeat_booking_week')){
+						 $is_multi_occr = 1;
+						 $multi_weeks	 = $this->input->post('repeat_booking_week');
+					 }
+					 else if($this->input->post('repeat_booking_days')){
+						 $is_multi_occr = 1;
+						 $multi_days	 = $this->input->post('repeat_booking_days');
+					 }
+					
 					$data = array('court_id'	=> $court_id,
-								'loc_id'		=> $loc_id,
-								'reserved_by'	=> $reserved_by,
-								'res_date'		=> $rdate,
-								'from_time'		=> $from_time,
-								'to_time'		=> $to_time,
-								'created_on'	=> date('Y-m-d'),
-								'res_status'	=> 'Active',
-								'match_format'	=> $match_format,
-								'num_players'	=> $num_players,
-								'players'		=> $players
+								'loc_id'					=> $loc_id,
+								'reserved_by'		=> $reserved_by,
+								'res_date'				=> $rdate,
+								'from_time'			=> $from_time,
+								'to_time'				=> $to_time,
+								'created_on'			=> date('Y-m-d H:i:s'),
+								'res_status'			=> 'Active',
+								'match_format'		=> $match_format,
+								'num_players'		=> $num_players,
+								'players'				=> $players
 								);	
 
 					$cofrm_booking = $this->model_courts->confirm_court($data);
+
+					if($is_multi_occr and $multi_weeks){
+						for($i = 1; $i <= $multi_weeks; $i++){
+							$nxt_date = date('Y-m-d', strtotime('+'.$i.' week', strtotime($rdate)));
+	
+							$temp = array('res_date' => $nxt_date, 'loc_id' => $loc_id, 'court_id' => $court_id, 'from_time' => $from_time, 'to_time' => $to_time);
+
+							if($this->model_courts->check_court_booking($temp)){
+					$data = array('court_id'	=> $court_id,
+								'loc_id'					=> $loc_id,
+								'reserved_by'		=> $reserved_by,
+								'res_date'				=> $nxt_date,
+								'from_time'			=> $from_time,
+								'to_time'				=> $to_time,
+								'created_on'			=> date('Y-m-d H:i:s'),
+								'res_status'			=> 'Active',
+								'match_format'		=> $match_format,
+								'num_players'		=> $num_players,
+								'players'				=> $players
+								);	
+
+					$cofrm_booking = $this->model_courts->confirm_court($data);
+							}
+
+						}
+					}
+
+					if($is_multi_occr and $multi_days){
+						for($i = 1; $i <= $multi_days; $i++){
+							$nxt_date = date('Y-m-d', strtotime('+'.$i.' day', strtotime($rdate)));
+
+							$temp = array('res_date' => $nxt_date, 'loc_id' => $loc_id, 'court_id' => $court_id, 'from_time' => $from_time, 'to_time' => $to_time);
+							if($this->model_courts->check_court_booking($temp)){
+							$data = array('court_id'	=> $court_id,
+										'loc_id'					=> $loc_id,
+										'reserved_by'		=> $reserved_by,
+										'res_date'				=> $nxt_date,
+										'from_time'			=> $from_time,
+										'to_time'				=> $to_time,
+										'created_on'			=> date('Y-m-d H:i:s'),
+										'res_status'			=> 'Active',
+										'match_format'		=> $match_format,
+										'num_players'		=> $num_players,
+										'players'				=> $players
+										);	
+
+							$cofrm_booking = $this->model_courts->confirm_court($data);
+							}
+
+						}
+					}
+
 
 					$send_conf_mail = $this->send_conf_email($court_id, $loc_id, $reserved_by, $rdate, $from_time, $to_time);
 
@@ -622,10 +732,15 @@ else{
 			foreach($query as $fetch)
 			{
 				$e = array();
-
+				$plrs = json_decode($fetch->players, true);
+				$player = $plrs[0];
+				if(!$plrs[0]){
+				$player = $fetch->firstname." ".$fetch->lastname;
+				}
 				$e['id']			= $fetch->res_id;
 				$e['firstname']		= $fetch->firstname;
 				$e['lastname']		= $fetch->lastname;
+				$e['player']		= $player;
 				$e['courtid']		= $fetch->court_id;
 				//$e['courtid'][]		= $courts_info[$org_id][$fetch->court_id];
 				$e['locid']			= $fetch->loc_id;
@@ -635,7 +750,7 @@ else{
 				$e['num_players']	= $fetch->num_players;
 				$e['match_format']	= $fetch->match_format;
 				
-				$courts_info[$fetch->loc_id][$fetch->court_id]['reserve'] = $e;
+				$courts_info[$fetch->loc_id][$fetch->court_id]['reserve'][] = $e;
 			}
 			//echo json_encode($events);
 			//echo "<pre>"; print_r($courts_info); 
@@ -659,17 +774,45 @@ else{
 		}
 
 		public function get_reserve_popup(){
-			$data['date']  = $this->input->post('date');
+			$data['date']  = $book_date = $this->input->post('date');
 			$data['time']  = $this->input->post('time');
 			$data['court'] = $court_id = $this->input->post('court');
 
-			$loc				= $this->model_courts->get_loc_id($court_id);
-			$loc_id = $data['loc_id'] = $loc['loc_id'];
-			$data['get_courts'] = $this->model_courts->get_loc_courts($loc_id);
+			$loc							= $this->model_courts->get_loc_id($court_id);
+			$loc_id						= $data['loc_id'] = $loc['loc_id'];
+			$data['get_courts']	= $this->model_courts->get_loc_courts($loc_id);
+			$data['get_loc_info']	= $get_loc_info = $this->model_courts->get_loc_info($loc_id);
 
-			$court_durations	= $this->model_courts->get_court_durations($loc_id, $court_id);
-			$data['max_hours']  = $court_durations['max_hours'];
+			$court_durations		= $this->model_courts->get_court_durations($loc_id, $court_id);
+			$data['max_hours']	= $court_durations['max_hours'];
+			$data['max_adv']		= $court_durations['max_adv_booking_days'];
+			$data['is_sdb_allowed']		= $court_durations['allow_sameday_booking'];
+			$data['is_smb_allowed']		= $court_durations['allow_sameday_multi_booking'];
+			$data['slot_duration']	= $court_durations['slot_duration'];
+			$data['court_price']		= $this->model_courts->get_courtPrice($court_id);
+			
+			$data['is_nonmem_book'] = $get_loc_info['access_to_nonmem'];
 
+			if(!$data['is_nonmem_book']){
+			$data['is_user_member'] = $this->model_courts->is_club_member($this->logged_user, $this->org_id);
+			}
+
+			$data['is_club_admin'] = $this->model_courts->is_club_admin($this->logged_user, $this->org_id);
+			$data['is_club_coach'] = $this->model_courts->is_club_coach($this->logged_user, $this->org_id);
+
+			$data['is_user_have_bookings'] = 0;		
+
+			if(!$is_smb_allowed and ($this->logged_user != $this->academy_admin)) {
+				$check		= $this->model_courts->is_same_day_booking($court_id, $this->logged_user, $book_date);
+				$check2	= $this->model_courts->is_same_day_othercourt_booking($loc_id, $court_id, $this->logged_user, $book_date);
+				//echo $check; exit;
+				if($check > 0)
+					$data['is_user_have_bookings'] = 1;		
+				if($check2 > 0)
+					$data['is_user_have_othercourt_bookings'] = 1;		
+			}
+
+//echo "<pre>"; print_r($data); exit;
 			$this->load->view('academy_views/view_reserve_frm', $data);
 		}
 

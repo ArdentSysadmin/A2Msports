@@ -450,16 +450,18 @@ class Payments_pro extends CI_Controller
 	function Refund_transaction()
 	{
 		//echo "<pre>";	 print_r($_POST); exit;
-		$trans_id	  = trim($this->input->post('trans_id'));
-		$refund_amt	  = trim($this->input->post('refund_amnt'));
-		$tran_amt	  = trim($this->input->post('amtp'));
-
+		$trans_id			= trim($this->input->post('trans_id'));
+		$refund_amt		= trim($this->input->post('refund_amnt'));
+		$tran_amt			= trim($this->input->post('amtp'));
+		$red_uri			= trim($this->input->post('red_uri'));
 		//echo $trans_id;
 		//echo $refund_amt;
 
 		if($trans_id and $refund_amt and (preg_match('/[A-Za-z].*[0-9]|[0-9].*[A-Za-z]/', $trans_id))){
 
-		if($tran_amt < $refund_amt){ echo "Error: Refund amount is exceed than the paid amount. Can't proceed!"; exit; }
+		if($tran_amt < $refund_amt){ 
+			echo "Error: Refund amount is exceed than the paid amount. Can't proceed!"; exit; 
+		}
 
 		if($tran_amt > $refund_amt){ $refund_type = 'Partial'; }
 		else if($tran_amt == $refund_amt){ $refund_type = 'Full'; }
@@ -607,7 +609,9 @@ class Payments_pro extends CI_Controller
 						$this->email_to_player($user_res['EmailID'], $subject, $data);
 						//$this->email_to_player('pradeep@ardent-india.com, npradkumar@gmail.com', $subject, $data);
 			}
-
+				if($red_uri)
+					redirect($red_uri.'/'.$tourn_id."/9");
+				else
 					redirect('league/'.$tourn_id."/9");
 		}
 		}
@@ -685,6 +689,9 @@ class Payments_pro extends CI_Controller
 						//$this->email_to_player('pradeep@ardent-india.com, npradkumar@gmail.com', $subject, $data);
 			}
 
+				if($red_uri)
+					redirect($red_uri.'/'.$tourn_id."/9");
+				else
 					redirect('league/'.$tourn_id."/8");
 		}
 	}

@@ -1,7 +1,7 @@
 <?php
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-error_reporting(0);
+error_reporting(-1);
 ini_set("memory_limit","200M");
 //date_default_timezone_set('America/New_York');
 /*
@@ -41,7 +41,9 @@ $config['base_url'] = 'https://a2msports.com/';
 //$config['base_url'] = 'http://198.12.249.197';
 
 $http_orig_url = explode('/', $_SERVER['HTTP_X_ORIGINAL_URL']);
-$config['club_short_code'] = $http_orig_url[1];
+$http_orig_url_2 = explode('?', $http_orig_url[1]);
+
+$config['club_short_code'] = $http_orig_url_2[0];
 
 $config['proxy_url'] =$_SERVER['HTTP_X_REQUEST_SCHEME']."://".$_SERVER['HTTP_X_FORWARDED_HOST'];
 
@@ -50,8 +52,8 @@ if($_SERVER['HTTP_X_FORWARDED_HOST'] != ''){
 	$config['club_pr_url'] = $_SERVER['HTTP_X_REQUEST_SCHEME']."://".$_SERVER['HTTP_X_FORWARDED_HOST'];
 }
 else{
-	$config['club_form_url'] = $config['base_url'].$http_orig_url[1];
-	$config['club_pr_url'] = $config['base_url'].$http_orig_url[1];
+	$config['club_form_url'] = $config['base_url'].$http_orig_url_2[0];
+	$config['club_pr_url'] = $config['base_url'].$http_orig_url_2[0];
 	//echo "test ".$config['proxy_url']; exit;
 }
 $config['profiler'] = FALSE; 

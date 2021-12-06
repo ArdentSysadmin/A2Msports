@@ -218,6 +218,12 @@
 			return $query->row_array();
 		}
 
+		public function get_location_name($loc_id){
+			$data = array('Loc_id' => $loc_id);
+			$get_sp_name = $this->db->get_where('Events_Locations',$data);
+			return $get_sp_name->row_array();
+		}
+
 		public function get_user_created_teams()
 		{
 			$data = array('Created_by' => $this->logged_user);	

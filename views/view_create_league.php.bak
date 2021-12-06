@@ -1951,30 +1951,10 @@ Paypal EmailID (Merchant):
 
  		</div> 
  	</div>
-	<!-- ************************* Paytm Details Section Ends Here. ************************* -->
+<!-- ************************* Paytm Details Section Ends Here. ************************* -->
 
-<div class="col-md-12 league-form-bg" style="margin-top:30px;">
-<div class="fromtitle">Access </div>
-Visible to  &nbsp; <label for="visible">
-<input type="radio" id="visible" name="visible" value="public" checked="checked"  />
-Public
-</label>&nbsp;&nbsp;
-<label for="visible1">
-<input type="radio" id="visible1" name="visible" value="private" />
-Private
-</label>
 
-<div id="academy_text" style="display: none">
-<div class='form-group'>
-<label class='control-label col-md-3' for='id_accomodation'>Academy Name: </label>
-<div class='col-md-6 form-group internal'>
-<input id='academy' name="club_name" class='ui-autocomplete-input col-md-3 form-control ajax_blur' type="text" placeholder="Type your Club Name" />
-<input class='form-control' id='org_id' name='org_id' type='hidden' placeholder="Org_id" value=""  />
-</div>
-</div> 
-</div>
 
-</div>
 <!-- T-Shirt Section Start -->
 <div class="col-md-12 league-form-bg" style="margin-top:30px;" id="TShirt_Info">
 <div class="fromtitle">T-Shirts</div>
@@ -2045,6 +2025,28 @@ else { return true; }
 
 });
 </script>
+
+<div class="col-md-12 league-form-bg" style="margin-top:30px;">
+<div class="fromtitle">Publish </div>
+Do you want to publish the tournament?&nbsp;
+<label for="is_publish_yes">
+<input type="radio" id="is_publish_yes" name="is_publish" value="1" checked="checked"  />Yes
+</label>&nbsp;&nbsp;
+<label for="is_publish_no">
+<input type="radio" id="is_publish_no" name="is_publish" value="0" />No
+</label>
+
+<div id="academy_text" style="display: none">
+<div class='form-group'>
+<label class='control-label col-md-3' for='id_accomodation'>Academy Name: </label>
+<div class='col-md-6 form-group internal'>
+<input id='academy' name="club_name" class='ui-autocomplete-input col-md-3 form-control ajax_blur' type="text" placeholder="Type your Club Name" />
+<input class='form-control' id='org_id' name='org_id' type='hidden' placeholder="Org_id" value=""  />
+</div>
+</div> 
+</div>
+
+</div>
 
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:20px;">
 <div class="fromtitle">Review & Submit</div>
@@ -2270,7 +2272,7 @@ var baseurl = "<?php echo base_url();?>";
 
 		var ed = $(this).attr('id');
 		var x = ed.split('_');
-		alert(x[1]);
+		//alert(x[1]);
 		var St_date	 = $("#custom_start_date").val();
 		var End_date = $("#custom_end_date").val();
 		var ev_st  = $("#start_time").val();

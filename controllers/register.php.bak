@@ -158,19 +158,19 @@
 
 		public function create_user_session($user, $is_valid){
 
-			if($is_valid == '1'){
+			if($is_valid == '1') {
 				$get_data = $this->general->get_user($user);
-				if($get_data){
-$notify = json_decode($get_data['NotifySettings']);
+				if($get_data) {
+					$notify = json_decode($get_data['NotifySettings']);
 
-if(in_array('2', $notify)){
-$email_notify = 1;
-}
-else{
-$email_notify = 0;
-}
+					if(in_array('2', $notify)) {
+					$email_notify = 1;
+					}
+					else {
+					$email_notify = 0;
+					}
 
-$new_user = array(
+					$new_user = array(
 					'user'				=>	$get_data['Firstname']." ".$get_data['Lastname'], 
 					'email'			=>	$get_data['EmailID'],
 					'username'		=>	$get_data['Username'],
@@ -181,36 +181,35 @@ $new_user = array(
 					'admin'			=>	$get_data['Role'],
 					'email_notify'	=>	$email_notify);
 
-$this->session->set_userdata($new_user);
+				$this->session->set_userdata($new_user);
 
-$data['users_id'] = $this->session->userdata('users_id');
-$data['lat']			 = $this->session->userdata('lat');
-$data['long']		 = $this->session->userdata('long');
-$data['range']	 = 10;
+				$data['users_id'] = $this->session->userdata('users_id');
+				$data['lat']			 = $this->session->userdata('lat');
+				$data['long']		 = $this->session->userdata('long');
+				$data['range']	 = 10;
 
-$this->login->insert_a2mscore();  // Insert default score entries for a user if, he doesn't have records in A2MScore table
+				$this->reg_model->insert_a2mscore();  
+				// Insert default score entries for a user if, he doesn't have records in A2MScore table
 
-$data['interests']	 = $this->login->get_sports();
-$data['tournments'] = $this->login->get_all($data);
+				$data['interests']	 = $this->reg_model->get_sports();
+				$data['tournments'] = $this->reg_model->get_all($data);
 
-if($this->input->post('academy')){
-	if($this->input->post('aca_page'))
-	redirect($this->input->post('shortcode')."/".$this->input->post('aca_page'));
-	else
-	redirect($this->input->post('shortcode'));
-}
+				if($this->input->post('academy')) {
+					if($this->input->post('aca_page'))
+						redirect($this->input->post('shortcode')."/".$this->input->post('aca_page'));
+					else
+						redirect($this->input->post('shortcode'));
+				}
 
-if(($this->session->userdata('redirect_to'))){
-$exp = explode('.com', $this->session->userdata('redirect_to'));
-redirect($exp[1]);
-}
-else{
-redirect('Play', $data);
-}
-}
-
-			}		
-
+				if(($this->session->userdata('redirect_to'))) {
+					$exp = explode('.com', $this->session->userdata('redirect_to'));
+					redirect($exp[1]);
+				}
+				else {
+					redirect('Play', $data);
+				}
+				}
+			}
 		}
 
 		public function save_user_data()
@@ -355,6 +354,19 @@ redirect('Play', $data);
 			}                
 		echo $status;
 
+	}
+
+	public function ajax_email_verify($email_id = '')
+	{
+		$email_id =  $this->input->post('email_id');				
+			$query = $this->reg_model->ajax_check_email($email_id);
+			
+			$status = "";
+		if($query){
+			$status = $query['Users_ID']."-".$query['EmailID'];
+		}   
+		
+		echo $status;
 	}
 
 	public function org_url_check($org_url = '')
@@ -566,6 +578,7 @@ redirect('Play', $data);
 				exit;
 		 }
 
+/*
 		public function instant_register(){
 		//echo "<pre>"; print_r($_POST); exit;
 			if($this->input->post('email')){
@@ -602,6 +615,42 @@ redirect('Play', $data);
 				}
 			}
 		}
+*/
+
+		public function instant_register(){
+		//echo "<pre>"; print_r($_POST); exit;
+			if($this->input->post('email')){
+				$check_user_exists = $this->reg_model->get_email($this->input->post('email'));
+				if($check_user_exists){
+					echo "User with this email id already exists!";
+					exit;
+				}
+			}
+				
+                $data['latt'] = $this->get_lang_latt();
+			
+				$ins_user = $this->reg_model->instant_register($data);
+
+				if(!empty($ins_user)){
+					$fname			= $ins_user['firstname'];
+					$lame			= $ins_user['lastname'];
+					$phone			= $ins_user['phone'];
+					$users_id		= $ins_user['users_id'];
+
+					if($this->input->post('tourn_id')){
+					   $ins_user['tourn_id'] = $this->input->post('tourn_id');
+					}
+					
+					$this->instant_user_email($ins_user);
+					
+					$name = $fname.' '.$lame.'|'.$users_id.'|'.$phone;
+					echo $name;
+				}
+				else{
+					echo 0;
+				}
+		}
+
 
 		public function instant_clubmember(){
 		

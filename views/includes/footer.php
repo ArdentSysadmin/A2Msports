@@ -71,11 +71,12 @@ echo strip_tags($s) . "...";
 <footer>
 <div class="content-footer">
 <div class="container">
-<div class="col-md-7">
-<p>&copy; <?=date('Y');?> a2msports.com. All rights reserved. &nbsp;&nbsp;<a id='priv_policy' style="cursor:pointer;color:#FFF">Privacy Policy</a></p>
+<div class="col-md-10">
+<p>&copy; <?=date('Y');?> a2msports.com. All rights reserved. &nbsp;&nbsp;
+<a id='priv_policy' style="cursor:pointer;color:#FFF">Privacy Policy</a></p>
 </div>
 <!-- <div class="col-md-5"> -->
-<div class="fb-like col-md-5" data-href="https://www.a2msports.com/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
+<div class="fb-like col-md-2" data-href="https://www.a2msports.com/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="true"></div>
 
 <!--<div class="col-md-3" style="padding-right:50px">
 <a href='https://www.facebook.com/a2msports' target='_blank'><img src = "<?php echo base_url().'images/fb_round.png'; ?>" alt = 'Facebook Page' width = '25px' height='25px' align='right' /></a>
@@ -225,7 +226,7 @@ else {
 <script>
 $(document).ready(function() {
 $('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
 });
 </script>
 <?php
@@ -287,6 +288,6 @@ var baseurl = "<?php echo base_url(); ?>";
 });
 </script>
 <!-- jQuery DataTables -->
-
+<script type="text/javascript" src="<?php echo base_url(); ?>js/wickedpicker.js"></script>
 </body>
 </html>

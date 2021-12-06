@@ -57,7 +57,7 @@ class model_user extends CI_Model {
 
 	public function validate_user($email, $pwd) {
 		$pwd = md5($pwd);
-		$qry_check = $this->db->query("SELECT * FROM Users WHERE (EmailID = '".$email."' OR UserProfileName = '".$email."' ) AND Password = '".$pwd."'");
+		$qry_check = $this->db->query("SELECT * FROM Users WHERE (EmailID = '".$email."' OR UserProfileName = '".$email."' OR Username = '".$email."' ) AND Password = '".$pwd."'");
 		return $qry_check->row_array();
 	}
 
@@ -491,9 +491,9 @@ if($search['city'] or $search['state']){
 
 	if($search['sport']){
 		if($search['sp_level'])
-			$search_cond .= " AND Users_ID in (SELECT users_id FROM Sports_Interests WHERE Sport_id = {$search['sport']} AND Level = {$search['sp_level']})";
+			$search_cond .= " AND u.Users_ID in (SELECT users_id FROM Sports_Interests WHERE Sport_id = {$search['sport']} AND Level = {$search['sp_level']})";
 		else
-			$search_cond .= " AND Users_ID in (SELECT users_id FROM Sports_Interests WHERE Sport_id = {$search['sport']})";
+			$search_cond .= " AND u.Users_ID in (SELECT users_id FROM Sports_Interests WHERE Sport_id = {$search['sport']})";
 	}
 
 	$lat   = 0;
@@ -510,20 +510,20 @@ if($search['city'] or $search['state']){
 
 }
 		if($club_id != '' and $is_sort and $sport != ''){			
-			$qry_check = $this->db->query("SELECT (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, u.* FROM Users u JOIN A2MScore a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = '".$sport."' WHERE u.Users_ID IN (SELECT Users_id FROM User_memberships WHERE Club_id = {$club_id}){$search_cond} ORDER BY A2MScore {$is_sort} {$offset_qry}");
+			$qry_check = $this->db->query("SELECT (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, u.* FROM Users u JOIN A2MScore a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = '".$sport."' WHERE u.Users_ID IN (SELECT Users_id FROM User_memberships WHERE Member_Status =1 AND Club_id = {$club_id}){$search_cond} ORDER BY A2MScore {$is_sort} {$offset_qry}");
 
-			$tot_users_qry = $this->db->query("SELECT COUNT(*) AS tot_users FROM Users WHERE Users_ID IN (SELECT Users_id FROM User_memberships WHERE Club_id = {$club_id}){$search_cond}");
+			$tot_users_qry = $this->db->query("SELECT COUNT(*) AS tot_users FROM Users u WHERE u.Users_ID IN (SELECT Users_id FROM User_memberships WHERE Member_Status =1 AND Club_id = {$club_id}){$search_cond}");
 		}
 		else if($club_id != ''){			
 			/*$qry_check = $this->db->query("SELECT * FROM Users WHERE Users_ID IN (SELECT Users_id FROM User_memberships WHERE Club_id = {$club_id}){$search_cond} ORDER BY Users_ID OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");*/
-			$qry_check = $this->db->query("SELECT * FROM Users WHERE Users_ID IN (SELECT Users_id FROM User_memberships WHERE Club_id = {$club_id}){$search_cond} ORDER BY Users_ID{$offset_qry}");
+			$qry_check = $this->db->query("SELECT * FROM Users u WHERE u.Users_ID IN (SELECT Users_id FROM User_memberships WHERE Member_Status =1 AND Club_id = {$club_id}){$search_cond} ORDER BY Users_ID{$offset_qry}");
 
-			$tot_users_qry = $this->db->query("SELECT COUNT(*) AS tot_users FROM Users WHERE Users_ID IN (SELECT Users_id FROM User_memberships WHERE Club_id = {$club_id}){$search_cond}");
+			$tot_users_qry = $this->db->query("SELECT COUNT(*) AS tot_users FROM Users u WHERE u.Users_ID IN (SELECT Users_id FROM User_memberships WHERE Member_Status =1 AND  Club_id = {$club_id}){$search_cond}");
 		}
 
 
-		/*echo $this->db->last_query();
-		exit;*/
+		//echo $this->db->last_query();
+		//exit;
 			$tot_users_res = $tot_users_qry->result_array();
 		
 			$tot_users = $tot_users_res[0]['tot_users'];
@@ -1246,6 +1246,8 @@ if($search['city'] or $search['state']){
 							$def_score = 100;
 				if($sp == '2') 
 				$def_score = 800;
+				if($sp == '7') 
+				$def_score = 3.0;
 
 			$data = array(
 						'SportsType_ID'  => $sp, 
@@ -1327,5 +1329,57 @@ if($search['city'] or $search['state']){
 				isnull(IIF(pl1.LastName is null and winner <> 0 , ' ', pl1.LastName) , ' ') as Player1LastName, isnull(IIF(pl2.Firstname is null and winner <> 0 , 'BYE', pl2.Firstname) , ' ') as Player2FirstName, isnull(IIF(pl2.LastName is null and winner <> 0 , ' ', pl2.LastName) , ' ') as Player2LastName, pr1.Firstname as Partner1FirstName , pr1.LastName as Partner1LastName, pr2.Firstname as Partner2FirstName, pr2.LastName as Partner2LastName ,t.* , tm.* from tournament t inner join RegisterTournament rt on rt.Tournament_ID = t.tournament_ID left outer join Tournament_Matches tm on tm.Tourn_ID = t.tournament_ID left outer join users pl1 on tm.Player1 = pl1.Users_ID left outer join users pl2 on tm.Player2 = pl2.Users_ID left outer join users pr1 on tm.Player1_Partner = pr1.Users_ID left outer join users pr2 on tm.Player2_partner = pr2.Users_ID where (tm.Player1 = '{$user_id}' or tm.Player2 = '{$user_id}' or tm.Player1_Partner = '{$user_id}' or tm.Player2_Partner = '{$user_id}' or tm.Player1 is null ) and rt.users_id = '{$user_id}' order by t.StartDate desc");
 				return $qr_check->result_array();
 		}
+
+	public function get_past_coach_bookings($user_id, $user_time){
+		//$today = date('Y-m-d');
+		$time   = date('H:i:s');
+		$query = $this->db->query("SELECT * FROM Coach_Bookings WHERE reserved_by = {$user_id} 
+		AND (res_date < '".$user_time."') AND res_status = 'Active'");
+		//echo $this->db->last_query();exit;
+		return $query->result();
+	}
+
+	public function get_upc_coach_bookings($user_id, $user_time){
+		//$today = date('Y-m-d');
+		$time   = date('H:i:s');
+		$query = $this->db->query("SELECT * FROM Coach_Bookings WHERE reserved_by = {$user_id} 
+		AND ((res_date = '".$user_time."' AND from_time >= '".$time."' ) OR (res_date >= '".$user_time."')) AND res_status = 'Active'");
+		//echo $this->db->last_query();exit;
+		return $query->result();
+	}
+
+	public function get_past_court_bookings($user_id, $user_time){
+		//$today = date('Y-m-d');
+		$time   = date('H:i:s');
+		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE reserved_by = {$user_id} AND (res_date < '".$user_time."') AND res_status = 'Active'");
+		//echo $this->db->last_query();
+		return $query->result();
+	}
+
+	public function get_upc_court_bookings($user_id, $user_time){
+		//$today = date('Y-m-d');
+		$time   = date('H:i:s');
+		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE reserved_by = {$user_id} AND ((res_date = '".$user_time."' AND from_time >= '".$time."' ) OR (res_date >= '".$user_time."')) AND res_status = 'Active'");
+		//echo $this->db->last_query();
+		return $query->result();
+	}
+
+	public function get_loc_info($loc_id) {
+		$data = array('loc_id' => $loc_id);
+		$query = $this->db->get_where('Academy_Court_Locations', $data);
+		return $query->row_array();
+	}
+
+	public function get_court_info($court_id) {
+		$data = array('court_id' => $court_id);
+		$query = $this->db->get_where('Academy_Courts', $data);
+		return $query->row_array();
+	}
+
+	public function get_academy_info($aca_id) {
+		$data = array('Aca_ID' => $aca_id);
+		$query = $this->db->get_where('Academy_Info', $data);
+		return $query->row_array();
+	}
 
 }

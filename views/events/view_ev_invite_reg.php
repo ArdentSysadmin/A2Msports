@@ -85,7 +85,7 @@ $('#created_by').autocomplete({
 </div>
 			
 <form class="form-horizontal" id='form-op-users' method='post' role="form" 
-action="<?php echo base_url();?>events/invite_players"> 
+action="<?php echo $this->config->item('club_pr_url');?>/events/invite_players"> 
 
 <input type="hidden" id="event_id" name="event_id" value="<?php echo $ev_det['Ev_ID'];?>" /> 
 <br />
@@ -118,7 +118,7 @@ action="<?php echo base_url();?>events/invite_players">
 <div class="accordion"  id="up_match_section1"  style="background:#f59123; padding:5px; color:white;"><i class="fa fa-arrow-circle-o-right" style="color:white;"> </i>Invite Players (Registered Users)<span></span></div>
 
 
-<form class='form-horizontal' name='send_email' id='send_email' method="post" action='<?php echo base_url();?>events/send_event'>
+<form class='form-horizontal' name='send_email' id='send_email' method="post" action='<?php echo $this->config->item('club_pr_url');?>/events/send_event'>
 
 	<div class='form-group' style='margin-top: 25px;'>
 		<label class='control-label col-md-3' for='id_accomodation'>Search Player & Add:</label>

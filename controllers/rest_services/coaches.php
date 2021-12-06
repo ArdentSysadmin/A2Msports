@@ -108,4 +108,50 @@ class Coaches extends REST_Controller {
 
 		$this->response($final_team);
 	}*/
+
+
+	public function bookCoach_post() {
+
+		$post_data = json_decode(trim(file_get_contents('php://input')), true);
+
+			if(!$post_data){
+			$this->response(array('Error: ' . "Empty!")); 
+			}
+
+		$data['coach_id']		 = $post_data['coach_id'];
+
+		$data['reserved_by']	 = $post_data['user_id'];
+		$data['bookings']		 = $post_data['bookings'];
+		$data['booking_amt']	 = $post_data['booking_amt'];
+		$data['trans_id']		 = $post_data['transaction_id'];
+
+//echo "<pre>"; print_r($data); exit;
+		//$is_sharable = $this->mclub->check_sharable($data['coach_id']);
+//echo "<pre>"; print_r($is_sharable); exit;
+		//if($is_sharable['is_shared_resource'] > 0) {
+		//	$res_court = $this->mclub->reserve_courtTemp($data);
+		//}
+		//else {
+			$res_court = $this->coaches->check_bookCoach($data);
+		//}
+
+		//var_dump($res_court);		exit;
+		if($res_court and $res_court > 0) {
+		 $res = array('Success: '."Coach booking done");
+		 $res_code = 200;
+		}
+		else if($res_court < 0) {
+		 $res = array('Error: '."Coach is already booked!");
+		 $res_code = 400;
+		}
+		else {
+		 $res = array('Error: '."Undone, Try again!");
+		 $res_code = 400;
+		}
+
+		$this->response($res, $res_code);
+	}
+
+
+
 }

@@ -3,14 +3,36 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
+function isValidDate(s) {
+  var bits = s.split('/');
+  var d = new Date(bits[2] + '/' + bits[1] + '/' + bits[0]);
+  return !!(d && (d.getMonth() + 1) == bits[1] && d.getDate() == Number(bits[0]));
+}
+
+//Test it!
+//var currentDate = new Date('31/19/2011');
+//console.log(isValidDate(currentDate.toString()));
+//console.log(isValidDate('30/29/2011'));
+$(document).ready(function(){
+
+/*$('#custom_txt_dob').blur(function(){
+	if(!isValidDate($(this).val())){
+		alert("Invalid date format (" +$(this).val()+ "). It should be mm/dd/yyyy");
+		$(this).val('');
+	}
+});*/
+
+});
+
 $('#Singles_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
 $('#Doubles_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
 $('#Mixed_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
 
 /* ************************* JQuery Code For Coupon Code Starts Here. *********************************** */
     var is_event_time  = '<?php echo $r->Multi_Event_Time;?>';
-    var is_event_limit = '<?php echo $r->Event_Reg_Limit;?>';
+    var is_event_limit   = '<?php echo $r->Event_Reg_Limit;?>';
 	var is_waitlist_event_exists = 0;
+	//var new_usatt_opt = $('#new_usatt_opt').val();
 $(document).ready(function(){
 
 	//reset all checkboxes to uncheck
@@ -101,7 +123,12 @@ $(document).ready(function(){
 
 var baseurl = "<?php echo base_url();?>";
 var users = <?php echo $users; ?>;
-		
+//var bpt = <?php echo $being_partner; ?>;
+//arr = $.parseJSON(bpt); //convert to javascript array
+//$.each(arr,function(key,value){
+  //  alert(value);
+//});
+
 $(".club_page").click(function () { //use change event
 	if (this.value == "1") { //check value if it is domicilio
 		$('#club').show(); //then show
@@ -483,10 +510,11 @@ function getfee(events,classname,ag_grp,format){
 				}
 			
                 if(classname=='event_format'){
+				var new_usatt_opt = $('#new_usatt_opt').val();
                     $.ajax({
 						type:'POST',
 						url:baseurl+'league/get_event_fee/',
-						data:{ tour_id:tourn_id, events:events, coupon:coupon_code},
+						data:{ tour_id:tourn_id, events:events, coupon:coupon_code, new_usatt_opt:new_usatt_opt},
 						success:function(html){
 							var res = html.split('#');
 						  $('#tour_fee').val(res[0]);
@@ -740,9 +768,9 @@ $.ajax({
 function terms_conditions()
 {
 var path = "<?php echo base_url(); ?>";
-var left  = ($(window).width()/2)-(725/2),
+var left  = ($(window).width()/2)-(730/2),
 	top   = ($(window).height()/2)-(600/2),
-	popup = window.open (path+'terms_conditions/', "popup", "width=725,scrollbars=1,height=600, top="+top+", left="+left);
+	popup = window.open (path+'terms_conditions/', "popup", "width=730,scrollbars=1,height=600, top="+top+", left="+left);
 
    // window.open(path+'league/terms_conditions/',null,"height=650,width=700,status=yes,toolbar=no,menubar=no,location=no, top="+top+", left="+left");
 }
@@ -799,7 +827,16 @@ else
 
 	$check_user_usatt_membership = league::is_logged_user_having_memeberhip($r->SportsType);
 //echo $ugender; exit;
-	if(!$udob or !$uaddr or !$uemail or !$ugender){
+//echo "<pre>"; print_r($check_user_usatt_membership); exit;
+ $get_user_mem_details		= league :: get_user_mem_details($user_id, $r->SportsType);
+ $get_user_usatt_rating		= league :: get_user_usatt_rating($get_user_mem_details['Membership_ID']);
+
+		$rating = 0;
+    if($get_user_usatt_rating['Rating']){
+		$rating = $get_user_usatt_rating['Rating']; 
+	}
+
+	if(!$udob or !$uaddr or !$uemail or !$ugender or !$umob){
 ?>
 <form class="form-horizontal" id='myform_dob' method='post' role="form"  action="<?php echo base_url(); ?>league/uprofile">
 <div class='col-md-8'>
@@ -814,10 +851,11 @@ else
 	<label class='control-label col-md-3 padtop' for='id_accomodation'>Date of Birth:</label>
 	<div class='col-md-8 form-group internal text1'>
 		<div class='input-group date'>
-		<input type="text" class='form-control custom_date' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob" maxlength="10" required /> 
+		<!-- <input type="text" class='form-control custom_date' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob" maxlength="10" required />  
 		<span class="input-group-addon custom_datepicker" id='txt_dob' style="cursor:pointer;">
 			<span class="fa fa-calendar"></span> 
-		</span>
+		</span> -->
+		<input type="date" class='form-control' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob"  max="<?php echo date('Y-m-d', strtotime('-3 years')); ?>" required />
 		</div>
 	</div>
 	</div>
@@ -843,7 +881,15 @@ else
 	<input class='form-control' id="txt_email" type="text" name="txt_email" value="" required />
 	</div>
 	</div>
-	<?php } 
+	<?php }
+	if(!$umob) { ?>
+	<div class='form-group'>
+	<label class='control-label col-md-3 padtop' for='id_accomodation'>Mobile #:</label>
+	<div class='col-md-8 form-group internal text1'>
+	<input class='form-control' id="txt_mob" type="text" name="txt_mob" value="" required />
+	</div>
+	</div>
+	<?php }
 	if(!$uaddr) { ?>
 	<!-- Gather address info. if not available -->
 
@@ -940,13 +986,24 @@ else
 
 <?php	
 	}
-	else if($is_usatt_sanctioned and !$check_user_usatt_membership){
+	else if($is_usatt_sanctioned and (!$check_user_usatt_membership or !$rating) and !$new_usatt_opt){
+?>
+<div class='col-md-8'>
+<?php
+if(!$check_user_usatt_membership){
 ?>
 <form class="form-horizontal" id='myform_dob' method='post' role="form"  action="<?php echo base_url(); ?>league/user_usatt_update">
-<div class='col-md-8'>
 
-	<div class='form-group'><label class='col-md-12 form-group internal' for='id_accomodation' style='font-size: 12px;'><b style='color:red'>Note: </b>
-	<?php echo "We require your USATT rating for this league. Please update the information and proceed to registration. Thankyou"; ?></label></div>
+	<div class='form-group'><label class='col-md-12 form-group internal' for='id_accomodation' style='font-size: 12px;'>
+	<?php if($this->session->flashdata('err_msg')){
+	echo "<b style='color:red'>".$this->session->flashdata('err_msg')."</b>";
+	}
+	else{
+	?>
+	<b style='color:red'>Note: </b><?php echo "We require your USATT rating for this tournament. Please update the information and proceed to registration. Thankyou"; 
+	}
+	?>
+	</label></div>
 	<div id="club">				
 		<div class="form-group">
 			<label class='control-label col-md-4 padtop' for="email"><b>USATT Membership ID</b></label>
@@ -962,6 +1019,70 @@ else
 	<input name="btn_udob" type="submit" value="Update" class="league-form-submit"/>
 	</div>
 </div>
+
+</form>	
+<?php
+}
+else{
+	echo "<span style='color:red'>Your USATT membership (#<b>".$get_user_mem_details['Membership_ID']."</b>)  is not matching with USATT Records. <br>Please contact Tournament Director for any queries.</span>";
+	echo "<br><br>";
+?>
+<form class="form-horizontal" id='myform_dob' method='post' role="form"  action="<?php echo base_url(); ?>league/user_usatt_update">
+
+	<div id="club">				
+		<div class="form-group">
+			<label class='control-label col-md-5 padtop' for="email"><b>Update Membership ID</b></label>
+			<div class='col-md-6 form-group internal text1'>
+			<input id="usatt_member_id" name="usatt_member_id" class="form-control" type="text" style="width:70%"/>
+			</div>
+		</div>
+	</div>
+<input class='form-control' id="txt_tid" type="hidden" name="txt_tid" value="<?php echo $r->tournament_ID; ?>" />
+<div class='form-group'>
+<label class='control-label col-md-4' for='id_accomodation'></label>
+	<div class='col-md-7 form-group internal'>
+	<input name="btn_udob" type="submit" value="Update" class="league-form-submit"/>
+	</div>
+</div>
+
+</form>	
+<?php
+}
+?>
+
+<span align='center' class="col-md-9"><b style='color:red'>OR </b></span>
+<form class="form-horizontal" id='myform_dob' method='post' role="form" action="<?php echo base_url(); ?>league/register_match/<?php echo $r->tournament_ID; ?>">
+
+
+	<div class='form-group'><label class='col-md-12 form-group internal' for='id_accomodation' style='font-size: 12px;'>
+	<input type='checkbox' name='is_new_usatt' id='is_new_usatt' value='1' required />
+	<?php echo "You can opt for a new USATT membership. This charges additional $25 to the events fee."; ?></label></div>
+<br />
+<div class="col-md-9">
+<input class='form-control' type='number' name='est_user_usatt' style='display:none; width:50%;' id='est_user_usatt' value='' placeholder='Estimated Rating?' required />
+</div>
+<br />
+<input class='form-control' id="txt_tid" type="hidden" name="txt_tid" value="<?php echo $r->tournament_ID; ?>" />
+<div class='form-group'>
+<label class='control-label col-md-4' for='id_accomodation'></label>
+	<div class='col-md-7 form-group internal'>
+	<input name="btn_proceed" type="submit" value="Proceed" class="league-form-submit"/>
+	</div>
+</div>
+<script>
+$(document).ready(function(){
+	$('#is_new_usatt').click(function(){
+		$('#est_user_usatt').val('');
+		if($(this).prop('checked')){
+			 $('#est_user_usatt').show();
+		}
+		else{
+			 $('#est_user_usatt').hide();
+		}
+	});
+
+});
+</script>
 
 </form>	
 <?php
@@ -1031,8 +1152,7 @@ echo $get_sport['Sportname'];
 
  $get_user_mem_details		= league :: get_user_mem_details($user_id, $r->SportsType);
  $get_user_usatt_rating		= league :: get_user_usatt_rating($get_user_mem_details['Membership_ID']);
- //print_r($get_user_usatt_rating);
- 
+
  $rating = 0;
     if($get_user_usatt_rating['Rating']) { 
 		$rating = $get_user_usatt_rating['Rating']; 
@@ -1051,7 +1171,7 @@ if($r->SportsType == '2' and !$check_user_usatt_membership){
 						
 	<div id="club" style="display:none">				
 		<div class="form-group">
-			<label class='control-label col-md-4 padtop' for="email"><b>MemberShip ID</b></label>
+			<label class='control-label col-md-4 padtop' for="email"><b>Membership ID</b></label>
 			<div class='col-md-4 form-group internal text1'>
 			<input id="input_usatt_member_id" name="input_usatt_member_id" class="form-control" type="text" />
 			</div>
@@ -1064,7 +1184,7 @@ if($r->SportsType == '2' and !$check_user_usatt_membership){
 <?php
 }
 
-if($r->SportsType == '2' and $check_user_usatt_membership){
+if($r->SportsType == '2' and $check_user_usatt_membership and !$new_usatt_opt){
 ?>
 <div class="form-group">
  <label class='control-label col-md-4 padtop' for=""> <b>USATT Membership ID</b></label>
@@ -1085,11 +1205,38 @@ if($rating)
 else
 	echo "<span style='color:red'>Your USATT membership info is not matching our database. Please update your <a href='".base_url()."profile'> Profile </a> so you can register for USATT rated events.</span>";
  /* echo "<span style='color:red'>We couldn't find your rating with provided Membership ID <b>{$get_user_mem_details['Membership_ID']}</b> <br>Please update your profile with USATT ID and try to register again. If you still have issues, please contact your Tournament/ League Director</span>";*/
+	
+/*	echo "<br>";
+	echo "<input type='checkbox' name='is_new_usatt' id='is_new_usatt_reg' value='1' required />&nbsp;Do you want to opt for a new USATT membership?";
+	echo "<input class='form-control' type='number' name='est_user_usatt' style='display:none;width:75%;' id='est_user_usatt' value='' placeholder='Estimated Rating?' />";
+	echo "<br>";
+*/
 ?>
 </div>
 </div>
+<script>
+/*
+$(document).ready(function(){
+	$('#is_new_usatt_reg').click(function(){
+		$('#est_user_usatt').val('');
+		if($(this).prop('checked')){
+			 $('#est_user_usatt').show();
+			 $('#est_user_usatt').prop('required', true);
+			 $('#new_usatt_opt').val('1');
+		}
+		else{
+			 $('#est_user_usatt').hide();
+			 $('#est_user_usatt').removeAttr('required');
+			 $('#new_usatt_opt').val('0');
+		}
+	});
+});
+*/
+</script>
 <?php
 }
+
+
 $option_array = array();
 if($r->Age != "")
 {
@@ -1269,10 +1416,15 @@ $i = 0;
     }
 
 	 $event_format = league::regenerate_events($multi_events);
-
+//if($this->logged_user == 240){
+//echo "<pre>"; print_r($event_format); exit;
+//}
 	$eligible_events				= array();
     $not_eligible_events		= array();
     $gender_eligible_events = array();
+
+if($est_usatt_rating)
+$rating = $est_usatt_rating;
 	//echo $age_class;
 	    echo "<div class='form-group'>";
 	    echo "<label class='control-label col-md-4 padtop' for='id_accomodation'>";
@@ -1874,6 +2026,9 @@ var count = (db+mx+sg);
 <!-- <div class='form-group text1' id='med_div'>
 	<label class='control-label col-md-4 padtop text1' for='id_accomodation'> &nbsp;&nbsp;&nbsp; </label>	Please <a style='cursor:pointer;' onclick='medical_form()'><b>Click here</b></a> to print a Medical Release Form. <br />	
 </div> -->
+
+<input type='hidden' name='new_usatt_opt' id='new_usatt_opt' value='<?=$new_usatt_opt;?>' />
+<input type='hidden' name='est_usatt_rating' id='est_usatt_rating' value='<?=$est_usatt_rating;?>' />
 
 <?php 
 	if($r->MedicalRelease_pdf != NULL or $r->MedicalRelease_pdf != '') { 

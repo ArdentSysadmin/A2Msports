@@ -423,4 +423,336 @@ class Users extends REST_Controller {
 				}
 
 			}
+
+			public function matches_get(){
+				$user_id = $this->input->get('user_id');		
+				$user_matches = $this->muser->get_user_matches($user_id);
+
+				if($user_matches){
+					$this->response($user_matches);
+				}
+				else{
+					$user_matches = array("No Matches Found!");
+					$this->response($user_matches);
+				}
+			}
+
+			public function mybookings_get(){
+				$user_id		= $this->input->get('user_id');	
+				//$user_time	= $this->input->get('date_time');	
+				$user_time	= date('Y-m-d');
+
+				$get_past_coach_bookings	= $this->muser->get_past_coach_bookings($user_id, $user_time);
+				$get_upc_coach_bookings	= $this->muser->get_upc_coach_bookings($user_id, $user_time);
+				$get_past_court_bookings	= $this->muser->get_past_court_bookings($user_id, $user_time);
+				$get_upc_court_bookings	= $this->muser->get_upc_court_bookings($user_id, $user_time);
+				
+				//echo "<pre>"; print_r($get_upc_court_bookings);  print_r($get_upc_coach_bookings); exit;
+
+				$temp_arr = array();
+				$bookings = NULL;
+				foreach($get_upc_court_bookings as $booking) {
+					//echo "<pre>"; print_r($booking); exit;
+
+					//$from  = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->from_time));
+					//$to	     = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->to_time));
+					$loc_info		= $this->muser->get_loc_info($booking->loc_id);
+					$aca_info		= $this->muser->get_academy_info($loc_info['org_id']);
+					$court_info	= $this->muser->get_court_info($booking->court_id);
+
+						$frTime  = strtotime($booking->from_time);
+						$toTime = strtotime($booking->to_time);
+						
+						$actual_from	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+						$actual_to		= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->to_time));
+
+						$k	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+				
+						//for( ;strtotime($k) < strtotime($booking->res_date.' '.$booking->to_time);){
+
+							//$k2  = date("Y-m-d H:i", strtotime('+30 minutes', strtotime($k)));
+							//$k2  = date("Y-m-d H:i", strtotime('+'.($court_info['slot_duration'] * 60).' minutes', strtotime($k)));
+							$k2  = date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->to_time));
+
+							/*if(date("H:i", strtotime('+30 minutes', $booking->from_time)) >= date("H:i", strtotime($booking->to_time))){
+								echo "test";
+							}*/
+							//echo $k2." - ".date("H:i", strtotime($booking->to_time)); exit;
+							$from  = date('Y-m-d H:i:s', strtotime($k));
+							$to	   = date('Y-m-d H:i:s', strtotime($k2));
+							$reserved_by  = $booking->reserved_by;
+							$numP				= $booking->num_players;
+							$tot_bookings  = $booking->num_players;
+
+							if(!empty($tot_book_arr)){
+							$tot_bookings  = $tot_book_arr["'".$k."-".$k2."'"];
+							}
+
+							if(!in_array($from."-".$to, $temp_arr)){
+								if($booking->players)
+								$pList = json_decode($booking->players, true);
+								else{
+									$get_user = $this->general->get_user($booking->reserved_by);
+									//echo "<pre>"; print_r($get_user); exit;
+									if($get_user)
+										$pList = array($get_user['Firstname']." ".$get_user['Lastname']);
+								}
+							
+							$aca_logo = NULL;
+							if($aca_info['Aca_logo'])
+							$aca_logo = base_url()."org_logos/".$aca_info['Aca_logo'];
+
+							$temp_arr[] = $from."-".$to;
+								//$temp_plist[$from."-".$to] = $pList;
+							$bookings[] = array('type' =>'COURT_BOOKING','club_id' => $aca_info['Aca_ID'], 'club_name' => $aca_info['Aca_name'], 'club_city' => $aca_info['Aca_city'], 'club_state' => $aca_info['Aca_state'], 'club_country' => $aca_info['Aca_country'], 'contact_num' => $aca_info['Aca_contact_phone'], 'club_logo' => $aca_logo, 'court_id' => $court_info['court_id'], 'court_name' => $court_info['court_name'], 'loc_id' => $loc_info['loc_id'], 'loc_name' => $loc_info['location'], 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
+							}
+							/*else{
+								$pList  = json_decode($booking->players, true);
+								$temp = $temp_plist[$from."-".$to]; 
+								$pList  = array_merge($pList, $temp);
+							}*/
+
+							//$k = $k2;
+						//}
+
+				}
+
+// --------------------------------------------------------
+
+			$temp_past_arr = array();
+			$past_bookings = NULL;
+				foreach($get_past_court_bookings as $booking) {
+					//echo "<pre>"; print_r($booking); exit;
+
+					//$from  = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->from_time));
+					//$to	     = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->to_time));
+					$loc_info		= $this->muser->get_loc_info($booking->loc_id);
+					$aca_info		= $this->muser->get_academy_info($loc_info['org_id']);
+					$court_info	= $this->muser->get_court_info($booking->court_id);
+
+						$frTime  = strtotime($booking->from_time);
+						$toTime = strtotime($booking->to_time);
+						
+						$actual_from	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+						$actual_to		= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->to_time));
+
+						$k	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+				
+						//for( ;strtotime($k) < strtotime($booking->res_date.' '.$booking->to_time);){
+
+							//$k2  = date("Y-m-d H:i", strtotime('+30 minutes', strtotime($k)));
+							//$k2  = date("Y-m-d H:i", strtotime('+'.($court_info['slot_duration'] * 60).' minutes', strtotime($k)));
+							$k2  = date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->to_time));
+
+							/*if(date("H:i", strtotime('+30 minutes', $booking->from_time)) >= date("H:i", strtotime($booking->to_time))){
+								echo "test";
+							}*/
+							//echo $k2." - ".date("H:i", strtotime($booking->to_time)); exit;
+							$from  = date('Y-m-d H:i:s', strtotime($k));
+							$to	     = date('Y-m-d H:i:s', strtotime($k2));
+							$reserved_by  = $booking->reserved_by;
+							$numP				= $booking->num_players;
+							$tot_bookings  = $booking->num_players;
+
+							if(!empty($tot_book_arr)){
+							$tot_bookings  = $tot_book_arr["'".$k."-".$k2."'"];
+							}
+
+							if(!in_array($from."-".$to, $temp_past_arr)){
+							
+								if($booking->players)
+									$pList = json_decode($booking->players, true);
+								else{
+									$get_user = $this->general->get_user($booking->reserved_by);
+									//echo "<pre>"; print_r($get_user); exit;
+									if($get_user)
+										$pList = array($get_user['Firstname']." ".$get_user['Lastname']);
+								}
+
+							$aca_logo = NULL;
+							if($aca_info['Aca_logo'])
+							$aca_logo = base_url()."org_logos/".$aca_info['Aca_logo'];
+
+							$temp_past_arr[] = $from."-".$to;
+							//$temp_plist[$from."-".$to] = $pList;
+
+							$past_bookings[] = array('type' =>'COURT_BOOKING', 'club_id' => $aca_info['Aca_ID'], 'club_name' => $aca_info['Aca_name'], 'club_city' => $aca_info['Aca_city'], 'club_state' => $aca_info['Aca_state'], 'club_country' => $aca_info['Aca_country'], 'contact_num' => $aca_info['Aca_contact_phone'], 'club_logo' => $aca_logo, 'court_id' => $court_info['court_id'], 'court_name' => $court_info['court_name'], 'loc_id' => $loc_info['loc_id'], 'loc_name' => $loc_info['location'], 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
+							}
+							/*else{
+								$pList  = json_decode($booking->players, true);
+								$temp = $temp_plist[$from."-".$to]; 
+								$pList  = array_merge($pList, $temp);
+							}*/
+
+							//$k = $k2;
+						//}
+
+				}
+
+// --------------------------------------------------------
+
+
+				$temp_arr2	= array();
+				$bookings2	= NULL;
+				$slot_dur		= 0.5;
+
+				foreach($get_upc_coach_bookings as $booking) {
+					//$from  = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->from_time));
+					//$to	     = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->to_time));
+
+						$get_coach = $this->general->get_user($booking->coach_id);
+
+						$frTime  = strtotime($booking->from_time);
+						$toTime = strtotime($booking->to_time);
+						
+						$actual_from	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+						$actual_to		= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->to_time));
+
+						$k	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+				
+						//for( ;strtotime($k) < strtotime($booking->res_date.' '.$booking->to_time);){
+
+							//$k2  = date("Y-m-d H:i", strtotime('+30 minutes', strtotime($k)));
+							//$k2  = date("Y-m-d H:i", strtotime('+'.($slot_dur * 60).' minutes', strtotime($k)));
+							$k2  = date('Y-m-d H:i', strtotime($booking->res_date.' '.$booking->to_time));
+
+							/*if(date("H:i", strtotime('+30 minutes', $booking->from_time)) >= date("H:i", strtotime($booking->to_time))){
+								echo "test";
+							}*/
+							//echo $k2." - ".date("H:i", strtotime($booking->to_time)); exit;
+							$from  = date('Y-m-d H:i:s', strtotime($k));
+							$to	     = date('Y-m-d H:i:s', strtotime($k2));
+							$reserved_by  = $booking->reserved_by;
+							$numP				= $booking->num_players;
+							$tot_bookings  = $booking->num_players;
+
+							if(!empty($tot_book_arr)){
+							$tot_bookings  = $tot_book_arr["'".$k."-".$k2."'"];
+							}
+
+							if(!in_array($from."-".$to, $temp_arr2)){
+								if($booking->players)
+								$pList = json_decode($booking->players, true);
+								else{
+									$get_user = $this->general->get_user($booking->reserved_by);
+									//echo "<pre>"; print_r($get_user); exit;
+									if($get_user)
+										$pList = array($get_user['Firstname']." ".$get_user['Lastname']);
+								}
+								
+								$prof_pic = NULL;
+								if($get_coach['Profilepic']){
+								$prof_pic = base_url()."profile_pictures/".$get_coach['Profilepic'];
+								}
+
+								$temp_arr2[] = $from."-".$to;
+								$temp_plist[$from."-".$to] = $pList;
+								$bookings2[] = array('type' =>'COACH_BOOKING', 'coach_id' => $booking->coach_id, 'coach_name' => $get_coach['Firstname']." ".$get_coach['Lastname'], 'coach_img' => $prof_pic, 'coach_sport' => $get_coach['coach_sport'], 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
+							}
+							/*else{
+								$pList  = json_decode($booking->players, true);
+								$temp = $temp_plist[$from."-".$to]; 
+								$pList  = array_merge($pList, $temp);
+							}*/
+
+							//$k = $k2;
+						//}
+
+				}
+// --------------------------------------
+
+$temp_past_arr3 = array();
+$coach_past_bookings = NULL;
+				$slot_dur = 0.5;
+
+				foreach($get_past_coach_bookings as $booking) {
+					//$from  = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->from_time));
+					//$to	     = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->to_time));
+
+						$get_coach = $this->general->get_user($booking->coach_id);
+
+						$frTime  = strtotime($booking->from_time);
+						$toTime = strtotime($booking->to_time);
+						
+						$actual_from	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+						$actual_to		= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->to_time));
+
+						$k	= date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->from_time));
+				
+						//for( ;strtotime($k) < strtotime($booking->res_date.' '.$booking->to_time);){
+
+							//$k2  = date("Y-m-d H:i", strtotime('+30 minutes', strtotime($k)));
+							//$k2  = date("Y-m-d H:i", strtotime('+'.($slot_dur * 60).' minutes', strtotime($k)));
+							$k2  = date("Y-m-d H:i", strtotime($booking->res_date.' '.$booking->to_time));
+
+							/*if(date("H:i", strtotime('+30 minutes', $booking->from_time)) >= date("H:i", strtotime($booking->to_time))){
+								echo "test";
+							}*/
+							//echo $k2." - ".date("H:i", strtotime($booking->to_time)); exit;
+							$from  = date('Y-m-d H:i:s', strtotime($k));
+							$to	     = date('Y-m-d H:i:s', strtotime($k2));
+							$reserved_by  = $booking->reserved_by;
+							$numP				= $booking->num_players;
+							$tot_bookings  = $booking->num_players;
+
+							if(!empty($tot_book_arr)){
+							$tot_bookings  = $tot_book_arr["'".$k."-".$k2."'"];
+							}
+
+							if(!in_array($from."-".$to, $temp_past_arr3)){
+								if($booking->players)
+								$pList = json_decode($booking->players, true);
+								else{
+									$get_user = $this->general->get_user($booking->reserved_by);
+									//echo "<pre>"; print_r($get_user); exit;
+									if($get_user)
+										$pList = array($get_user['Firstname']." ".$get_user['Lastname']);
+								}
+
+								$prof_pic = NULL;
+								if($get_coach['Profilepic']){
+								$prof_pic = base_url()."profile_pictures/".$get_coach['Profilepic'];
+								}
+
+								$temp_past_arr3[] = $from."-".$to;
+								$temp_plist[$from."-".$to] = $pList;
+								$coach_past_bookings[] = array('type' =>'COACH_BOOKING', 'coach_id' => $booking->coach_id, 'coach_name' => $get_coach['Firstname']." ".$get_coach['Lastname'], 'coach_img' => $prof_pic, 'coach_sport' => $get_coach['coach_sport'], 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
+							}
+							/*else{
+								$pList  = json_decode($booking->players, true);
+								$temp = $temp_plist[$from."-".$to]; 
+								$pList  = array_merge($pList, $temp);
+							}*/
+
+							//$k = $k2;
+						//}
+
+				}
+
+// ------------------------------------------
+
+//echo "<pre>"; print_r($bookings);print_r($bookings2);print_r($past_bookings);print_r($coach_past_bookings); exit;
+			$res_upc = array();
+			$res_past = array();
+			//					echo "test"; exit;
+
+				if($bookings)				
+				$res_upc = array_merge($res_upc, $bookings);
+
+				if($bookings2)
+				$res_upc = array_merge($res_upc, $bookings2);
+
+				if($past_bookings)
+				$res_past = array_merge($res_past, $past_bookings);
+	
+				if($coach_past_bookings)
+				$res_past = array_merge($res_past, $coach_past_bookings);
+
+
+
+				$data['upcoming'] = $res_upc;
+				$data['past']			= $res_past;
+
+			$this->response($data, 200);
+			}
 }

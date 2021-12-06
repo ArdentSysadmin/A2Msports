@@ -649,4 +649,9 @@ exit;*/
 			return $get_level->row_array();
 		}
 	 // model functions for search user details end code....
+
+	public function basketball_matches($user_id){
+		$qr_check = $this->db->query("select * from RegisterTournament where Team_Players like '%".'"'.$user_id.'"'."%' and Tournament_ID in (select tournament_ID from tournament where SportsType = 18)");
+		return $qr_check->num_rows();
+	}
 }

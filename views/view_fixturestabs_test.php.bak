@@ -1,5 +1,4 @@
-<link href="<?php echo base_url();?>css/foundation-datepicker.css" rel="stylesheet">
-<script src="<?php echo base_url();?>js/foundation-datepicker.js"></script>
+<link href="https://a2msports.com/css/wickedpicker.min.css" rel="stylesheet" type="text/css" />
 <script> 
 $(document).ready(function(){
 	$('#reg_users_table').DataTable({
@@ -28,9 +27,12 @@ $(document).on("click", ".up, .down", function(){
 
 <link href="<?php echo base_url();?>css/fSelect.css" rel="stylesheet" />
 <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
-<!-- <script src="<?php echo base_url();?>js/jquery-1.10.2.js" type="text/javascript"></script> -->
+<script src="<?php echo base_url();?>js/jquery-1.10.2.js" type="text/javascript"></script>
 <script src="<?php echo base_url();?>js/fSelect.js" type="text/javascript"></script>
 <script type="text/javascript">
+   $(document).on("click", "#userSelectAll", function () {
+	  $(".user_select").prop('checked', $(this).prop('checked'));
+   });
 
 // Script Code For Groups Starts Here.
 	$(document).ready(function(){
@@ -54,7 +56,7 @@ $(document).on("click", ".up, .down", function(){
 			//var count	  = $('#a :selected').length;
 			var count	  = 0;
 
-			if(ttype_val == "Switch Doubles"){
+			if(ttype_val == "Switch Doubles" && $("input[name='is_groups']:checked").val() == 0){
 
 				$('input[name="users[]"]:checked').each(function(){
 					var x = this.value;
@@ -93,7 +95,7 @@ $(document).on("click", ".up, .down", function(){
 
 		$('#ttype').change(function(){
 			ttype_val = $(this).val();
-			if(ttype_val != 'Round Robin'){
+			if(ttype_val != 'Round Robin' && ttype_val != 'Switch Doubles'){
 				$("#t_No").trigger('click');
 				$('#groups').hide();
 				$('#no_of_groups').hide();
@@ -124,6 +126,7 @@ $("#dvPassport").hide();
 }
 });
 });
+
 function GetUsers(format){
   //alert(type);
 //var format = $("#format").find('option:selected').val();
@@ -139,10 +142,6 @@ var is_checkin = $('input[type=radio][name=is_checkin]:checked').val();
        types.push(match_type);
   });
  
-   $(document).on("click", "#userSelectAll", function () {
-	  $(".user_select").prop('checked', $(this).prop('checked'));
-   });
-
    $.ajax({
         type:'POST',
         url:baseurl+'league/getusers/',
@@ -172,6 +171,51 @@ var is_checkin = $('input[type=radio][name=is_checkin]:checked').val();
         }
     });
 }
+var sel_occr_ids = [];
+
+function GetUsers_OCCR(format, is_checked) {
+//var format = $("#format").find('option:selected').val();
+
+if(is_checked)
+	sel_occr_ids.push(format);
+else
+	sel_occr_ids.pop(format);
+
+
+var sport  = $("#sport").val();
+var types = [];
+var baseurl  = "<?php echo base_url();?>";
+var tour_id   = "<?php echo $tourn_det['tournament_ID'];?>";
+var is_event     = $('#is_event').val();
+var is_checkin = $('input[type=radio][name=is_checkin]:checked').val();
+
+  $('input:checkbox.macthtype:checked').each(function () {
+       var match_type = this.value; 
+       types.push(match_type);
+  });
+ 
+  var dr_format = $('input[name="draw_format"]:checked').val();
+
+   $.ajax({
+        type:'POST',
+        url:baseurl+'league/getusers_occr/',
+        data:{types:types,sel_occr_ids:sel_occr_ids,tour_id:tour_id,format:format,is_event:is_event,is_checkin:is_checkin,sport:sport,draw_type:dr_format},
+        success:function(html){
+		$('#age_group_users').html(html);
+		
+		$('#reg_users_table').DataTable({
+			searching : false, 
+			paging	  : false, 
+			lengthMenu: false,
+			/*sDom	  : '<"clear">t<"H"p><"F"p>'*/
+		});
+
+        }
+    });
+}
+
+
+
 /*$(function($) {
     $(function() {
         $('#match_type').fSelect();
@@ -325,12 +369,14 @@ $('#match_type').on('change', function() {
   $("#match_type option:selected").each(function(){       
         types.push($(this).val());
     });
-  
+
+  var dr_format = $('input[name="draw_format"]:checked').val();
+
 //alert(types);
     $.ajax({
         type:'POST',
         url:baseurl+'league/getusers/',
-        data:{types:types,tour_id:tour_id},
+        data:{types:types,tour_id:tour_id,draw_type:dr_format},
         success:function(html){
          // console.log(html);
           //alert(html);
@@ -429,7 +475,7 @@ $('#age_group_users').html(html);
 <section id="single_player" class="container secondary-page">
 
 <div class="top-score-title right-score col-md-9">
-<h3 style="text-align:left">Create Draws (Testing)</h3>
+<h3 style="text-align:left">Create Drawss</h3>
 
 <?php 
 if(isset($exist)) { ?>
@@ -443,7 +489,7 @@ if(isset($exist)) { ?>
 <?php
 if($tourn_det){
 ?>
-<form class="form-horizontal" id='myform' method='post' role="form" action="<?php echo base_url()."league_v2/bracket/".$tourn_det['tournament_ID'];?>"> 
+<form class="form-horizontal" id='myform' method='post' role="form" action="<?php echo base_url()."league/bracket/".$tourn_det['tournament_ID'];?>" autocomplete="off"> 
 
 <input type="hidden" id="tourn_id" name="tourn_id" value="<?php echo $tourn_det['tournament_ID'] ;?>" /> 
 <input type="hidden" id="is_event" name="is_event" value="<?php echo ($tourn_det['Multi_Events'] != NULL) ? '1' : '0'; ?>" /> 
@@ -459,7 +505,7 @@ if($tourn_det){
 </div>
 
 <div class='form-group'>
-<label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Game Type:</label>
+<label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Sport:</label>
 <div class='col-md-6 form-group internal'>
 <?php $sport_name = league::get_sport($tourn_det['SportsType']);
 echo $sport_name['Sportname'];
@@ -469,9 +515,44 @@ echo $sport_name['Sportname'];
 <input type='hidden' id='tformat' name='tformat' value='<?php echo $tourn_det['tournament_format']; ?>' />
 </div>
 </div>
+
+<?php
+if($tourn_det['Is_League'] == 1){
+		$ev_occrs = league::get_league_occr($tourn_det['tournament_ID']);
+?>
+<div class='form-group'>
+<label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Bracket Game Day:</label>
+<div class='col-md-6 form-group internal'>
+<select class="form-control" name='br_game_day' style="width:45%" required>
+<option value=''>Game Day</option>
+	<?php
+	foreach($ev_occrs as $occr){
+	?>
+	<option value='<?php echo $occr->OCR_ID;?>'>
+			<?php echo date('M d, Y H:i', strtotime($occr->Game_Date)); ?>
+	</option>
+	<?php
+	}
+?>
+</select>
+</div>
+</div>
+<?php
+}
+?>
+
 <?php
 if($tourn_det['tournament_format'] != 'Teams' and $tourn_det['tournament_format'] != 'TeamSport'){
 ?>
+<div class='form-group'>
+<label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Draw Format</label>
+<div class='col-md-6 form-group internal'>
+<input type='radio' id='format_singles' name='draw_format' value='singles' required /> Singles
+<input type='radio' id='format_doubles' name='draw_format' value='doubles' required /> Doubles
+<input type='radio' id='format_mixed'  name='draw_format' value='mixed' required /> Mixed Doubles
+</div>
+</div>
+
 <div class='form-group'>
 <label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Show only Check-In Players</label>
 <div class='col-md-6 form-group internal'>
@@ -527,13 +608,15 @@ else if(in_array($evntarr[1], array('Doubles','Mixed')))
 	$format          = $evntarr[1];  
 else if(in_array($evntarr[2], array('Doubles','Mixed')))
 	$format          = $evntarr[2];  
+else
+	$format          = "Singles";  
 
 $level_id        = $evntarr[3];
-$level_name_arry = league::get_level_name('',$level_id);
-$LevelName       = $level_name_arry['SportsLevel'];
+//$level_name_arry = league::get_level_name('',$level_id);
+//$LevelName       = $level_name_arry['SportsLevel'];
 $users           = league::in_array_r($key, $reg_users);
 //echo "<pre>";print_r($users);
-$users=array_unique($users);
+$users		=		array_unique($users);
 if(count($users) != 0){
 ?>
 <tr>
@@ -541,6 +624,18 @@ if(count($users) != 0){
 </td>
 </tr>
 <?php
+	if($tourn_det['Is_League'] == 1){
+	$ev_occrs = league::get_event_occrs($tourn_det['tournament_ID'], $key);
+		foreach($ev_occrs as $occr){
+		?>
+		<tr>
+		<td style="padding-left:70px;" ><input type="checkbox" value="<?php echo $key; ?>" name="match_type[]" class="macthtype" onclick="GetUsers_OCCR('<?php echo $occr->OCR_ID;?>', this.checked);"> &nbsp; <?php echo date('M d, Y H:i', strtotime($occr->Game_Date))." (".count($users).")"; ?>
+		</td>
+		</tr>
+		<?php
+		}
+	}
+
 }
 }
 
@@ -575,32 +670,33 @@ echo "</div>";
 <div class='form-group'>
 <label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'> Bracket Type: </label>
 <div class='col-md-6 form-group internal'>
-
+<input type='hidden' name='is_testing' id='is_testing' value='1' />
 <?php //if($tourn_det['Tournament_type'] != "Challenge Ladder"){?>
 
 <select class="form-control" name="ttype" id="ttype" style="width:45%" required>
 <?php if($tourn_det['SportsType'] != 4){ ?>
 <option value="Single Elimination" 
-<?php if($tourn_det['Tournament_type'] == 'Single Elimination') { echo "selected"; } ?>>Single Elimination</option>
+<?php if($this->session->userdata('draw')['ttype'] == 'Single Elimination') { echo "selected"; } ?>>Single Elimination</option>
 <option value="Consolation" 
-<?php if($tourn_det['Tournament_type'] == 'Consolation') { echo "selected"; } ?>>Consolation</option>
+<?php if($this->session->userdata('draw')['ttype'] == 'Consolation') { echo "selected"; } ?>>Consolation</option>
 <option value="Round Robin" 
-<?php if($tourn_det['Tournament_type'] == 'Round Robin') { echo "selected"; } ?>>Round Robin</option>
+<?php if($this->session->userdata('draw')['ttype'] == 'Round Robin') { echo "selected"; } ?>>Round Robin</option>
 <option value="Switch Doubles">Switch Doubles</option>
 <!-- <option value="Switch Doubles2">Switch Doubles - 2</option> -->
-<?php if($tourn_det['Tournament_type'] == "Challenge Ladder"){ ?>
+<?php if($this->session->userdata('draw')['ttype'] == "Challenge Ladder"){ ?>
 <option value="Challenge Ladder">Challenge Ladder</option>
 <?php
 }?>
 
-<?php if($tourn_det['SportsType'] != 4 and ($tourn_det['tournament_format'] == 'Teams' || $tourn_det['tournament_format'] == 'TeamSport')){ ?>
+<?php if($tourn_det['SportsType'] != 4 
+and ($tourn_det['tournament_format'] == 'Teams' || $tourn_det['tournament_format'] == 'TeamSport')){ ?>
 <option value="Play Off">Play Off</option>
 <?php 
 }
 }
 else{ ?>
-<option value='conventional' <?php if($tourn_det['Tournament_type'] == 'conventional') { echo "selected"; } ?>>Conventional</option>
-<option value='drive_chip_putt' <?php if($tourn_det['Tournament_type'] == 'drive_chip_putt') { echo "selected"; } ?>>Drive, Chip & Putt</option>
+<option value='conventional' <?php if($this->session->userdata('draw')['ttype'] == 'conventional') { echo "selected"; } ?>>Conventional</option>
+<option value='drive_chip_putt' <?php if($this->session->userdata('draw')['ttype'] == 'drive_chip_putt') { echo "selected"; } ?>>Drive, Chip & Putt</option>
 <?php
 }
 ?>
@@ -644,7 +740,7 @@ if($tourn_det['tournament_format'] != 'Teams' and $tourn_det['tournament_format'
 	<th class="score-position">Player/Team</th>
 	<th class="score-position">City</th>
 	<th class="score-position">State</th>
-	<th class="score-position">A2MScore</th>
+	<th class="score-position">A2M Rating</th>
 	<th class="score-position">Seed</th>
 </tr>
 </thead>
@@ -802,12 +898,45 @@ $(document).ready(function() {
 
 		if (requested > count) {
 			for (i = count; i < requested; i++) {
-				var $ctrl = $("<div class='col-md-12 div_grp' style='padding-bottom:4px;'><div class='col-md-4'><input type='text' class='form-control' name='courts[]' placeholder='Court Name/#"+(i+1)+"' value='Court "+(i+1)+"' /></div><div class='col-md-3'><input type='text' class='form-control court_date' name='match_date[]' placeholder='MM/DD/YYYY' value='' autocomplete='off' /></div><div class='col-md-2'><select class='form-control' name='stime[]' id='stime_"+i+"' style='width: 108%; !important'><option value=''>Start Time</option><option value='05:00:00'>5:00 am</option><option value='06:00:00'>6:00 am</option><option value='07:00:00'>7:00 am</option><option value='08:00:00'>8:00 am</option><option value='09:00:00'>9:00 am</option><option value='10:00:00'>10:00 am</option><option value='11:00:00'>11:00 am</option><option value='12:00:00'>12:00 pm</option><option value='13:00:00'>1:00 pm</option><option value='14:00:00'>2:00 pm</option><option value='15:00:00'>3:00 pm</option><option value='16:00:00'>4:00 pm</option><option value='17:00:00'>5:00 pm</option><option value='18:00:00'>6:00 pm</option><option value='19:00:00'>7:00 pm</option><option value='20:00:00'>8:00 pm</option><option value='21:00:00'>9:00 pm</option><option value='22:00:00'>10:00 pm</option></select></div><div class='col-md-2'><select class='form-control' name='etime[]' id='etime_"+i+"' style='width: 108%; !important'><option value=''>End Time</option><option value='06:00:00'>6:00 am</option><option value='07:00:00'>7:00 am</option><option value='08:00:00'>8:00 am</option><option value='09:00:00'>9:00 am</option><option value='10:00:00'>10:00 am</option><option value='11:00:00'>11:00 am</option><option value='12:00:00'>12:00 pm</option><option value='13:00:00'>1:00 pm</option><option value='14:00:00'>2:00 pm</option><option value='15:00:00'>3:00 pm</option><option value='16:00:00'>4:00 pm</option><option value='17:00:00'>5:00 pm</option><option value='18:00:00'>6:00 pm</option><option value='19:00:00'>7:00 pm</option><option value='20:00:00'>8:00 pm</option><option value='21:00:00'>9:00 pm</option><option value='22:00:00'>10:00 pm</option><option value='23:00:00'>11:00 pm</option></select></div>");
+				var $ctrl = $("<div class='col-md-12 div_grp' style='padding-bottom:4px;'><div class='col-md-4'><input type='text' class='form-control' name='courts[]' placeholder='Court Name/#"+(i+1)+"' value='Court "+(i+1)+"' /></div><div class='col-md-3'><input type='text' class='form-control' name='match_date[]' placeholder='MM/DD/YYYY' value='' max='' /></div><div class='col-md-2'><input type='text' class='form-control timepicker' name='stime[]' id='stime_"+i+"' value='' /></div><div class='col-md-2'><input type='text' class='form-control timepicker2' name='etime[]' id='etime_"+i+"' value='' /></div>");
 
 				$("#court_sch_times").append($ctrl);
 				//$('.addn_fee_all').prop('disabled', true);
 				//	$('#dynamic_startEndDates_Fees').append($ctrl1);
 	
+	/*var options = { 
+	now: "12:35", //hh:mm 24 hour format only, defaults to current time 
+	twentyFour: false, //Display 24 hour format, defaults to false 
+	upArrow: 'wickedpicker__controls__control-up', //The up arrow class selector to use, for custom CSS 
+	downArrow: 'wickedpicker__controls__control-down', //The down arrow class selector to use, for custom CSS 
+	close: 'wickedpicker__close', //The close class selector to use, for custom CSS 
+	hoverState: 'hover-state', //The hover state class to use, for custom CSS 
+	title: 'Timepicker', //The Wickedpicker's title, 
+	showSeconds: false, //Whether or not to show seconds, 
+	secondsInterval: 1, //Change interval for seconds, defaults to 1 , 
+	minutesInterval: 1, //Change interval for minutes, defaults to 1 
+	beforeShow: null, //A function to be called before the Wickedpicker is shown 
+	show: null, //A function to be called when the Wickedpicker is shown 
+	clearable: false, //Make the picker's input clearable (has clickable "x") 
+	};*/
+
+	var options1 = {
+		now: "06:00",			//hh:mm 24 hour format only, defaults to current time 
+		twentyFour: true,		//Display 24 hour format, defaults to false 
+		minutesInterval: 15,  //Change interval for minutes, defaults to 1
+		title: 'Start Time',		//The Wickedpicker's title, 
+	}
+
+	var options2 = {
+		now: "18:00",			//hh:mm 24 hour format only, defaults to current time 
+		twentyFour: true,		//Display 24 hour format, defaults to false 
+		minutesInterval: 15,  //Change interval for minutes, defaults to 1 
+		title: 'End Time',		//The Wickedpicker's title, 
+	}
+
+	  $('.timepicker').wickedpicker(options1);
+	  $('.timepicker2').wickedpicker(options2);
+
 			}
 		} else if (requested < count) {
 			var x = requested - 1;
@@ -816,57 +945,13 @@ $(document).ready(function() {
 		}
 	});
 
-		$("#num_cons_courts").change(function () {
-
-		var count = $("#cons_court_sch_times .div_grp").size();
-		//alert(count);
-		var requested = parseInt($("#num_cons_courts").val(), 10);
-		//alert(requested);
-
-		if (requested > count) {
-			for (i = count; i < requested; i++) {
-				var $ctrl = $("<div class='col-md-12 div_grp' style='padding-bottom:4px;'><div class='col-md-4'><input type='text' class='form-control' name='cc_courts[]' placeholder='Court Name/#"+(i+1)+"' value='Court "+(i+1)+"' /></div><div class='col-md-3'><input type='text' class='form-control court_date' name='cc_match_date[]' placeholder='MM/DD/YYYY' value='' autocomplete='off' /></div><div class='col-md-2'><select class='form-control' name='cc_stime[]' id='stime_"+i+"' style='width: 108%; !important'><option value=''>Start Time</option><option value='05:00:00'>5:00 am</option><option value='06:00:00'>6:00 am</option><option value='07:00:00'>7:00 am</option><option value='08:00:00'>8:00 am</option><option value='09:00:00'>9:00 am</option><option value='10:00:00'>10:00 am</option><option value='11:00:00'>11:00 am</option><option value='12:00:00'>12:00 pm</option><option value='13:00:00'>1:00 pm</option><option value='14:00:00'>2:00 pm</option><option value='15:00:00'>3:00 pm</option><option value='16:00:00'>4:00 pm</option><option value='17:00:00'>5:00 pm</option><option value='18:00:00'>6:00 pm</option><option value='19:00:00'>7:00 pm</option><option value='20:00:00'>8:00 pm</option><option value='21:00:00'>9:00 pm</option><option value='22:00:00'>10:00 pm</option></select></div><div class='col-md-2'><select class='form-control' name='cc_etime[]' id='etime_"+i+"' style='width: 108%; !important'><option value=''>End Time</option><option value='06:00:00'>6:00 am</option><option value='07:00:00'>7:00 am</option><option value='08:00:00'>8:00 am</option><option value='09:00:00'>9:00 am</option><option value='10:00:00'>10:00 am</option><option value='11:00:00'>11:00 am</option><option value='12:00:00'>12:00 pm</option><option value='13:00:00'>1:00 pm</option><option value='14:00:00'>2:00 pm</option><option value='15:00:00'>3:00 pm</option><option value='16:00:00'>4:00 pm</option><option value='17:00:00'>5:00 pm</option><option value='18:00:00'>6:00 pm</option><option value='19:00:00'>7:00 pm</option><option value='20:00:00'>8:00 pm</option><option value='21:00:00'>9:00 pm</option><option value='22:00:00'>10:00 pm</option><option value='23:00:00'>11:00 pm</option></select></div>");
-
-				$("#cons_court_sch_times").append($ctrl);
-				//$('.addn_fee_all').prop('disabled', true);
-				//	$('#dynamic_startEndDates_Fees').append($ctrl1);
-	
-			}
-		} else if (requested < count) {
-			var x = requested - 1;
-			//alert(x);
-			$("#cons_court_sch_times .div_grp:gt(" + x + ")").remove();
-		}
-	});
-
-
 });
-
-$('#ttype').change(function (){
-	if($(this).val() == 'Consolation'){
-		$('#cons_court_dura').show();
-	}
-	else{
-		$('#cons_court_dura').hide();
-	}
-});
-
 </script>
 <script>
-$(document).on('change', '#etime_0', function(){ 
-	//alert('test'); 
-});
-/*$('.court_date').fdatepicker({format: 'mm/dd/yyyy hh:ii', disableDblClickSelection: true, language: 'en', pickTime: true });*/
-$(document).on('focus', '.court_date', function(){ $(this).fdatepicker({format: 'mm/dd/yyyy ', disableDblClickSelection: true, language: 'en', pickTime: false }); });
 
-$(document).on('focus', '#main_draw_dt', function(){ $(this).fdatepicker({format: 'mm/dd/yyyy H:i', disableDblClickSelection: true, language: 'en', pickTime: true }); });
+
 </script>
 <!-- HTML Code For Groups Creation Ends Here.  -->
-<div class='form-group'>
-<label class='control-label col-md-5' style='padding-top:7px;'>Draw Start Date & Time: </label>
-<input type='text' class='form-control' id='main_draw_dt' name='main_draw_dt' placeholder='MM/DD/YYYY' value='' autocomplete='off' style='width:20%' />
-</div>
-
 <div class='form-group'>
 <label class='control-label col-md-5' style='padding-top:7px;'>Do you want to schedule the courts and match timings?</label>
 	<label for="sch_Yes" style="padding-top:7px;"><input type="radio" id="sch_Yes" name="is_sch_courts" value="1" /> Yes</label>&nbsp;&nbsp;
@@ -890,7 +975,6 @@ $(document).on('focus', '#main_draw_dt', function(){ $(this).fdatepicker({format
 	</select>
 </div>
 <div id='court_sch_times'></div>
-<div id='main_draw_dura'>
 <div>
 <label class='control-label col-md-3' style='padding-top:7px;'>Match Duration</label>
 <input class="form-control" type='number' name='match_duration' id='match_duration' placeholder='Minutes' style="width:20%; margin-bottom:35px;" />
@@ -899,37 +983,6 @@ $(document).on('focus', '#main_draw_dt', function(){ $(this).fdatepicker({format
 <label class='control-label col-md-3' style='padding-top:7px;'>Break time between Matchs</label>
 <input class="form-control" type='number' name='match_break' id='match_break' placeholder='Minutes' style="width:20%; margin-bottom:35px;" />
 </div>
-</div>
-
-
-<div id='cons_court_dura' style='display:none;'>
-
-<div>
-<label class='control-label col-md-3' style='padding-top:7px;'>No. of Courts (Consolation)?</label>
-	<select class="form-control" name="num_cons_courts" id="num_cons_courts" style="width:20%; margin-bottom:35px;">
-		<option value='1'>1</option>
-		<option value='2'>2</option>
-		<option value='3'>3</option>
-		<option value='4'>4</option>
-		<option value='5'>5</option>
-		<option value='6'>6</option>
-		<option value='7'>7</option>
-		<option value='8'>8</option>
-		<option value='9'>9</option>
-		<option value='10'>10</option>
-	</select>
-</div>
-<div id='cons_court_sch_times'></div>
-<div>
-<label class='control-label col-md-3' style='padding-top:7px; '>Consolation Match Duration</label>
-<input class="form-control" type='number' name='cons_match_duration' id='cons_match_duration' placeholder='Minutes' style="width:20%; margin-bottom:35px;" />
-</div>
-<div>
-<label class='control-label col-md-3' style='padding-top:7px;'>Break time between Matchs (Consolation)</label>
-<input class="form-control" type='number' name='cons_match_break' id='cons_match_break' placeholder='Minutes' style="width:20%; margin-bottom:35px;" />
-</div>
-</div>
-
 
 </div>
 
@@ -965,3 +1018,54 @@ else
 </div><!--Close Top Match-->
 <div style='clear:both'></div>
 </div><!--Close Top Match-->
+
+<script>
+$(document).ready(function(){
+
+	var ttype = "<?php echo $this->session->userdata('draw')['ttype']; ?>";
+	if(ttype){
+		$('#ttype').val('');
+		$('#ttype').val(ttype).trigger('change');
+	}
+
+
+	var isGrp = "<?php echo $this->session->userdata('draw')['is_groups']; ?>";
+	if(isGrp != "0")
+		$("#t_Yes").prop("checked", true).trigger("click");
+
+	var isGrpTopPlayers = "<?php echo $this->session->userdata('draw')['is_group_top_players']; ?>";
+	if(isGrpTopPlayers != "0")
+		$("#top_Yes").prop("checked", true).trigger("click");
+
+	var isCourts = "<?php echo $this->session->userdata('draw')['is_sch_courts']; ?>";
+	if(isCourts != "0")
+		$("#sch_Yes").prop("checked", true).trigger("click");
+
+	var num_grps = "<?php echo $this->session->userdata('draw')['sel_groups']; ?>";
+	if(num_grps)
+		$("#sel_groups").val(num_grps).trigger("change");
+
+	var is_checkin = "<?php echo $this->session->userdata('draw')['is_checkin']; ?>";
+	if(is_checkin != "0")
+		$("#checkin_yes").prop("checked", true).trigger("click");
+
+	var dr_format = "<?php echo $this->session->userdata('draw')['draw_format']; ?>";
+	if(dr_format == 'singles')
+		$("#format_singles").prop("checked", true).trigger("click");
+	else if(dr_format == 'doubles')
+		$("#format_doubles").prop("checked", true).trigger("click");
+	else if(dr_format == 'mixed')
+		$("#format_mixed").prop("checked", true).trigger("click");
+
+
+		//var prev_filter = "<?php echo $this->session->userdata('draw')['filters']; ?>";
+		var prev_filter = ["<?php echo implode('","', $this->session->userdata('draw')['filters']); ?>"];
+		if(prev_filter){
+			$.each(prev_filter, function( index, value ) {
+				var ev_id = value;
+				$("input[value='" + ev_id + "']").trigger('click');
+			});
+		}
+
+});
+</script>

@@ -303,22 +303,27 @@
 		
 		public function ins_ev_invite($data)
 		{
-			$user_id = $data['user'];
-			$event_id = $data['event_id'];
-			$ev_rep_id = $data['ev_rep_id'];
+			$user_id		= $data['user'];
+			$event_id		= $data['event_id'];
+			$ev_rep_id	= $data['ev_rep_id'];
+			$status			= 'Pending';
+
+			if($data['ev_status']){
+			$status = $data['ev_status'];
+			}
 
 			$data = array(
-					'Ev_ID' => $event_id,
-					'Ev_Rep_ID' => $ev_rep_id,
-					'Users_Id' => $user_id,
-					'Ev_status' => 'Pending'
-			);
+					'Ev_ID'			=> $event_id,
+					'Ev_Rep_ID'  => $ev_rep_id,
+					'Users_Id'		=> $user_id,
+					'Ev_status'		=> $status
+					);
 
 			$result = $this->db->insert('Ev_Inv_Status', $data);
 		    return  $result; 
 	    }
 
-		public function update_non_reg_user_status($ev_id,$act_code)
+		public function update_non_reg_user_status($ev_id, $act_code)
 		{
 			
 			$updateData = array(
@@ -730,6 +735,16 @@
 			$query = $this->db->get_where('Event_Images',$data);
 			return $query->result();
 		}
-		
+
+		public function get_pay_status($ev_id, $users_id){
+			$data = array('mtype_ref'=>$ev_id, 'Users_ID' => $users_id);
+			$query = $this->db->get_where('PayTransactions', $data);
+			return $query->row_array();
+		}
+	
+		public function get_ts_count($ts, $ev_id){
+			$qry = $this->db->query("SELECT count(*) as ts_count FROM Users WHERE TShirt_Size = {$ts} AND Users_ID IN (SELECT Users_Id from Ev_Inv_Status WHERE Ev_ID = $ev_id)");
+			return $qry->row_array();
+		}
 	
 }

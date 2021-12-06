@@ -792,6 +792,27 @@ public function ajax_validate_login(){
 			}
 		}
 
+		public function get_country_code(){
+				$mob_num = $this->input->post('mob_num');
+				//$match = 
+				$get_user = $this->login->check_user_phone($mob_num);
+				if($get_user){
+					if($get_user['Country'] == 'India'){
+						$country_code = '+91';
+					}
+					else if($get_user['Country'] == 'United States of America' or $get_user['Country'] == 'USA'){
+						$country_code = '+1';
+					}
+					else{
+						$country_code = '+1';
+					}
+			  }
+			  else{
+				$country_code = '+1';
+			  }
+			  echo $country_code;
+		}
+
 		public function check_phone(){
 					//echo "<pre>"; print_r($_REQUEST);
 					$provider	 = $this->input->post('provider');
@@ -805,7 +826,8 @@ public function ajax_validate_login(){
 //echo "<pre>"; print_r($arr); exit;
  		if($cur_time < $exp_time){
 			$phone	= $arr['phone_number'];
-			$ph			= substr($phone, -10);
+			//$ph			= substr($phone, -10);
+			$ph			= substr($phone, 1);
 
 			$validate_user = $this->login->validate_user_phone($phone, $ph);
 			if($validate_user){

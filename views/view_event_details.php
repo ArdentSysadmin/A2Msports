@@ -370,10 +370,10 @@ $('#div2').show();
 
 <section id="single_player" class="container secondary-page">
 <!-- Google AdSense -->
-<div id='google' class='col-md-12'>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- <div id='google' class='col-md-12'>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
 <!-- Ad_Horizontal -->
-<ins class="adsbygoogle"
+<!-- <ins class="adsbygoogle"
      style="display:block"
      data-ad-client="ca-pub-9772177305981687"
      data-ad-slot="1273487212"
@@ -382,7 +382,7 @@ $('#div2').show();
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-</div>
+</div> -->
 <!-- Google AdSense -->
 
 <div class="top-score-title right-score col-md-9">
@@ -395,7 +395,7 @@ if($ev_det)
 ?>
 <input type="hidden" id="ev_id" name="ev_id" value="<?php echo $ev_det['Ev_ID'];?>" />
 <?php 
-$num = $this->uri->segment(3);
+$num = $this->uri->segment(4);
 //echo var_dump($num);
 switch($num){
 
@@ -467,9 +467,63 @@ break;
 ?>
 
 <div class="col-md-12 league-form-bg" >
-<div class="fromtitle"><?php echo $ev_det['Ev_Title'];?>
+<div class="fromtitle" style='font-size:13px !important;'><?php echo $ev_det['Ev_Title'];?>
 <div class="fb-like" data-href="<?php echo base_url(); ?>events/<?=$ev_det['Ev_ID']; ?>" data-layout="button_count" data-mobile-iframe="true" data-action="like" data-show-faces="false" data-share="true">
 </div>
+</div>
+
+<div class="col-md-4" align='center' style="margin-bottom: 10px;">
+<?php if($ev_det['EventImage']){ ?>
+<img class="scale_image" src="<?php echo base_url(); ?>events_pictures/<?php echo $ev_det['EventImage']; ?>" alt="" width="200px" height="200px" style="margin-top: 18px;" />
+<?php
+}
+else{
+?>
+
+<img class="scale_image" src="https://a2msports.com/images/logo.png" alt="" width="200px" height="180px" style="margin-top: 18px;" />
+<?php
+}
+//if(!$is_tshirt and $users_id and count($is_ev_user) > 0){
+?>
+<!-- <div id='div_tshirt_upd' style="padding-top:90px">
+<select class='form-control' name="TShirtSize_UPD" id="TShirtSize_UPD" style='width:50%; display:inline;'>
+<option value="">TShirt Size</option>
+<?php
+//if($tshirt_sizes){
+//	foreach($tshirt_sizes as $ts){
+?>
+<option value='<?//=$ts->TShirtID;?>'><?//=$ts->TShirtSize;?></option>
+<?php
+	//}
+//}
+?>
+</select>
+<span align='center' class='txt-torn1'>
+<a style='display:inline; cursor:pointer;' id='user_tshirt' name='user_tshirt'>UPDATE</a>
+</span>
+
+</div> -->
+<?php
+//}
+?>
+<?php
+//if($ev_det['Ev_Created_by'] == $users_id){
+?>
+	<!-- <div id='div_tshirt_size_info' style="margin-top:90px;background:#e2e2e2;padding:15px;"> -->
+	<?php
+	/*echo "<b>TShirt Size Count</b><br><br>";
+	foreach($tshirt_sizes as $ts){
+		$count = events::get_tshirt_count($ts->TShirtID, $ev_det['Ev_ID']);
+
+		if($count){
+		echo $ts->TShirtSize." - ".$count."<br>";
+		}
+	}*/
+	?>
+	<!-- </div> -->
+<?php
+//}
+?>
 </div>
 
 <div class='col-md-8' style='padding-top:10px;'>
@@ -488,7 +542,7 @@ if($ev_det['Ev_Start_Date'] != "1900-01-01 00:00:00.000"){
 else { echo "&lt;Not Available&gt;"; }
 ?></p>
 <?php 
-} 
+}
 else {
 ?>
 <p><label>Start Date:</label> <?php 
@@ -516,9 +570,13 @@ if($loc['loc_country']) echo ",".$loc['loc_country'];
 echo $event_init['Firstname']." ".$event_init['Lastname'];?>
 </p>
 <p><label>Contact Number:</label> <?php echo $ev_det['Ev_Contact_Num'];?></p>
+<?php if($ev_det['Fee']){ ?>
 <p><label>Fee:</label> <?php echo number_format($ev_det['Fee'], 2);?></p>
+<?php
+}
+?>
 <p><label>Description:</label>
-	<div class='comment'>
+	<div class='comment' style='display:inline;'>
 	<?php 
 	if($ev_det['Ev_Desc']) {
 	$description = html_entity_decode($ev_det['Ev_Desc']);
@@ -529,18 +587,16 @@ echo $event_init['Firstname']." ".$event_init['Lastname'];?>
 	echo $description; ?>
 	</div>
 </p>
-</div>
+<?php
 
-<div class="col-md-4" align='center' style="margin-bottom: 10px;">
-<?php if($ev_det['EventImage']!=""){ ?>
-<img class="scale_image" src="<?php echo base_url(); ?>events_pictures/<?php echo $ev_det['EventImage']; ?>" alt="" width="200px" height="200px" />
+if($users_id){
+?>
+<div align='center' style="margin-top: 20px;margin-bottom: 20px;"><a href='#comments'><b>Add / View Comments</b></a></div>
 <?php
 }
-
-if($ev_det['Fee'] != '' and $ev_det['Fee'] != NULL and $ev_det['Fee'] > 0 
-	and $pay_status == 'Due' and $users_id and count($is_ev_user) > 0){
+if($ev_det['Fee'] != '' and $ev_det['Fee'] != NULL and $ev_det['Fee'] > 0 and $pay_status == 'Due' and $users_id and count($is_ev_user) > 0) {
 ?>
-<div align='center' class='txt-torn1'>
+<div align='center' class='txt-torn1' style="margin-top: 20px;">
 <br />
 <a style='display:inline;' href="<?=base_url();?>events/pay_now/<?=$ev_det['Ev_ID'];?>" id='event_pay_now' name='event_pay_now'>
 Pay NOW
@@ -548,54 +604,10 @@ Pay NOW
 </div>
 <?php
 }
-
-if(!$is_tshirt and $users_id and count($is_ev_user) > 0){
 ?>
-<div id='div_tshirt_upd' style="padding-top:90px">
-<select class='form-control' name="TShirtSize_UPD" id="TShirtSize_UPD" style='width:50%; display:inline;'>
-<option value="">TShirt Size</option>
-<?php
-if($tshirt_sizes){
-	foreach($tshirt_sizes as $ts){
-		/*echo "<pre>";
-		print_r($ts);*/
-?>
-<option value='<?=$ts->TShirtID;?>'><?=$ts->TShirtSize;?></option>
-<?php
-	}
-}
-?>
-</select>
-<span align='center' class='txt-torn1'>
-<a style='display:inline; cursor:pointer;' id='user_tshirt' name='user_tshirt'>UPDATE</a>
-</span>
 
 </div>
-<?php
-}
-?>
 
-<?php
-if($ev_det['Ev_Created_by'] == $users_id){
-?>
-	<div id='div_tshirt_size_info' style="margin-top:90px;background:#e2e2e2;padding:15px;">
-	<?php
-	echo "<b>TShirt Size Count</b><br><br>";
-	foreach($tshirt_sizes as $ts){
-		$count = events::get_tshirt_count($ts->TShirtID, $ev_det['Ev_ID']);
-
-		if($count){
-		echo $ts->TShirtSize." - ".$count."<br>";
-		}
-	}
-	?>
-	</div>
-<?php
-}
-?>
-
-
-</div>
 
 <div class="col-md-12">
 <?php
@@ -649,14 +661,14 @@ if($ev_det['Ev_Created_by'] == $users_id){
 <div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
 <a href="#div3" id="showdiv3" style="cursor:pointer;">Send Email to Players</a></div>
 
-<div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
-<a href="#div4" id="showdiv4"  style="cursor:pointer;">Upload Images</a></div>
+<!-- <div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
+<a href="#div4" id="showdiv4"  style="cursor:pointer;">Upload Images</a></div> -->
 
 <!-- <div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
 <a href="#div5" id="showdiv5"  style="cursor:pointer;">TShirt Sizes</a></div> -->
 
-<div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
-<a onclick="refresh_blog(<?php echo $ev_det['Ev_ID'];?>)" style='cursor:pointer;'>View Gallery</a></div>
+<!-- <div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
+<a onclick="refresh_blog(<?php //echo $ev_det['Ev_ID'];?>)" style='cursor:pointer;'>View Gallery</a></div> -->
 
 <?php
 }
@@ -665,23 +677,26 @@ else if(count($is_ev_user) > 0  and ($num_players > 0) and ($ev_det['Ev_Created_
 <br /><div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
 <a href="#div2" id="showdiv2" style="cursor:pointer;">Track/ Update Schedule</a></div>
 
-<div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
-<a onclick="refresh_blog(<?php echo $ev_det['Ev_ID'];?>)" style='cursor:pointer;'>View Gallery</a></div>
+<!-- <div class="col-md-4 txt-torn1" style="padding-left:0px; margin-bottom:20px">
+<a onclick="refresh_blog(<?php //echo $ev_det['Ev_ID'];?>)" style='cursor:pointer;'>View Gallery</a></div> -->
 <?php
 }
 else if(!$users_id){
+	$arr = array('redirect_to' => current_url());
+	$this->session->set_userdata($arr);
 ?>
 <br />
 <div>
 <label>Do you want to register for this event? </label>
-	<input type="button" class="league-form-submit1" style='margin-bottom:3px;' name="login" id="login" value="Login">
+<a class="btn btn-primary" style="background-color: #f59123; border-color: #f59123;" href="<?php echo base_url(); ?>login">Login to RSVP</a>
+	<!-- <input type="button" class="league-form-submit1" style='margin-bottom:3px;' name="login" id="login" value="Login">
 	<input type="button" class="league-form-submit1" name="signup" id="signup" value="Sign Up"><br />
 		<a href="<?php echo $login; ?>">
 		<img src="<?php echo base_url(); ?>icons/facebook.jpg" height="40px" width="230px" />
 		</a>
 		<a href="<?php echo $authUrl; ?>">
 		<img src="<?php echo base_url(); ?>icons/google.jpg" height="40px" width="230px" />
-		</a>
+		</a> -->
 </div>
 
 
@@ -1080,11 +1095,11 @@ else if(!$ev_det['Is_Private']){
 <form id='frm_reg_attend' name='frm_reg_attend' action='<?=base_url();?>events/reg_user2' method='POST'>
 <input type="hidden" id="ev_id"		name="ev_id"	  value="<?php echo $ev_det['Ev_ID'];?>" />
 <input type="hidden" id="reg_stat"  name="reg_stat"   value="Attending" />
-<input name="attend" style='width:100%;' id="register_user" type="submit" value="ATTENDING" class='league-form-submit1' />
+<input name="attend" style='width:100%; background-color: #81a32b; border-color: #81a32b;' id="register_user" type="submit" value="ATTENDING" class='league-form-submit1' />
 </form>
 </div>
 <div class='col-md-4' style='margin-bottom:15px;'>
-<input name="decline" style='width:100%;' id="register_user" type="button" value="NOT ATTENDING" class='btn_acceptance league-form-submit1' />
+<input name="decline" style='width:100%; background-color: #f10b0b; border-color: #f10b0b;' id="register_user" type="button" value="NOT ATTENDING" class='btn_acceptance league-form-submit1' />
 </div>
 <div class='col-md-4' style='margin-bottom:3px;'>
 <input name="tentative" style='width:100%;' id="register_user" type="button" value="TENTATIVE" class='btn_acceptance league-form-submit1' />

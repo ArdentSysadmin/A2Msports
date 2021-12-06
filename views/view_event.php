@@ -268,9 +268,9 @@ $(document).ready(function(){
 					url:baseurl+'events/location_add/',
 					data:{title:Title, add:Add, city:City, state:State, country:Country, zip:Zip},
 					success:function(res){
-						$('#loc_form').each(function(){
-						this.reset();
-						});
+						//$('#loc_form').each(function(){
+						//this.reset();
+						//});
 						$('#location_form').hide();
 						$('.loc_section').show();
 					}
@@ -315,7 +315,7 @@ $(document).ready(function(){
 
 <div class="top-score-title right-score col-md-9">
 <!-- Google AdSense -->
-<div id='google' align='center'>
+<!-- <div id='google' align='center'>
 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <ins class="adsbygoogle"
      style="display:block"
@@ -325,7 +325,7 @@ $(document).ready(function(){
 <script>
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-</div>
+</div> -->
 <!-- Google AdSense -->
 <!-- start main body -->
 <div class="col-md-12 league-form-bg" style="margin-top:50px;">
@@ -392,7 +392,7 @@ Please <a href='<?php echo base_url()."login"; ?>'><b>Login</b> </a>to create an
 	<div class="form-group">  
 			<label class="control-label col-md-4" for="id_accomodation">Event Image </label>
             <div class="col-md-5 form-group internal">
-			   <input id="" name="EventImage" style="margin-bottom:8px" type="file">
+			   <input id="" name="EventImage" style="margin-bottom:8px" type="file" accept="image/png, image/gif, image/jpeg, image/jpg" />
             </div>
     </div>
 	<div class='form-group loc_section'>
@@ -520,23 +520,26 @@ Please <a href='<?php echo base_url()."login"; ?>'><b>Login</b> </a>to create an
 			<table>
 			<tr>
 			<td>
-				<select class='form-control' name="ev_st" id="event_st_time">
+				<!-- <select class='form-control' name="ev_st" id="event_st_time">
 				<?php for($i = 0; $i < 24; $i++):?>
 				  <option value="<?= $i % 12 ? $i % 12 : 12 ?>:00 <?= $i >= 12 ? 'pm' : 'am' ?>">
 				  <?= $i % 12 ? $i % 12 : 12 ?>:00 <?= $i >= 12 ? 'pm' : 'am' ?>
 				  </option>
 				<?php endfor ?>
-				</select>		
+				</select>	 -->	
+				<input type='time' class='form-control' name='ev_st' id="event_st_time" value='' />
 			</td>
 			<td>&nbsp;</td>
 			<td>
-				<select class='form-control' name="ev_et" id="event_end_time">
+				<!-- <select class='form-control' name="ev_et" id="event_end_time">
 				<?php for($i = 0; $i < 24; $i++):?>
 				  <option value="<?= $i % 12 ? $i % 12 : 12 ?>:00 <?= $i >= 12 ? 'pm' : 'am' ?>">
 				  <?= $i % 12 ? $i % 12 : 12 ?>:00 <?= $i >= 12 ? 'pm' : 'am' ?>
 				  </option>
 				<?php endfor ?>
-				</select>
+				</select> -->
+				<input type='time' class='form-control' name='ev_et' id="event_end_time" value='' />
+
 				<!-- <p id="datepairExample">
                     <input type="text" name="ev_st" class="time start" /> to 
 					<input type="text" name="ev_et" class="time end" />

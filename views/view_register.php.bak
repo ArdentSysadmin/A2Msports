@@ -15,24 +15,57 @@ function check(input){
 $(document).ready(function(){    
 $('#EmailID').val("");
 
+
+$(document).on('click', '#reset_pwd', function() {
+	var baseurl	= "<?php echo base_url();?>";
+	var email_id = $('#temp_email').val();
+	var uid			= $('#temp_uid').val();
+	$('#reset_pwd').html("Please wait...");
+if(email_id && uid){
+	$.ajax({
+	type:'POST',
+	url:baseurl+'login/reset_email_pwd',
+	data:{req_email:email_id, user:uid},
+	success:function(res){
+		if(res){
+			alert("Reset Password link sent to your email.")
+			window.location.replace(baseurl+"login");
+		}
+		else{
+			alert("Something wrong! please try after some time.");
+			$('#reset_pwd').html("Reset Password ?");
+		}
+	}
+	}); 
+}
+
+});
+
 $('#EmailID').blur(function(){
-var baseurl = "<?php echo base_url();?>";
+var baseurl	= "<?php echo base_url();?>";
 var email_id = $(this).val();
 
 if(email_id!=""){
 	$.ajax({
 	type:'POST',
-	url:baseurl+'register/email_check/',
+	url:baseurl+'register/ajax_email_verify/',
 	data:'email_id='+email_id,
 	success:function(html){
-	var stat = html;
-	if(stat!=""){
-		$('#email_stat').html(stat);
-		$('#EmailID').val("");
-	}
-	else {
-		$('#email_stat').html("");
-	}
+		var stat = html;
+		if(stat!=""){
+			var sp = stat.split('-');
+			$('#email_stat').html(sp[1] + " already exists! <br />want to <a id='reset_pwd' style='cursor:pointer;'><b>Reset Password</b>?</a>");
+			//$('#email_stat').html(stat);
+			$('#temp_uid').val(sp[0]);
+			$('#temp_email').val(sp[1]);
+
+			$('#EmailID').val("");
+		}
+		else {
+			$('#email_stat').html("");
+			$('#temp_uid').val('');
+			$('#temp_email').val('');
+		}
 	}
 	}); 
 }
@@ -429,7 +462,7 @@ return false;
 <div class="col-md-12">
 <label for="email">* Email:</label><div class="clear"></div>
 <input class='form-control' id="EmailID" name="EmailID"  type="email" oninvalid="check(this)" required />
-<div id="email_stat" style="color:red;"><?php echo $this->session->flashdata('err_msg');?></div>
+<div id="email_stat" style="color:red; margin-bottom:15px;"><?php echo $this->session->flashdata('err_msg');?></div>
 </div>
 
 <div class="col-md-12">
@@ -813,14 +846,14 @@ return false;
 <input class='form-control' id="zipcode" name="Zipcode" type="text" maxlength='10' required/>
 </div>
 
-<!-- <div class="col-md-12" style="padding-top:10px">
+<div class="col-md-12" style="padding-top:10px">
 <label for="Sportsintrests">* Interested in:</label><div class="clear"></div>
 <?php foreach($intrests as $row) { ?> 
 <input type="checkbox" class="sport_class" name="Sportsintrests[]" value="<?php echo $row->SportsType_ID;?>"> <?php echo $row->Sportname;?> &nbsp;
 <?php } ?>
-</div> -->
+</div>
 
-<div class="col-md-12" style="margin-bottom: 25px;">
+<!-- <div class="col-md-12" style="margin-bottom: 25px;">
 <label for="AddnSports">Additional Sports ?</label><div class="clear"></div>
 <div class="row">
 
@@ -854,7 +887,7 @@ return false;
 	</div>
 
 </div>
-
+ -->
 <script>
 $(document).ready(function(){
 $('#myform').submit(function() {
@@ -873,6 +906,9 @@ I accept the <a style='cursor:pointer;' onclick='terms_conditions()'><b>Terms & 
 </div>
 
 <div class="col-md-12" align="center">
+<input type='hidden' name='temp_uid'		id='temp_uid'	 value='' />
+<input type='hidden' name='temp_email'	id='temp_email' value='' />
+
 <input name="reg_user" id="reg_user" type="submit" value="REGISTER" style="padding: 10px 30px; font-weight: bold; margin-top:20px; border:#81a32b; background-color:#81a32b" />
 </div>
 

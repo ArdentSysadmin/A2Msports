@@ -385,7 +385,7 @@ action="<?=$this->config->item('club_form_url');?>/facility/add_banner" enctype=
 	<?php if($pom_user){ ?>
 	<div><a href="<?=$this->config->item('club_form_url').'/player/'.$pom_user['Users_ID'];?>">
 	<?php if($pom_user['Profilepic']){ ?>
-	<img src="<?php echo base_url(); ?>profile_pictures/<?php echo $pom_user['Profilepic'];?>"  style="width:150px; height:150px;" alt="">
+	<img src="<?php echo base_url(); ?>profile_pictures/<?php echo $pom_user['Profilepic'];?>"  style="width:175px; height:245px;" alt="">
 	<?php } else { ?>
 	<img src="<?php echo base_url(); ?>assets/club_pages/images/pm.png" alt="">
 	<?php } ?>
@@ -446,7 +446,7 @@ if(trim($aca_pages['Alert_Message']) != ''){
 		<div class="caltext"><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events"><!-- <i class="fa fa-calendar" aria-hidden="true"></i> --> More Events</a></div>
  
  <?php 
-if(count($club_leagues) == 0)
+if(count($club_leagues) == 0 and count($club_events) == 0)
 {
 ?>
     <div class="col-md-12 col-sm-12">
@@ -531,7 +531,103 @@ foreach($club_leagues as $row) {
 }
 }
 ?>
- 
+   <?php 
+if(count($club_events) > 0){
+
+foreach($club_events as $row) { 
+?>
+	<div class="col-md-3 col-sm-6">
+	<!-- <div class="text-center col-md-3 col-md-offset-3"> -->
+		 <div class="course-item">
+			<div class="course-img">
+			<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>">
+			<img src="<?php echo base_url(); ?>events_pictures/<?php if($row->EventImage!=""){echo $row->EventImage; }
+			else {
+			switch($row->Ev_Sport) {
+			case 1:
+			echo "default_tennis.jpg";
+			break;
+			case 2:
+			echo "default_table_tennis.jpg";
+			break;
+			case 3:
+			echo "default_badminton.jpg";
+			break;
+			case 4:
+			echo "default_golf.jpg";
+			break;
+			case 5:
+			echo "default_racquet_ball.jpg";
+			break;
+			case 6:
+			echo "default_squash.jpg";
+			break;
+			case 7:
+			echo "default_pickleball.jpg";
+			break;
+			case 8:
+			echo "default_chess.jpg";
+			break;
+			case 9:
+			echo "default_carroms.jpg";
+			break;
+			case 10:
+			echo "default_volleyball.jpg";
+			break;
+			case 11:
+			echo "default_fencing.jpg";
+			break;
+			case 12:
+			echo "default_bowling.jpg";
+			break;
+			case 18:
+			echo "default_basketball1.jpg";
+			break;
+			default:
+			echo "";
+			}
+			}
+			?>" alt="" style="width:261px; height:157px;" />
+			</a>
+			</div>
+			<div class="course-body">
+				<div class="course-desc" style="min-height: 115px;">
+					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>"><?php echo $row->Ev_Title;?></a></h4>
+					  <p style="line-height: 23px;"><b>Sport:</b> <?php 
+						$get_sport = academy::get_sport($row->Ev_Sport);
+						echo $get_sport['Sportname'];
+						?><br>
+						<!-- <b>Registration closed on:</b> <?php //echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br> -->
+						<b>Starts on:</b> <?php echo date('m/d/Y',strtotime(substr($row->Ev_Start_Date,0,10))); ?><br>
+						<?php 
+						$get_loc = academy::get_location($row->Ev_Location);
+						if($get_loc['loc_city'] or $get_loc['loc_state']){
+						?>
+						<b>Location:</b> <?php echo $get_loc['loc_city']. ', ' .$get_loc['loc_state']; ?><br>
+						<?php
+						}
+						else{
+						?>
+						<b>Location:</b> N/A<br>
+						<?php
+						}
+						$now		  = strtotime("now");
+						$end_date = strtotime($row->Ev_End_Date);
+
+						if($end_date < $now){ ?>
+						<b style="background-color:#2de033; padding:0px;">COMPLETED</b>
+						<?php } ?>
+						</p>
+				</div>
+			</div>
+		</div><!-- Tournaments-item -->
+	</div><!-- col-md-4 -->
+
+<?php
+}
+}
+?>
+
       
     </div><!-- row -->
   </div>
@@ -604,7 +700,7 @@ foreach($club_leagues as $row) {
 			}
 			else{
 		?>
-		<div class="col-md-12 col-sm-6 text-center">No Partners and Sponsors are added yet!</div>
+		<div class="col-md-12 col-sm-6" align='center'>No Partners and Sponsors are added yet!</div>
 		<?php
 				}
 		?>
@@ -779,9 +875,11 @@ if(count($club_testimonials) > 0){
 				<p>
 				<?php 
 				$abc 	= strip_tags($row->News_content);
-				$result = substr($abc, 0, strpos($abc, '.'));
+				//$result = substr($abc, 0, strpos($abc, '.'));
+				$result = substr($abc, 0, 50);
 
 				echo $result . "...";
+				exit;
 				?>
 				</p>
 			<a class="read-more" href="<?=$this->config->item('club_form_url');?>/news/view/<?=$row->News_id;?>">Read more <i class="fa fa-long-arrow-right"></i> </a> </div>

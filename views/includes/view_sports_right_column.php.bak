@@ -197,10 +197,10 @@ rssfeed_cache = "<?php echo md5($rss_feed_url); ?>";
 			<?php } ?>
 
 			<!-- Google AdSense -->
-			<div id="google" align='center' style='margin-bottom:120px;'>
-			<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+			<!-- <div id="google" align='center' style='margin-bottom:120px;'>
+			<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> -->
 			<!-- Ad_Vertical -->
-			<ins class="adsbygoogle"
+			<!-- <ins class="adsbygoogle"
 			style="display:block"
 			data-ad-client="ca-pub-9772177305981687"
 			data-ad-slot="3271945304"
@@ -209,7 +209,7 @@ rssfeed_cache = "<?php echo md5($rss_feed_url); ?>";
 			<script>
 			(adsbygoogle = window.adsbygoogle || []).push({});
 			</script>
-			</div>
+			</div> -->
 			<!-- Google AdSense -->
 
 		   <div class="top-score-title col-md-12 right-title hidden-xs">

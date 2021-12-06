@@ -187,26 +187,7 @@ $txt .= "\n"."/*****************************************************************
 	
 			
 		}
-	/*
-	<metals>
-<AED>
-<gold>
-<bid>213.38925460577</bid>
-<ask>213.50734429792</ask>
-</gold>
-<silver>
-<bid>2.2814928522717</bid>
-<ask>2.2933018214864</ask>
-</silver>
-<platinum>
-<bid>97.193721121235</bid>
-<ask>98.374618042701</ask>
-</platinum>
-<palladium>
-<bid>225.43794589549</bid>
-<ask>240.19915741381</ask>
-</palladium>
-*/
+
 		public function comm(){
 
 			//$feed_url = "http://metal-feed.ignitewoo.com/api.php?key=IGN-9d024a6a-1f42-495c-884e-7445fd27f7ca";	
@@ -250,7 +231,7 @@ $txt .= "\n"."/*****************************************************************
 
 		public function alp($text){
 			echo "<pre>";
-			print_r($_SERVER);
+			//print_r($_SERVER);
 			exit;
 
 			if (preg_match('/[A-Za-z].*[0-9]|[0-9].*[A-Za-z]/', $text))
@@ -722,4 +703,392 @@ print_r($arr);
 		public function correction_in_gpa_a2m(){
 			//$this->general->correction_in_gpa_a2m();
 		}
+
+		public function upd_tbl(){
+$this->general->upd_tbl();
+
+		}
+
+
+
+//this function is for handling post call requests
+public function make_post_call($url, $postdata) {
+    global $token;
+	//$token = get_access_token($url,$postArgs); //works and returns a valid access token
+    $curl = curl_init($url); 
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($curl, CURLOPT_SSLVERSION , 6);
+    curl_setopt($curl, CURLOPT_HEADER, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                'Authorization: Bearer '.$token,
+                'Accept: application/json',
+                'Content-Type: application/json'
+                ));
+
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $postdata); 
+    $response = curl_exec( $curl );
+    print_r($response); //IM NOW RECEIVING OUTPUT, however symbols are now being replaced by placeholders such as '%40', how can i prevent this?
+    if (empty($response)) {
+        die(curl_error($curl)); //close due to error
+        curl_close($curl); 
+    } else {
+        $info = curl_getinfo($curl);
+        echo "Time took: " . $info['total_time']*1000 . "ms\n";
+        curl_close($curl); // close cURL handler
+        if($info['http_code'] != 200 && $info['http_code'] != 201 ) {
+            echo "Received error: " . $info['http_code']. "\n";
+            echo "Raw response:".$response."\n";
+            die();
+        }
+    }
+    // Convert the result from JSON format to a PHP array 
+    $jsonResponse = json_decode($response, TRUE);
+    return $jsonResponse;
+}
+
+		public function get_paypal_info(){
+
+//$token = get_access_token($url,$postArgs); //works and returns a valid access token
+
+//This is the URL for the call
+$url = 'https://api-3t.sandbox.paypal.com/nvp';
+
+//This is the data to be sent in the call 
+$postdata = array(
+'USER' => 'admin_api1.a2msports.com', 
+'PWD' => '728KLXR5QWS9URBW', 
+'SIGNATURE' => 'ADfSJQMOTfIywNttfIXyG-eEEiNwAdDynxyQeY.Pg.mMmpioaCUsSEuZ', 
+'METHOD' => 'GetTransactionDetails', 
+'VERSION' => '123', 
+'TransactionID' => '7CL87153CJ6684029'
+);
+
+$postdata = http_build_query($postdata); 
+//$postdata = json_encode($postdata); //Is this the correct way of formatting? 
+
+$transactionInfo = $this->make_post_call($url, $postdata); //get transaction details NOT WORKING
+
+print_r($transactionInfo); //does not print anything
+
+
+		}
+
+public function get_transaction_details($trans_id) { 
+    $api_request = 'USER=' . urlencode( 'admin_api1.a2msports.com' )
+                .  '&PWD=' . urlencode( '728KLXR5QWS9URBW' )
+                .  '&SIGNATURE=' . urlencode( 'ADfSJQMOTfIywNttfIXyG-eEEiNwAdDynxyQeY.Pg.mMmpioaCUsSEuZ' )
+                .  '&VERSION=76.0'
+                .  '&METHOD=GetTransactionDetails'
+                .  '&TransactionID=' . $trans_id;
+
+    $ch = curl_init();
+    curl_setopt( $ch, CURLOPT_URL, 'https://api-3t.paypal.com/nvp' ); // For live transactions, change to 'https://api-3t.paypal.com/nvp'
+    curl_setopt( $ch, CURLOPT_VERBOSE, 1 );
+
+    // Uncomment these to turn off server and peer verification
+     curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
+    // curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, FALSE );
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+    curl_setopt( $ch, CURLOPT_POST, 1 );
+
+    // Set the API parameters for this transaction
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $api_request );
+
+    // Request response from PayPal
+    $response = curl_exec( $ch );
+    // print_r($response);
+
+    // If no response was received from PayPal there is no point parsing the response
+    if( ! $response )
+        die( 'Calling PayPal to change_subscription_status failed: ' . curl_error( $ch ) . '(' . curl_errno( $ch ) . ')' );
+
+    curl_close( $ch );
+
+    // An associative array is more usable than a parameter string
+    parse_str( $response, $parsed_response );
+
+echo "<pre>"; print_r($parsed_response);
+	}
+
+	public function test_se($tourn_id=''){
+error_reporting(0);
+?>
+		<html>
+		<head><title>Processing Draws...</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script>
+			window.onload = function(){
+			//document.forms['se_auto_form'].submit();
+			document.getElementById('bracket_confirm').click();
+			}
+		</script>
+		</head>
+		<body style="text-align:center;">
+		<p style="text-align:center;">Please wait, your order is being processed and you will be redirected to the paypal website.</p>
+		
+		<form method="post" action='<?php echo base_url(); ?>league/bracket_save' name="se_auto_form">
+<?php
+		$num_players = 4;
+		$teams = array('','','','');
+		$num_teams = $num_players;
+$pow_vals  = array(2,4,8,16,32,64,128,256,512);
+$seed_team = $teams;
+
+$log_val = ceil(log($num_teams, 2));
+((in_array($log_val, $pow_vals)) or (in_array($num_teams, $pow_vals))) ? $total_rounds = $log_val : $total_rounds =  floor(log($num_teams, 2)) + 1;
+
+$match_num = 1;
+
+for($round = 1, $source=1 ; $round <= $total_rounds; $round++) {
+?>
+<input type='hidden' name='round[]' value="<?php echo $round; ?>" />
+<?php
+$process_res = $this->cal_c($pow_vals, $num_teams, $teams, $round);
+$teams = array();
+
+$rt = $process_res[1] + $process_res[2];
+//-------------------------
+//echo "<pre>"; print_r($process_res);
+$x=0;
+foreach($process_res[6] as $ab => $game_pl){
+$is_bye = 0;
+?>
+<input type='hidden' name="match_num[<?php echo $round; ?>][]" value="<?php echo $match_num; ?>" />
+<input type='hidden' name="player1[<?php echo $round; ?>][<?php echo $match_num; ?>][0]" value="<?php echo $process_res[6][$ab][0]; ?>" />
+<input type='hidden' name="player1[<?php echo $round; ?>][<?php echo $match_num; ?>][1]" value="<?php 
+	if($round > 1) { $s = $match_num - ($match_num - $source); echo $s; $source++; } else { echo "0"; } ?>" />
+<?php
+if($round > 1){ $prv_match1 = $s; }
+?>
+<input type='hidden' name="player2[<?php echo $round; ?>][<?php echo $match_num; ?>][0]" value="<?php echo $process_res[6][$ab][1]; ?>" />
+<input type='hidden' name="player2[<?php echo $round; ?>][<?php echo $match_num; ?>][1]" value="<?php 
+	if($round > 1) { $s = $match_num - ($match_num - $source); echo $s; $source++; } else { echo "0"; } ?>" />
+<?php
+if($round > 1){ $prv_match2 = $s; }
+
+
+$match_dt_time = '';
+$court_name = '';
+if($match_timings[$match_num] and $is_bye == 0){
+//echo "<br>".$match_timings[$match_num][0] . " - " .date('m/d/Y H:i', (trim($match_timings[$match_num][2])));
+	$i = 1;
+	while($i <= 10 and ($new_match_timings[$prv_match1][2] == $match_timings[$pick_time][2] or $new_match_timings[$prv_match2][2] == $match_timings[$pick_time][2])) {
+		$pick_time++;
+	$i++;
+	}
+
+$court_name = $match_timings[$pick_time][0];
+echo "&nbsp;&nbsp;&nbsp;".$court_name;
+$match_dt_time = date('m/d/Y H:i', (trim($match_timings[$pick_time][2])));
+$new_match_timings[$match_num] = array('1' => $court_name, '2' => $match_timings[$pick_time][2]);
+
+$pick_time++;
+}
+?>
+<input type="hidden" id="court_<?php echo $match_num; ?>" name="assg_court<?php echo $match_num; ?>" 
+value="<?php echo $court_name; ?>" />
+<input type="hidden" id="sdate<?php echo $match_num; ?>" name="match_date<?php echo $match_num; ?>" value="<?php echo $match_dt_time; ?>" />
+<?php
+
+
+if($round == ($total_rounds)){
+	$match_num++;
+$round2 = -1;
+
+$match_dt_time = '';
+$court_name = '';
+if($match_timings[$match_num] and $is_bye == 0){
+//echo "<br>".$match_timings[$match_num][0] . " - " .date('m/d/Y H:i', (trim($match_timings[$match_num][2])));
+	$i = 1;
+	while($i <= 10 and ($new_match_timings[$prv_match1][2] == $match_timings[$pick_time][2] or $new_match_timings[$prv_match2][2] == $match_timings[$pick_time][2])) {
+		$pick_time++;
+	$i++;
+	}
+
+$court_name = $match_timings[$pick_time][0];
+//echo "&nbsp;&nbsp;&nbsp;".$court_name;
+$match_dt_time = date('m/d/Y H:i', (trim($match_timings[$pick_time][2])));
+$new_match_timings[$match_num] = array('1' => $court_name, '2' => $match_timings[$pick_time][2]);
+
+$pick_time++;
+}
+?>
+<input type="hidden" id="court_<?php echo $match_num; ?>" name="assg_court<?php echo $round2; ?>" 
+value="<?php echo $court_name; ?>" />
+<input type="hidden" placeholder="Date" id="sdate<?php echo $match_num; ?>" name="match_date<?php echo $round2; ?>" value="<?php echo $match_dt_time; ?>" style="width: 62%;" />
+
+<input type='hidden' name='round[]' value="<?php echo $round2; ?>" />
+
+<input type='hidden' name="match_num[<?php echo $round2; ?>][]" value="<?php echo '-1'; ?>" />
+<input type='hidden' name="player1[<?php echo $round2; ?>][<?php echo '-1'; ?>][0]" value="<?php echo $process_res[6][$ab][0]; ?>" />
+<input type='hidden' name="player1[<?php echo $round2; ?>][<?php echo '-1'; ?>][1]" value="<?php 
+	if($round > 1) { $s = ($match_num-2) - (($match_num-2) - ($source-2)); echo $s; /*$source++; */} else { echo "0"; } ?>" />
+<?php
+if($round > 1){ $prv_match1 = $s; }
+?>
+<input type='hidden' name="player2[<?php echo $round2; ?>][<?php echo '-1'; ?>][0]" value="<?php echo $process_res[6][$ab][1]; ?>" />
+<input type='hidden' name="player2[<?php echo $round2; ?>][<?php echo '-1'; ?>][1]" value="<?php 
+	if($round > 1) { $s = ($match_num-1) - (($match_num-1) - ($source-1)); echo $s; /*$source++; */} else { echo "0"; } ?>" />
+
+<?php
+}
+
+
+$y++;
+
+	if($process_res[6][$ab][1] == '---') {
+
+		if($round < 2){
+		$teams[$x] = $process_res[6][$ab][0];
+		}
+		else{
+		$teams[$x] = "---";
+		}
+		$x++;
+	}
+	else if($process_res[6][$ab][0] == '---') {
+		if($round < 2){
+		$teams[$x] = $process_res[6][$ab][1];
+		}
+		else{
+		$teams[$x] = "---";
+		}
+		$x++;
+	}
+	else {
+		$teams[$x] = '---';
+		$x++;
+	}
+//print_r($teams);
+$match_num++;
+//echo $match_num; exit;
+}
+
+unset($process_res[6]);
+//print_r($teams);
+//exit;
+$num_teams = $process_res[3];
+$prev_round_games = $process_res[1];
+($prev_round_games > 1) ? $process_res[1] = $process_res[1]/2: $process_res[1];
+	}
+?>
+<input type="hidden" id="tourn_id" name="tourn_id" value="<?php echo $tourn_id; ?>" />
+<input type='hidden' name='match_type' value="<?php echo $this->input->post('types'); ?>" />
+<input type='hidden' name='filter_events' value='<?php if($filter_events != '' and $filter_events != 'null') { echo $filter_events; }
+else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>' />
+<input type='hidden' name='age_group' value="<?php echo $this->input->post('type_gen'); ?>" />
+<input type='hidden' name='ttype' value="<?php echo "Single Elimination"; ?>" />
+<input type='hidden' name='is_publish_draw'	value="<?php echo '0'; ?>" />
+<input type='hidden' name='num_of_sets'			value="<?php echo $num_of_sets; ?>" />
+<input type='hidden' name='br_game_day' value="<?php echo $br_game_day; ?>" />
+<input type="hidden" name="draw_format"  id="draw_format"  value='<?=$draw_format;?>' />
+
+<input type='hidden' name='squad' value='<?php echo serialize($seed_team); ?>' />
+
+<input type="submit" class="league-form-submit1" name="bracket_confirm" id="bracket_confirm" value="Confirm & Save" />
+
+</form>
+</html>
+<?php
+}
+
+
+
+		public function cal_c($pow_vals, $num_teams, $teams, $round)			// Single Elimination
+		{
+			global $pow_vals;
+
+			$pow_vals = array(2,4,8,16,32,64,128,256);
+			
+			foreach($pow_vals as $i=>$pv){
+				if($num_teams > $pv){
+					$near_pow = $pow_vals[++$i];
+				}
+				else if($num_teams == $pv){
+					$near_pow = $pow_vals[$i];
+				}
+			}
+
+			$num_p = ($num_teams - ($near_pow - $num_teams));
+			$num_g = abs($num_teams - ($near_pow/2));
+
+			$bye_p = $num_teams - $num_p;
+
+			$nxt_r_p = $bye_p + $num_g;
+
+				$temp_teams = $teams;
+
+				$bye_pl_list = array();
+				if($bye_p > 0){
+
+					for($i=0;$i<$bye_p;$i++){
+						$pl = array_shift($temp_teams);
+						$bye_pl_list[$i] = array($pl,'---');
+					}
+				}
+
+				$game_pl_list = array();
+				if($round==1){
+					for($i=0,$k=0;$i<$num_g;$i++){
+						$fst = reset($temp_teams);
+						$lst = end($temp_teams);
+
+						$game_pl_list[$k] = array($fst,$lst);
+						array_shift($temp_teams);
+						array_pop($temp_teams);
+					$k++;
+					}
+				}
+				else{
+					for($j=1,$k=0;$j<=count($teams);$j++){
+						if($j%2==0){
+						$game_pl_list[$k] = array($teams[$j-2],$teams[$j-1]);
+						$k++;
+						}
+					}
+
+				}
+
+			$res = array();
+
+				$res[0] = $num_p;
+				$res[1] = $num_g;
+				$res[2] = $bye_p;
+				$res[3] = $nxt_r_p;
+				$res[4] = $num_g + $bye_p;
+
+				if(!empty($bye_pl_list)){
+					$res[5] = array_merge($bye_pl_list, $game_pl_list);
+				}
+				else{
+					$res[5] = $game_pl_list;
+				}
+			
+
+				/*	Disabled the shuffling of Seeds
+				if($round==1){
+						shuffle($res[5]);
+				}*/
+
+
+				/*	Top seed should not be in same pool */
+				//if($round == 1 and $num_teams != 2){
+					// New Code 18-March-2019
+				//	$res[5] = league::getBracket($teams);
+				//}
+
+				/* -------------------------------------- */		
+
+				$res[6] = $res[5];
+
+			return $res;
+		}
+
+public function test_cn(){
+	echo $this->load->view('includes/header');
+	echo $this->load->view('view_calender_test');
+}
+
 }

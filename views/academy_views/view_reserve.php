@@ -9,10 +9,10 @@
 <script>
 	var baseurl		= "<?php echo base_url();?>";
 	var short_code	= "<?php echo $this->short_code;?>";
-	var org_id		= "<?php echo $this->org_id;?>";
+	var org_id			= "<?php echo $this->org_id;?>";
 	var r_date		= "<?php echo $this->uri->segment(4);?>";
 
-var disDate;
+	var disDate;
 
 $(document).ready(function(){
 
@@ -215,6 +215,7 @@ function getRes(orgId,resDate){
 			$('.contentTD').html('&nbsp;');
 			$('.rowTD').addClass("contentTD");
 			$('.rowTD').css('background', 'white');
+			$('.rowTD').html('');
 			var jsonData = JSON.parse(data);
 				//console.log(jsonData);
 			/*for(var i=0;i<jsonData.length;i++){
@@ -235,7 +236,7 @@ function getRes(orgId,resDate){
 
 					if (jsonData[loc][court]['timings']) {
 						//console.log('timings '+jsonData[loc][court]['timings']);
-						blockRes2(court, jsonData[loc][court]['timings']);
+						//blockRes2(court, jsonData[loc][court]['timings']);
 					}
 				}
 			}
@@ -254,24 +255,30 @@ Date.prototype.yyyymmdd = function() {
 };
 
 function populateRes(resData) {
-//console.log(resData);
-  var name			= resData.firstname + " " + resData.lastname;
-  var courtId		= resData.courtid;
-  var num_players   = resData.num_players;
-  var match_format  = resData.match_format;
-  var startTimeHour = resData.from_time.split(':')[0];
-  var startTimeMin  = resData.from_time.split(':')[1];
-  var EndTimeHour	= resData.to_time.split(':')[0];
-  var EndTimeMin	= resData.to_time.split(':')[1];
+	for (var ind in resData) {
+console.log(resData);
+  //var name			= resData.firstname + " " + resData.lastname;
+  var name				= resData[ind].player;
+  var courtId				= resData[ind].courtid;
+  var num_players		= resData[ind].num_players;
+  var match_format	= resData[ind].match_format;
+  var startTimeHour	= resData[ind].from_time.split(':')[0];
+  var startTimeMin		= resData[ind].from_time.split(':')[1];
+  var EndTimeHour	= resData[ind].to_time.split(':')[0];
+  var EndTimeMin	= resData[ind].to_time.split(':')[1];
   var starttime		= new Date (new Date().toDateString() + ' ' + +startTimeHour + ':' + startTimeMin);
   var EndTime		= new Date (new Date().toDateString() + ' ' + +EndTimeHour + ':' + EndTimeMin);
-  var diff			= Math.abs(EndTime - starttime);
+  var diff				= Math.abs(EndTime - starttime);
+ // alert(diff);
   var minutes		= Math.floor((diff/1000)/60);
-  var height		= (minutes/60)* 50 -4
+  //var height			= (minutes/60)* 50 -4
+  var tmp				= (minutes/60);
+  var height			= (tmp * (80))  -4
   /*var TimeRow = (startTimeHour - 5) * 2 + 1*/
   var TimeRow		= (startTimeHour) * 2 + 1
   var startAMPM	= (startTimeHour < 12) ? 'AM' : 'PM' ;
   var endAMPM		= (EndTimeHour < 12) ? 'AM' : 'PM' ;
+ // if (EndTimeMin === '30' || EndTimeMin > '30'){
   if (EndTimeMin === '30'){
 	  TimeRow++;
   }
@@ -288,11 +295,11 @@ function populateRes(resData) {
 	resHtml= resHtml+"		<b> "
 	resHtml= resHtml+name +"</b>"
 	resHtml= /*resHtml+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"*/
-	resHtml= resHtml+"&nbsp(<b>"+num_players+"</b>)<br> "
-    resHtml= resHtml+startTimeHour%12+":"+startTimeMin +" " + startAMPM + " to " +EndTimeHour%12+":"+EndTimeMin+ " " + endAMPM + " <br>"
-    resHtml= resHtml + "" + match_format
+	resHtml= resHtml+"&nbsp(<b>"+num_players+"</b>)&nbsp;"+match_format+"<br> "
+    resHtml= resHtml+startTimeHour%12+":"+startTimeMin +" " + startAMPM + " - " +EndTimeHour%12+":"+EndTimeMin+ " " + endAMPM + " <br>"
+    //resHtml= resHtml + "" + match_format
 		"<?php if($this->logged_user == $this->academy_admin){ ?>"
-    resHtml= resHtml+"<a class='rsAptDelete' id='del_"+resData.id+"' href='#' style='visibility:visible;'>delete</a>"
+    resHtml= resHtml+"<a class='rsAptDelete' id='del_"+resData[ind].id+"' style='visibility:visible; cursor:pointer'>delete</a>"
 		"<?php } else {?>"
     //resHtml= resHtml+"<a class='rsAptDelete' href='#'>delete</a>"
 		"<?php } ?>"
@@ -302,7 +309,7 @@ function populateRes(resData) {
 
   $("#" + tdId ).removeClass("contentTD");
   $("#" + tdId ).html(resHtml);
-
+	}
   return;
 };
 
@@ -431,18 +438,19 @@ if(isset($add_stat)){?>
 <div id='div_add_court' style='display:block;'> <!-- Add a court section -->
 <div id='res_court_status' class="col-md-8"><!-- Status of the new court booking will display here --></div>
 <div class="col-md-4" style='text-align: right;'>
-<input type="button" id="res_court" name="res_court" value="Make a Reservation" class="book-submit" style="margin-bottom: 3px" />
+<input type="button" id="res_court" name="res_court" value="Make a Reservation" class="book-submit" style="margin-bottom: 3px; display:none;" />
 </div>
 <div style='clear:both'></div>
 <br />
 
+<div style="margin-bottom: 20px;"><b>Note:</b> Double click on the desired time slot to make a booking.</div>
 <div id='res_court_block' style='display:none;'> 
 <!-- Reservation Block -->
-<form id='frm_reserve' name='frm_reserve' method='post' action='<?php echo base_url().$this->short_code."/courts/block_court" ?>'>
+<!-- <form id='frm_reserve' name='frm_reserve' method='post' action='<?php echo base_url().$this->short_code."/courts/block_court" ?>'>
 <div class='col-md-6 form-group internal'>
 <select name="loc_id" id="location" class='form-control check_price' required>
 <option value=''>Select Location</option>
-<?php //echo "<pre>"; print_r($locations); 
+<?php
 foreach($locations as $i => $loc){
 ?>
 <option value='<?php echo $locations[$i]->loc_id; ?>'><?php echo $locations[$i]->location; ?></option>
@@ -494,12 +502,11 @@ Booking Price: <span id='book_price'></span>
 </div>
 <?php } ?>
 <div class='col-md-12 form-group internal'>
-<!-- <input type="button" id="reserve_check" name="reserve_check" value="Check Availability" class="league-form-submit1" style="margin:20px 0px"/> -->
 <input type="submit" id="reserve_submit" name="reserve_submit" value="Book" class="book-submit" style="margin:20px 0px;"/>
 &nbsp;&nbsp;&nbsp;
 <input type="button" id="reserve_cancel" name="reserve_cancel" value="Cancel" class="cancel-submit" style="margin:20px 0px"/>
 </div>
-</form>
+</form>-->
 <!-- Reservation Block -->
 </div>
 
@@ -520,7 +527,7 @@ foreach($locations as $i => $loc){
 <p><a class="rsPrevDay" href="#">previous day</a>
 <a class="rsNextDay" href="#">next day</a><em>
 <a class="rsToday" href="#">Today</a></em></p>
-<a class="rsDatePickerActivator" href="#">Select date</a>
+<!-- <a class="rsDatePickerActivator" href="#">Select date</a> -->
 <h2 class="displayDate"></h2>
 </div>
 
@@ -539,7 +546,12 @@ foreach($locations as $i => $loc){
 foreach($loc->courts as $i => $court){
 ?>
 <th><div>
-<?php echo $court->court_name; ?>
+<?php echo $court->court_name;
+$min_max = courts :: get_min_max_court_time($loc->loc_id);
+//$info_arr = json_decode($court->court_info_json, true);
+//if($this->logged_user == 240)
+	//echo "<pre>"; print_r($min_time); echo intval($min_max['min']); exit;
+?>
 </div></th>
 <?php } ?>
 </tr>
@@ -549,17 +561,18 @@ foreach($loc->courts as $i => $court){
 </tr>
 
 <tr>
-<td class="rsVerticalHeaderWrapper" style="height: 950px;"><div style="overflow: hidden; position: relative; height: 100%;">
+<td class="rsVerticalHeaderWrapper" style="height: 100%;"><div style="overflow: hidden; position: relative; height: 100%;">
 <div style="overflow:hidden;height:100%;">
 <table class="rsVerticalHeaderTable">
 <tbody>
 <?php //for ($i = 5; $i < 24; $i++) { ?>
-<?php for ($i = 0; $i < 24; $i++) { ?>
-<tr style="height:25px;">
+<?php //for ($i = 0; $i < 24; $i++) { ?>
+<?php for ($i = intval($min_max['min']); $i < intval($min_max['max']); $i++) { ?>
+<tr style="height:40px;">
 <th><div>
 <?php echo $i % 12 == 0 ? 12 : $i % 12 ?> <span class="rsAmPm"><?php echo $i < 12 ? AM : PM ?></span>
 </div></th>
-</tr><tr class="rsAlt" style="height:25px;">
+</tr><tr class="rsAlt" style="height:40px;">
 <th><div class="rsAlt">
 &nbsp;
 </div></th>
@@ -570,22 +583,23 @@ foreach($loc->courts as $i => $court){
 </div>
 </div>
 </td>
-<td class="rsContentWrapper" style="width: 100%; height: 950px;">
+<td class="rsContentWrapper" style="width: 100%; height: 100%;">
 <div class="rsContentScrollArea" style="width: 100%; height: 100%;">
-<table class="rsContentTable" style="width:100%;">
+<table class="rsContentTable" style="width:100%; height: 100%;">
 <tbody>
 <?php  
 //for ($i = 1; $i < 39; $i++){
-for ($i = 1; $i < 49; $i++){
+//for ($i = 1; $i < 49; $i++){
+
+for ($i = ((intval($min_max['min']) * 2) +1); $i <=(intval($min_max['max']) * 2); $i++){
 ?>
-<tr style="height:25px;" <?php echo $i % 2 == 0 ? "class='rsAlt'"  : ""  ?>>
+<tr style="height:40px;" <?php echo $i % 2 == 0 ? "class='rsAlt'"  : ""  ?>>
 <?php 
 foreach($loc->courts as $j => $court){
 	/*$court_info = json_decode($court->court_info_json, true);
 	echo "<pre>"; 
 	print_r($court_info['court_prices']);*/
 	//exit;
-
 ?>
       <td id="<?php echo $court->court_id.'-'.$i ?>" class="contentTD rowTD">&nbsp;</td>
 <?php }?>
@@ -619,13 +633,13 @@ foreach($loc->courts as $j => $court){
     
       <!-- Modal content-->
       <div class="modal-content">
-        <div class="modal-header">
+        <div class="modal-header" style="padding:20px !important;">
           
           <h4 class="modal-title">Reserve</h4>
-		  <button type="button" class="close" data-dismiss="modal">&times;</button>
+		  <button type="button" class="close" data-dismiss="modal" style='margin-top: -25px !important;'>&times;</button>
         </div>
         <div class="modal-body">
-		<!-- Test content --><div id='show_reserve_frm'>Test content</div>
+			<div id='show_reserve_frm'>Reserve Popup will load here...</div>
         </div>
         <div class="modal-footer" style='border-top: 0px solid;'>
           &nbsp;<!-- <button type="button" class="btn btn-default green-but" data-dismiss="modal">Close</button> -->
@@ -688,16 +702,21 @@ $(this).next().show().prev().addClass('active').siblings().removeClass('active')
 });
 //@ sourceURL=pen.js
 </script>
+
 <script>
 $(document).ready(function(){
-	var log_user = "<?php echo $logged_user; ?>";
+	var log_user			= "<?php echo $logged_user; ?>";
+	var log_user_id	= "<?php echo $this->logged_user; ?>";
+	var adm_user		= "<?php echo $this->academy_admin; ?>";
 	$('#num_players').change(function(){
-	
 		var num = $(this).val();
 		$('#players_section').html('');
 		for(var i=0; i < num; i++){
-			if(i==0){
+			if(i==0 && log_user_id != adm_user){
 			$row = $("<div class='col-md-6' style='margin-bottom:1px;'><input type='text' class='form-control' name='players[]' placeholder='Player #"+(i+1)+"' value='"+log_user+"' readonly /></div>");
+			}
+			else if(i==0 && log_user_id == adm_user){
+			$row = $("<div class='col-md-6' style='margin-bottom:1px;'><input type='text' class='form-control' name='players[]' placeholder='Player #"+(i+1)+"' value='"+log_user+"' /></div>");
 			}
 			else{
 			$row = $("<div class='col-md-6' style='margin-bottom:1px;'><input type='text' class='form-control' name='players[]' placeholder='Player #"+(i+1)+"' value='' /></div>");
@@ -712,8 +731,11 @@ $(document).ready(function(){
 		var num = $(this).val();
 		$('#players_section1').html('');
 		for(var i=0; i < num; i++){
-			if(i==0){
+			if(i==0 && log_user_id != adm_user){
 			$row = $("<div class='col-md-6' style='margin-bottom:1px;'><input type='text' class='form-control' name='players[]' placeholder='Player #"+(i+1)+"' value='"+log_user+"' readonly /></div>");
+			}
+			else if(i==0 && log_user_id == adm_user){
+			$row = $("<div class='col-md-6' style='margin-bottom:1px;'><input type='text' class='form-control' name='players[]' placeholder='Player #"+(i+1)+"' value='"+log_user+"' /></div>");
 			}
 			else{
 			$row = $("<div class='col-md-6' style='margin-bottom:1px;'><input type='text' class='form-control' name='players[]' placeholder='Player #"+(i+1)+"' value='' /></div>");
@@ -727,7 +749,7 @@ $(document).ready(function(){
 	$(document).on('click', '#reserve_submit', function(){
 
 		if($('#book_price_val').val() == ''){
-			alert('Selected booking slot is N/A');
+			alert('Selected booking slot is not available!');
 			return false;
 		}
 	});
@@ -743,6 +765,8 @@ $(document).ready(function(){
 			url:baseurl+short_code+'/courts/cancel_booking',
 			data:{ rec:sp[1]},    //{pt:'7',rngstrt:range1, rngfin:range2},
 			success:function(res){
+				alert("Booking is deleted successfully");
+				location.reload();
 				/*$("#show_reserve_frm").dialog({
 				resizable: false,
 				modal: true,
@@ -783,3 +807,69 @@ $(document).ready(function(){
 
 </div>
 </section>
+<script>
+$(document).ready(function(){
+	$(document).on('change', '#repeat_booking_week',  function(){
+		if($('#repeat_booking_days').val() != '0')
+		$('#repeat_booking_days').val('0');
+
+		var bd = $('#repeat_booking_week').val();
+		var rd = $('#res_date1').val();
+		var rt  = $('#res_time1').val();
+		var slt  = $('#book_hours1').val();
+		var court  = $('#court1').val();
+
+		$('#next_days').html('');
+
+		if(bd != '0' && rd && rt && slt && court){
+			get_next_dates(court, bd,rd,rt,slt,'week');
+		}
+		else if(bd != '0'){
+			alert('Select the Court, Date, Time & Duration!');
+			$('#repeat_booking_days').val('0');
+		}
+
+	});
+	$(document).on('change', '#repeat_booking_days',  function(e){
+		if($('#repeat_booking_week').val() != '0')
+		$('#repeat_booking_week').val('0');
+
+		var bd = $('#repeat_booking_days').val();
+		var rd = $('#res_date1').val();
+		var rt  = $('#res_time1').val();
+		var slt  = $('#book_hours1').val();
+		var court  = $('#court1').val();
+		
+		$('#next_days').html('');
+
+		if(bd != '0' && rd && rt && slt && court){
+			get_next_dates(court, bd,rd,rt,slt,'day');
+		}
+		else if(bd != '0') {
+			alert('Select the Court, Date, Time, & Duration!');
+			$('#repeat_booking_days').val('0');
+		}
+	});
+
+	function get_next_dates(court, bd, rd, rt, slt, tp){
+			$.ajax({
+				type: 'POST',
+				url:baseurl+short_code+'/courts/get_next_dates/',
+				//data: $('#frm_reserve').serialize(),
+				data: {court:court, bd:bd, rd:rd, rt:rt, tp:tp, slt:slt},
+				success: function(res) {
+					$('#next_days').html('');
+					$('#next_days').html(res);
+					//alert(res);
+					//var x = res.split('_');
+					/*if(x[0] == 1 && x[1] != -1){
+						$('#book_price1').html(x[1]);
+						$('#book_price_val1').val(x[1]);
+					}*/
+				}
+			});
+			e.preventDefault();
+
+	}
+});
+</script>

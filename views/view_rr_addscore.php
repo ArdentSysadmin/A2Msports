@@ -1,5 +1,5 @@
 <script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
-<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-1.9.1.js"></script> -->
 
 <script type="text/javascript">
 	$(document).ready(function () {
@@ -98,7 +98,7 @@ var id_val = $(this).attr('id');
 		data: $('#form-addscore'+id_val).serialize(),
 		success: function (res) {
 		   //location.reload();
-		   alert('Scores were added successfully');
+		   alert('Scores are added successfully');
 		   $('#tr_'+id_val).html(res);
 		   //$('#score'+id_val).style('display','none');
   		   $('#score'+id_val).hide();
@@ -124,7 +124,7 @@ var id_val = $(this).attr('id');
 		data: $('#form-rr-editscore'+id_val).serialize(),
 		success: function (res) {
 		   //location.reload();
-		   alert('Score were updated successfully');
+		   alert('Score are updated successfully');
 		   $('#tr_'+id_val).html(res);
 		   //$('#rr_escore'+id_val).style('display','none');
   		   $('#rr_escore'+id_val).hide();
@@ -140,7 +140,7 @@ var id_val = $(this).attr('id');
 $(document).ready(function(){
 var baseurl = "<?php echo base_url();?>";
 
-$('.rr_edit_score').on('click',function(){
+$('.rr_edit_score').click(function(){
 
 var tab_row_id = $(this).attr('name');
 
@@ -209,6 +209,8 @@ success:function(html){
 
 });
 
+
+
 });
 </script>
 
@@ -242,20 +244,18 @@ foreach($rr_matches as $m => $match){
 <div class="table-responsive">
 <? //--------------------------------------------------------------------------------------------------------------- ?>
 
-<table class='tab-score'>
+<table class='tab-score'  id='add_score_table'>
 <?php
 $round =0;
 $match_num = 1;
 //if(!in_array($sess_id, $players) and $tour_details->Usersid != $sess_id)
 //echo $this->is_super_admin;
-if(!in_array($this->logged_user, $players) and !in_array($this->logged_user, $players_partners) and $this->logged_user != $tourn_det->Usersid and !$this->is_super_admin)
-{
+if(!in_array($this->logged_user, $players) and !in_array($this->logged_user, $players_partners) and ($this->logged_user != $tourn_det->Usersid and $tourn_det->Tournament_Director != $this->logged_user) and !$this->is_super_admin) {
 ?>
 <tr></td><span style="color:red">No Matches found, as you are not a player in this draw!</span></td></tr>
 <?php
 }
-else 
-{
+else {
 foreach($rr_matches as $m=>$rrm){   // Main for loop
 
 /*if(($sess_id != $rr_matches[$m]->Player1 and 
@@ -270,8 +270,7 @@ echo "<tr><td>Bye Match</td></tr>";
 }*/
 //else
 //{
-	if($round != $rr_matches[$m]->Round_Num)
-	{
+	if($round != $rr_matches[$m]->Round_Num){
 	$round = $rr_matches[$m]->Round_Num;
 ?>
 
@@ -340,7 +339,7 @@ $tm_id = $rr_matches[$m]->Tourn_match_id;
 
 
 	<?php 
-	if($sess_id == $rr_matches[$m]->Player1 or $sess_id == $rr_matches[$m]->Player1_Partner or $sess_id == $rr_matches[$m]->Player2 or $sess_id == $rr_matches[$m]->Player2_Partner or $tour_details->Usersid == $sess_id or $this->is_super_admin){ ?>
+	if($sess_id == $rr_matches[$m]->Player1 or $sess_id == $rr_matches[$m]->Player1_Partner or $sess_id == $rr_matches[$m]->Player2 or $sess_id == $rr_matches[$m]->Player2_Partner or $tour_details->Usersid == $sess_id or $tour_details->Tournament_Director == $sess_id or $this->is_super_admin){ ?>
 
 	<tr id='tr_<?=$tm_id;?>'>
 	<td align='center'><?=$rr_matches[$m]->Match_Num;?></td>
@@ -402,7 +401,7 @@ if($rr_matches[$m]->Winner == ""){?>
 			}
 
 		}
-		if($tour_details->Usersid == $sess_id or $this->is_super_admin){
+		if($tour_details->Usersid == $sess_id or $tour_details->Tournament_Director == $sess_id or $this->is_super_admin){
 		?>
 			<?php echo "\t"; ?><img src='<?php echo base_url()."images/ico-images/Edit.png"; ?>' id='img-winner' class='rr_edit_score img-winner' 
 			href='#edit_score' name='<?php echo $tm_id; ?>' width='30px' height='30px' style='cursor:pointer' />
@@ -534,29 +533,27 @@ $(function() {
 		 $player2_name =  $get_name['Firstname'] . "  " . $get_name['Lastname'];
 		?>
 		<?php
-		$get_sport = league::getonerow($tourn_id);
-		$sport_id = $get_sport->SportsType;
+		$get_sport	= league::getonerow($tourn_id);
+		$sport_id		= $get_sport->SportsType;
+		$num_sets	= 5;
+		if($get_bracket_details['Tot_Sets'])
+		$num_sets   = $get_bracket_details['Tot_Sets'];
+
 		?>
 		<table class="score-cont">
 		  <?php if($sport_id == 1){ ?>
 		  <tr>
 			<th>Players</th>
-			<th>Set1</th>
-			<th>Set2</th>
-			<th>Set3</th>
-			<th>Set4</th>
-			<th>Set5</th>
-			<!-- <th>Set6</th> -->
+			<?php for($a=1; $a<=$num_sets; $a++){ ?>
+			<th>Set <?=$a?></th>
+			<?php } ?>
 		 </tr> 
 		 <?php } else { ?>
 		 <tr>
 			<th>Players</th>
-			<th>Game1</th>
-			<th>Game2</th>
-			<th>Game3</th>
-			<th>Game4</th>
-			<th>Game5</th>
-			<!-- <th>Game6</th> -->
+			<?php for($a=1; $a<=$num_sets; $a++){ ?>
+			<th>Game <?=$a?></th>
+			<?php } ?>
 		 </tr> 
 		  <?php } ?>
 
@@ -564,24 +561,18 @@ $(function() {
 			<td bgcolor="#fdd7b0"><b><?php echo $player1_name; 
 			 if($player1_partner){ echo "; ".$player1_partner['Firstname']." ".$player1_partner['Lastname']; }
 			 ?></b></td>
-			<td><input id='set1_1' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_1' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_1' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_1' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_1' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<!-- <td><input id='set1_1' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td> -->
+			 <?php for($a=1; $a<=$num_sets; $a++){ ?>
+			<td><input id='set<?=$a?>_1' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
+			<?php } ?>
 
 		 </tr>
 		  <tr>
 			<td bgcolor="#fdd7b0"><b><?php echo $player2_name; 
 			 if($player2_partner){ echo "; ".$player2_partner['Firstname']." ".$player2_partner['Lastname']; }
 			?></b></td>
-			<td><input id='set1_2' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_2' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_2' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_2' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<td><input id='set1_2' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-			<!-- <td><input id='set1_2' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td> -->
+			 <?php for($a=1; $a<=$num_sets; $a++){ ?>
+			<td><input id='set<?=$a?>_2' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
+			<?php } ?>
 			
 			 </tr>
 		 </table> 
@@ -603,53 +594,21 @@ $(function() {
 										if($sport_id == 1){
 										$set_or_game = 'Set';
 										}
-										else
-										{
+										else{
 										$set_or_game = 'Game';
 										}
 									?>
 					           </tr>
+					  <?php for($a=1; $a<=$num_sets; $a++){ ?>
 					  <tr>
-						<td>
-							<?php echo $set_or_game . "1"; ?>
-						</td>
-						<td><input id='set1_1' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='set1_2' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-						<tr>
-						<td>
-							<?php echo $set_or_game . "2"; ?>
-						</td>
-						<td><input id='set2_1' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='set2_2' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-						<tr>
-						<td>
-							<?php echo $set_or_game . "3"; ?>
-						</td>
-						<td><input id='set3_1' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='set3_2' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-						<tr>
-						<td>
-							<?php echo $set_or_game . "4"; ?>
-						</td>
-						<td><input id='set4_1' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='set4_2' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-						<tr>
-						<td>
-							<?php echo $set_or_game . "5"; ?>
-						</td>
-						<td><input id='set5_1' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='set5_2' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-
+						<td><?php echo $set_or_game . $a; ?></td>
+						<td><input id='set<?=$a?>_1' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
+						<td><input id='set<?=$a?>_2' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
+					  </tr>
+						<?php } ?>
 			     </table>
 		      </div>
 				<!-- ---------------Mobile view------------------------------------------------------- -->
-
-
 
 
 	 <input class='form-control' value="ADDSCORE" name="score_type" type='hidden'> 
@@ -712,11 +671,17 @@ $(function() {
 		<table class="score-cont">
 					 <?php if($sport_id == 1){ ?>
 					 <tr>
-						<th>Players</th><th>Set1</th><th>Set2</th><th>Set3</th><th>Set4</th><th>Set5</th><!-- <th>Set6</th> -->
+						<th>Players</th>
+						<?php for($a=1; $a<=$num_sets; $a++){ ?>			
+						<th>Set1</th>
+						<?php } ?>
 					 </tr> 
 					 <?php } else { ?>
 					 <tr>
-						<th>Players</th><th>Game1</th><th>Game2</th><th>Game3</th><th>Game4</th><th>Game5</th><!-- <th>Game6</th> -->
+						<th>Players</th>
+						<?php for($a=1; $a<=$num_sets; $a++){ ?>			
+						<th>Game1</th>
+						<?php } ?>
 					 </tr> 
 					 <?php } ?>						  
 
@@ -724,25 +689,17 @@ $(function() {
 						<td bgcolor="#fdd7b0"><b><?php echo $player1_name; 
 						 if($player1_partner){ echo "; ".$player1_partner['Firstname']." ".$player1_partner['Lastname']; }
 						 ?></b></td>
-						<td><input id='set1_1_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set1_2_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set1_3_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set1_4_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set1_5_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<!-- <td><input id='set1_6_<?php //echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td> -->
-
+						<?php for($a=1; $a<=$num_sets; $a++){ ?>
+						<td><input id='set1_<?=$a?>_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player1[]' style = "width:65%" type='text' maxlength='2' /></td>
+						<?php } ?>
 					 </tr>
 					  <tr>
 						<td bgcolor="#fdd7b0"><b><?php echo $player2_name; 
 						 if($player2_partner){ echo "; ".$player2_partner['Firstname']." ".$player2_partner['Lastname']; }
 						?></b></td>
-						<td><input id='set2_1_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set2_2_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set2_3_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set2_4_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<td><input id='set2_5_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
-						<!-- <td><input id='set2_6_<?php //echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td> -->
-						
+						<?php for($a=1; $a<=$num_sets; $a++){ ?>
+						<td><input id='set2_<?=$a?>_<?php echo $rr_matches[$m]->Tourn_match_id; ?>' name='player2[]' style = "width:65%" type='text' maxlength='2' /></td>
+						<?php } ?>
 					 </tr>
 			  </table> 
 			
@@ -763,50 +720,20 @@ $(function() {
 									<?php if($sport_id == 1){
 											$set_or_game = 'Set';
 										   }
-										  else
-										  {
+										  else{
 											  $set_or_game = 'Game';
 										  }
 
 										  $tm_id = $rr_matches[$m]->Tourn_match_id;
 									?>
 					           </tr>
+			<?php for($a=1; $a<=$num_sets; $a++){ ?>
 					    <tr>
-						<td>
-							<?php echo $set_or_game . "1"; ?>
-						</td>
+						<td><?php echo $set_or_game . $a; ?></td>
 						<td><input id='mset1_1_<?php echo $tm_id; ?>' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
 						<td><input id='mset2_1_<?php echo $tm_id; ?>' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
 					   </tr>
-
-						<tr>
-						<td>
-							<?php echo $set_or_game . "2"; ?>
-						</td>
-						<td><input id='mset1_2_<?php echo $tm_id; ?>' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='mset2_2_<?php echo $tm_id; ?>' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-						<tr>
-						<td>
-							<?php echo $set_or_game . "3"; ?>
-						</td>
-						<td><input id='mset1_3_<?php echo $tm_id; ?>' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='mset2_3_<?php echo $tm_id; ?>' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-						<tr>
-						<td>
-							<?php echo $set_or_game . "4"; ?>
-						</td>
-						<td><input id='mset1_4_<?php echo $tm_id; ?>' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='mset2_4_<?php echo $tm_id; ?>' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
-						<tr>
-						<td>
-							<?php echo $set_or_game . "5"; ?>
-						</td>
-						<td><input id='mset1_5_<?php echo $tm_id; ?>' name='player1[]' style = "width:45%" type='text' maxlength='2' /></td>
-						<td><input id='mset2_5_<?php echo $tm_id; ?>' name='player2[]' style = "width:45%" type='text' maxlength='2' /></td>
-						</tr>
+			<?php } ?>
 
 			     </table>
 		      </div>
@@ -933,8 +860,7 @@ foreach($list_players as $player){
 				$cnt1 = count(array_filter($p1));
 
 				if($cnt1 > 0){
-					for($i=0; $i<count(array_filter($p1)); $i++)
-					{
+					for($i=0; $i<count(array_filter($p1)); $i++){
 						$p1_sum = intval($p1_sum) + intval($p1[$i]);
 					}
 				}
@@ -944,8 +870,7 @@ foreach($list_players as $player){
 				$cnt2 = count(array_filter($p2));
 	
 				if($cnt2 > 0){
-					for($i=0; $i<count(array_filter($p2)); $i++)
-					{
+					for($i=0; $i<count(array_filter($p2)); $i++){
 						$p2_sum = intval($p2_sum) + intval($p2[$i]);
 					}
 				}
@@ -962,8 +887,7 @@ foreach($list_players as $player){
 						$cnt1 = count(array_filter($p1));
 
 						if($cnt1 > 0){
-							for($i=0; $i<count(array_filter($p1)); $i++)
-							{
+							for($i=0; $i<count(array_filter($p1)); $i++){
 								$p1_sum = intval($p1_sum) + intval($p1[$i]);
 							}
 						}
@@ -973,8 +897,7 @@ foreach($list_players as $player){
 						$cnt2 = count(array_filter($p2));
 			
 						if($cnt2 > 0){
-							for($i=0; $i<count(array_filter($p2)); $i++)
-							{
+							for($i=0; $i<count(array_filter($p2)); $i++){
 								$p2_sum = intval($p2_sum) + intval($p2[$i]);
 							}
 						}

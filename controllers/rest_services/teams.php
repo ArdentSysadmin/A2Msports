@@ -212,7 +212,7 @@ class Teams extends REST_Controller {
 	public function listNew_get() {
 
 		$user_id   = $this->input->get('user_id');		
-		$page        = $this->input->get('page');		
+		$page       = $this->input->get('page');		
 
 		$limit = 15;
 		$search = '';
@@ -413,21 +413,22 @@ exit;*/
 			$this->response($res);
 		}
 
-		 public function autocomplete_get()
-		 {
-			 	$q		  = $this->input->get('q');
-				$type	  = $this->input->get('type');
+		 public function autocomplete_get() {
+
+			 	$q				  = $this->input->get('q');
+				$type		  = $this->input->get('type');
+				$club_id	  = $this->input->get('club_id');
 				$data_new = array('');
-				switch($type){
+
+				switch($type) {
 				case 'users':
 					$data['key']	  = trim($q);
+					$data['club_id']	  = trim($club_id);
 					$result = $this->mteam->search_autocomplete_users($data);
 
-					if($result)
-					{
+					if($result) {
 						$data_new = array();
-						foreach($result as $row)   
-						{
+						foreach($result as $row) {
 							$name = array();
 							//$name = $row->Users_ID.'|'.$row->Firstname.' '.$row->Lastname;
 							$name[$row->Users_ID] = $row->Firstname.' '.$row->Lastname;
@@ -440,11 +441,9 @@ exit;*/
 					$data['key']	  = trim($q);
 					$result = $this->mteam->search_autocomplete_court_locations($data);
 
-					if($result)
-					{
+					if($result) {
 						$data_new = array();
-						foreach($result as $row)   
-						{
+						foreach($result as $row) {
 							$name = array();
 							//$name = $row->Users_ID.'|'.$row->Firstname.' '.$row->Lastname;
 							$name[$row->hcl_id] = $row->hcl_title;

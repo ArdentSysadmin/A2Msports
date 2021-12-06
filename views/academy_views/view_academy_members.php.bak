@@ -65,9 +65,19 @@ $sport = $org_details['Primary_Sport'];
 if($this->session->userdata('users_id') == $org_details['Aca_User_id']){
 ?>
 		<div class="contact-form" style='text-align:right; margin-bottom: 30px; margin-right: 5px;'>
+		 <!-- <tr align='center'><td> -->
+
+ <!-- </td></tr> -->
+
 		<input type="button"  id="btn-notif" name="btn_notif" value=" Send Notifications " class='btn btn-default' />
 		&nbsp;
-		<input type="button" id="rp" value="Add a Member" class="reg_player league-form-submit1 btn btn-default" title='Add a new player to your club.' />
+		<input type="button" id="rp" value="Add a Member" class="reg_player btn btn-default" title='Add a new player to your club.' />
+
+ <form id='frm_download'  name='frm_download' method='POST' action='<?=$this->config->item('club_form_url');?>/export/club_members' style="display:inline">
+	 <input type='hidden' name='sel_locations' id='sel_locations' value='' />
+	 <input type="submit" id="court_res_download" name="court_res_download"  value = "Export Members" class="btn submit-btn" style="margin:20px 0px" />
+ </form>
+
 		</div> 
 		<!-- <div class="contact-form" style='text-align:right; margin-bottom: 10px; margin-right: 5px;'>
 		<input type="button" id="rp" value="Add a Member" class="reg_player league-form-submit1 btn btn-default" title='Add a new player to your club.' />
@@ -99,7 +109,7 @@ if($this->input->get('stat') != ""){
 $stat = "?stat=".$this->input->get('stat');
 }
 ?>
-<form method="post" id="search_form"  action="<?=$this->config->item('club_form_url');?>/search_members<?=$stat;?>"> 
+<form method="post" id="search_form"  action="<?=$this->config->item('club_form_url');?>/search_members"> 
 
 <div class='col-md-3 form-group internal' style="padding-left:0px">
 <input class='form-control' id='name' name='name' type='text' placeholder="Player Name" value="<?php echo $search_fname; ?>"  size="25" />
@@ -188,9 +198,11 @@ foreach($ag_grp_list as $i => $row) {
 <input class='form-control'  name='org_id' id='org_id' type='hidden' value="<?php echo $org_details['Aca_ID'];?>"  />
 <input type="checkbox" id="academy_status"  name="academy_status" style='display:none;' checked  value="1" />
 <input type="hidden" id="view-type"  name="view_type" value="" />
+<input type="hidden" id="stat_search"  name="stat_search" value="<?php if($this->input->get('stat') != ''){echo $this->input->get('stat');}else if($stat_search){echo $stat_search;} else {echo 1;}
+?>" />
 
 <div id="register-submit" class="col-md-1 form-group internal" style="padding-left:0px">
-<input type="submit"  class="btn-default" name="search_mem" value=" Search " />
+<input type="submit"  class="grid-button" name="search_mem" value=" Search " />
 <!-- <button type="submit" class="btn btn-default" name="search_mem">Submit</button> -->
 </div>
 
@@ -253,7 +265,7 @@ if($this->session->userdata('users_id') == $org_details['Aca_User_id']){
 
 <div class='form-group' id="rpform" style="display:none">	
 	<!-- <form name='register_form' id='register_form'> -->			
-	<form name='register_form' id='register_form' method='POST' action='<?=base_url();?>register/instant_clubmember/' enctype='multipart/form-data'>
+	<form name='register_form' id='register_form' method='POST' action='<?=$this->config->item('club_form_url');?>/register/instant_clubmember/' enctype='multipart/form-data'>
 <div class='row'>
 <div class='col-md-6'>
 		<div class='form-group'>
@@ -357,12 +369,12 @@ if($this->session->userdata('users_id') == $org_details['Aca_User_id']){
 		<div class='form-group contact-form'>
 			<label class='control-label col-md-4' for='id_accomodation'></label>
 			<div class='col-md-8 form-group internal'>
-			<input type="hidden" value="<?=$org_details['Aca_ID'];?>" name="Aca_ID" id="Aca_ID" />
-			<input type="hidden" value="<?=$sport;?>" name="Aca_Sport" id="Aca_Sport" />
-			<input type="hidden" value="<?php echo "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>" 
-			name="Ret_URL" id="Ret_URL" />
-			<input type="submit" id="btn_register" name="btn_register" value=" Register " class="btn_register league-form-submit1 btn btn-default" />
-			<input type="button" id="cancel" name="btn_register_cancel" value=" Cancel " class="league-form-submit1 btn_register_cancel" />
+<input type="hidden" value="<?=$org_details['Aca_ID'];?>" name="Aca_ID" id="Aca_ID" />
+<input type="hidden" value="<?=$org_details['Primary_Sport'];?>" name="Aca_Sport" id="Aca_Sport" />
+<input type="hidden" value="<?php echo "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]"; ?>" 
+name="Ret_URL" id="Ret_URL" />
+<input type="submit" id="btn_register" name="btn_register" value=" Register " class="btn_register league-form-submit1 btn btn-default" />
+<input type="button" id="cancel" name="btn_register_cancel" value=" Cancel " class="league-form-submit1 btn_register_cancel" />
 			</div>
 		</div>
 		</form>

@@ -97,7 +97,7 @@ foreach($leagues as $league) {
 	else if($sport == 4){  $tour_image = "default_golf.jpg";		 }
 	else if($sport == 5){  $tour_image = "default_racquet_ball.jpg"; }
 	else if($sport == 6){  $tour_image = "default_squash.jpg";		 }
-	else if($sport == 7){  $tour_image = "default_pickleball.jpg";	 }
+	else if($sport == 7){  $tour_image = "default_pickleball_new.jpg";	 }
 	else if($sport == 8){  $tour_image = "default_chess.jpg";		 }
 	else if($sport == 9){  $tour_image = "default_carroms.jpg";		 }
 	else if($sport == 10){ $tour_image = "default_volleyball.jpg";   }

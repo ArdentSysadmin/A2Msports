@@ -15,10 +15,20 @@ $pick_time = 1;
 	$n = 1;
 	//echo date('Y-m-d H:i', '1615744800');
 	//echo "<pre>"; print_r($match_timings);
+
+	if($this->input->post('br_game_day') != ''){
+		$game_date = league::get_game_day($this->input->post('br_game_day'));
+		$draw_title_date = date('M d, Y', strtotime($game_date));	
+	}
+	else{
+		$draw_title_date =  date('M d, Y');	
+	}
+
 foreach($groups as $g => $group){
+	$draw_title = $draw_title_date." - Group{$g}";
 ?>
 <label>Group-<?=$g;?></label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
-<input class="form-control" type="text" name="draw_title[<?=$g;?>]" id="draw_title" placeholder='Draw Title' value='Group-<?=$g;?>' required />
+<input class="form-control" type="text" name="draw_title[<?=$g;?>]" id="draw_title" placeholder='Draw Title'  value="<?=$draw_title;?>" required />
 
 <?php
 $robin			= $robins[$g];

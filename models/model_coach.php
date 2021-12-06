@@ -1,0 +1,39 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class model_coach extends CI_Model {
+	
+		public function __construct()	{
+			parent:: __construct();	
+		}
+
+		public function get_coachTimings(){
+			//$a = $this->db->query("DELETE FROM Coach_Timings WHERE Coach_ID = {$this->logged_user}");
+
+			$query = $this->db->get_where('Coach_Timings', array('Coach_ID' => $this->logged_user));
+			return $query->result();
+		}
+		public function insert_coach_timings($data){
+			//$a = $this->db->query("DELETE FROM Coach_Timings WHERE Coach_ID = {$this->logged_user}");
+
+			$query = $this->db->insert('Coach_Timings', $data);
+			return true;
+		}
+		public function del_coach_timings($user){
+			$a = $this->db->query("DELETE FROM Coach_Timings WHERE Coach_ID = {$user}");
+		}
+
+		public function upd_coach_discounts($user, $priv_mem_discount, $grp_mem_discount){
+			$a = $this->db->query("UPDATE Users SET Coach_Priv_Members_Disc = '{$priv_mem_discount}', Coach_Grp_Members_Disc = '{$grp_mem_discount}' WHERE Users_ID = {$user}");
+		}
+
+		public function get_user_details($user_id) {
+			$qry_check = $this->db->query("SELECT * FROM Users WHERE Users_ID = '".$user_id."'");
+			return $qry_check->row_array();
+		}
+
+		public function check_is_coach($user_id) {
+			$qry_check = $this->db->query("SELECT * FROM Users WHERE Users_ID = '".$user_id."' AND Is_coach = 1");
+			return $qry_check;
+		}
+
+}

@@ -113,7 +113,7 @@
 		public function get_membership_det($tab_id){
 			$data = array('tab_id' => $tab_id);
 			$this->db->select('Membership_ID,Membership_Type,Sport_Type,
-			Frequency_Code,Fee,ActivationFee,Status');
+			Frequency_Code,Fee,ActivationFee,Status,Expire_Date');
 			$get_det = $this->db->get_where('Membership_Types', $data);
 
 			return $get_det->row_array();

@@ -62,6 +62,8 @@ $(document).ready(function(){
 				success: function(res) {
 					 resultObj = eval (res);
         //alert( resultObj[2] );
+					$('#upd_expire_date').val('');
+
 					$('#tab_row_id').val(tab_id);
 					$('#upd_membership_id').html("<b>"+resultObj[0]+"</b>");
 					$('#upd_membership_type').val(resultObj[1]);
@@ -70,6 +72,26 @@ $(document).ready(function(){
 					$('#upd_membership_fee').val(parseFloat(resultObj[4]).toFixed(2));
 					$('#upd_membership_acc_fee').val(parseFloat(resultObj[5]).toFixed(2));
 					$('#upd_membership_status option[value="'+resultObj[6]+'"]').prop('selected', true);
+					//$('#upd_expire_date').val(resultObj[7]);
+					
+					//alert(typeof(resultObj[3]));
+					if(resultObj[3] === 'O'){
+
+						var now = new Date(resultObj[7]);
+
+						var day = ("0" + now.getDate()).slice(-2);
+						var month = ("0" + (now.getMonth() + 1)).slice(-2);
+
+						var exp_date = now.getFullYear()+"-"+(month)+"-"+(day) ;
+						$('#upd_expire_date').val(exp_date);
+
+						$('#edit_div_activationfee').hide();
+						$('#edit_div_expdate').show();				
+					}
+					else{
+						$('#edit_div_activationfee').show();
+						$('#edit_div_expdate').hide();				
+					}
 				}
 				});
 		}
@@ -208,31 +230,57 @@ else{
 </div>
 
 <div class="col-md-6">
+<label>Membership Type</label>
 <input type="text" class='form-control' id="upd_membership_type" name="upd_membership_type" placeholder='Membership Type' required />
 <span id='upd_mem_type_stat' style='color:red'></span>
 </div>
 
 <div class="col-md-6">
+<label>Frequency</label>
 <select id='upd_frequency' name='upd_frequency' class='form-control' required>
-<option value=''>Frequency</option>
+<option value=''>Select</option>
+<option value='O'>One Time Charge</option>
 <option value='D'>Daily</option>
 <option value='W'>Weekly</option>  
 <option value='M'>Monthly</option>
 <option value='Y'>Yearly</option>	
 </select>
 </div>
+<script>
+$(document).ready(function() {
+	$('#upd_frequency').change(function(){
+		if($(this).val() == 'O'){
+			$('#upd_membership_acc_fee').val('0');
+			$('#edit_div_activationfee').hide();
+			$('#edit_div_expdate').show();
+		}
+		else{
+			$('#edit_div_activationfee').show();
+			$('#edit_div_expdate').hide();
+		}
+	});
 
+});
+</script>
 <div class="col-md-6">
-<input type="number" class='form-control' id="upd_membership_fee" name="upd_membership_fee" min=1 placeholder='Membership Fee'  required />
+<label>Membership Fee</label>
+<input type="number" class='form-control' id="upd_membership_fee" name="upd_membership_fee" min=0  required />
+</div>
+
+<div class="col-md-6" id="edit_div_activationfee">
+<label>Activation Fee (One Time)</label>
+<input type="number" class='form-control' id="upd_membership_acc_fee" name="upd_membership_acc_fee" min=0 required />
+</div>
+
+<div class="col-md-6" id="edit_div_expdate" style='display:none;'>
+<label>Expiration Date</label>
+<input type="date" class='form-control' id="upd_expire_date" name="upd_expire_date" min=0 required />
 </div>
 
 <div class="col-md-6">
-<input type="number" class='form-control' id="upd_membership_acc_fee" name="upd_membership_acc_fee" min=0 placeholder='Activation Fee (One Time)' required />
-</div>
-
-<div class="col-md-6">
+<label>Sport</label>
 	<select name="upd_sport_type"  id="upd_sport_type" class='form-control' >
-	<option value="">Sport</option>
+	<option value="">Select</option>
 	<option value="1">Tennis</option>
 	<option value="2">Table Tennis</option>
 	<option value="3">Badminton</option>
@@ -245,6 +293,7 @@ else{
 </div>
 
 <div class="col-md-6">
+<label>Status</label>
 	<select name="upd_membership_status"  id="upd_membership_status" class='form-control'>
 	<option value="1">Active</option>
 	<option value="0">Inactive</option>
@@ -282,36 +331,66 @@ action="<?php echo base_url().$this->short_code; ?>/add_memberships">
 ?>
 <br /><br />
 <div class="col-md-6">
-<input type="text" class='form-control' name="membership_id" id="membership_id" placeholder='Membership Code' required />
+<label>Membership Code</label>
+<input type="text" class='form-control' name="membership_id" id="membership_id" required />
 <span id='mem_id_stat' style='color:red'></span>
 </div>
 
 <div class="col-md-6">
-<input type="text" class='form-control' id="membership_type" name="membership_type" placeholder='Membership Type' required />
+<label>Membership Type</label>
+<input type="text" class='form-control' id="membership_type" name="membership_type" required />
 <span id='mem_type_stat' style='color:red'></span>
 </div>
 
 <div class="col-md-6">
+<label>Frequency</label>
 <select id='frequency' name='frequency' class='form-control' required>
-<option value=''>Frequency</option>
+<option value=''>Select</option>
+<option value='O'>One Time Charge</option>
 <option value='D'>Daily</option>
 <option value='W'>Weekly</option>  
 <option value='M'>Monthly</option>
 <option value='Y'>Yearly</option>	
 </select>
 </div>
+<script>
+$(document).ready(function() {
+	$('#frequency').change(function(){
+		if($(this).val() == 'O'){
+			$('#membership_acc_fee').val('0');
+			$('#div_activationfee').hide();
+			$('#div_expdate').show();
+			$("#expire_date").attr('required', 'required');
+		}
+		else{
+			$('#div_activationfee').show();
+			$('#div_expdate').hide();
+			$("#expire_date").removeAttr('required');
+		}
+	});
+
+});
+</script>
 
 <div class="col-md-6">
-<input type="number" class='form-control' name="membership_fee" min=1 placeholder='Membership Fee'  style='width: 50%;' required />
+<label>Membership Fee</label>
+<input type="number" class='form-control' name="membership_fee" min=0 value='0'  style='width: 50%;' required />
+</div>
+
+<div class="col-md-6" id="div_activationfee">
+<label>Activation Fee (One Time)</label>
+<input type="number" class='form-control' name="membership_acc_fee" min=0 value='0'  style='width: 50%;' required />
+</div>
+
+<div class="col-md-6" id="div_expdate" style='display:none;'>
+<label>Expiration Date</label>
+<input type="date" class='form-control' id="expire_date" name="expire_date" min=0 />
 </div>
 
 <div class="col-md-6">
-<input type="number" class='form-control' name="membership_acc_fee" min=0 placeholder='Activation Fee (One Time)'  style='width: 50%;' required />
-</div>
-
-<div class="col-md-6">
+<label>Sport</label>
 	<select name="sport_type"  id="sport_type" class='form-control'>
-	<option value="">Sport</option>
+	<option value="">Select</option>
 	<option value="1" <?php if($sport=="1"){ echo "selected=selected"; } ?>>Tennis</option>
 	<option value="2" <?php if($sport=="2"){ echo "selected=selected"; } ?>>Table Tennis</option>
 	<option value="3" <?php if($sport=="3"){ echo "selected=selected"; } ?>>Badminton</option>
@@ -330,7 +409,7 @@ Notes
 </div>
  -->
 <div class="col-md-12" id="add_courts">
-<input type="submit" id="submit_membership" name="submit_membership"  value=" Add Details " class="btn submit-btn" style="margin:20px 0px"/>&nbsp;&nbsp;
+<input type="submit" id="submit_membership" name="submit_membership"  value="Create Membership" class="btn submit-btn" style="margin:20px 0px"/>&nbsp;&nbsp;
 <input type="button" id="cancel_membership" name="cancel_membership"  value=" Cancel " class="league-form-submit1" style="margin:20px 0px"/>
 </div>
 

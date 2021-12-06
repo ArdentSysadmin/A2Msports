@@ -1,3 +1,8 @@
+<style>
+input:focus::placeholder {
+  color: transparent;
+}
+</style>
 <?php
 if($club_url == "https://a2msports.com/league"){
 	$profile_base = base_url();
@@ -6,9 +11,6 @@ else{
 	$profile_base = $club_url."/";
 }
 ?>
-<link href="<?php echo base_url();?>css/foundation-datepicker.css" rel="stylesheet">
-<script src="<?php echo base_url();?>js/foundation-datepicker.js"></script>
-
 <script>
 $(document).ready(function(){
 
@@ -54,12 +56,12 @@ var team = a[1];
 </script>
 <script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
 <script type="text/javascript">
-$(document).ready(function () {
+/*$(document).ready(function () {
 $(function () {
 "use strict";
 $('.accordion').accordion({ defaultOpen: 'up_match_section' }); //some_id section1 in demoup_tour_section
 });
-});
+});*/
 </script>
 
 <script language="javascript" type="text/javascript">
@@ -167,7 +169,13 @@ if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 
 	}
 ?>
-<input class="form-control" type="text" name="draw_title" id="draw_title" style="width:25%;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
+<input class="form-control col-md-5" type="text" name="draw_title" id="draw_title" style="width:25%;margin-bottom: 10px;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" id='update_draw' name='update_rr_dates' class='league-form-submit1' value=" Update " />
+
+
+
 <?php
 }
 else{
@@ -220,13 +228,14 @@ value="<?php if($rr_matches[$m]->Match_DueDate != ""){
 	} ?>">
 <script>
 var rid = "<?php echo $round; ?>";
-
+/*
   $('#round_date'+rid).fdatepicker({
 		format: 'mm/dd/yyyy hh:ii',
 		disableDblClickSelection: true,
 		language: 'en',
 		pickTime: true
 	});
+*/
 </script>
 
 <?php
@@ -330,6 +339,9 @@ $('#sdate'+mid).fdatepicker({
 			else{
 				echo $rr_matches[$m]->Court_Info;
 			}
+		}
+		else if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+				echo "<input type='text' name='match_court{$match_num}' placeholder='Court' value='' style='width:13%' />";
 		}
 
 
@@ -637,9 +649,9 @@ $grid_array[$rr_matches[$m]->Player2]['points'] += $rr_matches[$m]->Player2_poin
 <?php
 if($tour_details->Usersid == $this->logged_user){
 ?>
-<div class='col-md-1 form-group internal'>
+<!-- <div class='col-md-1 form-group internal'>
 <input type="button" id='update_draw' name='update_rr_dates' class='league-form-submit1' value=" Update " />
-</div>
+</div> -->
 <?php
 } ?>
 </td></tr>
@@ -792,7 +804,7 @@ foreach($list_players as $ind => $player){
 					 /*  Win percentage calculation end */	
 				}
 				$player_tot_score	+= ($p1_sum);
-				$p1p2_tot_score		+= ($p1_sum+$p2_sum);
+				$p1p2_tot_score		+= ($p1_sum + $p2_sum);
 		}
 	}
 $win_per = ($player_tot_score / $p1p2_tot_score) * 100;
@@ -801,19 +813,37 @@ $win_per = ($player_tot_score / $p1p2_tot_score) * 100;
 $players_sort[$player] = array('points' => $tot_p, 'win_per' => $player_tot_score, 'win_per2' => number_format($win_per, 2));
 }
 
-$sort_func = uasort($players_sort, array('league','compareOrder'));
-$keys_arr = array_keys($players_sort); 
+
+			foreach($players_sort as $pl => $x){
+				$cnt = 0;
+				$temp = '';
+				if(!in_array($pl, $temp))
+					$temp[] = $pl;
+
+				foreach($players_sort as $pl2 => $x2){
+					if($x['points'] == $x2['points']){
+						$cnt++;
+							if(!in_array($pl2, $temp))
+							$temp[] = $pl2;
+					}
+				}
+				$points_count_arr[$x['points']]['count'] = $cnt;
+				//$points_count_arr[$x['points']][] = $temp;
+			}
+
+
+$sort_func = uasort($players_sort, array('league', 'compareOrder'));
+$keys_arr  = array_keys($players_sort); 
 
 //echo "<pre>";
 //print_r($keys_arr);
 //if($this->logged_user == 240){
 //echo "<pre>"; print_r($players_sort); //exit;
-//echo "<pre>----------------------------------"; print_r($grid_array); //exit;
+//echo "<pre>----------------------------------"; print_r($grid_array); exit;
 //}
 foreach($players_sort as $player => $tot_score){
-	
-	if($players_sort[$temp]['points'] == $tot_score['points'])
-	{
+
+	if($players_sort[$temp]['points'] == $tot_score['points'] and $points_count_arr[$tot_score['points']]['count'] == 2){
 		//$last_player	 = str_replace('-', '', $temp);
 		//$cur_player	 = str_replace('-', '', $player);
 		$last_player	 = explode('-', $temp);
@@ -834,29 +864,21 @@ foreach($players_sort as $player => $tot_score){
 		$temp = $player;
 	}
 
-//$last_player	 = str_replace('-','',end(array_keys($players_sort)));
-//$cur_player		 = str_replace('-','',$player);
-
-	/*if($last_player_arr['points'] == $tot_p and ($grid_array[$last_player]['opponents'][$cur_player]['result'] == 'L')){
-			unset($players_sort[$last_player]);
-			$players_sort[$player]		= array('points' => $tot_p, 'win_per' => number_format($win_per, 2));
-			$players_sort[$last_player] = $last_player_arr;
-			echo "<pre>";
-			print_r($players_sort);
-	}
-	else{
-		$players_sort[$player] = array('points' => $tot_p, 'win_per' => number_format($win_per, 2));
-	}*/
-	
 }
 
-
+				//if($this->logged_user == 240 and ($get_bracket['BracketID'] == 1201 or $get_bracket['BracketID'] == 1195)){
+				//	echo "Keys";
+				//  echo "<pre> "; print_r($keys_arr);  echo "______";
+				//}
 foreach($keys_arr as $player){
 	$temp_players_sort[$player] = $players_sort[$player];
 	$get_players = explode("-", $player);
 	$temp_grid_array[$get_players[0]] = $grid_array[$get_players[0]];
 }
-
+				if($this->logged_user == 240 and $get_bracket['BracketID'] == 1201){
+					//echo "Keys";
+				//echo "<pre> "; print_r($grid_array); print_r($keys_arr);  echo "______";
+				}
 $players_sort = $temp_players_sort;
 $grid_array     = $temp_grid_array;
 
@@ -945,7 +967,7 @@ $res_ratings2 = league :: get_draw_init_ratings($get_players[1], $rr_matches2[0]
 <td align='center'><?php echo $tot_score['win_per2']; ?></td>
 <td align='center'><?php echo $init; ?></td>
 <td align='center'><?php echo $final; ?></td>
-<td align='center'><?php echo $change; ?></td>
+<td align='center'><?php echo number_format($change, 3); ?></td>
 </tr>
 <?php
 }
@@ -1029,3 +1051,5 @@ $k++;
 </div>
 
 <!--  Grid view -->
+<link href="<?php echo base_url();?>css/foundation-datepicker.css" rel="stylesheet">
+<script src="<?php echo base_url();?>js/foundation-datepicker.js"></script>

@@ -123,11 +123,10 @@ var id_val = $(this).attr('id');
 		type: 'POST',
 		url: baseurl+'league/view_matches',
 		data: $('#form-wff'+id_val).serialize(),
-		success: function (res) {
+		success: function () {
 		   //location.reload();
-		   alert('Result added successfully, it will reflect only after page refresh');
-		   $('#tr_'+id_val).html(res);
-		   $('#forfeit'+id_val).hide();
+		   		   alert('Result added successfully, it will reflect only after page refresh');
+
 		}
 	  });
 	  e.preventDefault();
@@ -149,11 +148,9 @@ var id_val = $(this).attr('id');
 		type: 'POST',
 		url: baseurl+'league/view_matches',
 		data: $('#form-addscore'+id_val).serialize(),
-		success: function (res) {
+		success: function () {
 		   //location.reload();
-		   alert('Scores were added successfully, it will reflect only after page refresh');
-		   $('#tr_'+id_val).html(res);
-		   $('#score'+id_val).hide();
+		   alert('Scores are added successfully, it will reflect only after page refresh');
 		}
 	  });
 	  e.preventDefault();

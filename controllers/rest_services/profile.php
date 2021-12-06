@@ -48,17 +48,18 @@ class Profile extends REST_Controller {
 		$data['State']					= trim($post_data['state'], '"');
 		$data['City']						= trim($post_data['city'], '"');
 		$data['Zipcode']				= trim($post_data['zip_code'], '"');
-		if($post_data['gender'])
-		$data['Gender'] = trim($post_data['gender'], '"');
+		if($post_data['gender'] == 1 or $post_data['gender'] == 0 or $post_data['gender'] == '1' or $post_data['gender'] == '0'){
+		$data['Gender'] = $post_data['gender'];
+		}
 
 		if($post_data['dob']){
 			$dob				= trim($post_data['dob'], '"');
 			$data['DOB']	= $dob;
 			$dob				= date('Y-m-d', strtotime($this->input->post('txt_dob')));
 			
-			$birthdate	= new DateTime($dob);
+			$birthdate		= new DateTime($dob);
 			$today			= new DateTime('today');
-			$age			= $birthdate->diff($today)->y;
+			$age				= $birthdate->diff($today)->y;
 			
 			switch (true) {
                 case $age <= 9:

@@ -47,17 +47,17 @@ define('TEST_FINT_EMAIL', 'hr@fintinc.com');
 define('FB_APPID', '201602263551845');
 define('FB_KEY', '2e07275226a7aa868e13179d8f449b40');
 define('FB_REDIRECT', 'https://a2msports.com/login/validate_login');
-define('BANNER_TEXT', 'All You Need for Your Sports Club');
+define('BANNER_TEXT', 'Connecting Players, Coaches and Clubs');
 define('GEO_LOC_KEY', 'AIzaSyC3_BjoW6T6jkMOL31GmDBeeVTv-NaI2Cg');
 
 define('SANDBOX_PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
 define('SANDBOX_PAYPAL_ID', 'admin-facilitator@a2msports.com');
 
-define('PAYPAL_URL', 'https://www.paypal.com/cgi-bin/webscr');
-define('PAYPAL_ID', 'admin@a2msports.com');
+//define('PAYPAL_URL', 'https://www.paypal.com/cgi-bin/webscr');
+//define('PAYPAL_ID', 'admin@a2msports.com');
 
-//define('PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
-//define('PAYPAL_ID', 'admin-facilitator@a2msports.com');
+define('PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
+define('PAYPAL_ID', 'admin-facilitator@a2msports.com');
 
 
 /* End of file constants.php */

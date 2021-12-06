@@ -56,8 +56,9 @@ function listbox_selectall(listID, isSelect) {
 	}
 }
 </script>
-   <section id="single_player" class="container secondary-page">
-
+   <section id="single_player" class="secondary-page">
+<div class='container'>
+<div class='row'>
            <div class="top-score-title right-score col-md-9">
 			<br />
 			 <!-- start main body -->

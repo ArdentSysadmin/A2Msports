@@ -49,7 +49,7 @@
 					</div> -->
 					<div style="line-height:22px; text-align:justify">
 					<?php
-					echo "<b>" . $news_id_det['News_title'] . "</b>";
+					echo "<b style='color: #123176; font-size: 18px;'>" . $news_id_det['News_title'] . "</b>";
 					echo "<br />";
 					echo "<br />";
 					echo stripslashes($news_id_det['News_content']);

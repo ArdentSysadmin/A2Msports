@@ -16,6 +16,24 @@ a.register:hover {
 <script>
 $(document).ready(function(){
 
+  $('#check_in').on('click', function(e) {
+	  var gd = "<?php echo 'for Game Day '.date('M d, Y'); ?>";
+	  if(confirm("Are you sure to check in "+gd+"?")){
+
+		  $.ajax({
+			  type: 'POST',
+			  url: club_baseurl+'league/check_in',
+			  data:{tourn_id:tourn_id},
+			  success: function(res) {
+					alert(res);
+					$('#check_in').hide();
+			  }
+		  });
+	  }
+  });
+
+
+//var fld = "<?php echo $this->session->flashdata('check_in_success'); ?>";
 	$('#admin_actions').change(function() {
 		if(this.value != ''){
 			var cur_val = this.value;
@@ -64,7 +82,7 @@ $users_id = $this->logged_user;
 $is_reg	  = league::user_reg_or_not($users_id, $tour_details->tournament_ID);
 $logged_user_role = 'Visiter';
 
-if($tour_details->Usersid == $users_id or $this->is_super_admin){    /// tournament admin access links
+if($users_id and ($tour_details->Usersid == $users_id or $tour_details->Tournament_Director == $users_id or $this->is_super_admin)){    /// tournament admin access links
 	$logged_user_role = 'Admin';
 }
 else if($is_logged_user_reg){
@@ -163,9 +181,10 @@ else{
 </div><!--Close col-md-3-->
 
 <div class="col-md-6">
-<div style="font-size:25px; color:#ff8a00; font-weight:bold; padding-bottom:20px; line-height:30px"><?php echo $tour_details->tournament_title; ?>
+<div style="font-size:25px; color:#ff8a00; font-weight:bold; padding-bottom:20px; line-height:30px">
+<?php echo $tour_details->tournament_title; ?>
 
-<div class="fb-like" data-href="<?php echo base_url(); ?>league/view/<?php echo $tour_details->tournament_ID; ?>" data-layout="button_count" data-mobile-iframe="true" data-action="like" data-show-faces="false" data-share="true"></div>
+<div class="fb-like" data-href="<?php echo base_url(); ?>league/<?php echo $tour_details->tournament_ID; ?>" data-layout="button_count" data-mobile-iframe="true" data-action="like" data-show-faces="false" data-share="true"></div>
 
 </div>
 <div style="line-height:30px">
@@ -177,6 +196,16 @@ else{
 <?php if($tour_details->TournamentAddress) { echo $tour_details->TournamentAddress.", "; }?> 
 <?php if($tour_details->TournamentCity) { echo $tour_details->TournamentCity.", "; }?>
 <?php echo $tour_details->TournamentState.", ";?> <?php echo $tour_details->PostalCode;?>
+<?php
+if($this->logged_user_role == 'Admin') {
+?>
+<br>
+<b>Status: </b>
+<?php
+if($tour_details->Is_Publish) { echo "<span style='color:green;font-weight:bold;font-size: 20px !important;'>Published</span>"; }
+else{ echo "<span style='color:red;font-weight:bold;font-size: 20px !important;'>UnPublished</span>"; }
+}
+?>
 </div>
 </div><!--Close col-md-6-->
 
@@ -190,12 +219,14 @@ else{
 	$now	= time();
 	$sdate	= strtotime($tour_details->StartDate);
 
-
-
-if(($tour_details->Usersid == $users_id or $this->is_super_admin) and $cdate <= $exp_date) {   /// tournament admin access links
+if($users_id) {  
 ?>
-<select name='admin_actions' id='admin_actions' class='form-control' style="width:60%; font-weight:bold;text-align:center;margin-top:70px;border:2px solid #ff8a00" autocomplete='off'>
+<select name='admin_actions' id='admin_actions' class='form-control' style="width:60%; font-weight:bold; text-align:center;margin-top:70px;border:2px solid #ff8a00" autocomplete='off'>
 <option value="">------ Actions ------</option>
+<?php
+if(($tour_details->Usersid == $users_id or $tour_details->Tournament_Director == $users_id or $this->is_super_admin) and $cdate <= $exp_date) {   
+	// tournament admin access links
+?>
 <option value="<?php echo base_url().$org_url_key;?>league/edit/<?php echo $tour_details->tournament_ID;?>">
 Edit Tournament</option>
 <option value="<?php echo base_url().$org_url_key;?>play/invite/<?php echo $tour_details->tournament_ID;?>">
@@ -213,6 +244,12 @@ Create Draws</option>
 		echo "<option value ='" . base_url() .$org_url_key. "league/reg_teams/$tour_details->tournament_ID'>Register Teams</option>";
 		echo "<option value ='" . base_url() .$org_url_key. "league/scorecard/$tour_details->tournament_ID'> Print Scorecard</option>";
 	}
+
+	if($tour_details->Is_Publish)
+		echo "<option value ='". base_url().$org_url_key."league/unpublish/$tour_details->tournament_ID'>UnPublish</option>";
+	else
+		echo "<option value ='". base_url().$org_url_key."league/publish/$tour_details->tournament_ID'>Publish</option>";
+
 }
 else if($is_logged_user_reg and !array_key_exists($this->logged_user, $team_captains)){
 	if($tour_details->tournament_format != 'Teams'){
@@ -231,7 +268,7 @@ else{
 }
 
 echo "</select>";
-
+}
 
 //$now   = time() + 3600;
 $now	 = time();
@@ -269,7 +306,18 @@ else if($is_logged_user_reg and $tour_details->tournament_format != 'Teams'){
 	echo "<br />";
 
 	if($tour_details->Is_League){
-		echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/reg-more.png' alt='Register More' title='Register More'></a>";
+		echo "<a href='".base_url().$org_url_key."league/register_match/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/reg-more.png' alt='Register More' title='Register More'></a>";
+		
+		$endTime = strtotime("-10 minutes",strtotime($game_day_dt));
+		$cur_time = time();
+		//if($this->logged_user == 237)
+			//echo $cur_time." ".$endTime." ".date('Y-m-d H:i', $endTime);
+		if(!$is_check_in and $is_reg_game_day and $is_a_game_day and $cur_time <= $endTime){
+		echo "<br /><a id='check_in' style='cursor:pointer; margin-right:40px;'><img src='".base_url()."icons/checkin.png' alt='Check In' title='Check In'></a>";
+		}
+		else if($this->session->flashdata('check_in_success')){
+			//echo "<br><br><b>".$this->session->flashdata('check_in_success')."</b>";
+		}
 	}
 	else{
 		echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/my_reg_events.png' alt='My Events' title='My Registered Events'></a>";
@@ -433,7 +481,7 @@ if($tour_details->Sponsors != 'NULL' && $tour_details->Sponsors != '') { ?>
 <div class="tab-content tabs">
 
 <div role="tabpanel" class="tab-pane fade in active" id="Summary"><!-- Summary -->
-<?php $this->load->view('tournament/view_tournament_summary', $data); ?>
+<?php $this->load->view('academy_views/tournament/view_tournament_summary', $data); ?>
 </div>
 
 <div role="tabpanel" class="tab-pane fade" id="Rules"><!-- Rules -->
@@ -575,9 +623,9 @@ if(!$this->is_team_league){
  --><script type="text/javascript">
 $(document).ready(function () {
 	var tourn_id = "<?php echo $tour_details->tournament_ID; ?>";
-	$('#register_btn').click(function(){
+	//$('#register_btn').click(function(){
 		$('#aca_page').val("league/"+tourn_id);
-	});
+	//});
 
 /*$(function () {
 $('.accordion').click(function() {

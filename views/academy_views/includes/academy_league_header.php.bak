@@ -1,16 +1,27 @@
 <?php
+if($org_details['Aca_ID'] == 1166){
+echo $this->load->view('academy_views/includes/sreenidhi_academy_league_header');
+}
+else{
 $cur_class	= $this->router->class; 
 if(!$this->logged_user){
 $login			= $cur_class::get_fb_login();
 $authUrl		= $cur_class ::get_google_login();
 }
-$club_menu = $cur_class :: get_club_menu($org_details['Aca_ID']);
+$club_menu	= $cur_class :: get_club_menu($org_details['Aca_ID']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<?php
+if($this->is_league_page OR $noIndex){
+?>
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+<?php
+}
+?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?=$org_details['Aca_name'];?></title>
 <!-- Bootstrap CSS -->
@@ -99,6 +110,18 @@ var club_baseurl = "<?php echo $this->config->item('club_pr_url'); ?>";
 </script>
 </head>
 <body>
+<?php
+ if($org_details['Aca_URL_ShortCode'] == 'gpa'){
+?>
+<style>
+h1, h2, h3, h4, h5, h6 {
+    font-family: roboto, sans-serif;
+}
+</style>
+<?php
+}
+?>
+
 <!-- Pre Loader -->
 <div id="dvLoading"></div>
 <!-- Header Start -->
@@ -117,11 +140,195 @@ var club_baseurl = "<?php echo $this->config->item('club_pr_url'); ?>";
 <?php echo addslashes(mb_strtoupper($org_details['Aca_name'])); ?>
 </a></div>
 <div class="collapse navbar-collapse" id="navbar">
+
+<?php
+ if($org_details['Aca_URL_ShortCode'] == 'gpa'){
+?>
+<!-- gpa menu -->
 <ul class="nav navbar-nav navbar-right">
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/tournaments">Tournaments</a></li>
+
+<li class="dropdown dropdown-toggle">
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#">Clubs <i class="fa fa-angle-down"></i></a>
+<ul class="dropdown-menu">
+	<!-- <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/club_benefits">Club Benefits</a></li> -->
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/clubs">Clubs List</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/register">Become a GPA Club</a></li>
+</ul>
+</li>
+
+<li class="dropdown dropdown-toggle">
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#">Players <i class="fa fa-angle-down"></i></a>
+<ul class="dropdown-menu">
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/members">Members</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/ratings">Ratings</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/rankings">Rankings</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/member_benefits">Member Benefits</a></li>
+	<?php
+		if(!$this->logged_user){
+	?>
+	<!-- <li><a href="#" class="member_login">Join Now</a></li> -->
+	<?php
+		}
+	?>
+</ul>
+</li>
+
+<?php
+if(!in_array('2', $club_menu)){
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/coaches">Coaches</a></li>
+<?php
+}
+?>
+<li class="dropdown dropdown-toggle">
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#">Play <i class="fa fa-angle-down"></i></a>
+<ul class="dropdown-menu">
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/places2play">Places to play</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/ratings">Challenge Players</a></li>
+</ul>
+</li>
 <?php 
-if(!in_array('8', $club_menu)){ ?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+if(!in_array('1', $club_menu)){ ?>
+<!-- <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li> -->
+<?php
+}
+?>
+
+<?php
+if(!in_array('3', $club_menu)){ ?>
+<!-- <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/pricing">Pricing</a></li> -->
+<?php
+}
+?>
 <?php 
+/*echo $this->logged_user." - ".$this->academy_admin;
+exit;*/
+if($this->academy_admin and ($this->logged_user == $this->academy_admin)){
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/list">Add/Edit Courts</a></li>
+<?php
+}
+?>
+
+<?php
+if($this->session->userdata('user') != "" and !in_array('5', $club_menu)) {
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/reserve">Reserve</a></li>
+<?php
+}
+else if(!in_array('5', $club_menu)){
+?>
+<li><a href="#" class='reserve-login'>Reserve</a></li>
+<?php
+}
+?>
+<?php
+if(!in_array('7', $club_menu) or  
+!in_array('9', $club_menu) or 
+!in_array('10', $club_menu) or 
+!in_array('6', $club_menu) or 
+!in_array('8', $club_menu) or 
+!in_array('11', $club_menu)){
+?>
+<li class="dropdown dropdown-toggle">
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#about">More <i class="fa fa-angle-down"></i></a>
+
+	<ul class="dropdown-menu">
+<?php
+	//if($org_details['Aca_ID'] == '1123'){ ?>
+	<!-- <li>
+	<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a>
+	</li> -->
+	<?php
+	//}
+	if(!in_array('10', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/news">News</a></li>
+	<?php 
+	}
+	?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility#gallery">Gallery</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility#videos">Videos</a></li>
+	<?php
+	if(!in_array('11', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/proshop">Pro Shop</a></li> 
+	<?php
+	}
+	if(!in_array('8', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+	<?php 
+	}
+	if(!in_array('6', $club_menu)){ 
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#contact">Contact</a></li>
+<?php
+}
+?>
+	</ul>
+</li>
+<?php
+}
+//echo "<pre>"; print_r($this->session); exit;
+//echo "test".$this->session->userdata('user');
+if($this->session->userdata('user') != "") {?>
+<li class="dropdown dropdown-toggle">
+<a>
+<?php 
+$get_fname = explode(' ', $this->session->userdata('user'));
+echo $get_fname[0];
+?>
+<i class="fa fa-angle-down"></i>
+</a>
+<ul class="dropdown-menu" style="right: 0;left: auto;">
+<?php 
+if($this->logged_user == $this->academy_admin) {
+?>
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/settings">Settings</a>
+</li>
+<?php 
+//if($this->logged_user == 237 or $this->logged_user == 240) {
+?>
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/memberships">Memberships</a>
+</li>
+<?php
+//}
+}?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
+</ul>
+</li>
+<?php
+}
+else {
+?>
+<li><a href="#" class="member_login">Login</a></li>
+<li><a href="#" class="join_now">Join Now</a></li>
+<?php
+}
+?>
+</ul>
+<!-- gpa menu -->
+<?php
+}
+else{
+?>
+
+<ul class="nav navbar-nav navbar-right">
+<?php
+if($org_details['Aca_URL_ShortCode'] == 'sreenidhi'){
+	if(!in_array('8', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/about-us">About Us</a></li>
+<?php 
+	}
+}
+else{
+	if(!in_array('8', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+<?php
+	}
 }
 if(!in_array('1', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li>
@@ -203,7 +410,7 @@ echo $get_fname[0];
 ?>
 <i class="fa fa-angle-down"></i>
 </a>
-<ul class="dropdown-menu">
+<ul class="dropdown-menu" style="right: 0;left: auto;">
 <?php 
 if($this->logged_user == $this->academy_admin) {
 ?>
@@ -225,11 +432,208 @@ else {
 ?>
 
 </ul>
+<?php
+} // closing of ELSE 
+?>
+
 </div>
+
+
+<?php
+ if($org_details['Aca_URL_ShortCode'] == 'gpa'){
+?>
+<!-- gpa mobile menu -->
 <ul class="wpb-mobile-menu">
-<?php if(!in_array('8', $club_menu)){ ?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/tournaments">Tournaments</a></li>
+
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#">Clubs</a>
+<ul>
+	<!-- <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/club_benefits">Club Benefits</a></li> -->
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/clubs">Clubs List</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/register">Become a GPA Club</a></li>
+</ul>
+</li>
+
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#">Players</a>
+<ul>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/members">Members</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/ratings">Ratings</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/rankings">Rankings</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/member_benefits">Member Benefits</a></li>
+	<?php
+		if(!$this->logged_user){
+	?>
+	<li><a href="#" class="member_login">Join Now</a></li>
+	<?php
+		}
+	?>
+</ul>
+</li>
+
+<?php
+if(!in_array('2', $club_menu)){
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/coaches">Coaches</a></li>
+<?php
+}
+?>
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#">Play</a>
+<ul>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/places2play">Places to play</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/ratings">Challenge Players</a></li>
+</ul>
+</li>
 <?php 
+if(!in_array('1', $club_menu)){ ?>
+<!-- <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li> -->
+<?php
+}
+?>
+
+<?php
+if(!in_array('3', $club_menu)){ ?>
+<!-- <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/pricing">Pricing</a></li> -->
+<?php
+}
+?>
+<?php 
+/*echo $this->logged_user." - ".$this->academy_admin;
+exit;*/
+if($this->academy_admin and ($this->logged_user == $this->academy_admin)){
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/list">Add/Edit Courts</a></li>
+<?php
+}
+?>
+
+<?php
+if($this->session->userdata('user') != "" and !in_array('5', $club_menu)) {
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/reserve">Reserve</a></li>
+<?php
+}
+else if(!in_array('5', $club_menu)){
+?>
+<li><a href="#" class='reserve-login'>Reserve</a></li>
+<?php
+}
+?>
+<?php
+if(!in_array('7', $club_menu) or  
+!in_array('9', $club_menu) or 
+!in_array('10', $club_menu) or 
+!in_array('6', $club_menu) or 
+!in_array('8', $club_menu) or 
+!in_array('11', $club_menu)){
+?>
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#about">More</a>
+	<ul>
+<?php
+	//if($org_details['Aca_ID'] == '1123'){ ?>
+	<!-- <li>
+	<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a>
+	</li> -->
+	<?php
+	//}
+	if(!in_array('10', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/news">News</a></li>
+	<?php 
+	}
+	?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility#gallery">Gallery</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility#videos">Videos</a></li>
+	<?php
+	if(!in_array('11', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/proshop">Pro Shop</a></li> 
+	<?php
+	}
+	if(!in_array('8', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+	<?php 
+	}
+	if(!in_array('6', $club_menu)){ 
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#contact">Contact</a></li>
+<?php
+}
+?>
+	</ul>
+</li>
+<?php
+}
+//echo "<pre>"; print_r($this->session); exit;
+//echo "test".$this->session->userdata('user');
+if($this->session->userdata('user') != "") {?>
+<li>
+<a>
+<?php 
+$get_fname = explode(' ', $this->session->userdata('user'));
+echo $get_fname[0];
+?>
+</a>
+<ul>
+<?php 
+if($this->logged_user == $this->academy_admin) {
+?>
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/settings">Settings</a>
+</li>
+<?php 
+//if($this->logged_user == 237 or $this->logged_user == 240) {
+?>
+<li>
+<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/memberships">Memberships</a>
+</li>
+<?php
+//}
+}?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
+</ul>
+</li>
+<?php
+}
+else {
+?>
+ <!-- <li><a href="#" class="member_login">Join Now</a></li> -->
+<li>
+<li>
+	<a href="#" class="member_login">Login</a>
+</li>
+	<ul>
+	<li><a href="#" class="join_now">Join Now</a></li>
+	</ul>
+</li>
+<?php
+}
+?>
+
+</ul>
+<?php
+} // close of mobile menu ELSE
+else{
+?>
+
+<ul class="wpb-mobile-menu">
+<?php 
+if($org_details['Aca_URL_ShortCode'] == 'sreenidhi'){
+	if(!in_array('8', $club_menu)){ ?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/about-us">About Us</a></li>
+<?php 
+	}
+}
+else{
+	if(!in_array('8', $club_menu)){
+?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+<?php
+	}
 }
 if(!in_array('1', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li>
@@ -322,12 +726,24 @@ else {
 ?>
 
 </ul>
+<?php
+}
+?>
+
 </div>
 </nav>
 <!-- Navigation End --> 
 
 <script>
 $(document).ready(function(){
+
+$(document).on('click','.join_now', function(){
+	//alert('test');
+	
+$("#login_modal").modal();
+$('#new_member').trigger('click');
+});
+
 $(document).on('click','.member_login',function(){
 		$('#login_err').html('');
 		$("#member_login").trigger('reset');
@@ -363,20 +779,20 @@ $("#reg_modal").modal();
 <div class="modal fade" id="login_modal" role="dialog">
 <div class="modal-dialog modal-lg">
 <div class="modal-content">
-<div class="modal-header">
+<div class="modal-header" style='text-align:center;'>
 <!-- Login window content -->
-<form id='member_login' method="post" action='<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/login/verify_user'  style='margin-left:20px;' >
+<form id='member_login' method="post" action='<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/login/verify_user'>
 <!-- <form id='member_login' method="post" action='<?php //echo base_url(); ?>/login/verify_user' class="login-form" style='margin-left:20px;' > -->
 <div class="name" align='left'>
 <label for="name_login" id="login_err" style="color:red"></label>
 </div>
 <div class="name">
-<label for="name_login">Username or Email:</label>
-<input class='form-control' style='width:60%; margin-bottom:10px;' id="txt_login" name="name_login" type="text" required />
+<label for="name_login">Username (or) Email</label><br />
+<input class='form-control' style='width:60%; margin-bottom:10px; display:inline-block;' id="txt_login" name="name_login" type="text" required />
 </div>
 <div class="pwd">
-<label for="password_login">Password:</label>
-<input class='form-control' style='width:60%; margin-bottom:10px;' id="password_login" name="password_login" type="password" required />
+<label for="password_login">Password</label><br />
+<input class='form-control' style='width:60%; margin-bottom:10px; display:inline-block;' id="password_login" name="password_login" type="password" required />
 </div>
 
 <div id="login-submit" style="line-height:25px">
@@ -393,11 +809,13 @@ $("#reg_modal").modal();
 <?php
 //}
 ?>
-<!-- <br /> <h4 style="padding-bottom:10px; padding-top:10px">Or...<br /><br />
+<br />
+<br />
+<h4 style="padding-bottom:10px; padding-top:10px">OR<br /><br />
 <div id="phone-login" style="line-height:25px;"> 
-<a href="#" id="phone_login" class="btn btn-info" role="button" style="margin-bottom: 20px;background-color: #81a32b;border-color: #81a32b;">
+<a href="#" id="phone_login" class="btn btn-info" role="button" style="margin-bottom: 20px;background-color: #81a32b;border-color: #81a32b;color:#fff; text-transform:none;">
 Login with Mobile Number</a>
-</div> -->
+</div>
 
 </div>
 
@@ -556,11 +974,16 @@ I Accept the club <?=$terms_link;?> and <?=$prv_pol_link;?>.
 <div id="login-submit" style="line-height:25px; margin-left:33%;">
 <input name="academy"  type="hidden" value="<?=$org_details['Aca_ID'];?>" />
 <input name="shortcode" type="hidden" value="<?=$org_details['Aca_URL_ShortCode'];?>" />
+<input name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url');?>" />
+
 <input name="aca_page" id="aca_page" type="hidden" value="" />
 <input type="submit" name='reg_user' value=" Register " style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00" /> 
 </div>
 
 </form>
+<input type='hidden' name='temp_uid'		id='temp_uid'	 value='' />
+<input type='hidden' name='temp_email'	id='temp_email' value='' />
+
 <!-- Register window content -->
 </div>
 </div>
@@ -602,6 +1025,34 @@ $('#frm_forgot_pwd').show();
 
 });
 
+$(document).on('click', '#reset_pwd', function() {
+	var baseurl = "<?php echo base_url();?>";
+	var red_url	= "<?php echo $this->config->item('club_pr_url');?>";
+
+	var email_id = $('#temp_email').val();
+	var uid			= $('#temp_uid').val();
+	$('#reset_pwd').html("Please wait...");
+if(email_id && uid){
+	$.ajax({
+	type:'POST',
+	url:baseurl+'login/reset_email_pwd',
+	data:{req_email:email_id, user:uid},
+	success:function(res){
+		if(res){
+			alert("Reset Password link sent to your email.")
+			window.location.replace(red_url);
+		}
+		else{
+			alert("Something wrong! please try after some time.");
+			$('#reset_pwd').html("<b>Reset Password</b> ?");
+		}
+	}
+	}); 
+}
+
+});
+
+
 $('#txtemail').blur(function(){
 var baseurl = "<?php echo base_url();?>";
 var email_id = $(this).val();
@@ -609,18 +1060,24 @@ var email_id = $(this).val();
 if(email_id!=""){
 $.ajax({
 type:'POST',
-url:baseurl+'register/email_check/',
+url:baseurl+'register/ajax_email_verify/',
 data:'email_id='+email_id,
 success:function(html){
 var stat = html;
-if(stat!=""){
-$('#email_stat').html(stat);
-$('#txtemail').val("");
-$('#txtemail').focus();
-}
-else {
-$('#email_stat').html("");
-}
+		if(stat!=""){
+			var sp = stat.split('-');
+			$('#email_stat').html(sp[1] + " already exists! want to <a id='reset_pwd' style='cursor:pointer;'><b>Reset Password</b>?</a>");
+			//$('#email_stat').html(stat);
+			$('#temp_uid').val(sp[0]);
+			$('#temp_email').val(sp[1]);
+
+			$('#EmailID').val("");
+		}
+		else {
+			$('#email_stat').html("");
+			$('#temp_uid').val('');
+			$('#temp_email').val('');
+		}
 }
 }); 
 }
@@ -711,3 +1168,6 @@ $(document).ready(function(){
 <!-- <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script> -->
 <script defer src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
 <script src="<?=base_url(); ?>js/custom/phone_login.js"></script>
+<?php
+}
+?>

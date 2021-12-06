@@ -88,6 +88,13 @@
 			return $query->result();
 		}
 
+		public function get_top_members_list($org_id)
+		{
+				$query = $this->db->query("SELECT TOP(15) u.*, um.* FROM users u INNER JOIN User_memberships um ON u.Users_ID = um.Users_id AND um.Club_id = {$org_id} AND um.Member_Status = 1 ORDER BY u.Users_ID DESC");
+
+			return $query->result();
+		}
+
 		public function get_members_list($org_id)
 		{
 			//$academySport = $this->get_academy_details($org_id);
@@ -344,6 +351,9 @@
 			if($this->input->get('stat') > -1){
 				$stat_qry = "AND Member_Status = ".$this->input->get('stat');
 			}
+			else if($this->input->post('stat_search') > -1){
+				$stat_qry = "AND Member_Status = ".$this->input->post('stat_search');
+			}
 
 
 			if(!empty($org_id)){
@@ -367,6 +377,7 @@
 				else{
 					$query = $this->db->query("SELECT *, 1 as Member_Status FROM users u join A2MScore a on u.users_id = a.Users_ID AND SportsType_ID = {$academySport[0]}  ORDER BY a.A2MScore desc");
 				}
+			//echo $this->db->last_query(); exit;
 
 			return $query->result();
 		}
@@ -433,23 +444,25 @@
 				$query		= $this->db->query("select * from SportsLevels where SportsLevel_ID = {$level}");
 				$qry_res	= $query->row_array();
 				if($qry_res['SportsLevel'][0] == 'L'){
-					$rating_val			= substr($qry_res['SportsLevel'], -3);
-					$min_rating_val = $rating_val - 0.5;
+					$rating_val	   = substr($qry_res['SportsLevel'], -3);
+					$min_rating  = $rating_val;
+					$max_rating = $rating_val + 0.5;
 				}
 				else if($qry_res['SportsLevel'] == 'Open'){
 					$level = '';
 				}
 				else if($qry_res['SportsLevel'] == '2.0'){
-					$rating_val			= $qry_res['SportsLevel'];
-					$min_rating_val = $rating_val - 0.5;
+					$rating_val	   = $qry_res['SportsLevel'];
+					$min_rating  = $rating_val;
+					$max_rating = $rating_val + 0.5;
 				}
 				else if($qry_res['SportsLevel'] == '2.5 to 3.5'){
-					$rating_val			= 3.5;
-					$min_rating_val = 2.5;
+					$min_rating  = 2.5;
+					$max_rating = 3.5;
 				}
 				else if($qry_res['SportsLevel'] == '3.5 and Up'){
-					$rating_val			= 6.0;
-					$min_rating_val = 3.5;
+					$min_rating  = 3.5;
+					$max_rating = 6.0;
 				}
 			}
 
@@ -508,17 +521,16 @@
 				}
 			}
 			else{
-
 						if($rating_type == 'Doubles')
 							$rating_column = 'Doubles_Rating';
 						if($rating_type == 'Mixed')
 							$rating_column = 'MixedDoubles_Rating';
 
 				if($name != "" OR $ag_grp != "" OR  $gend != ""){
-					$query = $this->db->query("SELECT * FROM Users u WHERE {$name_cond}  {$gend_cond} {$ag_grp_cond} AND u.EmailID IN (SELECT Email FROM GPA_Ratings WHERE {$rating_column} >= $min_rating_val AND {$rating_column} <= $rating_val)  ");
+					$query = $this->db->query("SELECT * FROM Users u WHERE {$name_cond}  {$gend_cond} {$ag_grp_cond} AND u.EmailID IN (SELECT Email FROM GPA_Ratings WHERE {$rating_column} >= $min_rating AND {$rating_column} <= $max_rating)  ");
 				}
 				else{
-					$query = $this->db->query("SELECT * FROM Users u WHERE u.EmailID IN (SELECT Email FROM GPA_Ratings WHERE {$rating_column} >= $min_rating_val AND {$rating_column} <= $rating_val)");
+					$query = $this->db->query("SELECT * FROM Users u WHERE u.EmailID IN (SELECT Email FROM GPA_Ratings WHERE {$rating_column} >= $min_rating AND {$rating_column} <= $max_rating)");
 				}
 			}
 
@@ -602,6 +614,17 @@
 
 		public function get_user_create_tournments($creator){
 			$qry_check = $this->db->query("SELECT * FROM tournament WHERE Usersid = $creator ORDER BY StartDate DESC");
+
+
+			/*$qry_check = $this->db->query("SELECT TOP 4 * FROM tournament WHERE Usersid = $creator AND EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/
+			/*$qry_check = $this->db->query("SELECT * FROM tournament WHERE EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/
+			
+			return $qry_check->result();
+		}
+
+		public function get_user_create_events($creator){
+			$qry_check = $this->db->query("SELECT * FROM Events WHERE Ev_Created_by = $creator 
+			ORDER BY Ev_Start_Date DESC");
 
 			/*$qry_check = $this->db->query("SELECT TOP 4 * FROM tournament WHERE Usersid = $creator AND EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/
 			/*$qry_check = $this->db->query("SELECT * FROM tournament WHERE EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/

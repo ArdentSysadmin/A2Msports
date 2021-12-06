@@ -1,4 +1,16 @@
 <!-- Reservation Block -->
+<?php
+if(!$is_smb_allowed and $is_user_have_bookings and !$is_club_admin and !$is_club_coach) {
+echo "<h5 style='line-height: 2;'><b>2Already a booking is made on this day (".date('M d, Y', strtotime($date)).") from your account. Multiple bookings are not allowed!</b></h5>";
+}
+else if(!$is_smb_allowed and $is_user_have_othercourt_bookings and !$is_club_admin and !$is_club_coach) {
+echo "<h5 style='line-height: 2;'><b>1Already a booking is made in another court on this day (".date('M d, Y', strtotime($date)).") from your account. Multiple bookings are not allowed!</b></h5>";
+}
+else if(!$is_nonmem_book and !$is_user_member and !$is_club_admin and !$is_club_coach) {
+echo "<h5 style='line-height: 2;'><b>Non members don't have access to book this court! Please contact admin for any queries. </h5>";
+}
+else{
+?>
 <form id='frm_reserve' name='frm_reserve' method='post' action='<?php echo base_url().$this->short_code."/courts/block_court" ?>'>
 <!-- <div class='col-md-6 form-group internal'>
 <select name="loc_id" id="location" class='form-control check_price' required>
@@ -7,7 +19,7 @@
 </div> -->
 
 <input type='hidden' name='loc_id' id='loc_id' value='<?php echo $loc_id; ?>' />
-<div class='col-md-6 form-group internal'>
+<div class='col-md-5 form-group internal'>
 <img src='<?php echo base_url();?>images/ajax_loader.gif' width='30px' height='40px' id='loading' style="display:none;" align="middle" />
 <select name="court" id="court1" class='form-control check_price get_durations' required>
 <option value=''>Select Court</option>
@@ -35,25 +47,53 @@ foreach($get_courts as $cr){
 <?php
 $time = $time-1;
 $tm   = ($time % 2 == 0) ? ($time/2).":00" : (($time-1)/2).":30";
+//echo strtotime($date." ".$tm);
+if($max_adv and !$is_club_admin and !$is_club_coach)
+$max_date = date('Y-m-d', strtotime('+'.$max_adv.' days'));
+else
+$max_date = date('Y-m-d', strtotime('+180 days'));
+
+$min_date = date('Y-m-d');
+if(!$is_sdb_allowed and !$is_club_admin and !$is_club_coach)
+$min_date = date('Y-m-d', strtotime('+1 day'));
+//echo $min_date; exit;
 ?>
-<div class='col-md-6 form-group internal'>
-<input type="text" name="res_date" id="res_date1" class='form-control check_price' 
-value="<?=date('m/d/Y H:i', strtotime($date." ".$tm));?>" placeholder='Select Start Date/Time' required />
+<div class='col-md-4 form-group internal'>
+<input type="date" name="res_date" id="res_date1" class='form-control check_price' 
+min='<?php echo $min_date; ?>' max='<?php echo date('Y-m-d', strtotime($max_date)); ?>' value="<?php if((strtotime($date) <= strtotime($max_date)) and (strtotime($date) >= strtotime($min_date))) { echo date('Y-m-d', strtotime($date)); } ?>" placeholder='Select Start Date/Time' required />
 </div>
-<div class='col-md-6 form-group internal'>
+<div class='col-md-3 form-group internal'>
+<select name="res_time" id="res_time1" class='form-control check_price' >
+<option value=''>Time</option>
+<?php
+$begin = new DateTime( $court_price['Start_Time'] );
+$end    = new DateTime( $court_price['End_Time'] );
+
+for($i = $begin; $i <= $end; $i->modify('+'.($slot_duration*60).' minutes')){
+    echo "<option value='".$i->format("H:i")."'>" . $i->format("h:i A") . "</option>";
+}
+?>
+</select>
+</div>
+<div class='col-md-5 form-group internal'>
 <select name="book_hours" id="book_hours1" class='form-control check_price' required>
 	<option value=''>Duration</option>
 	<?php
-			for($hr =1; $hr <= $max_hours; $hr++){
-				if($hr == 1)
-				echo "<option value='$hr'>$hr hour</option>";
-				if($hr > 1)
-				echo "<option value='$hr'>$hr hours</option>";
+	$num_sess = 1;
+	//echo $this->logged_user." - ". $this->academy_admin; exit;
+if($is_club_admin or $is_club_coach){
+	$num_sess = 8;
+}
+			for($x =1; $x <= $num_sess; $x++) {
+				if($x == 1)
+				echo "<option value='$x'>$x Session</option>";
+				if($x > 1)
+				echo "<option value='$x'>$x Sessions</option>";
 			}
 	?>
 </select>
 </div>
-<div class='col-md-6 form-group internal'>
+<div class='col-md-4 form-group internal'>
 <select name="match_format" id="match_format1" class='form-control' required>
 	<option value=''>Game Format</option>
 	<option value='Singles'>Singles</option>
@@ -62,7 +102,7 @@ value="<?=date('m/d/Y H:i', strtotime($date." ".$tm));?>" placeholder='Select St
 	<option value='Training'>Training</option>
 </select>
 </div>
-<div class='col-md-6 form-group internal'>
+<div class='col-md-3 form-group internal'>
 <select name="num_players" id="num_players1" class='form-control' required>
 	<option value=''>Players#</option>
 	<option value='1'>1</option>
@@ -79,13 +119,47 @@ value="<?=date('m/d/Y H:i', strtotime($date." ".$tm));?>" placeholder='Select St
 </div>
 <?php } ?>
 <div class='col-md-12 form-group internal' id='players_section1'></div>
-<div class='col-md-6 form-group internal'>
+<div class='col-md-12 form-group internal'>
 Booking Price: <span id='book_price1'></span>
 <input type='hidden' name='book_price_val' id='book_price_val1' value='' />
 </div>
+<?php
+if($is_club_coach or $is_club_admin){
+?>
+
+<div class='col-md-12 form-group internal'><hr>
+<label style="margin-bottom: 20px; font-weight:400 !important;">Do you want to repeat this booking for </label><br />
+<select class='form-control' style="width:30%; display:inline;" name='repeat_booking_week' id='repeat_booking_week'>
+<option value='0'>Weeks</option>
+<option value='1'>1 week</option>
+<option value='2'>2 weeks</option>
+<option value='3'>3 weeks</option>
+<option value='4'>4 weeks</option>
+<option value='5'>5 weeks</option>
+<option value='6'>6 weeks</option>
+<option value='7'>7 weeks</option>
+<option value='8'>8 weeks</option>
+</select>
+&nbsp;<label style="vertical-align:middle !important; font-weight:400 !important; margin-bottom:13px !important;"> ( OR ) </label>&nbsp;
+<select class='form-control' style="width:30%; display:inline;" name='repeat_booking_days' id='repeat_booking_days'>
+<option value='0'>Days</option>
+<option value='1'>1 Day</option>
+<option value='2'>2 Days</option>
+<option value='3'>3 Days</option>
+<option value='4'>4 Days</option>
+<option value='5'>5 Days</option>
+<option value='6'>6 Days</option>
+<option value='7'>7 Days</option>
+</select>
+<br>
+<span id='next_days'></span>
+</div>
+<?php
+}
+?>
 <div class='col-md-6 form-group internal'>
 <!-- <input type="button" id="reserve_check" name="reserve_check" value="Check Availability" class="league-form-submit1" style="margin:20px 0px"/> -->
-<input type="submit" id="reserve_submit1" name="reserve_submit" value="Book" class="book-submit" style="margin:20px 0px;"/>
+<input type="submit" id="reserve_submit1" name="reserve_submit" value="Book" class="book-submit" style="margin:20px 0px;"/><span id='book_error'></span>
 <!-- &nbsp;&nbsp;&nbsp;
 <input type="button" id="reserve_cancel1" name="reserve_cancel" value="Cancel" class="league-form-submit1" style="margin:20px 0px"/> -->
 </div>
@@ -110,17 +184,18 @@ Booking Price: <span id='book_price1'></span>
 		var loc_id	  = "<?php echo $loc_id; ?>";
 		var court_id  = $('#court1').val();
 		var res_date  = $('#res_date1').val();
+		var res_time  = $('#res_time1').val();
 		var hrs		  = $('#book_hours1').val();
 		//$.get_court_durations(loc_id, court_id);
 	//alert(court_id);
 
-		if(loc_id && court_id && res_date && hrs){
+		if(loc_id && court_id && res_date && res_time && hrs){
 	//alert('test');
 			$.ajax({
 				type: 'POST',
 				url:baseurl+short_code+'/courts/check_court_availability/',
 				//data: $('#frm_reserve').serialize(),
-				data: {loc_id:loc_id, court:court_id, res_date:res_date, book_hours:hrs},
+				data: {loc_id:loc_id, court:court_id, res_date:res_date, res_time:res_time, book_hours:hrs},
 				success: function(res) {
 					//alert(res);
 					var x = res.split('_');
@@ -165,16 +240,21 @@ Booking Price: <span id='book_price1'></span>
 	});
 
 	$(document).on('click', '#reserve_submit1', function(){
-
+		//$(this).val('Please wait...');
 		if($('#book_price_val1').val() == ''){
 			alert('Selected booking slot is N/A');
 			return false;
+		}
+		else if($('#repeat_booking_days').val() != '0'){
+			$(this).hide();
+			$('#book_error').html('Please wait...');
+
 		}
 	});
 
 	$('#block_all_day1').click(function(){
 		var ba = $(this).prop("checked");
-		alert(ba);
+		//alert(ba);
 		if(ba){
 			$("#book_hours1").removeAttr('required');
 			$("#match_format1").removeAttr('required');
@@ -189,6 +269,8 @@ Booking Price: <span id='book_price1'></span>
 		}
 	});
 
+$("input[type='date']").keydown(function (event) { event.preventDefault(); });
+
 </script>
 <script src="<?php echo base_url(); ?>js/jquery.datetimepicker.full.js"></script>
 <script>
@@ -202,3 +284,6 @@ $(document).ready(function () {
 
 });
 </script>
+<?php
+}
+?>

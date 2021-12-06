@@ -211,6 +211,7 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 	
 	public function inset_reg_tourn($data){
 		$res = $this->db->insert('RegisterTournament', $data);
+		//echo $this->db->last_query(); exit;
 		return $this->db->insert_id();
 	}
 
@@ -225,7 +226,7 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 	}
 
 	public function upd_reg_a2m($reg_id, $a2m){
-		$query = $this->db->query("UPDATE RegisterTournament SET Current_A2M = {$a2m} WHERE RegisterTournament_ID = {$reg_id}");
+		//$query = $this->db->query("UPDATE RegisterTournament SET Current_A2M = {$a2m} WHERE RegisterTournament_ID = {$reg_id}");
 	}
 
 	public function is_registered($id, $tourn_id, $type) {
@@ -518,4 +519,49 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 				return $init_rating+$cm;
 		}
 
+		public function get_league_occr($tourn_id){
+			$qry = $this->db->query("SELECT * FROM League_OCCR WHERE Tourn_ID = {$tourn_id}");
+			return $qry->result();
+		}
+
+		public function remove_user_game_day($game_day, $user_id, $tourn_id){
+			$qry = $this->db->query("DELETE FROM League_OCCR_Regs WHERE Users_ID = {$user_id} AND OCCR_ID = {$game_day}");
+			return $qry;
+		}
+
+		public function get_league_occr_regs($tourn_id, $user_id){
+			$qry = $this->db->query("SELECT * FROM League_OCCR_Regs where Users_ID = {$user_id} AND Reg_ID in (SELECT RegisterTournament_id from RegisterTournament where Tournament_ID = {$tourn_id})");
+			return $qry->result_array();
+		}
+
+		public function get_tourn_coupons($tourn_id=''){
+			$qry = $this->db->query("SELECT * FROM Coupon_Codes WHERE Ref_ID = $tourn_id");
+			return $qry->result();
+		}
+
+		public function validateCoupon($tourn_id, $coupon){
+			$qry = $this->db->query("SELECT * FROM Coupon_Codes WHERE Ref_ID = $tourn_id AND  Coupon_Code = '{$coupon}'");
+			return $qry->row_array();
+		}
+
+
+		public function ins_game_days($reg_id, $user_id, $game_days){
+			if($game_days){
+				foreach($game_days as $gd){
+						$data9 = array(
+						'Users_ID'				 => $user_id,
+						'Reg_ID'				 => $reg_id,
+						'OCCR_ID'			 => $gd,
+						'Amount'				 => NULL,
+						'OCCR_Reg_Date'	 => date('Y-m-d H:i:s'),
+						'Transaction_id'		 => NULL,
+						'Status'					 => NULL,
+						'Currency_Code'	 => NULL,
+						'Reg_Source'			 => 'APP'
+						);
+
+						$result   = $this->db->insert('League_OCCR_Regs', $data9);
+				}
+			}
+		}
 }

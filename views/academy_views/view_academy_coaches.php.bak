@@ -133,7 +133,7 @@ foreach($coaches_list as $row){ ?><!-- img-djoko -->
 <div class="col-md-2 col-xs-6">
 		 <div class="course-item">
 			<div class="course-img">
-			<a href="<?=$this->config->item('club_form_url').'/player/'.$row->Users_ID;?>" target='_blank'>
+			<a href="<?=$this->config->item('club_form_url').'/coach/'.$row->Users_ID;?>" target='_blank'>
 			<img class="club-rounded-circle1" src="<?php echo base_url(); ?>profile_pictures/<?php if($row->Profilepic!=''){ echo $row->Profilepic; } else { echo "NPA.png"; } ?>" alt="" style="width:165px; height:182px;" />
 			</a>
 			</div>

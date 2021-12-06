@@ -1,8 +1,12 @@
+<?php
+if($is_league)
+	echo "<h5 style='margin-bottom:-32px !important;'>Total Players: <b>".count(array_filter($tourn_reg_names))."</b></h5>";
+?>
 <table class="table tab-score" id="tourn_players">
 <thead>
 <tr class="top-scrore-table" style='background-color:#f68b1c'>
 <?php
-if($this->logged_user_role == 'Admin' or $this->is_super_admin){
+if($this->logged_user_role == 'Admin' or $this->logged_user_role == 'RegPlayer' or $this->is_super_admin){
 ?>
 <th class="score-position" valign="center" align="center">Check In</th>
 <?php }?>
@@ -82,7 +86,24 @@ if($this->logged_user_role == 'Admin' or $this->is_super_admin){
 ?> />
 <span style='display:none;'><?=$name->is_checkin;?></span>
 </td>
-<?php }?>
+<?php
+}
+else if($this->logged_user_role == 'RegPlayer'){
+?>
+<td style="padding-left:10px">
+<span>
+<?php 
+if($name->is_checkin) 
+	echo "Yes"; 
+else
+	echo " - ";
+?>
+</span>
+</td>
+<?php
+}
+?>
+
 <td style="padding-left:10px">
 <?php
 echo "<a href='".$this->config->item('club_form_url')."/player/".$name->Users_ID."' target='_blank'>" . ucfirst($name->Firstname) . " " . ucfirst($name->Lastname) . "</a>";

@@ -1,5 +1,4 @@
 <?php
-
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Import_clubs extends CI_Controller {
@@ -117,8 +116,8 @@ public function csv_users(){
 	}*/
 
 	$today	  = date('mdY');
-	$now	  = date("Y-m-d h:i:s");
-	//$fname	  = "club_users_{$today}.csv";
+	$now	  = date("Y-m-d H:i:s");
+	$fname	  = "ans_users_0924.csv";
 	$filename = "C:\inetpub\wwwroot\a2msportssite\csv_source\\".$fname;
 	if(file_exists($filename)){
 	  $count	 = 0;
@@ -129,45 +128,37 @@ public function csv_users(){
 		   $res = '';
 			$fname = trim($importdata[0]);
 			$lname = trim($importdata[1]);
-			$pwd = trim($importdata[2]);
-			$email = trim($importdata[3]);
+			$pwd = 'Am9Q63t$';
+			$email = trim($importdata[2]);
 
-			$dob = NULL;
+			/*$dob = NULL;
 			if($importdata[5] != NULL){
 			$dob = date('Y-m-d', strtotime(trim($importdata[5])));
 			}
 			$gender = trim($importdata[6]);
 
 			$address1 = trim($importdata[7]);
-			$address2 = trim($importdata[8]);
+			$address2 = trim($importdata[8]);*/
 			
-			$country = trim($importdata[9]);
-			$state = trim($importdata[10]);
-			$city = trim($importdata[11]);
-			$zipcode = trim($importdata[12]);
+			//$country = trim($importdata[3]);
+			//$state = trim($importdata[10]);
+			//$city = trim($importdata[11]);
+			//$zipcode = trim($importdata[12]);
 
-			$phone = trim($importdata[13]);
-			$mobile = trim($importdata[14]);
+			//$phone = trim($importdata[13]);
+			//$mobile = trim($importdata[14]);
 
-			$lat   = trim($importdata[37]);
-			$long = trim($importdata[38]);
+			//$lat   = trim($importdata[37]);
+			//$long = trim($importdata[38]);
 
-			$age_grp   = trim($importdata[39]);
-			$is_prf_upd = trim($importdata[40]);
-			$notif_set  = trim($importdata[41]);
+			//$age_grp   = trim($importdata[39]);
+			//$is_prf_upd = trim($importdata[40]);
+			//$notif_set  = trim($importdata[41]);
+			$notif_set  = '["1","2"]';
 
-			$is_club_mem  = trim($importdata[46]);
-			$is_coach		  = trim($importdata[47]);
+			$is_club_mem  = 1;
 
-			$mem_start	  = NULL;
-			if($importdata[57] != NULL and $importdata[57] != ""){
-			$mem_start	  = date('Y-m-d', strtotime(trim($importdata[57])));
-			}
 
-			$mem_end	  = NULL;
-			if($importdata[58] != NULL and $importdata[58] != ""){
-			$mem_end		  = date('Y-m-d', strtotime(trim($importdata[58])));
-			}
 
 			if($email != "" and $email != 'Email' and $email != 'E-mail') {
 
@@ -189,41 +180,41 @@ echo $email." ".$is_email_exist."<br>";
 				$data = array(
 						'Firstname' => $fname,
 						'Lastname' => $lname,
-						'Password' => $pwd,
+						'Password' => md5($pwd),
 						'EmailID' => $email,
-						'DOB' => $dob,
-						'Gender' => $gender,
-						'UserAddressline1' => $address1,
-						'UserAddressline2' => $address2,
-						'Country' => $country,
-						'State' => $state,
-						'City' => $city,
-						'Zipcode' => $zipcode,
-						'HomePhone' => $phone,
-						'Mobilephone' => $mobile,
+						//'DOB' => $dob,
+						//'Gender' => $gender,
+						//'UserAddressline1' => $address1,
+						//'UserAddressline2' => $address2,
+						//'Country' => $country,
+						//'State' => $state,
+						//'City' => $city,
+						//'Zipcode' => $zipcode,
+						//'HomePhone' => $phone,
+						//'Mobilephone' => $mobile,
 						'Issociallogin' => 0,
 						'RegistrationDtTm' => $now,
 						'ActivationCode' => $act_code,
 						'IsUserActivation' => 1,
 						'ActivatedDtTm' => $now,
-						'Latitude' => $lat,
-						'Longitude' => $long,
+						//'Latitude' => $lat,
+						//'Longitude' => $long,
 						//'UserAgegroup' => $ag_group,
-						'UserAgegroup' =>$age_grp,
-						'IsProfileUpdated' =>$is_prf_upd,
+						//'UserAgegroup' =>$age_grp,
+						//'IsProfileUpdated' =>$is_prf_upd,
 						'NotifySettings' =>$notif_set,
 						//'Username' => $user_name,
 						'Req_business_page' => 0,
 						'Is_org_admin' => 0,
-						'Is_ClubMember' => $is_club_mem,
-						'Is_coach' => $is_coach
+						'Is_ClubMember' => $is_club_mem
+						//'Is_coach' => $is_coach
 						);
 
-/*echo "<pre>";
-print_r($data);*/
+//echo "<pre>";
+//print_r($data);
 
-						//$res = $this->model_csv_import->insert_user($data);
-						//echo "<br>User = ".$fname." ".$lname." ".$email."(".$res.")";
+						$res = $this->model_csv_import->insert_user($data);
+						echo "<br>User = ".$fname." ".$lname." ".$email."(".$res.")";
 					}
 				}
 				/*else if($alt_email != '' and $alt_email != 'Alternate Email Address'){
@@ -283,21 +274,21 @@ print_r($data);*/
 			
 			if($res){
 				$data1 = array(	
-					'Club_id'		=> 1093,
+					'Club_id'		=> 1187,
 					'Users_id'		=> $res,
 					//'Membership_ID' => $parent_id
 					'Member_Status' => 1,
-					'Related_Sport' => 2,
-					'StartDate' => $mem_start,
-					'EndDate'   => $mem_end
+					'Related_Sport' => 6
+					//'StartDate' => $mem_start,
+					//'EndDate'   => $mem_end
 					);
 //print_r($data1);
 
 				$res3 = $this->model_csv_import->insert_club_member($data1);
 
 				$data2 = array(	
-					'Sport_id'  => 2,
-					'Level'		=> 4,
+					'Sport_id'  => 6,
+					'Level'		=> 17,
 					'users_id'  => $res
 					);
 //print_r($data2);
@@ -306,10 +297,10 @@ print_r($data);*/
 
 				$data3 = array(	
 					'Users_ID'			=> $res,
-					'SportsType_ID'		=> 2,
+					'SportsType_ID'	=> 6,
 					'A2MScore'			=> 100,
-					'A2MScore_Doubles'  => 100,
-					'A2MScore_Mixed'	=> 100
+					'A2MScore_Doubles'	=> 100,
+					'A2MScore_Mixed'		=> 100
 					);
 //print_r($data3);
 
@@ -768,6 +759,59 @@ $count = 0;
 				//$res3 = $this->model_csv_import->insert_club_member($data1);
 
 				//if($res3) 
+					$count++;
+		}
+
+		
+
+	}
+echo $count."<br>";
+
+}
+
+
+public function map_club_members(){
+
+$exis_users = array(12188,
+12304,
+12306,
+12316,
+12337,
+12344,
+12354,
+12355,
+12356,
+12422,
+12426,
+12443,
+12450,
+12456,
+12476);
+$count = 0;
+	foreach($exis_users as $uemail){
+		//$is_email_exist = $this->model_csv_import->check_user(trim($uemail));
+		//$get_user = $this->model_csv_import->get_user(trim($uemail));
+			
+			//$user_id = $get_user['Users_ID'];
+			$user_id = $uemail;
+
+		$check_gpa_membership = $this->model_csv_import->is_club_member($user_id, 1182);
+
+		if($user_id and $check_gpa_membership == 0){
+
+				$data1 = array(	
+					'Club_id'		=> 1182,
+					'Users_id'		=> $user_id,
+					//'Membership_ID' => trim($importdata[6]),
+					'Member_Status' => 1,
+					'Related_Sport' => 6,
+					//'StartDate' => $mem_start,
+					//'EndDate'   => "2021-12-31"
+					);
+
+				//$res3 = $this->model_csv_import->insert_club_member($data1);
+
+				if($res3) 
 					$count++;
 		}
 

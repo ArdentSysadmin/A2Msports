@@ -43,6 +43,11 @@
 
 		}
 
+		public function get_league_occr($tourn_id){
+			$qry = $this->db->query("SELECT * FROM League_OCCR WHERE Tourn_ID = {$tourn_id}");
+			return $qry->result();
+		}
+
 	/*	public function get_reg_match_ids()
 		{
 			$users_id = $this->session->userdata('users_id');
@@ -1714,11 +1719,11 @@ echo "Winner AddScore -". $add_score_points."<br>";
 			$levels		= array_combine($f, $lv);
 			$age_grp	= array_combine($f, $ag);
 
-			$tourn_id	 = $this->input->post('id');
-			$age_group= json_encode($age_grp);
+			$tourn_id		 = $this->input->post('id');
+			$age_group	 = json_encode($age_grp);
 			$level			 = json_encode($levels);
-            $mtype       = json_encode($formats);
-			$reg_date	 = date("Y-m-d h:i:s");
+            $mtype			 = json_encode($formats);
+			$reg_date		 = date("Y-m-d H:i");
 			$sel_players = $this->input->post('sel_player');
 			$payment_method = $this->input->post('payment_method');
 			$status		 = "Free Entry";
@@ -1731,7 +1736,7 @@ echo "Winner AddScore -". $add_score_points."<br>";
 			$paid_amnt  = number_format($paid_amnt, 2);
 			$post_events = $this->input->post('events');
 			$reg_events = json_encode($post_events);
-      
+			$tour_det		= $this->getonerow($tourn_id);
 			foreach($post_events as $ev){
 				$partners[$ev] = ""; 
 			}
@@ -1746,21 +1751,21 @@ echo "Winner AddScore -". $add_score_points."<br>";
 				if($check_already_reg->num_rows == 0)
 				{
 					$data = array('Tournament_ID'	=> $tourn_id,
-								  'Users_ID'		=> $sp,
-								  'Reg_date'		=> $reg_date,
-								  'Match_Type'		=> $mtype,
+								  'Users_ID'				=> $sp,
+								  'Reg_date'				=> $reg_date,
+								  'Match_Type'			=> $mtype,
 								  'Reg_Sport_Level' => $level,
 								  'Reg_Age_Group'	=> $age_group,
-								  'Fee'				=> $paid_amnt,
-								  'Transaction_id'	=> $payment_method,
-								  'Status'			=> $status,
-								  'Reg_Events'      => $reg_events,
-								  'partners'		=> $json_partners);
+								  'Fee'						=> $paid_amnt,
+								  'Transaction_id'		=> $payment_method,
+								  'Status'					=> $status,
+								  'Reg_Events'			=> $reg_events,
+								  'partners'				=> $json_partners);
 
 					$bulk_reg = $this->db->insert('RegisterTournament' ,$data);
-
+					$reg_id = $this->db->insert_id();
 					// A2MScore add if not exists for sport
-					$tour_det		= $this->getonerow($tourn_id);
+					//$tour_det		= $this->getonerow($tourn_id);
 					$tour_sport	= $tour_det->SportsType;
 
 					$a2m_data = array('SportsType_ID'=>$tour_sport , 'Users_ID'=>$sp);
@@ -1771,25 +1776,57 @@ echo "Winner AddScore -". $add_score_points."<br>";
 
 					if($get_a2mscore1->num_rows == 0){
 
+						$def_score = 100;
+					if($sp == '2')
+						$def_score = 800;
+					if($sp == '7')
+						$def_score = 3.0;
+
 					$a2m_ins_data = array(
-							'Users_ID'			 => $sp,
-							'SportsType_ID' => $tour_sport,
-							'A2MScore'				  => 100,
-							'A2MScore_Doubles' => 100,
-							'A2MScore_Mixed'	  => 100
+							'Users_ID'					=> $sp,
+							'SportsType_ID'			=> $tour_sport,
+							'A2MScore'			    => $def_score,
+							'A2MScore_Doubles'  => $def_score,
+							'A2MScore_Mixed'	    => $def_score
 							);
 
 					$result = $this->db->insert('A2MScore', $a2m_ins_data);
 					//echo $this->db->last_query(); exit;
 					}
-			$check_user_si = $this->db->query("SELECT * FROM Sports_Interests WHERE users_id = {$user_id} AND Sport_id = {$tour_sport}");
+			$check_user_si = $this->db->query("SELECT * FROM Sports_Interests WHERE users_id = {$sp} AND Sport_id = {$tour_sport}");
 			$prev_si = $check_user_si->row_array();
 
 			if(count($prev_si) == 0){
-				$ins_user_si = $this->db->query("INSERT INTO Sports_Interests(users_id,Sport_id) VALUES ({$user_id},{$tour_sport})");
+				$ins_user_si = $this->db->query("INSERT INTO Sports_Interests(users_id,Sport_id) VALUES ({$sp},{$tour_sport})");
 			}
 				}
+				else{
+					$info = $check_already_reg->row_array();
+					$reg_id = $info['RegisterTournament_id'];
+				}
 
+
+					if($tour_det->Is_League == 1){
+						$post_occr = $this->input->post('occr_ids');
+								if($post_occr){
+									foreach($post_occr as $oc){
+										$temp = explode(':', $oc);
+										$occr_id = $temp[0];
+
+										$data9 = array(
+										'Users_ID'		=> $sp,
+										'Reg_ID'		=> $reg_id,
+										'OCCR_ID'	=> $occr_id,
+										'Amount'			=> number_format($paid_amnt, 2),
+										'OCCR_Reg_Date'		=> $reg_date,
+										'Transaction_id' => $payment_method,
+										'Status'		=> $status
+										);
+
+										$result   = $this->db->insert('League_OCCR_Regs', $data9);
+									}
+								}
+					}
 			}
 			
 			return $bulk_reg;

@@ -17,23 +17,22 @@ require(APPPATH.'/libraries/REST_Controller.php');
  * @license         MIT
  * @link            https://github.com/chriskacerguis/codeigniter-restserver
  */
-//class Scores extends REST_Controller {
+
 class Scores extends REST_Controller {
 
-    public function __construct()
-    {
+    public function __construct(){
         // Construct the parent class
         parent::__construct();
 
 		//$this->load->helper(array('form', 'url'));
-		$this->load->model('score/model_score','mscore');
+		$this->load->model('score/model_score', 'mscore');
 
     }
 
 	public function add_post(){
-		$match_id   = $this->input->post('match_id');
-		$win_type   = $this->input->post('win_type');
-		$match_date = $this->input->post('match_date');
+		$match_id		= $this->input->post('match_id');
+		$win_type			= $this->input->post('win_type');
+		$match_date	= $this->input->post('match_date');
 
 		$match_info = $this->mscore->get_match_info($match_id);
 
@@ -76,9 +75,9 @@ class Scores extends REST_Controller {
 			if($post_data['player2_partner'])
 			$player2_partner	 = $data2['Player2_Partner'] = trim($post_data['player2_partner'], '"');
 
-			$match_title		= $data2['Play_Title']			= trim($post_data['match_title'], '"');
-			$rdate				= $data2['Reg_Date']			= trim($post_data['date'], '"');
-			$pdate				= $data2['Play_Date']			= trim($post_data['date'], '"');
+			$match_title			= $data2['Play_Title']			= trim($post_data['match_title'], '"');
+			$rdate					= $data2['Reg_Date']			= trim($post_data['date'], '"');
+			$pdate					= $data2['Play_Date']			= trim($post_data['date'], '"');
 			$player1_score	= $data2['Player1_Score']    = $post_data['player1_score'];
 			$player2_score	= $data2['Opponent_Score'] = $post_data['player2_score'];
 
@@ -100,6 +99,7 @@ class Scores extends REST_Controller {
 		else{
 			$this->response('Invalid Details', 404);
 		}
+		
 	}
 
 }

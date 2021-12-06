@@ -278,8 +278,8 @@
 		}
 
 		 public function autocomplete($param = ''){
-			$q = $_POST['name_startsWith'];
-			$sp_type = $_POST['sp_type'];
+			$q				= $_POST['name_startsWith'];
+			$sp_type  = $_POST['sp_type'];
 
 			$data['key'] = trim($q);
 
@@ -313,7 +313,7 @@
 					foreach($result as $row){
 						$get_a2m = $this->model_members->get_a2msocre($sp_type, $row->Users_ID);
 						$name	 = $row->Firstname.' '.$row->Lastname.'|'.$row->Users_ID.'|'.$row->City.'|'.$row->State
-						.'|'.$get_a2m['A2MScore'].'|'.$row->Gender;
+						.'|'.$get_a2m['A2MScore'].'|'.$row->Gender.'|'.$row->Mobilephone;
 						array_push($data_new, $name);	
 					}
 				}
@@ -580,8 +580,14 @@
 				$this->email->message($body);   
 				$res = $this->email->send();
 				
-				if($res){ echo "success"; exit; }
-				else{ echo $this->email->print_debugger(); exit; }
+				/*if($res){ echo "success"; exit; }
+				else{ echo $this->email->print_debugger(); exit; }*/
+				
+				if(!$res){ 
+					echo $this->email->print_debugger(); 
+					echo "<h3>Sorry, message not sent. Something went wrong! Please contact admin@a2msports.com. Thank you.</h3>";
+					exit; 
+				}
 				
 				$get_user_token = $this->model_members->get_userToken($id);
 
@@ -826,4 +832,8 @@ echo $opt;
 		}
 	}
 	
+	public function basketball_matches($user_id){
+		$bskball_mtches = $this->model_members->basketball_matches($user_id);
+return $bskball_mtches;
+	}
 }

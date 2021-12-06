@@ -22,11 +22,13 @@
 			$qry = 0;
 				if (!$result->num_rows > 0)
 				{
-					for($i=1;$i<=6;$i++)
+					for($i=1;$i<=9;$i++)
 					{
 						$def_score = 100;
 						if($i == 2)
 							$def_score = 800;
+						if($i == 7)
+							$def_score = 3.0;
 
 						$data = array('Users_ID'=>$this->session->userdata('users_id'), 'SportsType_ID'=>$i, 'A2MScore'=>$def_score, 'A2MScore_Doubles'=>$def_score, 'A2MScore_Mixed'=>$def_score);
 						$qry = $this->db->insert('A2MScore', $data);
@@ -313,6 +315,8 @@
 						$def_score = 100;
 						if($type == '2')
 							$def_score = 800;
+						if($type == '7')
+							$def_score = 3.0;
 				$data = array('SportsType_ID'	 => $type,
 							  'Users_ID'		 => $insert_id,
 							  'A2MScore'		 => $def_score,
@@ -358,14 +362,10 @@
 			return $query->row_array();
 		}
 
-		public function update_password()
-		{
-		
+		public function update_password(){
 			$password = md5($this->input->post('Password'));
-
 			$user_id =  $this->input->post('Users_ID');
 			
-		
 			$data = array ('Password'=>$password);
 
 			$this->db->where('Users_ID', $user_id);
@@ -374,19 +374,27 @@
 			return $result;
 		}
 
-		public function upd_child_act_code($user_id,$auth_code)
-		{
-		
-			$data = array('ActivationCode'=>$auth_code);
+		public function aca_update_password(){
+			$password = md5($this->input->post('upd_password'));
+			$user_id =  $this->input->post('Users_ID');
+			
+			$data = array ('Password'=>$password);
+
 			$this->db->where('Users_ID', $user_id);
 			$result = $this->db->update('Users', $data); 
 		
 			return $result;
+		}
+
+		public function upd_child_act_code($user_id, $auth_code){
+			$data = array('ActivationCode' => $auth_code);
+			$this->db->where('Users_ID', $user_id);
+			$result = $this->db->update('Users', $data); 
 		
+			return $result;
 		}
 
 		public function validate_token($token){
-
 			$data = array('Ext_token'=>$token);
 			$query = $this->db->get_where('Users',$data);
 
@@ -396,6 +404,11 @@
 		public function validate_user_phone($phone, $ph) {
 			$qry_check = $this->db->query("SELECT * FROM Users WHERE Mobilephone = '".$ph."' OR Mobilephone = '".$phone."'");
 			return $qry_check->result_array();
+		}
+
+		public function check_user_phone($phone) {
+			$qry_check = $this->db->query("SELECT * FROM Users WHERE Mobilephone like '%".$phone."%'");
+			return $qry_check->row_array();
 		}
 
 	}

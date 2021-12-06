@@ -88,6 +88,13 @@
 			return $query->result();
 		}
 
+		public function get_top_members_list($org_id)
+		{
+				$query = $this->db->query("SELECT TOP(15) u.*, um.* FROM users u INNER JOIN User_memberships um ON u.Users_ID = um.Users_id AND um.Club_id = {$org_id} AND um.Member_Status = 1 ORDER BY u.Users_ID DESC");
+
+			return $query->result();
+		}
+
 		public function get_members_list($org_id)
 		{
 			//$academySport = $this->get_academy_details($org_id);
@@ -344,6 +351,9 @@
 			if($this->input->get('stat') > -1){
 				$stat_qry = "AND Member_Status = ".$this->input->get('stat');
 			}
+			else if($this->input->post('stat_search') > -1){
+				$stat_qry = "AND Member_Status = ".$this->input->post('stat_search');
+			}
 
 
 			if(!empty($org_id)){
@@ -367,6 +377,7 @@
 				else{
 					$query = $this->db->query("SELECT *, 1 as Member_Status FROM users u join A2MScore a on u.users_id = a.Users_ID AND SportsType_ID = {$academySport[0]}  ORDER BY a.A2MScore desc");
 				}
+			//echo $this->db->last_query(); exit;
 
 			return $query->result();
 		}
@@ -602,7 +613,20 @@
 		}
 
 		public function get_user_create_tournments($creator){
+			if($this->is_club_admin)
 			$qry_check = $this->db->query("SELECT * FROM tournament WHERE Usersid = $creator ORDER BY StartDate DESC");
+			else
+			$qry_check = $this->db->query("SELECT * FROM tournament WHERE Usersid = $creator AND Is_Publish = 1 ORDER BY StartDate DESC");
+
+			/*$qry_check = $this->db->query("SELECT TOP 4 * FROM tournament WHERE Usersid = $creator AND EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/
+			/*$qry_check = $this->db->query("SELECT * FROM tournament WHERE EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/
+			
+			return $qry_check->result();
+		}
+
+		public function get_user_create_events($creator){
+			$qry_check = $this->db->query("SELECT * FROM Events WHERE Ev_Created_by = $creator 
+			ORDER BY Ev_Start_Date DESC");
 
 			/*$qry_check = $this->db->query("SELECT TOP 4 * FROM tournament WHERE Usersid = $creator AND EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/
 			/*$qry_check = $this->db->query("SELECT * FROM tournament WHERE EndDate > cast(GETDATE() as DATE) ORDER BY StartDate DESC");*/

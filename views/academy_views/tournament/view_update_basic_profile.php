@@ -1,4 +1,7 @@
-<section id="single_player" class="container secondary-page">
+<section id="single_player" class="secondary-page">
+<div class='container'>
+<div class='row'>
+
 <div class="top-score-title right-score col-md-9">
 
 <!-- start main body --> 
@@ -12,7 +15,8 @@
 <?php 
 	if(!$udob or !$uaddr or !$uemail){
 ?>
-<form class="form-horizontal" id='myform_dob' method='post' role="form"  action="<?php echo base_url(); ?>league/uprofile">
+<form class="form-horizontal" id='myform_dob' method='post' role="form" 
+action="<?php echo $this->club_form_url; ?>league/uprofile">
 <div class='col-md-12'>
 
 	<div class='form-group'><label class='col-md-12 form-group internal' for='id_accomodation' style='font-size: 12px;'><b style='color:red'>Note: </b>
@@ -86,14 +90,9 @@
 	<select name="StateName" id="state" class='form-control' onChange="stateChange();">
 	<option value="">Select</option>
 	<?php
-	$states = array('Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia',
-	'Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi',
-	'Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma', 'Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia',
-	'Wisconsin','Wyoming'); 
+	$states = array('Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','District of Columbia','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma', 'Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'); 
 
-
-	foreach($states as $state)
-	{
+	foreach($states as $state){
 	($state==$user_info->State) ? $sel_state = "selected='selected'" : $sel_state = "";
 
 	echo "<option value='$state' $sel_state>$state</option>";

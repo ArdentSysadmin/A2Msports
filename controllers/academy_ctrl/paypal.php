@@ -165,7 +165,7 @@ echo "Transaction complete!";
 			}
 	  }
 
-     function success(){
+     public function success(){
 
 		$this->session->unset_userdata('tour_reg_fee');
 		$this->session->unset_userdata('reg_tour_id');
@@ -186,10 +186,10 @@ echo "Transaction complete!";
 
 			$data['payment_amt']	= $this->input->get('amt');
 			$data['currency_code']	= $this->input->get('cc');
-			$data['status']			= $this->input->get('st');
+			$data['status']				= $this->input->get('st');
 
-			$data['coup_code']	= $this->input->get('coup_code');
-			$data['coup_disc']	= $this->input->get('coup_disc');
+			$data['coup_code']		= $this->input->get('coup_code');
+			$data['coup_disc']		= $this->input->get('coup_disc');
 
 		 if($this->input->get('ttype') == 'Teams'){
 			$data['team']		= $team_id		= $this->input->get('team');
@@ -222,8 +222,18 @@ echo "Transaction complete!";
 			if($this->input->get('occr')){
 			$data['occr'] = $occr	= $this->input->get('occr');
 			}
+			else if($this->input->get('option_name3')){
+			$data['occr'] = $occr	= $this->input->get('option_name3');
+			}
 
 			$res = $this->model_league->reg_tourn_with_fee($data);
+
+				$occr_arr = json_decode($occr, TRUE);
+				$game_days = '';
+				foreach($occr_arr as $occr_id){
+					$get_game_day = $this->model_league->get_game_day($occr_id);
+					$game_days[] = date('m/d/Y H:i', strtotime($get_game_day));
+				}
 
 						/*$this->session->unset_userdata('json_ag');
 						$this->session->unset_userdata('json_formats');
@@ -237,16 +247,17 @@ echo "Transaction complete!";
 		 }
 
 
-		$dev_email	 = "pradeep@ardent-india.com";
-		$dev_subject = "A2M Paypal Vals - Developer";
+		$dev_email	 = "pradeep.namala@fintinc.com";
+		$dev_subject = "A2M Paypal Vals - Developer - Club Success";
 		$data		 = array(
 						'firstname'			=> "Developer",
 						'player_teamleague'	=> $this->input->get('reg_user'),
 						'player_indv'		=> $this->input->get('player'),
 						'tourn_id'			=> $this->input->get('tourn_id'),
 						'team'				=> $this->input->get('team'),
+						'game_days'		=> $game_days,
 						'paypal_vals'		=> print_r($paypalInfo, true),
-						'paypal_vals2'		=> print_r($_GET, true),
+						'paypal_vals2'	=> print_r($_GET, true),
 						'page'				=> 'A2M Paypal values - Developer');
 
 		$this->email_to_player($dev_email, $dev_subject, $data);
@@ -324,18 +335,20 @@ echo "Transaction complete!";
 							'lastname'	=> $row->Lastname,
 							'tourn_id'	=> $tourn_id,
 							'title'			=> $title,
-							'date'			=> $reg_date,
-							'categories' => $categories,
-							'page'			=> 'Registration-Singles'
+							'game_days'	 => $game_days,
+							'date'			 => $reg_date,
+							'categories'   => $categories,
+							'page'			 => 'Registration-Singles'
 							);
 
 				$this->email_to_player($row->EmailID, $subject, $data);
+				$this->email_to_player("pradeepkumar.namala@gmail.com", $subject, $data);
 				
                 $userdat			   = $this->get_username($tourn_det->Usersid);
 
                 $tourn_admin_email			= $userdat['EmailID'];
                 $tourn_admin_firstname	= $userdat['Firstname'];
-                $tourn_admin_lastname		= $userdat['Lastname'];
+                $tourn_admin_lastname	= $userdat['Lastname'];
 
                 $reg_date = date('m-d-Y h:i:s');
 				$data	= array(
@@ -343,15 +356,17 @@ echo "Transaction complete!";
 								'lastname'	=> $row->Lastname,
 								'admin_firstname'	=> $tourn_admin_firstname,
 								'admin_lastname'	=> $tourn_admin_lastname,
-								'date'      => $reg_date,
+								'date'		=> $reg_date,
 								'tourn_id'	=> $tourn_id,
-								'title'		=> $title,
-								'categories' => $categories,
+								'title'			=> $title,
+								'game_days'		 => $game_days,
+								'categories'		 => $categories,
 								'note_to_admin' => $note_to_admin,
 								'page'		=> 'Send mail to tournament admin once user registration'
 							);
 
                 $this->email_to_player($tourn_admin_email, $subject, $data);
+                $this->email_to_player("pradeepkumar.namala@gmail.com", $subject, $data);
 				
 				/*if(preg_match('[Doubles|Mixed]', $match_types)) { 
 					
@@ -531,14 +546,21 @@ echo "Transaction complete!";
         $paypalInfo    = $this->input->post();
 
         $data['users_id']		= trim($paypalInfo['option_name1']);
-        $data['tourn_id']		= trim($paypalInfo["item_number"]);
+
+        $data['reg_events']	= trim($paypalInfo['option_name2']);
+
+		if($paypalInfo['option_name3'])
+        $data['reg_occrs']		= trim($paypalInfo['option_name3']);
+
+
+        $data['tourn_id']			= trim($paypalInfo["item_number"]);
         $data['txn_id']			= $paypalInfo["txn_id"];
         $data['payment_gross']	= $paypalInfo["payment_gross"];
         //$data['currency_code']	= $paypalInfo["mc_currency"];
-        $data['payer_email']	= $paypalInfo["payer_email"];
+        $data['payer_email']		= $paypalInfo["payer_email"];
         $data['payment_status'] = $paypalInfo["payment_status"];
         $data['payment_date']	= $paypalInfo["payment_date"];
-        $data['currency']		= $paypalInfo["mc_currency"];
+        $data['currency']			= $paypalInfo["mc_currency"];
         $data['pp_charges']		= $paypalInfo["mc_fee"];
 
 		//$paypalInfo["abc"] = $x;
@@ -555,7 +577,7 @@ echo "Transaction complete!";
 		}
 
 	 	$dev_email	 = "pradeepkumar.namala@gmail.com";
-		$dev_subject = "A2M Paypal Vals - Production";
+		$dev_subject = "A2M Paypal Vals - Production(club ipn)";
 		$data		 = array(
 						'firstname'	   => "Developer",
 						'paypal_vals'  => print_r($paypalInfo, true),
@@ -574,6 +596,7 @@ echo "Transaction complete!";
         $paypalInfo    = $this->input->post();
 
         $data['users_id']		= trim($paypalInfo['option_name1']);
+        $data['reg_events']		= trim($paypalInfo['option_name2']);
         $data['tourn_id']		= trim($paypalInfo["item_number"]);
         $data['txn_id']			= $paypalInfo["txn_id"];
         $data['payment_gross']	= $paypalInfo["payment_gross"];
@@ -597,7 +620,7 @@ echo "Transaction complete!";
 		}
 
 	 	$dev_email	 = "pradeepkumar.namala@gmail.com";
-		$dev_subject = "A2M Paypal Vals - Production More";
+		$dev_subject = "A2M Paypal Vals - Production More (club ipn more)";
 		$data		 = array(
 						'firstname'	   => "Developer",
 						'paypal_vals'  => print_r($paypalInfo, true),
@@ -1080,7 +1103,7 @@ $this->session->set_flashdata('user_temp_id', $paypalInfo['reg_user']);
 			return $revised_array;
 		}*/
 
-		public function regenerate_events($mult_events){
+/*		public function regenerate_events($mult_events){
 			$revised_array = array();
 
 			foreach($mult_events as $key => $val){
@@ -1151,6 +1174,92 @@ $this->session->set_flashdata('user_temp_id', $paypalInfo['reg_user']);
 			
 			return $revised_array;
 		}
+*/
+
+			public function regenerate_events($mult_events){
+			$revised_array = array();
+/*echo "<pre>";
+print_r($mult_events);*/
+
+			foreach($mult_events as $key => $val){
+				if(is_numeric($key)){
+				   $arr = explode('-', $val);
+				   $ag		= $arr[0];
+				   if($arr[1] != 'Mixed'){
+					   if(in_array($arr[1], array('Singles','Doubles'))){
+						   $gen		= '';
+						   $format	= $arr[1];
+						   $level	= $arr[2];
+					   }
+					   else{
+						   $gen		= $arr[1];
+						   $format	= $arr[2];
+						   $level	= $arr[3];
+					   }
+				   }
+				   else{
+					   $gen		= $arr[1];
+					   $format	= '';
+					   $level	= $arr[2];
+				   }
+					
+				   $gen = $this->config->item($arr[0].'-'.$gen, 'age_gender_values');
+
+				   if($arr[1] != 'Open')
+				   $get_level_label = $this->get_level_name('', $level);
+
+					$lbl = '';
+					//if($get_level_label['SportsLevel'] != 'Open') // uncomment this if wants to hide the Open label in level section
+
+						$lbl = ' '.$get_level_label['SportsLevel'];
+				   $revised_array[$val] = $gen.' '.$format.$lbl;
+				  // ksort($revised_array);
+				}
+				else{
+				   $arr = explode('-', $key);
+				   $ag		= $arr[0];
+				   if($arr[1] != 'Mixed'){
+					   if(in_array($arr[1], array('Singles','Doubles'))){
+						   $gen		= '';
+						   $format	= $arr[1];
+						   $level	= $arr[2];
+					   }
+					   else{
+						   $gen		= $arr[1];
+						   $format	= $arr[2];
+						   $level	= $arr[3];
+					   }
+				   }
+				   else{
+					   $gen		= $arr[1];
+					   $format	= '';
+					   $level	= $arr[2];
+				   }
+				   
+				   $gen = $this->config->item($arr[0].'-'.$gen, 'age_gender_values');
+
+				   if( $arr[1] != 'Open')
+				   $get_level_label = $this->get_level_name('', $level);
+
+						$lbl = '';
+
+					//if($get_level_label['SportsLevel'] != 'Open')
+						$lbl = ' '.$get_level_label['SportsLevel'];
+
+
+					if(is_numeric($val)){
+					$revised_array[$gen.' '.$format.$lbl] = number_format($val, 2);
+					}
+					else{
+					$revised_array[$gen.' '.$format.$lbl] = $val."+".$arr[1];
+					}
+				   //ksort($revised_array);
+				}
+			}
+			
+			//print_r($revised_array);
+			return $revised_array;
+		}
 
 	    public function get_reg_tourn_participants_new($tourn_id){
 			$res = $this->model_league->get_reg_tourn_participants($tourn_id);
@@ -1195,7 +1304,7 @@ $this->session->set_flashdata('user_temp_id', $paypalInfo['reg_user']);
 			return $res;
 		}
 
-		public function get_level_name($sport_id,$level)
+		public function get_level_name($sport_id, $level)
 		 {
 			return $this->model_league->get_level_name($sport_id, (int)$level);
 		 }

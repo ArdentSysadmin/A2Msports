@@ -44,36 +44,52 @@ foreach($result as $res){
 <table border="0" cellspacing="0" cellpadding="0" width='100%'>
 <tr>
 <td align="left"><img src='<?php echo base_url(); ?>images/logo.png' alt='Print' title='Print' width='70px'/></td>
-<td align="left" class="underline"> <h4><?php echo ucfirst($res->tournament_title); ?></h4></td>
+<td align="center"> <h4><?php echo ucfirst($res->tournament_title); ?></h4></td>
 </tr>
 </table>
 
 <table border="0" cellspacing="0" cellpadding="0" width='100%'>
-<tr><td style="padding-left: 0px;">&nbsp;</td>
-<td style="padding-left: 0px;">Round:&nbsp;<b>
+
+<tr>
+<td style="padding-left: 0px;" colspan='3'>Draw:&nbsp;<b>
+<u><?php echo $res->Draw_Title; if($res->Draw_Type == 'Consolation') echo " - Con";?></u>
+</b></td>
+</tr>
+
+<tr>
+<td style="padding-left: 0px;">&nbsp;<b>
 <u><?php
 if($res->Bracket_Type == 'Round Robin'){
 echo "Round - ".$res->Round_Num;
 }
 else if($res->Bracket_Type == 'Single Elimination' or $res->Bracket_Type == 'Consolation'){
 	if($res->Round_Num == $res->No_of_rounds){
-		echo "Final";
+		echo "Round:&nbsp;Final";
 	}
 	else if($res->Round_Num == ($res->No_of_rounds - 1)){
-		echo "Semi-Final";
+		echo "Round:&nbsp;Semi-Final";
 	}
 	else if($res->Round_Num == ($res->No_of_rounds - 2)){
-		echo "Quarter-Final";
+		echo "Round:&nbsp;Quarter-Final";
 	}
 	else if($rcount){
 		echo "Round of ".($rcount * 2);
 	}
 }
 ?>
-</u></b></td></tr>
-<tr>
-<td style="padding-left: 0px;">Draw Name:&nbsp;<b><u><?php echo $res->Draw_Title; if($res->Draw_Type == 'Consolation') echo " - Con";?></u></b></td>
+</u></b>
+</td>
+
 <td style="padding-right: 0px;">Match #:&nbsp;<b><u><?=$res->Match_Num;?></u></b></td>
+<td style="padding-right: 0px;">
+<?php
+if($res->Court_Info) {
+?>
+Court #:&nbsp;<b><u><?=$res->Court_Info;?></u></b>
+<?php
+}
+?>
+</td>
 </tr> 
 </table>
 
@@ -113,11 +129,17 @@ echo "   vs   __________";
 </tr>
 
 <tr><td colspan="3" align="right">&nbsp;</td></tr>
-<tr><td style="width:30%"><?=$game_type;?> 1</td><td style="width:30%">____</td><td style="width:30%">____</td></tr>
-<tr><td><?=$game_type;?> 2</td><td>____</td><td>____</td></tr>
-<tr><td><?=$game_type;?> 3</td><td>____</td><td>____</td></tr>
-<tr><td><?=$game_type;?> 4</td><td>____</td><td>____</td></tr>
-<tr><td><?=$game_type;?> 5</td><td>____</td><td>____</td></tr>
+<?php
+$num_sets = 5;
+if($res->Tot_Sets)
+$num_sets = $res->Tot_Sets;
+
+for($a = 1; $a <= $num_sets; $a++){
+?>
+<tr><td style="width:30%"><?=$game_type;?> <?=$a;?></td><td style="width:30%">____</td><td style="width:30%">____</td></tr>
+<?php
+}
+?>
 
 <tr><td colspan="3" align="right">&nbsp;</td></tr>
 <tr><td colspan="3" align="right"><h5>at end of match - circle winner's name</h5></td></tr>
@@ -135,7 +157,7 @@ echo "</div><div class='col-xs-12'>";
 $i=0;
 }
 
-if(i%2 == 0 and $j%4 == 0){
+if($i%2 == 0 and $j%4 == 0){
 echo "</div><div class='pagebreak'>&nbsp;</div><br /><div class='col-xs-12'>";
 $j=0;
 }

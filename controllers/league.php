@@ -1,11 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+//error_reporting(-1);
 	session_start(); 
 	//League controller ..
 	class League extends CI_Controller {
 
 		public $logged_user;
 		public $is_super_admin;
+		public $is_tourn_director;
 		public $is_team_league;
 		public $logged_user_role;
 		public $sports_dets;
@@ -45,9 +46,10 @@
 			$this->load->model('model_general', 'general');
 			$this->load->library('paypal_lib');
 
-			$this->is_super_admin = 0;
-			$this->is_league_page = 1;
-			$this->club_form_url = base_url();
+			$this->is_super_admin		= 0;
+			$this->is_tourn_director	= 0;
+			$this->is_league_page		= 1;
+			$this->club_form_url			= base_url();
 
 			if($this->session->userdata('users_id')){
 				$this->logged_user = $this->session->userdata('users_id');
@@ -259,7 +261,8 @@
 
 	public function create_trnmt()
 	{
-if($this->logged_user == 24000000 and $this->input->post('is_league') == 1){
+/*
+if($this->logged_user == 240 and $this->input->post('is_league') == 1){
 		echo "<pre>League<br>"; print_r($_POST); 
 
 				$game = $this->input->post('game_dt');
@@ -278,10 +281,10 @@ if($this->logged_user == 24000000 and $this->input->post('is_league') == 1){
 				}		
 		exit;
 }
-
-else if($this->logged_user == 240000000){
+else if($this->logged_user == 240){
 		echo "<pre>Testing ELSE"; print_r($_POST); exit;
 }
+*/
 
 
 			if(!$this->logged_user){
@@ -397,12 +400,13 @@ else if($this->logged_user == 240000000){
 					$fileName = 'spnsr_file_name';
 
 					$config = array(
-				    'upload_path'	=> "./tour_pictures/$tourn_id/sponsors/",
-					'allowed_types' => "gif|jpg|png|jpeg",
-					'overwrite'		=> TRUE,
-					'max_size'		=> "10000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
-					'max_height'	=> "8000",
-					'max_width'		=> "10000");
+									'upload_path'	=> "./tour_pictures/$tourn_id/sponsors/",
+									'allowed_types' => "gif|jpg|png|jpeg",
+									'overwrite'			=> TRUE,
+									'max_size'			=> "10000", 
+									// Can be set to particular file size, here it is ~10 MB(2048 Kb)
+									'max_height'		=> "8000",
+									'max_width'		=> "10000");
 
 				   $this->load->library('upload',$config);  
 				   $this->upload->initialize($config);
@@ -419,11 +423,28 @@ else if($this->logged_user == 240000000){
 				}	
 				//$email_status = $this->email_create_tournament($res);
                 $tourn_det = $this->model_league->getonerow($tourn_id);
+
+						$userdat							=	$this->get_username('240');
+		                $tourn_admin_email			=	$userdat['EmailID'];
+		                $tourn_admin_firstname	=	$userdat['Firstname'];
+		                $tourn_admin_lastname	=	$userdat['Lastname'];
+
+						$tourn_admin_data = array(
+														'admin_firstname'	=> $tourn_admin_firstname,
+														'admin_lastname'	=> $tourn_admin_lastname,
+														'tourn_id'				=> $tourn_id,
+														'title'						=> $tourn_det->tournament_title,
+														'page'					=> 'Tournament Creation Admin Notif'
+														);
+					$subject = "Tournament Creation Notification!";
+				$this->email_to_player($tourn_admin_email, $subject, $tourn_admin_data);
+
                 if($tourn_det->Short_Code!=""){
                    redirect("$tourn_det->Short_Code");
-                }else{
+                }
+				else{
                    redirect("league/$tourn_id");
-                }				
+                }	
 	}
 
 		 public function email_create_tournament($res)
@@ -541,7 +562,7 @@ else if($this->logged_user == 240000000){
 			if($tr_det) {
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);
 
-				if($tr_det->Usersid == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
+				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
 				else if($is_reg){
@@ -562,7 +583,7 @@ else if($this->logged_user == 240000000){
 				$data['valid_draws_count']	= $count;
 				$data['show_draw_bid']			= 0;
 
-				if(($this->logged_user) and ($tr_det->Usersid != $this->logged_user)){
+				if(($this->logged_user) and ($tr_det->Usersid != $this->logged_user and $tr_det->Tournament_Director != $this->logged_user )){
 					$brackets = $this->get_bracket_list($tid);
 					if(count(array_filter($brackets)) > 0){
 						foreach($brackets as $bk)
@@ -599,7 +620,7 @@ else if($this->logged_user == 240000000){
 				 $cur_date = date('Y-m-d');
 				 $reg_closed_on = date('Y-m-d', strtotime($tr_det->Registrationsclosedon));
 
-				 if(!empty($user_reg_team) and $team_fee_type == 'Player' and $tr_det->Usersid != $this->logged_user and $reg_closed_on >= $cur_date){
+				 if(!empty($user_reg_team) and $team_fee_type == 'Player' and ($tr_det->Usersid != $this->logged_user and $tr_det->Tournament_Director != $this->logged_user ) and $reg_closed_on >= $cur_date){
 					
 					$team_reg_age_group		= $user_reg_team['Reg_Age_Group'];
 					$logged_user_part_team	= $user_reg_team['Team_id'];
@@ -697,7 +718,7 @@ else if($this->logged_user == 240000000){
 			$details = $data['tour_details'];
 			$user_id = $this->logged_user;
 
-			if($details->Usersid == $user_id){
+			if($details->Usersid == $user_id or $details->Tournament_Director == $user_id){
 
 				$data['results'] = $this->model_news->get_news();
 				$data['intrests'] = $this->model_league->get_intrests();
@@ -713,9 +734,8 @@ else if($this->logged_user == 240000000){
 
 		public function update_trnmt()
 			{
-				/*echo "<pre>";
-				print_r($_POST);
-				exit;*/
+				//echo "<pre>"; print_r($_POST);	exit;
+
 			  // $sdate = date('h:i', strtotime($this->input->post('stime')));echo $sdate;exit();
 	  
 				$data['tourn_id'] = $this->input->post('tourn_id'); 
@@ -989,7 +1009,7 @@ else if($this->logged_user == 240000000){
 		}
 
 		public function get_reg_tourn_partner_names($tourn_id, $event){
-			if($tourn_id == "" and $event == ""){
+			if($tourn_id == "" and $event == "") {
 				$tourn_id = $this->input->post('tourn_id');
 				$event	  = $this->input->post('event');
 				
@@ -998,7 +1018,7 @@ else if($this->logged_user == 240000000){
 
 				$this->load->view('view_dbl_partner_ajax', $data);
 			}
-			else{
+			else {
 				return $this->model_league->get_reg_tourn_partner_names($tourn_id, $event);
 			}
 		}
@@ -1024,13 +1044,11 @@ else if($this->logged_user == 240000000){
 			return $res;
 		 }
 
-		 public function get_user($user_id)
-		 {
-			//$user_id = $this->logged_user;
+		 public function get_user($user_id) {
 			return $this->model_league->get_user_name($user_id);
 		 }
 
-		 public function apply_gc($gc = ''){
+		 public function apply_gc($gc = '') {
 			$gc			 = $this->input->post('gc');
 			$tourn_id	 = $this->input->post('tid');
 			$tot_reg_fee = $this->session->userdata('tour_reg_fee');
@@ -1364,16 +1382,243 @@ Array
 			$reg_close	 = strtotime($details->Registrationsclosedon) + $oneday;
 			}
 
-			$tourn_sport = $details->SportsType;
+			$reg_open	= strtotime($details->Registrations_Opens_on);
+
+			$tourn_sport	 = $details->SportsType;
 			$is_reg = 0;
 			
 			if($details->tournament_format == 'Teams' or $details->tournament_format == 'TeamSport'){					
 				$is_reg = $this->model_league->get_team_reg_tournment($tourn_id);		
 			}
 			else{					
-				$is_reg = $this->model_league->get_reg_tournment($tourn_id);		
+				$is_reg = $this->model_league->get_reg_tournment($tourn_id);
+				if($details->Is_League){
+					$reg_occr = $this->model_league->get_user_reg_occrs($tourn_id, $this->logged_user);
+					$data['reg_occr'] = $reg_occr;
+				}
 			}
+
 			$data['tourn_id']	= $tourn_id;
+
+			//if(!in_array($this->logged_user, array(237, 239, 240))){
+				if($now < $reg_open){
+					echo "<h3>Registration will open on ".
+						date('M d, Y H:i', strtotime($details->Registrations_Opens_on))."<h3>"; exit;
+				}
+			//}
+
+
+			if($is_reg or $now < $reg_close){
+
+				$user_id	 = $this->logged_user;
+				$reg_details = $this->model_league->get_reg_tournment($tourn_id);
+				$ag_group    = $this->general->get_user_agegroup();
+
+				if((!empty($reg_details['Tournament_ID']) == $tourn_id) && ((!empty($reg_details['Users_ID']) == $user_id)) or $is_reg)
+				{
+					$data['reg_status'] = "You were already registered for this tournament. Thankyou.";
+					$details				= $this->model_league->getonerow($tourn_id);
+					$data['r']			= $details;
+					$data['results']	= $this->model_news->get_news();
+
+
+				if($org_id)
+					$this->load->view('academy_views/includes/academy_league_header', $data);
+				else
+					$this->load->view('includes/header', $data);
+
+					if($details->Is_League)
+						$this->load->view('view_lg_register_match', $data);
+					else
+						$this->load->view('view_register_match', $data);
+
+					$this->load->view('includes/view_right_column',$data);
+
+				if($org_id)
+					$this->load->view('academy_views/includes/academy_league_footer');
+				else
+					$this->load->view('includes/footer');
+				}
+				else
+				{
+					$data['new_usatt_opt']    = 0;
+					$data['est_usatt_rating']  = '';
+
+					if($this->input->post('btn_proceed')){
+					$data['new_usatt_opt']    = 1;
+					$data['est_usatt_rating'] = $this->input->post('est_user_usatt');
+					}
+					$result = $this->general->get_all_users();
+					//$data	= array();
+
+					$data['ag_grp']		  = $ag_group['UserAgegroup'];
+					$data['user_age_dat'] = $ag_group;
+
+					if(!empty($result)) {
+							$returnStr = '[';
+						foreach($result as $row){
+							$returnStr .= '{';
+							$returnStr .= 'label:'.'"'.trim($row->Firstname).' '.trim($row->Lastname).'",';
+							$returnStr .= 'value:'.'"'.trim($row->Firstname).' '.trim($row->Lastname).'",';
+							$returnStr .= 'value2:'.'"'.$row->Users_ID.'"';
+							$returnStr .= '},';
+						}
+							$returnStr .= ']';
+					}
+
+					$data['users'] = $returnStr;
+
+					$details				= $this->model_league->getonerow($tourn_id);
+					$check_dob			= $this->model_league->check_user_dob($user_id);
+					$check_addr		= $this->model_league->check_user_addr($user_id);
+					$data['user_info']	= $check_addr;
+
+					//$data['user_created_teams'] = $this->general->get_user_created_teams();		
+					$data['user_created_teams'] = $this->general->get_user_created_sport_teams($tourn_sport);		
+					$data['user_existed_teams']  = $this->general->get_user_existed_teams($tourn_id, $tourn_sport);		
+					//$data['tour_reg_teams']	= $this->model_league->tour_registered_teams($tourn_id);
+
+				($check_dob->DOB != NULL) ? $data['udob'] = 1 : $data['udob'] = 0;
+				
+					$data['school_info_req'] = 0;
+				$age_array = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18');
+				if(in_array($check_addr->UserAgegroup, $age_array)){
+					$data['school_info_req'] = 1;
+				}
+
+				($check_addr->School_Info != NULL and $check_addr->School_Info != "") ? $data['is_school_info'] = 1 : $data['is_school_info'] = 0;
+
+				//($check_addr->Latitude != NULL and $check_addr->Latitude != 0) ? $data['uaddr'] = 1 : $data['uaddr'] = 0;
+				(($check_addr->UserAddressline1 != NULL and $check_addr->UserAddressline1 != '') 
+					or 
+				($check_addr->UserAddressline2 != NULL and $check_addr->UserAddressline2 != '')) ? $data['uaddr'] = 1 : $data['uaddr'] = 0;
+
+				($check_addr->Mobilephone != NULL and $check_addr->Mobilephone != '') ? $data['umob'] = 1 : $data['umob'] = 0;
+					
+				($check_addr->EmailID != NULL or $check_addr->AlternateEmailID != NULL) ? $data['uemail'] = 1 : $data['uemail'] = 0;
+
+				($check_addr->Gender === 0 or $check_addr->Gender === 1) ? $data['ugender'] = 1 : $data['ugender'] = 0;
+
+					$data['r']		 = $details;
+					$data['results'] = $this->model_news->get_news();
+
+				//echo "<pre>"; print_r($data); exit;
+				/*$get_reg = $this->model_league->get_reg_partners($tourn_id, $user_id);
+				$plyr_partners = array();
+
+				if($get_reg){
+					foreach($get_reg as $i => $val){
+						$partners = json_decode($val->Partners, TRUE);
+
+						foreach($partners as $ev => $prt){
+							if($prt == $user_id)
+							$plyr_partners[$ev] = $val->Users_ID;
+						}
+					}		
+				}
+				//echo "<pre>"; print_r($plyr_partners); exit;
+					$data['being_partner'] = json_encode($plyr_partners);
+			*/
+				if($org_id)
+					$this->load->view('academy_views/includes/academy_league_header', $data);
+				else
+					$this->load->view('includes/header', $data);
+
+					if($details->Is_League){
+
+							$show_whole_league = 0;
+						if($details->lg_Event_Reg_Fee)
+							$show_whole_league = 1;
+
+
+						$lg_occr = $this->model_league->get_league_occr($tourn_id);
+						foreach($lg_occr as $ocr){
+							$ev_occr[$ocr->Event][] = array($ocr->OCR_ID, $ocr->Game_Date);
+						}
+						//echo "<pre>"; print_r($ev_occr);
+						$data['lg_occr'] = $ev_occr;
+						$data['show_wh_league'] = $show_whole_league;
+
+						$this->load->view('view_lg_register_match', $data);
+					}
+					else{
+						$this->load->view('view_register_match', $data);
+					}
+
+					$this->load->view('includes/view_right_column',$data);
+
+				if($org_id)
+					$this->load->view('academy_views/includes/academy_league_footer');
+				else
+					$this->load->view('includes/footer');
+				}
+			}
+			else
+			{ echo "<h4>Oops Registrations closed!</h4>"; }
+		 
+		 }
+
+		 public function register_match123($tourn_id, $org_id = '')
+		{
+			$this->session->unset_userdata('json_ag');
+			$this->session->unset_userdata('json_formats');
+			$this->session->unset_userdata('json_levels');
+			$this->session->unset_userdata('json_partners');
+			$this->session->unset_userdata('hc_loc_id');
+			$this->session->unset_userdata('events');
+			$this->session->unset_userdata('tshirt_size');
+			$this->session->unset_userdata('coup_code');
+			$this->session->unset_userdata('coup_disc');
+			$this->session->unset_userdata('occr_json');
+
+			if(!$this->logged_user){
+				redirect('login');
+			}
+
+			$data['org_url_key'] = "";
+
+			if($org_id){
+				$this->load->model('academy_mdl/model_academy');
+				$org_details			 = $this->model_academy->get_academy_details($org_id);
+				$data['org_details']	 = $org_details;
+				$data['org_url_key'] = $org_details['Aca_URL_ShortCode']."/";
+				$data['is_academy_league'] = 1;
+			}
+
+			//$tourn_id	 = $this->uri->segment(3);
+
+			$details	 = $this->model_league->getonerow($tourn_id);
+			$now		 = strtotime("now"); $oneday = 86400;
+
+			if($details->Tournament_type == "Challenge Ladder"){
+			$reg_close	 = strtotime($details->EndDate) - $oneday;
+			}
+			else{
+			$reg_close	 = strtotime($details->Registrationsclosedon) + $oneday;
+			}
+
+			$reg_open		 = strtotime($details->Registrations_Opens_on);
+
+			$tourn_sport	 = $details->SportsType;
+			$is_reg = 0;
+			
+			if($details->tournament_format == 'Teams' or $details->tournament_format == 'TeamSport'){					
+				$is_reg = $this->model_league->get_team_reg_tournment($tourn_id);		
+			}
+			else{					
+				$is_reg = $this->model_league->get_reg_tournment($tourn_id);
+				if($details->Is_League){
+					$reg_occr = $this->model_league->get_user_reg_occrs($tourn_id, $this->logged_user);
+					$data['reg_occr'] = $reg_occr;
+				}
+			}
+
+			$data['tourn_id']	= $tourn_id;
+
+			if($now < $reg_open){
+				echo "<h3>Registration will open on ".date('m-d-Y H:i', strtotime($details->Registrations_Opens_on))."<h3>"; exit;
+			}
+
 
 			if($is_reg or $now < $reg_close){
 
@@ -1435,7 +1680,7 @@ Array
 
 					//$data['user_created_teams'] = $this->general->get_user_created_teams();		
 					$data['user_created_teams'] = $this->general->get_user_created_sport_teams($tourn_sport);		
-					$data['user_existed_teams'] = $this->general->get_user_existed_teams($tourn_id, $tourn_sport);		
+					$data['user_existed_teams']  = $this->general->get_user_existed_teams($tourn_id, $tourn_sport);		
 					//$data['tour_reg_teams']	= $this->model_league->tour_registered_teams($tourn_id);
 
 				($check_dob->DOB != NULL) ? $data['udob'] = 1 : $data['udob'] = 0;
@@ -1466,12 +1711,20 @@ Array
 					$this->load->view('includes/header', $data);
 
 					if($details->Is_League){
+
+							$show_whole_league = 0;
+						if($details->lg_Event_Reg_Fee)
+							$show_whole_league = 1;
+
+
 						$lg_occr = $this->model_league->get_league_occr($tourn_id);
 						foreach($lg_occr as $ocr){
 							$ev_occr[$ocr->Event][] = array($ocr->OCR_ID, $ocr->Game_Date);
 						}
 						//echo "<pre>"; print_r($ev_occr);
 						$data['lg_occr'] = $ev_occr;
+						$data['show_wh_league'] = $show_whole_league;
+
 						$this->load->view('view_lg_register_match', $data);
 					}
 					else{
@@ -1508,9 +1761,12 @@ Array
 			}
 
 			$tourn_id	 = $this->uri->segment(3);
-
 			$details	 = $this->model_league->getonerow($tourn_id);
 			$now		 = strtotime("now"); $oneday = 86400;
+
+			if(!$details->Is_Publish and !$this->is_super_admin and $this->logged_user != $details->Usersid and $this->logged_user != $details->Tournament_Director) {
+					echo "<h3>Invalid Tournament!</h3>"; exit;
+			}
 
 			if($details->Tournament_type == "Challenge Ladder"){
 			$reg_close	 = strtotime($details->EndDate) - $oneday;
@@ -1636,7 +1892,7 @@ Array
 		    $tour_det  = $this->model_league->getonerow($tourn_id);
 		    $tourn_det = $this->model_league->get_fixtures_det($tourn_id);
 
-		    if($user_id != $tour_det->Usersid and !$this->is_super_admin){
+		    if(($user_id != $tour_det->Usersid and $user_id != $tour_det->Tournament_Director) and !$this->is_super_admin){
                echo "Invalid Access!";
                exit();
 		    }
@@ -1695,7 +1951,9 @@ Array
 		}
 
 		 public function fixtures_test($tourn_id)
-		 {
+		  {
+			 //$this->session->unset_userdata('draw');
+
 		 	if(!$this->session->userdata('user')){ redirect('login'); }
 
 			$tourn_id =  $this->uri->segment(3);
@@ -1867,6 +2125,30 @@ Array
 						</tr>
 						</thead>";
 			$output .= "<tbody>";
+//echo "<pre>"; print_r($users_id);
+
+			// Keep the Seedings of Draw page when user comeback
+			
+			$temp_arr = array();
+			if($this->session->userdata('draw')['users']){
+				$sess_draws_users = $this->session->userdata('draw')['users'];
+				foreach ($users_id as $k => $value) {
+
+					$xyz = explode('-', $value);
+					if(!$xyz[1])
+						$value = trim($value,'-'); // removing - if the value is no having partner but having - in the string
+
+					$key = array_search ($value, $sess_draws_users);
+					if($key > -1)
+						$temp_arr[$key] = $value;
+					else
+						$temp_arr[$k]		= $value;
+				}
+				$x = ksort($temp_arr);
+				$users_id = $temp_arr;
+			}
+
+			// Keep the Seedings of Draw page when user comeback
 
             foreach ($users_id as $key => $value) {
 				$avg_a2m = '';
@@ -1968,10 +2250,12 @@ Array
           	   // $userslist[]=$this->model_league->get_user_name($value);
             }
 
-			//usort($users_list, "cmp_a2m");
-			array_multisort(array_map(function($element) {
-			return $element['A2MScore'];
-			}, $users_list), SORT_DESC, $users_list);
+			/////////////usort($users_list, "cmp_a2m");
+			
+			if(!$this->session->userdata('draw')['users']){
+				array_multisort(array_map(function($element){ return $element['A2MScore']; }, $users_list), SORT_DESC, $users_list);
+			}
+			// commented this to make session sort work
 
             //echo "<pre>";print_r($users_list);exit();
 			$j = 1;
@@ -2009,9 +2293,8 @@ Array
 						<td>&nbsp;".$details['State']."</td>
 						<td>&nbsp;".$details['A2M_AVG']."</td>
 						{$new_col}
-						<td> <input type='hidden' id='seeded_".$uid."' value='".$uid."' >
+						<td><input type='hidden' id='seeded_".$uid."' value='".$uid."' >
 						<img src='".base_url().'icons/up.png'."' class='up' style='cursor:pointer;width:20px;height:20px;' />
-						&nbsp;&nbsp;
 						<img src='".base_url().'icons/down.png'."' class='down' style='cursor:pointer;width:20px;height:20px;' />
 						</td>
 						</tr>";
@@ -2031,7 +2314,7 @@ Array
 		 	//print_r($_POST);exit();
 		 	$format				= $this->input->post('format');
             $types				= $this->input->post('types');
-            $sel_occr_ids    = $this->input->post('sel_occr_ids');
+            $sel_occr_ids  = $this->input->post('sel_occr_ids');
             $tour_id			= $this->input->post('tour_id');
             $SportsType = $this->input->post('sport');
             $is_event		= $this->input->post('is_event');
@@ -2078,11 +2361,35 @@ Array
 						</thead>";
 			$output .= "<tbody>";
 
+			// Keep the Seedings of Draw page when user comeback
+			
+			$temp_arr = array();
+			if($this->session->userdata('draw')['users']){
+				$sess_draws_users = $this->session->userdata('draw')['users'];
+				foreach ($users_id as $k => $value) {
+					$xyz = explode('-', $value);
+					if(!$xyz[1])
+						$value = trim($value,'-'); // removing - if the value is no having partner but having - in the string
+
+					$key = array_search($value, $sess_draws_users);
+					if($key > -1)
+						$temp_arr[$key] = $value;
+					else
+						$temp_arr[$k]		= $value;
+				}
+				$x = ksort($temp_arr);
+				$users_id = $temp_arr;
+			}
+
+			// Keep the Seedings of Draw page when user comeback
+
+
             foreach ($users_id as $key => $value) {
 				$avg_a2m = '';
-            	if (strpos($value, '-') !== false) {
-                    $userArr		= explode('-', $value);
+				$userArr = explode('-', $value);
 
+            	if (strpos($value, '-') !== false and $userArr[1]) {
+					$value = $userArr[0];
                     $user			= $this->model_league->get_user_name($userArr[0]);
                     $user_a2msocre  = $this->get_a2mscore($userArr[0], $SportsType);
 
@@ -2140,6 +2447,7 @@ Array
 					$users_list[$value]['A2M_MAX'] = $max_score;
             	 }
 				 else{
+					$value = $userArr[0];					 
             	 	$user		= $this->model_league->get_user_name($value);
                     $username	= $user['Firstname'].' '.$user['Lastname'];
           	        $userid		= $user['Users_ID'];
@@ -2150,8 +2458,6 @@ Array
 						$user_score		= $user_a2msocre['A2MScore_Mixed'];
 					else
 						$user_score		= $user_a2msocre['A2MScore'];
-
-
 
 					$rating		 = "N/A";
 					if($SportsType == 2){
@@ -2181,9 +2487,6 @@ Array
 							$max_score	 = number_format($new_a2m, 3);
 					}
 
-
-
-
 					$users_list[$value]['UID']		=  $user['Users_ID'];
 					$users_list[$value]['Name']	=  $user['Firstname'].' '.$user['Lastname'];
 					$users_list[$value]['City']		=  $user['City'];
@@ -2200,9 +2503,10 @@ Array
             }
 
 			//usort($users_list, "cmp_a2m");
-			array_multisort(array_map(function($element) {
-			return $element['A2MScore'];
-			}, $users_list), SORT_DESC, $users_list);
+			if(!$this->session->userdata('draw')['users']){
+				array_multisort(array_map(function($element) { 
+					return $element['A2M_MAX']; }, $users_list), SORT_DESC, $users_list);
+			}
 
             //echo "<pre>";print_r($users_list);exit();
 			$j = 1;
@@ -2242,7 +2546,6 @@ Array
 						{$new_col}
 						<td> <input type='hidden' id='seeded_".$uid."' value='".$uid."' >
 						<img src='".base_url().'icons/up.png'."' class='up' style='cursor:pointer;width:20px;height:20px;' />
-						&nbsp;&nbsp;
 						<img src='".base_url().'icons/down.png'."' class='down' style='cursor:pointer;width:20px;height:20px;' />
 						</td>
 						</tr>";
@@ -2299,7 +2602,7 @@ Array
 			if(!$this->input->post('bulk_register')){
 				$data['tourn_id'] = $tourn_id;
 
-				if($details->Usersid == $this->session->userdata('users_id')){
+				if($details->Usersid == $this->session->userdata('users_id') or $details->Tournament_Director == $this->session->userdata('users_id')){
 					$data['r']		 = $details;
 					$data['results'] = $this->model_news->get_news();
 
@@ -2553,13 +2856,18 @@ Array
 				$formats    = json_decode($r->Match_Type);
 				$ag_group  = json_decode($r->Reg_Age_Group);
 				$sp_levels = json_decode($r->Reg_Sport_Level);
-
+				
+				if($formats and $ag_group and $sp_levels){
 				foreach($formats as $i => $fr){
 					foreach($ag_group[$i] as $j => $ag){
 						foreach($sp_levels[$i][$j] as $lv){
 							$reg_users[$r->Users_ID][] = $fr."-".$ag."-".$lv;
 						}
 					}
+				}
+				}
+				else{
+							$reg_users[$r->Users_ID][] = '';
 				}
 
 				$user_tsize[$r->Users_ID] = $r->TShirt_Size;
@@ -2611,41 +2919,69 @@ Array
 			}
 		 }
 	
-		 public function bracket($tourn_id)
-		 {
+		public function bracket($tourn_id)
+		{
 		//echo "<pre>"; print_r($_POST); exit;
-		$data['courts_new']		= "";
-		$data['match_timings']	= "";
+		$data['courts_new']			= "";
+		$data['match_timings']		= "";
 
-		$data['br_game_day']	= $this->input->post('br_game_day');
+		$data['br_game_day']		= $this->input->post('br_game_day');
+		$data['draw_format']			= $this->input->post('draw_format');
+		$data['is_publish_draw']	= $this->input->post('is_publish_draw');
+		$data['num_of_sets']		= $this->input->post('num_of_sets');
+
+		$data['is_plof']			= $this->input->post('is_plof');
+		$data['plof_size']		= $this->input->post('plof_size');
+
+		//if($this->input->post('is_testing'))
+		if($this->input->post('generate')){
+			$this->set_bracket_session();
+		}
 
 		if($this->input->post('is_sch_courts')){
-			$num_courts		= $this->input->post('num_courts');
+			$num_courts	= $this->input->post('num_courts');
 			$crts					= $this->input->post('courts');
 			$match_dates	= $this->input->post('match_date');
-			$start_time			= $this->input->post('stime');
-			$end_time			= $this->input->post('etime');
-			$duration				= $this->input->post('match_duration');
-			$break					= $this->input->post('match_break');
-			$tot_match_duration = $duration + $break;
-					foreach($crts as $i => $court){
-					$start  = date('Y-m-d H:i',strtotime($match_dates[$i] . " " . $start_time[$i]));
-					$end   = date('Y-m-d H:i',strtotime($match_dates[$i] . " " . $end_time[$i]));
+			$start_time		= $this->input->post('stime');
+			$end_time		= $this->input->post('etime');
+			$duration			= $this->input->post('match_duration');
+			$break				= $this->input->post('match_break');
 
-					//$start  = strtotime('-5 hours', strtotime($match_dates[$i] . " " . $start_time[$i]));
+				/*$num_grps   = $this->input->post('sel_groups');
+				$is_groups   = $this->input->post('is_groups');
+				$crts_count  = count($crts);
+
+				if($is_groups and $num_grps > 1 and $crts_count > 1){
+					$per_gr = ceil($crts_count / $num_grps);
+				}*/
+
+
+			$tot_match_duration = $duration + $break;
+
+					foreach($crts as $i => $court){
+						$start_time[$i] = str_replace(' ', '', $start_time[$i]);
+						$end_time[$i]  = str_replace(' ', '', $end_time[$i]);
+
+					$start  = date('Y-m-d H:i', strtotime($match_dates[$i] . " " . $start_time[$i]));
+					$end   = date('Y-m-d H:i', strtotime($match_dates[$i] . " " . $end_time[$i]));
+								//echo $match_dates[$i]." ".$start_time[$i]." ".$start; exit;
+								//$start  = strtotime('-5 hours', strtotime($match_dates[$i] . " " . $start_time[$i]));
 					$start  = strtotime($match_dates[$i] . " " . $start_time[$i]);
-					//$end   = strtotime('-5 hours', strtotime($match_dates[$i] . " " . $end_time[$i]));
+								//$end   = strtotime('-5 hours', strtotime($match_dates[$i] . " " . $end_time[$i]));
 					$end   = strtotime($match_dates[$i] . " " . $end_time[$i]);
 
 					$currentdate	= $start;
 					$time_arr		= array();
 
-					while($currentdate <= $end)
+					$minus_match = strtotime('-'.$tot_match_duration.' minutes', $end);
+
+					//while($currentdate <= $end)
+					while($currentdate <= $minus_match)
 					{
 					  //echo date('m-d-Y H:i', $currentdate)."<br>";
 					  //$matches_times[$m] = ($i+1)."-".$currentdate;
-						//$time_arr[($i+1)][] = $currentdate;
-						$time_arr[] = $currentdate;
+					  //$time_arr[($i+1)][] = $currentdate;
+					  $time_arr[] = $currentdate;
 
 					  $currentdate = strtotime('+'.$tot_match_duration.' minutes', $currentdate);
 					  //do what you want here
@@ -2667,9 +3003,12 @@ Array
 
 					$crt = 0;
 					$tm_index = 0;
+					$mt = 1;
 					for($m = 1; $m < 180; $m++){
-
-						$match_timings[$m] = array($courts_new[$crt]['name'], $courts_new[$crt]['timings']['sd'], $courts_new[$crt]['time_breaks'][$tm_index]);
+						if($courts_new[$crt]['time_breaks'][$tm_index]){
+							$match_timings[$mt] = array($courts_new[$crt]['name'], $courts_new[$crt]['timings']['sd'], $courts_new[$crt]['time_breaks'][$tm_index]);
+							$mt++;
+						}
 
 						if($crt == ($num_courts - 1))
 							$crt = 0;
@@ -2687,7 +3026,10 @@ Array
 					$data['courts_new']		= $courts_new;
 					$data['match_timings']	= $match_timings;
 			}
-
+	/*if($this->logged_user==240)
+	echo "<pre>"; print_r($courts_new);
+	echo "<pre>"; print_r($match_timings); 
+	exit;*/
 
 			if($this->input->post('generate'))
 			{
@@ -2695,12 +3037,28 @@ Array
 					$this->is_team_league = 1;
 				}
 
-				$users			  = $this->input->post('users');
+				$users			= $this->input->post('users');
 				$num_grps   = $this->input->post('sel_groups');
 				$is_groups   = $this->input->post('is_groups');
-				$sport			  = $this->input->post('sport');
+				$sport			= $this->input->post('sport');
 				$grp_top_players = $this->input->post('is_group_top_players');
-				$ttype			  = $this->input->post('ttype');
+				$ttype					= $this->input->post('ttype');
+
+				$match_type = $this->input->post('match_type');
+
+				$data['sport_level'] = '';
+				if($this->input->post('sport_level')){
+				$sport_level = $this->input->post('sport_level');
+                $data['sport_level'] = '["'.$sport_level.'"]';
+				}
+
+				foreach($match_type as $key => $event){		
+					$filter_events[] = $event;
+				}
+
+                $data['filter_events']	= json_encode($filter_events);
+
+
 
 				if($is_groups){
 					$per_grp = round(count($this->input->post('users')) / $num_grps);
@@ -2719,23 +3077,23 @@ Array
 							if(count($groups[$i]) == $per_grp and $i < $num_grps){ $i++; }
 						}
 					}
-					$data['groups']		= $groups;
+					$data['groups']		 = $groups;
 					$data['num_grps']  = $num_grps;
-					$data['tourn_id']		= $tourn_id;
-					$data['sport']			= $sport;
-					$data['brc_type']		= $ttype;
+					$data['tourn_id']	 = $tourn_id;
+					$data['sport']		 = $sport;
+					$data['brc_type']	 = $ttype;
 
 					$data['err_count']				= array();
 					$data['tformat']					= $this->input->post('tformat');
-					$data['rr_multi_rounds']		= $this->input->post('num_of_times');
+					$data['rr_multi_rounds']	= $this->input->post('num_of_times');
 					$data['tour_type']				= $this->input->post('tour_type');
-					$data['is_publish_draw']	= $this->input->post('is_publish_draw');
+
 					$data['grp_top_players']	= $this->input->post('is_group_top_players');
 
-		//print_r($data);
-		//exit;
+					//echo "<pre>"; print_r($data); exit;
 
 					$this->load->view('includes/header');
+					$this->load->view('view_bracket_groups_js', $data);
 					$this->load->view('view_bracket_groups', $data);
 					$this->load->view('includes/footer');
 				}
@@ -2747,24 +3105,12 @@ Array
 				$ttype = 'Single Elimination';
 				}
 				
-				$data['ttype']   = $ttype;
+				$data['ttype']    = $ttype;
 				$data['results'] = $this->model_news->get_news();
 
-				$tourn_id	= $this->uri->segment(3);
-				$user_id	= $this->logged_user;
-				$match_type = $this->input->post('match_type');
+				$tourn_id		= $this->uri->segment(3);
+				$user_id		= $this->logged_user;
 
-				$data['sport_level'] = '';
-				if($this->input->post('sport_level')){
-				$sport_level = $this->input->post('sport_level');
-                $data['sport_level'] = '["'.$sport_level.'"]';
-				}
-
-				foreach($match_type as $key => $event){		
-					$filter_events[] = $event;
-				}
-
-                $data['filter_events']	= json_encode($filter_events);
 
 				if($ttype == 'Single Elimination' or $ttype == 'Consolation'){
 					$data['types']		  = $this->input->post('types');
@@ -2909,12 +3255,12 @@ $robins	   = $temp2;
 
 
 					if(($players_count % 4) == 0){
-						$limit = $players_count - 1;
-						$quot  = $players_count / 4;
+						$limit  = $players_count - 1;
+						$quot = $players_count / 4;
 					}
 					else{
 						$limit = $players_count;
-						$rem   = $players_count % 4;
+						$rem = $players_count % 4;
 					}
 
 					$i = 1;
@@ -2922,13 +3268,22 @@ $robins	   = $temp2;
 					if($players_count == 5){
 						while($i <= $limit){
 							$bridge[$i] = $temp;
-							$temp1		= $temp;
+							/*$temp1		= $temp;
 							foreach($temp1 as $pos => $player){
-								if(++$pos == count($temp1))
+								if($pos == count($temp1) - 1){
 									$pos = 0;
+									$temp[$pos] = $player;
+								}
+								else{
+									$y = $player;
+									$z = $temp1[$pos+];
+									$temp[$pos] = $player;
+								}
+							}*/
 
-								$temp[$pos] = $player;
-							}
+							$removed = array_shift($temp);						
+							array_push($temp, $removed);
+
 						$i++;
 						}
 					}
@@ -3005,13 +3360,21 @@ exit;*/
 			  }
 			}
 			else if($this->input->post('groups_cont')){
+				//if($this->logged_user == 240){
+				//echo "<pre>"; print_r($_POST);  exit;
+				//}
+				$data['filter_events']	  = $this->input->post('filter_events');
+
 				if($this->input->post('brc_type') == 'Round Robin'){
-				$groups							= unserialize($this->input->post('groups'));
+				//$groups						= unserialize($this->input->post('groups'));
+				$groups						= $this->input->post('new_grp');
+
 				$data['courts_new']		= unserialize($this->input->post('courts_new'));
 				$data['match_timings']	= unserialize($this->input->post('match_timings'));
 				$data['types']	  = $this->input->post('types');
 				$data['tformat'] = $this->input->post('tformat');
 				$data['is_publish_draw'] = $this->input->post('is_publish_draw');
+				$data['num_of_sets'] = $this->input->post('num_of_sets');
 				$data['rr_multi_rounds'] = $this->input->post('num_grps');
 				$rounds_per_team = $this->input->post('rr_multi_rounds');
 	
@@ -3032,7 +3395,7 @@ exit;*/
 						$pop_temp	= "";
 
 						$temp	    = $robin->tour;
-
+//echo "<pre>"; print_r($temp);  exit;
 	$total_matches = count($temp);
 	if($total_matches > 3) {
 		$group_matches = ($total_matches % 2 == 0) ? ($total_matches / 2) : ($total_matches / 3);
@@ -3067,6 +3430,9 @@ exit;*/
 					//$data['robins']	 = $temp_arr;
 				}
 				
+				//if($this->logged_user == 240)
+				//echo "<pre>"; print_r($temp_arr); exit;
+				
 				$data['tourn_id']		= $tourn_id;
 				$data['groups']			= $groups;
 				$data['robin_rounds']	= $robin_rounds;
@@ -3086,7 +3452,9 @@ exit;*/
 			else if($this->input->post('brc_type') == 'Switch Doubles'){
 
 				// Switch doubles Grouing continue
-				$data['groups'] = $groups = unserialize($this->input->post('groups'));
+				//$data['groups'] = $groups = unserialize($this->input->post('groups'));
+				$data['groups'] = $groups	= $this->input->post('new_grp');
+
 				$data['courts_new']		= unserialize($this->input->post('courts_new'));
 				$data['match_timings']	= unserialize($this->input->post('match_timings'));
 //echo "<pre>"; print_r($data); exit;
@@ -3104,7 +3472,7 @@ exit;*/
 
 foreach($groups as $g => $group){
 					$players_count = 0;
-					$temp = array();
+					$temp	= array();
 					$temp1 = array();
 					$bridge = array();
 					foreach($group as $pp){
@@ -3138,13 +3506,16 @@ foreach($groups as $g => $group){
 					if($players_count == 5){
 						while($i <= $limit){
 							$bridge[$i] = $temp;
-							$temp1	   = $temp;
+							/*$temp1	   = $temp;
 							foreach($temp1 as $pos => $player){
 								if(++$pos == count($temp1))
 									$pos = 0;
 
 								$temp[$pos] = $player;
-							}
+							}*/
+							$removed = array_shift($temp);						
+							array_push($temp, $removed);
+
 						$i++;
 						}
 					}
@@ -3241,6 +3612,8 @@ foreach($groups as $g => $group){
 
 		 public function bracket_save()
 		 {	
+			 	//			echo "<pre>"; print_r($_POST); exit;
+
 			$tourn_id = $this->input->post('tourn_id');
 //echo "<pre>"; print_r($_POST); exit;
 			if($this->input->post('rr_bracket_confirm')){
@@ -3274,9 +3647,12 @@ foreach($groups as $g => $group){
 			}
 		 }
 
-		 public function get_bracket_list($tourn_id)
-		 {
+		 public function get_bracket_list($tourn_id){
 			return $this->model_league->get_bracket_list($tourn_id);
+		 }
+
+		 public function check_is_cd($tourn_id){
+			return $this->model_league->check_is_cd($tourn_id);
 		 }
 
 		 public function get_player($uid, $pid=''){
@@ -3704,51 +4080,43 @@ foreach($groups as $g => $group){
 			return $res;
 		}
 
-		 public function get_username($user_id)
-		 {
+		 public function get_username($user_id) {
 			return $this->general->get_user($user_id);
 		 }
 
-		 public function get_team($team_id)
-		 {
+		 public function get_team($team_id) {
 			return $this->general->get_team($team_id);
 		 }
 
-		 public function get_participant_count($tourn_id)
-		 {
+		 public function get_participant_count($tourn_id) {
 			return $this->general->get_team_participant_player_count($tourn_id);
 		 }
 
-		 public function get_team_track_event($tourn_title)
-		 {
+		 public function get_team_track_event($tourn_title) {
 			return $this->general->get_team_track_event($tourn_title);
 		 }
 
-		 public function check_user_emailoption($user_id)
-		 {
+		 public function check_user_emailoption($user_id) {
 			return $this->general->check_user_emailoption($user_id);
 		 }
 
-		 public function get_a2mscore($user_id, $sport_id)
-		 {
+		 public function get_a2mscore($user_id, $sport_id) {
 			return $this->general->get_user_a2mscore($user_id, $sport_id);
 		 }
 
-		 public function register_trnmt()
-		 {
-	
-			$res = $this->model_league->insert_reg__tourn_data();
-			$data['reg'] = "Thanks for Registering to this tournment. Details are sent to your email Address";
+		 public function register_trnmt() {
+
+			$res				= $this->model_league->insert_reg__tourn_data();
+			$data['reg']	= "Thanks for Registering to this tournment. Details are sent to your email Address";
 			
-			if($res)
-			{
+			if($res) {
 				redirect('play',$data);
 			}
 		 }
 
-		 public function viewbracket($tourn_id = '')
-		 {
-			$bid = $this->input->post('bracket_id');
+		public function viewbracket($tourn_id = '') {
+		
+		$bid = $this->input->post('bracket_id');
 		/*echo "<pre>";
 		print_r($_POST);
 		*/
@@ -3779,12 +4147,10 @@ foreach($groups as $g => $group){
 	
 				if($this->input->post('tourn_type') == 'Single Elimination')
 				{
-					if(!$get_bracket['BracketID'])
-					{
+					if(!$get_bracket['BracketID']){
 						$data['no_bracket'] = "Draws are not available for the given criteria.";
 					}
-					else
-					{
+					else{
 						$data['get_tourn_matches'] = $this->model_league->get_tourn_matches($data);
 
 						if($this->input->post('tformat') == "Teams"){
@@ -3794,12 +4160,10 @@ foreach($groups as $g => $group){
 				}
 				else if($this->input->post('tourn_type') == 'Round Robin')
 				{
-					if(!$get_bracket['BracketID'])
-					{
+					if(!$get_bracket['BracketID']){
 						$data['no_bracket'] = "Draws are not available for the given criteria.";
 					}
-					else
-					{
+					else{
 						$data['get_rr_tourn_matches'] = $this->model_league->get_tourn_matches($data);
 
 						if($this->input->post('tformat') == "Teams"){
@@ -3860,7 +4224,7 @@ foreach($groups as $g => $group){
 				$tour_admin = $data['tourn_det']->Usersid;
 				$sport		= $data['tourn_det']->SportsType;
 
-				if($tour_admin != $this->logged_user and $this->logged_user){
+				if(($tour_admin != $this->logged_user and $data['tourn_det']->Tournament_Director != $this->logged_user) and $this->logged_user){
 					$brackets = $this->get_bracket_list($tid);
 					if(count(array_filter($brackets)) > 0){
 						foreach($brackets as $bk)
@@ -3933,7 +4297,7 @@ foreach($groups as $g => $group){
 				$tourn_id = $this->input->post('tourn_id');
 				$get_tour_admin = $this->model_league->getonerow($tourn_id);
 				
-				if($get_tour_admin->Usersid == $this->logged_user) {
+				if($get_tour_admin->Usersid == $this->logged_user or $get_tour_admin->Tournament_Director == $this->logged_user) {
 				
 					if($get_tour_admin->SportsType == '4') {
 					$res = $this->model_league->delete_golf_brackets($bid);
@@ -3961,7 +4325,6 @@ foreach($groups as $g => $group){
 		 public function view_matches()
 		 {
 			//echo "<pre>"; print_r($_POST); exit;
-
 			$score_type = $this->input->post('score_type');
 
 			switch($score_type){
@@ -4089,6 +4452,11 @@ foreach($groups as $g => $group){
 					//$email_status = $this->email_add_score($res);
 				break;
 
+				case "TS_ADDSTATS":		// Add Match Player Stats
+					$res = $this->model_league->update_match_player_stats();
+					//$email_status = $this->email_add_score($res);
+				break;
+
 				default:
 					break;
 			}
@@ -4134,6 +4502,9 @@ foreach($groups as $g => $group){
 				}
 				else if($draw_type == 3) {
 					$this->model_league->update_rr_tourn_dates();
+				}
+				else if($draw_type == 4) {
+					$this->model_league->update_sd_tourn_dates();
 				}
 				else{
 					echo "Invalid Request!";
@@ -4238,9 +4609,10 @@ foreach($groups as $g => $group){
 
 				$tid		= $data['tourn_det']->tournament_ID;
 				$tour_admin = $data['tourn_det']->Usersid;
+				$tour_director = $data['tourn_det']->Tournament_Director;
 				$sport		= $data['tourn_det']->SportsType;
 
-				if($tour_admin != $this->logged_user){
+				if($tour_admin != $this->logged_user and $tour_director != $this->logged_user){
 					$brackets = $this->get_bracket_list($tid);
 					if(count(array_filter($brackets)) > 0){
 						foreach($brackets as $bk)
@@ -4300,10 +4672,11 @@ foreach($groups as $g => $group){
 
 			$tourn_det	 = $this->model_league->getonerow($tourn_id);
 			$tourn_admin = $tourn_det->Usersid;
+			$tour_director = $tourn_det->Tournament_Director;
 			$sess_id	 = $this->logged_user;;
 
-			if($sess_id != $tourn_admin){
-
+			if($sess_id != $tourn_admin and $sess_id != $tour_director){
+// done so far here
 			$title = $tourn_det->tournament_title;
 
 			$get_email2 = $this->get_username($tourn_admin);
@@ -4645,23 +5018,20 @@ foreach($groups as $g => $group){
 
 		 public function upload_pics()
 		 {
-			
 			if($this->input->post('tourn_id')){
-			$doc_root = $_SERVER['DOCUMENT_ROOT'];
+				$doc_root		= $_SERVER['DOCUMENT_ROOT'];
 
 				$this->load->library('upload');
-				$tourn_id = $this->input->post('tourn_id');
-
+				$tourn_id		= $this->input->post('tourn_id');
 				$tour_folder = $doc_root.'\tour_pictures\\'.$tourn_id.'';
 
 				if (!file_exists($tour_folder)) {
 					mkdir($tour_folder, 0777, true);
 				}
 
-				$files = $_FILES;
-				$cpt = count($_FILES['userfile']['name']);
-				for($i=0; $i<$cpt; $i++)
-				{
+				$files	= $_FILES;
+				$cpt		= count($_FILES['userfile']['name']);
+				for($i=0; $i<$cpt; $i++) {
 				   $rand = md5(uniqid(rand(), true));
 
 				   $format	=	explode('.',$files['userfile']['name'][$i]);
@@ -4673,20 +5043,21 @@ foreach($groups as $g => $group){
 				   //echo $re_name;exit;
 
 					$_FILES['userfile']['name']		= $re_name.'.'.$format;
-					$_FILES['userfile']['type']		= $files['userfile']['type'][$i];
+					$_FILES['userfile']['type']			= $files['userfile']['type'][$i];
 					$_FILES['userfile']['tmp_name']	= $files['userfile']['tmp_name'][$i];
-					$_FILES['userfile']['error']	= $files['userfile']['error'][$i];
-					$_FILES['userfile']['size']		= $files['userfile']['size'][$i];
-
+					$_FILES['userfile']['error']			= $files['userfile']['error'][$i];
+					$_FILES['userfile']['size']			= $files['userfile']['size'][$i];
+					//echo $files['userfile']['width'][$i]."<br>";
+					//echo $files['userfile']['height'][$i]; exit;
 					$fileName = 'userfile';
 
 					$config = array(
-				    'upload_path'	=> "./tour_pictures/$tourn_id/",
-					'allowed_types' => "gif|jpg|png|jpeg",
-					'overwrite'		=> TRUE,
-					'max_size'		=> "10000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
-					'max_height'	=> "8000",
-					'max_width'		=> "10000");
+				    'upload_path'		=> "./tour_pictures/$tourn_id/",
+					'allowed_types'		=> "gif|jpg|png|jpeg",
+					'overwrite'				=> TRUE,
+					'max_size'				=> "10000", // Can be set to particular file size, here it is ~10 MB(2048 Kb)
+					'max_height'			=> "8000",
+					'max_width'			=> "10000");
 
 				   $this->load->library('upload',$config);  
 				   $this->upload->initialize($config);
@@ -4695,30 +5066,35 @@ foreach($groups as $g => $group){
 				   //exit;
 
 				   if($this->upload->do_upload($fileName)){
-				  
-					    $upload_data = $this->upload->data();
-
+					    $upload_data  = $this->upload->data();
 					    $thumb_folder = $doc_root.'\tour_pictures\\'.$tourn_id.'\thumbs';
 
 						if (!file_exists($thumb_folder)) {
 							mkdir($thumb_folder, 0777, true);
 						}
+					//	echo "<pre>"; print_r($upload_data);
+					//echo "wdith: ".$upload_data['image_width']."<br>";
+					//echo "height: ".$upload_data['image_height']."<br>"; 
+					//echo "full_path: ".$upload_data['full_path']."<br>"; 
+					
+					//exit;
 
 						// orientation
 						$this->image_rotate_exif($upload_data['full_path']);
 
 						///resize image code starts ....
-
                         $resize_conf = array(
-							'image_library'	 => 'gd2',
-							'maintain_ratio'  =>  FALSE,
-							'upload_path'  => "./tour_pictures/$tourn_id/thumbs/",
-							'source_image' => $upload_data['full_path'], 
-							//'new_image'  => './tour_pictures/$tourn_id/thumbs/'.$upload_data['file_name'],
-							'new_image'    => $upload_data['file_path'].'thumbs/'.$upload_data['file_name'],
-							'width'        => '200',
-							'height'       => '200'
-							);
+											'image_library'	=> 'gd2',
+											'maintain_ratio' =>  FALSE,
+											'upload_path'	=> "./tour_pictures/$tourn_id/thumbs/",
+											'source_image' => $upload_data['full_path'], 
+											//'new_image'	=> './tour_pictures/$tourn_id/thumbs/'.$upload_data['file_name'],
+											'new_image'		=> $upload_data['file_path'].'thumbs/'.$upload_data['file_name'],
+											'quality'				=> '30%',
+											'width'				=> $upload_data['image_width'],
+											'height'				=> $upload_data['image_height']
+											/*'maintain_ratio' => TRUE*/
+											);
 
 					$this->load->library('image_lib');
 					$this->image_lib->initialize($resize_conf);
@@ -4731,7 +5107,6 @@ foreach($groups as $g => $group){
 						//exit;
 					}
 					else{
-
 						$this->image_rotate_exif($resize_conf['new_image']);
 
 						$data_to_store['userfile']	= $upload_data['file_name'];						
@@ -4856,10 +5231,7 @@ foreach($groups as $g => $group){
 
 				$size = getimagesize($filename); 
 
-				//print_r($size);
-				//exit;
-
-				switch ($size['mime']){ 
+				switch ($size['mime']) { 
 				case "image/gif": 
 				 
 						header('Content-Type: image/gif');
@@ -4960,8 +5332,7 @@ foreach($groups as $g => $group){
 					echo "Invalid Image file";
 			    break;
 
-				}
-
+			 }
 		 }
 		
 		 public function set_upload_options($tourn_id)
@@ -5470,7 +5841,9 @@ document.f1.submit();
 		 public function buy($tid)
 		 {
 			$tour_det  = $this->model_league->getonerow($tid);
-
+			//if($tid == 3483){
+			//	echo "<pre>"; print_r($_POST); exit;
+			//}
 			if($this->input->post('tour_fee') == '' and $tour_det->Tournamentfee == 1){
 					echo "Sorry, something went wrong! Please contact <a href='mailto:admin@a2msports.com'> Admin </a>. Thank you";
 					exit;
@@ -5528,7 +5901,7 @@ document.f1.submit();
 			//$currency_code = 'INR';
 
 
-			$tsize				= $this->input->post('tshirt_size');
+			$tsize			= $this->input->post('tshirt_size');
 			$coup_code	= $this->input->post('coup_code');
 			$coup_disc	= $this->input->post('coup_disc');
 
@@ -5602,7 +5975,7 @@ document.f1.submit();
 							}
 						}
 
-					$occr_json	= $sess_data['occr_json']	= json_encode($occr_ids);
+					$occr_json = $sess_data['occr_json'] = json_encode($occr_ids);
 						$this->session->unset_userdata('occr_json');
 					}
 
@@ -5626,7 +5999,12 @@ document.f1.submit();
 					print_r($this->session->userdata('events'));
 					exit;*/
 
-					$returnURL = base_url().'paypal/success?tourn_id='.$tid.'&player='.$reg_userid.'&age_group='.$age_group.'&mtypes='.$match_types.'&partners='.$partners.'&level='.$level.'&hc_loc='.$hc_loc_id.'&ttype='.$ttype.'&tsize='.$tsize.'&coup_code='.$coup_code.'&coup_disc='.$coup_disc.'&events='.$reg_events.'&occr='.$occr_json.'&nte_to_admin='.$note_to_admin.'&school_info='.$school_info;  
+				$est_usatt_rating = "";
+				if($this->input->post('new_usatt_opt')){
+				$est_usatt_rating = $this->input->post('est_usatt_rating');
+				}
+
+					$returnURL = base_url().'paypal/success?tourn_id='.$tid.'&player='.$reg_userid.'&age_group='.$age_group.'&mtypes='.$match_types.'&partners='.$partners.'&level='.$level.'&hc_loc='.$hc_loc_id.'&ttype='.$ttype.'&tsize='.$tsize.'&coup_code='.$coup_code.'&coup_disc='.$coup_disc.'&events='.$reg_events.'&occr='.$occr_json.'&nte_to_admin='.$note_to_admin.'&school_info='.$school_info.'&est_usatt_rating='.$est_usatt_rating;  
 					//payment success url
 					//echo $returnURL;
 					//exit;
@@ -5648,6 +6026,9 @@ document.f1.submit();
 
 				if($tour_det->Is_League == 1){
 				$this->paypal_lib->add_field('on2', $occr_json);
+				}
+				else if($this->input->post('new_usatt_opt')){
+				$this->paypal_lib->add_field('on2', $this->input->post('est_usatt_rating'));
 				}
 
 				$this->paypal_lib->add_field('item_number',  $tid);
@@ -5756,8 +6137,10 @@ document.f1.submit();
 						'page'				=> 'Send mail to tournament admin once user registration'
 						);
 						
+						if($tourn_id != 3513){
 						$this->email_to_player($row->EmailID, $subject, $data);
 						$this->email_to_player($tourn_admin_email, $subject, $tourn_admin_data);
+						}
 
 
 				    if(in_array("Doubles", $this->input->post('mtype')) or in_array("Mixed", $this->input->post('mtype'))){
@@ -5784,8 +6167,9 @@ document.f1.submit();
 										'event'		=> $event,
 										'page'		=> 'Tourn-Reg-Doubles'
 										);
-									
+									if($tourn_id != 3513){
 									$this->email_to_player($partner1_email, $subject, $data);
+									}
 							}
 						}
 
@@ -6080,7 +6464,8 @@ document.f1.submit();
 //			return number_format($b['win_per'], 2) - number_format($a['win_per'], 2);
 //		}
 
-function compareOrder($a, $b) {
+/*
+function compareOrder($a, $b) {  // commented to fix the 3460 issue
 	$result = 0;
 		if($a['points'] == $b['points']){
 			if ($b['win_per'] > $a['win_per']) {
@@ -6101,6 +6486,30 @@ function compareOrder($a, $b) {
 
    return $result; 
    }
+*/
+
+function compareOrder($a, $b) {
+	$result = 0;
+		if($a['points'] == $b['points']){
+			if ($b['win_per2'] > $a['win_per2']) {
+				$result = 1;
+			}
+			elseif ($b['win_per2'] < $a['win_per2']) {
+				$result = -1;
+			}
+		}
+		else{
+			if ($b['points'] > $a['points']) {
+				$result = 1;
+			}
+			elseif ($b['points'] < $a['points']) {
+				$result = -1;
+			}
+		}
+
+   return $result; 
+   }
+
 		public function compareOrder2($a, $b)
 		{
 			if($a['tp'] == $b['tp']){
@@ -6121,6 +6530,28 @@ function compareOrder($a, $b) {
 			}
 		}
 
+
+function compareOrder4($a, $b) {
+	$result = 0;
+		if($a['points'] == $b['points']){
+			if ($b['winper2'] > $a['winper2']) {
+				$result = 1;
+			}
+			elseif ($b['winper2'] < $a['winper2']) {
+				$result = -1;
+			}
+		}
+		else{
+			if ($b['points'] > $a['points']) {
+				$result = 1;
+			}
+			elseif ($b['points'] < $a['points']) {
+				$result = -1;
+			}
+		}
+
+   return $result; 
+   }
 
    public function compareDates($date1, $date2){
       if (strtotime($date1) < strtotime($date2))
@@ -6537,10 +6968,20 @@ function compareOrder($a, $b) {
 			$this->email->to($to_email);
 			$this->email->subject($subject);
 
-			$body = $this->load->view('view_email_template.php', $data, TRUE);
+			$body = $this->load->view('view_email_template', $data, TRUE);
 
 			$this->email->message($body);   
-			$this->email->send();
+			$snd_email = $this->email->send();
+
+			/*if($snd_email){ 
+				echo "Success<br/>";
+			}
+			else{ 
+				echo $this->email->print_debugger();
+				echo "Fail<br/>";
+			}
+exit;*/
+
 		}
 
 		 public function add_comment()
@@ -6625,26 +7066,22 @@ function compareOrder($a, $b) {
 				}
 				
 				/*echo json_encode($revised);
-				echo "<pre>";
-				print_r($revised);
-				print_r($_POST);
-				print_r($_FILES);
-				exit;*/
+				echo "<pre>"; print_r($revised); print_r($_POST); print_r($_FILES); exit;*/
 				
-				$data['sport']           = $this->input->post('sport');
-				$sport                   = $data['sport'];
+				$data['sport']				= $this->input->post('sport');
+				$sport							= $data['sport'];
 				$data['club_name']       = $this->input->post('clubname');
 			    $data['club_country']    = $this->input->post('clubcountry');
 			    $data['club_addr1']      = $this->input->post('addr_line1');
 			    $data['club_addr2']      = $this->input->post('addr_line2');
-			    $data['club_zipcode']    = $this->input->post('zipcode');
-				$data['club_state']      = $this->input->post('addclub_state');
-				$data['club_city']       = $this->input->post('clubcity');
+			    $data['club_zipcode']   = $this->input->post('zipcode');
+				$data['club_state']		= $this->input->post('addclub_state');
+				$data['club_city']			= $this->input->post('clubcity');
 				$data['club_website']    = $this->input->post('club_website');
-				$data['club_details']    = $this->input->post('club_details');
-				$data['contact_name']    = $this->input->post('contact_name');
-				$data['contact_email']   = $this->input->post('contact_email');
-				$data['contact_phone']   = $this->input->post('contact_phone');
+				$data['club_details']		= $this->input->post('club_details');
+				$data['contact_name']  = $this->input->post('contact_name');
+				$data['contact_email']	= $this->input->post('contact_email');
+				$data['contact_phone'] = $this->input->post('contact_phone');
 				$club_sports             = json_encode($this->input->post('clubsport'));
 				$data['club_sports']     = $club_sports;
 				$data['no_of_courts']    = $this->input->post('no_of_courts');
@@ -7104,7 +7541,8 @@ function compareOrder($a, $b) {
 			$details = $this->model_league->getonerow($tourn_id);
 
 				$data['tourn_id'] = $tourn_id;
-				if($details->Usersid == $this->session->userdata('users_id')){
+				if($details->Usersid == $this->session->userdata('users_id') 
+					or $details->Tournament_Director == $this->session->userdata('users_id')){
 					$data['r'] = $details;
 					$data['results'] = $this->model_news->get_news();
 					$data['teams'] = $this->model_league->Get_TournamentTeams($tourn_id);
@@ -7141,7 +7579,7 @@ function compareOrder($a, $b) {
 				$get_tour_admin = $this->get_logged_user_role($tourn_id);
 				//$get_tour_admin = $this->model_league->getonerow($tourn_id);
 				//echo $get_tour_admin->SportsType;exit();
-				if($get_tour_admin->Usersid == $this->logged_user or $this->is_super_admin or 1){
+				if($get_tour_admin->Usersid == $this->logged_user or $get_tour_admin->Tournament_Director == $this->logged_user or $this->is_super_admin or 1){
 				
 					if($get_tour_admin->SportsType == '4'){
 						foreach ($bracket_ids as $key => $bid) {
@@ -7194,7 +7632,9 @@ function compareOrder($a, $b) {
 				$get_tour_admin = $this->get_logged_user_role($tourn_id);
 				//$get_tour_admin = $this->model_league->getonerow($tourn_id);
 				//echo $get_tour_admin->SportsType;exit();
-				if($get_tour_admin->Usersid == $this->logged_user or $this->is_super_admin){
+				if($get_tour_admin->Usersid == $this->logged_user 
+					or $get_tour_admin->Tournament_Director == $this->logged_user 
+					or $this->is_super_admin){
 						foreach ($bracket_ids as $key => $bid) {
 							$res = $this->model_league->publish_draws($bid);
 						}
@@ -7212,7 +7652,9 @@ function compareOrder($a, $b) {
 				$get_tour_admin = $this->get_logged_user_role($tourn_id);
 				//$get_tour_admin = $this->model_league->getonerow($tourn_id);
 				//echo $get_tour_admin->SportsType;exit();
-				if($get_tour_admin->Usersid == $this->logged_user or $this->is_super_admin){
+				if($get_tour_admin->Usersid == $this->logged_user 
+					or $get_tour_admin->Tournament_Director == $this->logged_user 
+					or $this->is_super_admin){
 						foreach ($bracket_ids as $key => $bid) {
 							$res = $this->model_league->unpublish_draws($bid);
 						}
@@ -7251,6 +7693,10 @@ function compareOrder($a, $b) {
 		 	$fee		 = 0.00;
 		 	$tour_id = $this->input->post('tour_id');
 			$events  = $this->input->post('events');
+
+				$usatt_fee = 0;;
+			if($this->input->post('new_usatt_opt'))
+				$usatt_fee = 25.00;
 
 			//print_r($events);exit();
             $get_tour_info   = $this->model_league->getonerow($tour_id);
@@ -7291,6 +7737,9 @@ function compareOrder($a, $b) {
 				}
 		   }
            
+		   if($fee > 0)
+		   $fee += $usatt_fee;
+
             $sess_data = array('tour_reg_fee'=>number_format($fee, 2), 'reg_tour_id'=>$tour_id);
 
 			$this->session->set_userdata($sess_data);
@@ -7820,7 +8269,7 @@ function compareOrder($a, $b) {
 				 $data['subject']  = $subject;
 			     $data['msg']      = $body;
 			     $data['players']  = $player_ids_jsn;
-			     
+			     //echo "<pre>"; print_r($data); exit;
 				 $res = $this->model_league->insert_sendmail_tmparticipants($data);
 				 echo $res;
 			}
@@ -8089,10 +8538,11 @@ function compareOrder($a, $b) {
 			echo number_format($rem, 2);
 		}
 
+/*
 			public function regenerate_events($mult_events){
 			$revised_array = array();
-/*echo "<pre>";
-print_r($mult_events);*/
+//echo "<pre>";
+//print_r($mult_events);
 
 			foreach($mult_events as $key => $val){
 				if(is_numeric($key)){
@@ -8188,7 +8638,93 @@ print_r($mult_events);*/
 			//print_r($revised_array);
 			return $revised_array;
 		}
+*/
 
+
+			public function regenerate_events($mult_events){
+			$revised_array = array();
+/*echo "<pre>";
+print_r($mult_events);*/
+
+			foreach($mult_events as $key => $val){
+				if(is_numeric($key)){
+				   $arr = explode('-', $val);
+				   $ag		= $arr[0];
+				   if($arr[1] != 'Mixed'){
+					   if(in_array($arr[1], array('Singles','Doubles'))){
+						   $gen		= '';
+						   $format	= $arr[1];
+						   $level	= $arr[2];
+					   }
+					   else{
+						   $gen		= $arr[1];
+						   $format	= $arr[2];
+						   $level	= $arr[3];
+					   }
+				   }
+				   else{
+					   $gen		= $arr[1];
+					   $format	= '';
+					   $level	= $arr[2];
+				   }
+					
+				   $gen = $this->config->item($arr[0].'-'.$gen, 'age_gender_values');
+
+				   if( $arr[1] != 'Open')
+				   $get_level_label = league::get_level_name('', $level);
+
+					$lbl = '';
+					//if($get_level_label['SportsLevel'] != 'Open') // uncomment this if wants to hide the Open label in level section
+
+						$lbl = ' '.$get_level_label['SportsLevel'];
+				   $revised_array[$val] = $gen.' '.$format.$lbl;
+				  // ksort($revised_array);
+				}
+				else{
+				   $arr = explode('-', $key);
+				   $ag		= $arr[0];
+				   if($arr[1] != 'Mixed'){
+					   if(in_array($arr[1], array('Singles','Doubles'))){
+						   $gen		= '';
+						   $format	= $arr[1];
+						   $level	= $arr[2];
+					   }
+					   else{
+						   $gen		= $arr[1];
+						   $format	= $arr[2];
+						   $level	= $arr[3];
+					   }
+				   }
+				   else{
+					   $gen		= $arr[1];
+					   $format	= '';
+					   $level	= $arr[2];
+				   }
+				   
+				   $gen = $this->config->item($arr[0].'-'.$gen, 'age_gender_values');
+
+				   if( $arr[1] != 'Open')
+				   $get_level_label = league::get_level_name('', $level);
+
+						$lbl = '';
+
+					//if($get_level_label['SportsLevel'] != 'Open')
+						$lbl = ' '.$get_level_label['SportsLevel'];
+
+
+					if(is_numeric($val)){
+					$revised_array[$gen.' '.$format.$lbl] = number_format($val, 2);
+					}
+					else{
+					$revised_array[$gen.' '.$format.$lbl] = $val."+".$arr[1];
+					}
+				   //ksort($revised_array);
+				}
+			}
+			
+			//print_r($revised_array);
+			return $revised_array;
+		}
 
 	    public function get_reg_tourn_participants_new($tourn_id){
 			$res = $this->model_league->get_reg_tourn_participants($tourn_id);
@@ -8240,7 +8776,7 @@ print_r($mult_events);*/
 			if($this->logged_user){
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);			
 
-				if($tr_det->Usersid == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
+				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
 				else if($this->session->userdata('users_id') == 3380 and $tid == 2383){
@@ -8266,7 +8802,9 @@ print_r($mult_events);*/
 		}
 
 		public function viewtournament($tid, $stat = '', $org_id = '')
-		{	
+		{
+			$this->session->unset_userdata('draw');
+			
 			$data['org_url_key'] = "";
 
 			if($org_id){
@@ -8282,13 +8820,20 @@ print_r($mult_events);*/
 			$tr_det = $this->model_league->getonerow($tid);
 			if($tr_det)
 			{
+
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);
 
-				if($tr_det->Usersid == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
+				if($tr_det->Tournament_Director == $this->logged_user 
+					or $tr_det->Usersid == $this->logged_user 
+					or $this->is_super_admin){    // tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
 				else if($is_reg){
 				$this->logged_user_role = 'RegPlayer';
+				}
+
+				if($this->logged_user_role != 'Admin' and !$this->is_super_admin and !$tr_det->Is_Publish){
+					echo "<h3>Invalid Tournament!</h3>"; exit;
 				}
 
 				$this->is_team_league = ($tr_det->tournament_format  == 'Teams' || $tr_det->tournament_format  == 'TeamSport') ? 1 : 0;
@@ -8308,7 +8853,7 @@ print_r($mult_events);*/
 				$data['valid_draws_count']  = $count;
 				$data['show_draw_bid']		= 0;
                
-				if(($this->logged_user) and ($tr_det->Usersid != $this->logged_user)){
+				if($this->logged_user and ($tr_det->Usersid != $this->logged_user and $tr_det->Tournament_Director != $this->logged_user)){
 
 
 					$brackets = $this->get_bracket_list($tid);
@@ -8410,18 +8955,18 @@ print_r($mult_events);*/
 
 				//echo 'ddd'.$data['uaddr'];
 				if($data['udob'] == '0' or $data['uaddr'] == '0' or $data['uemail'] == '0'){
-					$data['r']		 = $tr_det;
-					$data['results'] = $this->model_news->get_news();
+					$data['r']		   = $tr_det;
+					$data['results']  = $this->model_news->get_news();
 					$this->load->view('tournament/view_update_basic_profile', $data); 
 					$this->load->view('includes/view_right_column',$data);
 				}
 				else{
 					$data['show_landing_page'] = 1;
 					$data['tourn_comments'] = $this->general->get_tourn_comments($tid);
-					$data['no_of_brackets'] = $this->model_league->get_bracket_count($tid);
-					$data['tourn_teams']	= $this->model_league->Get_TournamentTeams($tid);
-
-					$data['sponsor_details'] = $this->model_league->get_sponsorships($tid);
+					$data['no_of_brackets']	 = $this->model_league->get_bracket_count($tid);
+					$data['tourn_teams']		 = $this->model_league->Get_TournamentTeams($tid);
+					$data['sponsor_details']  = $this->model_league->get_sponsorships($tid);
+					$data['is_check_in']		 = $this->model_league->is_player_checkin($tid, $this->logged_user);
 
 					$this->load->view('view_tournament_new', $data);
 				}
@@ -8502,8 +9047,16 @@ print_r($mult_events);*/
 			$data['match_type']  = $get_bracket['Match_Type'];
 			$tr_id						   = $get_bracket['Tourn_ID'];
 			$data['club_url']		   = $this->input->post('club_url');
+			$data['usr']				= $this->input->post('usr');
 			
+
 			$tourn_det = $this->model_league->getonerow($tr_id);
+
+			if($this->input->post('usr') and ($tourn_det->Usersid == $this->input->post('usr') or $tourn_det->Tournament_Director == $this->input->post('usr') or $this->input->post('usr') == 240)){
+					$this->logged_user_role = "Admin";
+					$this->is_super_admin   = 1;
+			}
+
             $data['tour_details'] = $tourn_det;
             $data['tourn_det'] = $tourn_det;
 			if($get_bracket['Bracket_Type'] == 'Single Elimination'){
@@ -8686,10 +9239,10 @@ print_r($mult_events);*/
 
 		public function ShowMatches($bracket_id){
 
-			$data['bracket_id']  = $bracket_id;
-			$get_bracket_details = $this->model_league->get_tourn_bracket($bracket_id);
-			$data['match_type']  = $get_bracket_details['Match_Type'];
-			$tr_id				 = $get_bracket_details['Tourn_ID'];
+			$data['bracket_id']		= $bracket_id;
+			$get_bracket_details	= $this->model_league->get_tourn_bracket($bracket_id);
+			$data['match_type']		= $get_bracket_details['Match_Type'];
+			$tr_id							= $get_bracket_details['Tourn_ID'];
 	
 			if($this->session->userdata('users_id') == 3380 and $tr_id == 2383){
 			$this->logged_user_role = "Admin";
@@ -8799,6 +9352,10 @@ print_r($mult_events);*/
 
 		 public function register_more($tourn_id)
 		 {
+			if(!$this->logged_user){
+				redirect('login');
+			}
+
 			$tourn_id	 = $this->uri->segment(3);
             //echo $tourn_id;
 			$details	 = $this->model_league->getonerow($tourn_id);
@@ -8806,7 +9363,11 @@ print_r($mult_events);*/
 			$reg_close	 = strtotime($details->Registrationsclosedon) + $oneday;
 			$tourn_sport = $details->SportsType;
 			$is_reg		 = 0;
-			
+		
+			if(!$details->Is_Publish and !$this->is_super_admin and $this->logged_user != $details->Usersid and $this->logged_user != $details->Tournament_Director) {
+					echo "<h3>Invalid Tournament!</h3>"; exit;
+			}
+
 				$is_reg = $this->model_league->get_reg_tournment($tourn_id);	
 
 			//if($now < $reg_close or $is_reg){
@@ -8854,8 +9415,10 @@ print_r($mult_events);*/
 							}
 						}
 
-					}           
-                 
+					}     
+					//if($this->logged_user == 237)
+	               //  echo "<pre>"; print_r($user_reg_ag_grps); exit;
+				
 					$details	= $this->model_league->getonerow($tourn_id);
 					$check_dob	= $this->model_league->check_user_dob($user_id);
 					$check_addr	= $this->model_league->check_user_addr($user_id);
@@ -8907,6 +9470,14 @@ print_r($mult_events);*/
 			$mx		 = $this->input->post('mx');
 
 			$user_reg_age_grps = json_decode($this->input->post('user_reg_age_grps'));
+
+			// -------------------
+			foreach($user_reg_age_grps as $reg_ag_grp){
+				if(strpos($reg_ag_grp, 'dults_') and !in_array('Adults', $user_reg_age_grps)){
+					$user_reg_age_grps[] = 'Adults';
+				}
+			}
+			// -------------------
 
 			$get_tour_info = $this->model_league->getonerow($tour_id);
 
@@ -8970,6 +9541,7 @@ print_r($mult_events);*/
 		}
 
 		public function load_participants($tid){
+			//error_reporting(-1);
 			$tid	= $this->input->post('tid');
 			$tr_det = $this->get_logged_user_role($tid);
 			$this->is_team_league = ($tr_det->tournament_format  == 'Teams' || $tr_det->tournament_format  == 'TeamSport') ? 1 : 0;
@@ -8983,7 +9555,7 @@ print_r($mult_events);*/
 			}
 		}
 
-		public function load_draws_results($tid){
+		public function load_draws_results($tid=''){
 			$tid	= $this->input->post('tid');
 			$data['club_url'] = $this->input->post('club_url');
 			$tr_det = $this->get_logged_user_role($tid);
@@ -9042,6 +9614,7 @@ print_r($mult_events);*/
 
 		public function load_gallery(){
 			$tid	= $this->input->post('tid');
+			$data['club_url'] = $this->input->post('club_url');
 			$tr_det = $this->get_logged_user_role($tid);
 			$data['tour_details'] = $tr_det;
             $data['get_images'] = $this->model_league->get_individual_tourn_images($tid);
@@ -9050,6 +9623,7 @@ print_r($mult_events);*/
 
 		public function load_editdesc(){
 			$tid = $this->input->post('tid');
+			$data['club_url'] = $this->input->post('club_url');
             $res = $this->model_league->getonerow($tid);
 			$data['tourn_id']  = $res->tournament_ID;
 			$data['tour_desc'] = $res->TournamentDescription;
@@ -9179,7 +9753,7 @@ print_r($mult_events);*/
 				$data['is_academy_league'] = 1;
 			}
 
-			 if($tournament_details->Usersid == $user_id or $this->is_super_admin){
+			 if($tournament_details->Usersid == $user_id or $tournament_details->Tournament_Director == $user_id or $this->is_super_admin){
 				 		$total_agegroups  = array();
 						$total_sprt_lvls  = array();
 						$multiEvents_keys = array();
@@ -9256,12 +9830,25 @@ print_r($mult_events);*/
 					$data['coupon_codes'] = $this->model_league->get_coupon_codes($tournament_details->tournament_ID);
 					/* ***************************** CouponCode code ************************************* */
 
+				if($tournament_details->Is_League == 1){
+					$data['game_days'] = $this->model_league->get_league_occr($tournament_details->tournament_ID);
+
+				}
+//if($this->logged_user == 240){
+//echo "<pre>"; print_r($data); exit;
+//}
 				if($org_id)
 					$this->load->view('academy_views/includes/academy_league_header', $data);
 				else
 					$this->load->view('includes/header', $data);
-						$this->load->view('view_edit_tournament',$data);
-						$this->load->view('includes/view_right_column',$data);
+
+				if($tournament_details->Is_League == 1)
+					$this->load->view('view_edit_league', $data);
+				else
+					$this->load->view('view_edit_tournament', $data);
+
+					$this->load->view('includes/view_right_column', $data);
+
 				if($org_id)
 					$this->load->view('academy_views/includes/academy_league_footer');
 				else
@@ -9436,15 +10023,14 @@ print_r($mult_events);*/
 			//echo "<pre>";
 			$user			= $this->input->post('user');
 			$tformat		= $this->input->post('tformat');
-			$brc_type		= $this->input->post('brc_type');
 			$sport			= $this->input->post('sport');
 			$target_group	= $this->input->post('target_group');
-			$tourn_id		= $this->input->post('tourn_id');
+			$tourn_id			= $this->input->post('tourn_id');
 			$groups			= unserialize($this->input->post('groups'));
 
-			if($tformat == 'Teams'){
-				$this->is_team_league = 1;
-			}
+				if($tformat == 'Teams'){
+					$this->is_team_league = 1;
+				}
 			
 			$num_grps		= 0;
 			$err_count		= array();
@@ -9469,9 +10055,99 @@ print_r($mult_events);*/
 						$err_count[] = $i;
 				}
 			}
-		//	echo "<pre>";
+
+// when player swap b/w group, need to place him based on the rating.
+$temp_groups = '';
+
+foreach($groups as $i => $group){
+
+$temp_plyrs = '';
+foreach($group as $user){
+		$players = explode('-', $user);
+		$userInfo = $this->getUserInfo($players[0], $sport);
+		if($draw_format == 'doubles'){
+			$user_a2m = ($sport != 7) ? $userInfo['A2MScore_Doubles'] : number_format($userInfo['A2MScore_Doubles'], 3);
+		}
+		else if($draw_format == 'mixed'){
+			$user_a2m = ($sport != 7) ? $userInfo['A2MScore_Mixed'] : number_format($userInfo['A2MScore_Doubles'], 3);
+		}
+		else{
+			$user_a2m = ($sport != 7) ? $userInfo['A2MScore'] : number_format($userInfo['A2MScore_Doubles'], 3);
+		}
+		$temp_plyrs[$user] = $user_a2m;
+}
+
+//krsort($temp_plyrs);
+//$group = array_values($temp_plyrs);
+arsort($temp_plyrs);	
+$group = array_keys($temp_plyrs);
+$temp_groups[$i] = $group;
+}
+$groups = $temp_groups;
+// when player swap b/w group, need to place him based on the rating.
+
+
+		//echo "<pre>";
 		//print_r($groups);
 			$data['groups']	   = $groups;
+			$data['num_grps']  = $num_grps;
+			$data['tourn_id']  = $tourn_id;
+			$data['tformat']   = $tformat;
+			$data['sport']	   = $sport;
+			$data['err_count'] = $err_count;
+			$data['rr_multi_rounds'] = $this->input->post('rr_multi_rounds');
+			$data['draw_format']		= $this->input->post('draw_format');
+			$data['br_game_day']	= $this->input->post('br_game_day');
+			$data['is_publish_draw'] = $this->input->post('is_publish_draw');
+			$data['brc_type']			= $this->input->post('brc_type');
+			$data['courts_new']		= $this->input->post('courts_new');
+			$data['match_timings']	= $this->input->post('match_timings');
+
+			echo $this->load->view('view_bracket_groups', $data);
+		}
+
+
+			public function remove_group_players(){
+			//echo "<pre>";
+			$user			= $this->input->post('user');
+			$tformat		= $this->input->post('tformat');
+			$brc_type		= $this->input->post('brc_type');
+			$sport			= $this->input->post('sport');
+			$target_group	= $this->input->post('group_id');
+			$tourn_id		= $this->input->post('tourn_id');
+			$groups		= unserialize($this->input->post('groups'));
+			//$groups		= $this->input->post('new_grp');
+
+			if($tformat == 'Teams'){
+				$this->is_team_league = 1;
+			}
+			
+			$num_grps		= 0;
+			$err_count		= array();
+			foreach($groups as $i => $group){
+			$key = '';
+			$key = array_search($user, $group);
+
+				if(is_numeric($key)){
+					//echo 'k'.$key;
+					unset($groups[$i][$key]);
+					$groups[$i] = array_values($groups[$i]);
+				}
+				$num_grps++;
+			}
+
+			//$groups[$target_group][] = $user;
+			foreach($groups as $i => $group){
+				if(count($groups[$i]) < 3){
+					if(count($groups[$i]) == 0)
+						unset($groups[$i]);
+					else
+						$err_count[] = $i;
+				}
+			}
+		//	echo "<pre>";		print_r($groups);
+
+			$data['groups']		= $groups;
 			$data['num_grps']  = $num_grps;
 			$data['tourn_id']  = $tourn_id;
 			$data['tformat']   = $tformat;
@@ -9479,6 +10155,12 @@ print_r($mult_events);*/
 			$data['sport']			= $sport;
 			$data['err_count'] = $err_count;
 			$data['rr_multi_rounds'] = $this->input->post('rr_multi_rounds');
+			$data['draw_format']		= $this->input->post('draw_format');
+			$data['br_game_day']	= $this->input->post('br_game_day');
+			$data['is_publish_draw'] = $this->input->post('is_publish_draw');
+			$data['brc_type']			= $this->input->post('brc_type');
+			$data['courts_new']		= $this->input->post('courts_new');
+			$data['match_timings']	= $this->input->post('match_timings');
 
 			echo $this->load->view('view_bracket_groups', $data);
 		}
@@ -9824,21 +10506,22 @@ print_r($mult_events);*/
 			$reg_players = $this->model_league->get_reg_players($tourn_id);
 			$report		 = array();
 			$data['club_url'] = $this->input->post('club_url');
+			$format = $this->input->post('df');
 
 			foreach($reg_players as $reg_pl){
 				$player				 = $reg_pl->Users_ID;
-				$get_player_matches  = $this->model_league->get_player_matches($tourn_id, $player);
+				$get_player_matches  = $this->model_league->get_player_matches($tourn_id, $player, $format);
 				
 				if(count($get_player_matches) > 0){
 					$player_det = $this->model_league->get_user_name($player);
 
 				
-					$get_init_rating = $this->model_league->get_lg_std_init_ratings($player, $tourn_id);
+					$get_init_rating = $this->model_league->get_lg_std_init_ratings($player, $tourn_id, $format);
 			
 					if($get_init_rating['Init_Rating'] != NULL and $get_init_rating['Init_Rating'] != 'NULL' and $get_init_rating['Init_Rating'] != ''){
 						//echo "testing ".$get_init_rating['Init_Rating']; exit;
 						$init_a2m   = $get_init_rating['Init_Rating'];
-						$final_a2m = $this->model_league->get_lg_std_final_ratings($player, $tourn_id, $init_a2m);
+						$final_a2m = $this->model_league->get_lg_std_final_ratings($player, $tourn_id, $format);
 						$change = $final_a2m - $init_a2m;
 					}
 					else{
@@ -10203,10 +10886,14 @@ print_r($mult_events);*/
 
 		public function user_usatt_update(){
 
-			$this->model_league->user_usatt_update();
+			$stat = $this->model_league->user_usatt_update();
 			$tour_id = $this->input->post('txt_tid');
 
 			$redirect = $this->input->post('txt_red');
+			if(!$stat){
+				$this->session->set_flashdata('err_msg', "Given ID(#".$this->input->post('usatt_member_id').") is not matching with USATT Records. Please contact Tournament Director.");
+			}
+//echo $this->session->flashdata('err_msg'); exit;
 
 			if($redirect == 'league_view'){
 				redirect("league/$tour_id");
@@ -10230,7 +10917,7 @@ print_r($mult_events);*/
 			
 			if($user){
 				$tour_details = $this->model_league->getonerow($tid);
-				if($this->logged_user == $tour_details->Usersid or $this->is_super_admin){
+				if($this->logged_user == $tour_details->Usersid or $this->logged_user == $tour_details->Tournament_Director or $this->is_super_admin){
 					$upd = $this->model_league->update_user_a2m($user, $tour_details->SportsType, $sl_val, $db_val, $mx_val);
 
 					if($tour_details->SportsType != 7){
@@ -10941,7 +11628,12 @@ $sno++;
 		public function get_league_occr($tourn_id){
 			return $this->model_league->get_league_occr($tourn_id);
 		}
-		
+
+		public function get_occr_info($ocr_id){
+			return $this->model_league->get_occr_info($ocr_id);
+		}
+
+
 		public function get_ocr_players(){
 			$ocr = $this->input->post('ocr_id');
 			$tourn_id = $this->input->post('tourn_id');
@@ -10954,4 +11646,182 @@ $sno++;
 
 				echo $this->load->view('academy_views/tournament/view_players_section', $data2);
 		}
+
+		public function check_in(){
+			$tourn_id = $this->input->post('tourn_id');
+			$this->model_league->update_checkIn($this->logged_user, $tourn_id, 1);
+			//$this->session->set_flashdata('check_in_success', 'Successfully Checked In');
+			echo "Successfully Checked In. Thank you";
+		}
+
+		public function set_bracket_session(){
+			$sess_data							= array();
+			$sess_data['draw']['format']	= $this->input->post('draw_format');
+			$sess_data['draw']['is_checkin']	= $this->input->post('is_checkin');
+			$sess_data['draw']['ttype']	= $this->input->post('ttype');
+			$sess_data['draw']['filters']	= array_unique($this->input->post('match_type'));
+			$sess_data['draw']['users']	= $this->input->post('users');
+			$sess_data['draw']['is_groups']	= $this->input->post('is_groups');
+			$sess_data['draw']['sel_groups']	= $this->input->post('sel_groups');
+			$sess_data['draw']['sel_game_days']			= $this->input->post('sel_game_days');
+			$sess_data['draw']['draw_format']	= $this->input->post('draw_format');
+			$sess_data['draw']['is_group_top_players']	= $this->input->post('is_group_top_players');
+			$sess_data['draw']['is_sch_courts']	= $this->input->post('is_sch_courts');
+
+			$this->session->set_userdata($sess_data);
+			
+			/*echo "<pre>";
+			print_r($this->session->userdata('draw'));
+			echo "<br>------";
+			print_r($_POST);
+			exit;*/
+		}
+		
+		public function get_game_day($gd){
+			return $this->model_league->get_game_day($gd);
+		}
+
+		 public function auto_reg_players($param = ''){
+			$q	   = $_POST['name_startsWith'];
+			$tid  = $data['tid'] = $_POST['tid'];
+
+			$data['key'] = trim($q);
+
+			$result = $this->general->search_autocomplete($data);
+
+				if($result){
+					$data_new = array();
+					foreach($result as $row){
+						//$get_a2m = $this->general->get_a2msocre($sp_type, $row->Users_ID);
+						//$name = $row->Firstname.' '.$row->Lastname.'|'.$row->Users_ID.'|'.$row->City.'|'.$row->State			.'|'.$get_a2m['A2MScore'].'|'.$row->Gender;
+						$name = $row->Firstname.' '.$row->Lastname.'|'.$row->Users_ID.'|'.$row->City.'|'.$row->State.'|'.$row->Gender;
+						array_push($data_new, $name);	
+					}
+				}
+				else{
+					$data_new = array();
+					$name = "No match found!";
+					array_push($data_new, $name);	
+				}
+			 
+			 echo json_encode($data_new);
+			 exit;
+		 }
+
+		 public function get_event_title($event_id){
+			$event_title = "";
+
+				   $arr = explode('-', $event_id);
+				   $ag		= $arr[0];
+				   if($arr[1] != 'Mixed'){
+					   if(in_array($arr[1], array('Singles','Doubles'))){
+						   $gen		= '';
+						   $format	= $arr[1];
+						   $level	= $arr[2];
+					   }
+					   else{
+						   $gen		= $arr[1];
+						   $format	= $arr[2];
+						   $level	= $arr[3];
+					   }
+				   }
+				   else{
+					   $gen		= $arr[1];
+					   $format	= '';
+					   $level	= $arr[2];
+				   }
+				   
+				   $gen = $this->config->item($arr[0].'-'.$gen, 'age_gender_values');
+
+				   if( $arr[1] != 'Open')
+				   $get_level_label = league::get_level_name('', $level);
+
+					$lbl = '';
+					$lbl = ' '.$get_level_label['SportsLevel'];
+
+					$event_title = $gen.' '.$format.$lbl;
+
+			return $event_title;
+		}
+
+		public function delete_tourn($tourn_id){
+
+
+			$check_tourn = $this->model_league->check_scores($tourn_id);
+
+			if($check_tourn > 0){
+				echo "<h3><b>This tournament can not be deleted!</b></h3>";
+				exit;
+			}
+			else{
+				echo "<h1><b>This tournament can be deleted!</b></h1>";
+				exit;
+			}
+		}
+
+		public function test_tourn_email($tourn_id){
+                $tourn_det = $this->model_league->getonerow($tourn_id);
+
+				$userdat							=	$this->get_username('10891');
+				$tourn_admin_email			=	$userdat['EmailID'];
+				$tourn_admin_firstname	=	$userdat['Firstname'];
+				$tourn_admin_lastname	=	$userdat['Lastname'];
+
+				$tourn_admin_data = array(
+												'admin_firstname'	=> $tourn_admin_firstname,
+												'admin_lastname'	=> $tourn_admin_lastname,
+												'tourn_id'				=> $tourn_id,
+												'title'						=> $tourn_det->tournament_title,
+												'page'					=> 'Tournament Creation Admin Notif'
+												);
+
+				$subject	= "Tournament Creation Notification!";
+
+				$s_email  =	$this->email_to_player($tourn_admin_email, $subject, $tourn_admin_data);
+
+                if($tourn_det->Short_Code!="")
+                   redirect("$tourn_det->Short_Code");
+				else
+                   redirect("league/$tourn_id");
+		}
+
+		public function unpublish($tourn_id) {
+			$this->get_logged_user_role($tourn_id);
+
+			if($this->logged_user_role == "Admin" or $this->is_super_admin){
+				$this->model_league->unpulish_league($tourn_id);
+				redirect("league/$tourn_id");
+			}
+			else{
+				echo "Invalid Request!"; exit;
+			}			
+		}
+
+		public function publish($tourn_id) {
+			$this->get_logged_user_role($tourn_id);
+
+			if($this->logged_user_role == "Admin" or $this->is_super_admin){
+				$this->model_league->pulish_league($tourn_id);
+				redirect("league/$tourn_id");
+			}
+			else{
+				echo "Invalid Request!"; exit;
+			}
+		}
+
+		public function is_draw_complete($bracket_id){
+			return $this->model_league->is_draw_complete($bracket_id);
+		}
+
+		//public function get_player_standings($bracket_id){
+		//}
+		public function is_user_reg_event($tid, $event){
+			$check_reg = $this->model_league->is_user_reg_event($tid, $event);
+			return $check_reg;
+		}
+
+		/*public function get_user($user_id){
+			$get_user = $this->model_league->get_user($user_id);
+			return $get_user;
+		}*/
 }

@@ -24,8 +24,6 @@
             <input name="player_name" id="player_name" type="text" value="<?php echo set_value('player_name');?>" class="formbox">
         </p>
 		
-		 <p>
-               <input name="submit" id="submit" type="submit" value="Submit">
-        </p>
+		 <p><input name="submit" id="submit" type="submit" value="Submit" /></p>
 		
 	</form>

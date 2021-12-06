@@ -156,6 +156,12 @@
 			return $query->row_array();
 		}
 
+		public function get_gpa_ratings($email){
+			$data = array('Email'=>$email);
+			$query = $this->db->get_where('GPA_Ratings', $data);
+			return $query->row_array();
+		}
+
 		public function get_addr()
 		{
 			$data = array('Users_ID'=>$this->session->userdata('users_id'));

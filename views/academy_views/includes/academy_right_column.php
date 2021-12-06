@@ -163,13 +163,15 @@ var user = $('#txt_ac_pom_id').val();
 						 $res = substr($s, 0, strrpos($s, ' '));
 
 						 echo $res . "...";
+						 //exit;
 					?>
 					</a>
 					</p>
                     <p class="txt-right">
 					<?php 
 						$abc = strip_tags($row->News_content);
-						$result = substr($abc, 0, strpos($abc, '.'));
+						//$result = substr($abc, 0, strpos($abc, '.'));
+						$result = substr($abc, 0, 300);
 
 						echo $result . "...";
 					?>
@@ -315,4 +317,6 @@ var user = $('#txt_ac_pom_id').val();
 		  </div>
 		  </div>
 		  </div>
+
+		  </div><!-- Container close -->
 		  </section>

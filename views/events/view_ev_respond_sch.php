@@ -1,12 +1,12 @@
 <script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
 
-<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-1.9.1.js"></script> -->
 
 <script type="text/javascript">
 $(document).ready(function () {
 	$(function () {
 	"use strict";
-	$('.accordion').accordion({ defaultOpen: 'no_section' }); //some_id section1 in demoup_tour_section
+	$('.accordion').accordion({ defaultOpen: 'section1' }); //some_id section1 in demoup_tour_section
 	});
 
 	$('.edit_img').on('click',function(){
@@ -124,10 +124,10 @@ $('#send_comment').on('click', function(e) {
 
 var ev_id = $('#ev_id').val();
 var mes = $('#message').val();
-
+var club_baseurl = "<?php echo $this->config->item('club_pr_url'); ?>";
 	  $.ajax({
 		type: 'POST',
-		url: baseurl+'events/add_comment',
+		url: club_baseurl+'/events/add_comment',
 		data:{message:mes,event_id: ev_id},
 		success: function(res) {
 		 $('#message').val("");
@@ -351,11 +351,11 @@ $i++;
 <?php
 foreach($ev_rep_schedule as $rep_sch){
 ?>
-<td width="147" align='center'><b><?php 
-
-	$get_accpted_count = $this->model_event->get_res_count($rep_sch->Ev_Tab_ID);
-	
-	echo $get_accpted_count;
+<td width="147" align='center'>
+<b>
+<?php
+$get_accpted_count = $this->model_event->get_res_count($rep_sch->Ev_Tab_ID);
+echo $get_accpted_count;
 ?>
 </b>
 </td>
@@ -366,7 +366,27 @@ foreach($ev_rep_schedule as $rep_sch){
 
 </table>
 </div>
-		<br /><br />
+<br /><br />
+
+
+<div id="comments" style="margin-bottom: 10px; margin-top: 10px;">
+<?php
+$num = $this->uri->segment(4);
+switch($num){
+
+case '6': 
+?>
+<div class="name" align='left'>
+<label for="name_login" style="color:green"><?php echo "Successfully registered for this event. Provide your comments here if any. Thank you.<br />"; ?></label>
+</div>
+<?php 
+break;
+
+}
+?>
+</div>
+
+
 
 		<?php if($is_ev_user or ($ev_det['Ev_Created_by'] == $this->session->userdata('users_id'))){?>
 		<div class='col-md-2 form-group internal' valign='middle'>
@@ -391,10 +411,12 @@ foreach($ev_rep_schedule as $rep_sch){
 		$name = events :: get_user_det($comment->Users_id);
 		?>
 			<div class='pull-left' style="margin-right:20px"><img style="width:50px !important; height:50px !important;" class='img-circle' src='<?php 
-			if($name['Profilepic']){
-			echo base_url()."profile_pictures/$name[Profilepic]"; }
+			if($name['Profilepic'] != ''){
+			echo base_url()."profile_pictures/{$name[Profilepic]}";
+			}
 			else{
-			echo base_url()."profile_pictures/default-profile.png"; }
+			echo base_url()."profile_pictures/default-profile.png";
+			}
 			?>' />
 			</div>
 			<div style="margin-top:5px">
@@ -402,7 +424,6 @@ foreach($ev_rep_schedule as $rep_sch){
 				<div style="margin-top:5px;"><?php echo $comment->Comments; ?></div>
 			</div>
 			<div style='clear:both; height:20px'></div>
-
 		<?php
 		} ?>
 		</div>

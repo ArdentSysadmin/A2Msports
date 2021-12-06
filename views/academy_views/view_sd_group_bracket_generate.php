@@ -58,11 +58,21 @@ var baseurl = "<?php echo base_url();?>";
 
 <form method="post" id="myform" action='<?=$this->club_form_url;?>league/bracket_save' class="col-md-12 login-page">
 <?php
+	if($this->input->post('br_game_day') != ''){
+		$game_date = league::get_game_day($this->input->post('br_game_day'));
+		$draw_title_date = date('M d, Y', strtotime($game_date));	
+	}
+	else{
+		$draw_title_date =  date('M d, Y');	
+	}
+
 foreach($groups as $g => $group){
 	//echo "<pre>";	print_r($group);	exit;
+	$draw_title = $draw_title_date." - Group{$g}";
+
 ?>
 <label>Group-<?=$g;?></label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
-<input class="form-control" type="text" name="draw_title[<?=$g;?>]" id="draw_title" value='Group-<?=$g;?>' required />
+<input class="form-control" type="text" name="draw_title[<?=$g;?>]" id="draw_title" value="<?=$draw_title;?>" required />
 <? //--------------------------------------------------------------------------------------------------------------- 
 $sd_matches = $grp_sd_matches[$g];
 

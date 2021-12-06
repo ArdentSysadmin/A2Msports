@@ -3,6 +3,27 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
+function isValidDate(s) {
+  var bits = s.split('/');
+  var d = new Date(bits[2] + '/' + bits[1] + '/' + bits[0]);
+  return !!(d && (d.getMonth() + 1) == bits[1] && d.getDate() == Number(bits[0]));
+}
+
+//Test it!
+//var currentDate = new Date('31/19/2011');
+//console.log(isValidDate(currentDate.toString()));
+//console.log(isValidDate('30/29/2011'));
+$(document).ready(function(){
+/*
+$('#custom_txt_dob').blur(function(){
+	if(!isValidDate($(this).val())){
+		alert("Invalid date format (" +$(this).val()+ "). It should be mm/dd/yyyy");
+		$(this).val('');
+	}
+});
+*/
+});
+
 $('#Singles_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
 $('#Doubles_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
 $('#Mixed_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
@@ -834,7 +855,7 @@ else
 
 	$check_user_usatt_membership = league::is_logged_user_having_memeberhip($r->SportsType);
 //echo $ugender; exit;
-	if(!$udob or !$uaddr or !$uemail or !$ugender){
+	if(!$udob or !$uaddr or !$uemail or !$ugender or !$umob){
 ?>
 <form class="form-horizontal" id='myform_dob' method='post' role="form"  action="<?php echo base_url(); ?>league/uprofile">
 <div class='col-md-8'>
@@ -849,10 +870,12 @@ else
 	<label class='control-label col-md-3 padtop' for='id_accomodation'>Date of Birth:</label>
 	<div class='col-md-8 form-group internal text1'>
 		<div class='input-group date'>
-		<input type="text" class='form-control custom_date' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob" maxlength="10" required /> 
+		<!-- <input type="text" class='form-control custom_date' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob" maxlength="10" required /> 
 		<span class="input-group-addon custom_datepicker" id='txt_dob' style="cursor:pointer;">
 			<span class="fa fa-calendar"></span> 
-		</span>
+		</span> -->
+		<input type="date" class='form-control' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob"  max="<?php echo date('Y-m-d', strtotime('-3 years')); ?>" required /> 
+
 		</div>
 	</div>
 	</div>
@@ -879,6 +902,14 @@ else
 	</div>
 	</div>
 	<?php } 
+	if(!$umob) { ?>
+	<div class='form-group'>
+	<label class='control-label col-md-3 padtop' for='id_accomodation'>Mobile #:</label>
+	<div class='col-md-8 form-group internal text1'>
+	<input class='form-control' id="txt_mob" type="text" name="txt_mob" value="" required />
+	</div>
+	</div>
+	<?php }
 	if(!$uaddr) { ?>
 	<!-- Gather address info. if not available -->
 
@@ -1317,6 +1348,14 @@ $i = 0;
 		echo "<div class='col-md-8 form-group internal text1'><table style='padding:1px; font-family:Open Sans, sans-serif; font-size:14px;'>";
 		//echo "<pre>";
 		//print_r();
+		$prev_reg_occrs = array();
+
+		if($reg_occr){
+			foreach($reg_occr as $occr){
+				$prev_reg_occrs[] = $occr->OCCR_ID;
+			}
+		}
+
 		foreach ($event_format as $event => $event1) {
 			
   	    $eventsarr  = explode('-', $event); 
@@ -1536,9 +1575,22 @@ $i = 0;
       /*echo "<tr><td><input type='checkbox' class='".$fee_class." get_occr' name='events[]' value='".$key."' autocomplete='off'/>&nbsp;"."<span>".trim($value)."</span>"."&nbsp;&nbsp;<input type='checkbox' class='".$fee_class." lg_events' name='whole_lg_events[]' value='".$key."' autocomplete='off' />&nbsp;Whole League?"."</td></tr>";*/
 
       //echo "<tr><td><input type='checkbox' class='".$fee_class." get_occr' name='events[]' value='".$key."' autocomplete='off'/>&nbsp;"."<span>".trim($value)."</span>"."</td></tr>";
-      echo "<tr><td><input type='checkbox' class='".$fee_class." get_occr' name='events[]' value='".$key."' autocomplete='off'/>&nbsp;"."<span>".trim($value)."</span>&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee  lg_events' name='whole_lg_events[]' value='".$key."' autocomplete='off' />&nbsp;Whole League?"."</td></tr>";
+
+      if($show_wh_league){
+		  echo "<tr><td><input type='checkbox' class='".$fee_class." get_occr' name='events[]' value='".$key."' autocomplete='off'/>&nbsp;"."<span>".trim($value)."</span>&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee  lg_events' name='whole_lg_events[]' value='".$key."' autocomplete='off' />&nbsp;Select All Game Days?"."</td></tr>";
+	  }
+	  else{
+		  echo "<tr><td><input type='checkbox' class='".$fee_class." get_occr' name='events[]' value='".$key."' autocomplete='off'/>&nbsp;"."<span>".trim($value)."</span>&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee  lg_events' name='whole_lg_events[]' value='".$key."' autocomplete='off' />&nbsp;Select All Game Days"."</td></tr>";
+	  }
+
+	  $now = strtotime(date('Y-m-d'));
 	  foreach($lg_occr[$key] as $occr){
-		echo "<tr class='tr_".$key."' style='display:none;'><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee' id='occr_".$key."' name='occr_ids[]' value='".$occr[0].":".$key."' autocomplete='off' />&nbsp;"."<span>".date("M d, Y H:i", strtotime($occr[1]))."</span>"."</td></tr>";
+		  if(!in_array($occr[0], $prev_reg_occrs) and $now < strtotime($occr[1])){
+				echo "<tr class='tr_".$key."' style='display:block;'><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee' id='occr_".$key."' name='occr_ids[]' value='".$occr[0].":".$key."' autocomplete='off' />&nbsp;"."<span>".date("M d, Y H:i", strtotime($occr[1]))."</span>"."</td></tr>";
+		  }
+		  else{
+				echo "<tr class='tr_".$key."' style='display:block;'><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee' id='occr_".$key."' name='occr_ids[]' value='".$occr[0].":".$key."' autocomplete='off' disabled title='Registered / Completed' />&nbsp;"."<span style='color:red'>".date("M d, Y H:i", strtotime($occr[1]))."</span>"."</td></tr>";
+		  }
 	  }
    }
     echo "</table></div></div>";
@@ -1996,7 +2048,7 @@ if(!isset($reg_status)) {
 <script>
 $(document).ready(function(){
 	
-	$('.get_occr').click(function(){
+	/*$('.get_occr').click(function(){
 		if($(this).prop("checked") == true){
 		$(".tr_"+$(this).val()).show();
 		}
@@ -2004,7 +2056,7 @@ $(document).ready(function(){
 		$(".tr_"+$(this).val()).hide();
 		$(".tr_"+$(this).val()+' .get_occr_fee').removeAttr('checked');
 		}
-	});
+	});*/
 
 	$('.get_occr_fee').click(function (){
 

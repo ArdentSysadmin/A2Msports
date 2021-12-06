@@ -396,9 +396,9 @@ exit;*/
 
 if($this->input->post('academy')){
 	if($this->input->post('aca_page'))
-	redirect($this->input->post('shortcode')."/".$this->input->post('aca_page'));
+		redirect($this->config->item('club_pr_url')."/".$this->input->post('aca_page'));
 	else
-	redirect($this->input->post('shortcode'));
+		redirect($this->input->post('shortcode'));
 }
 
 if(($this->session->userdata('redirect_to'))){
@@ -546,7 +546,7 @@ $data = array(
 'page'=> 'Reset Password'
 );
 
-$body = $this->load->view('view_email_template.php',$data,TRUE);
+$body = $this->load->view('view_email_template',$data,TRUE);
 $this->email->message($body);   
 $stat = $this->email->send();
 
@@ -891,5 +891,52 @@ public function ajax_validate_login(){
 			}
 		}
 
+
+public function reset_email_pwd()
+{
+$pa_id			= $this->input->post('user');
+$email_id		= $this->input->post('req_email');
+
+$parent_details = $this->get_child_name($pa_id);
+
+if(strtolower($parent_details['EmailID']) == strtolower($email_id)){
+$parent_email	= $parent_details['EmailID'];
+$first_name		= $parent_details['Firstname'];
+$last_name		= $parent_details['Lastname'];
+
+if($parent_details['ActivationCode']){
+$activation_code = $parent_details['ActivationCode'];
+}
+else{
+$code = md5($parent_details['Lastname']. $parent_details['AlternateEmailID']);
+$activation_code = substr($code, 0, 16);
+
+$update_act_code = $this->login->upd_child_act_code($pa_id, $activation_code);
+}
+
+$this->load->library('email');
+$this->email->set_newline("\r\n");
+
+$this->email->from(FROM_EMAIL, 'A2MSports');
+$this->email->to($parent_email); 
+$this->email->subject('Reset password - A2MSports');
+
+$data = array(
+'firstname'=> $first_name,
+'lastname'=> $last_name,
+'code' => $activation_code,
+'page'=> 'Reset Password'
+);
+
+$body = $this->load->view('view_email_template.php',$data,TRUE);
+$this->email->message($body);   
+$stat = $this->email->send();
+
+echo $stat;
+}
+else{
+echo 0;
+}
+}
 
 }

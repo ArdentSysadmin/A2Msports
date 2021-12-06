@@ -6,6 +6,28 @@
 		echo "--------------------------------------------------------";
 		print_r($GLOBALS); exit; */?>
 <script>
+function isValidDate(s) {
+  var bits = s.split('/');
+  var d = new Date(bits[2] + '/' + bits[1] + '/' + bits[0]);
+  return !!(d && (d.getMonth() + 1) == bits[1] && d.getDate() == Number(bits[0]));
+}
+
+//Test it!
+//var currentDate = new Date('31/19/2011');
+//console.log(isValidDate(currentDate.toString()));
+//console.log(isValidDate('30/29/2011'));
+$(document).ready(function(){
+
+/*$('#custom_txt_dob').blur(function(){
+	if(!isValidDate($(this).val())){
+		alert("Invalid date format (" +$(this).val()+ "). It should be mm/dd/yyyy");
+		$(this).val('');
+	}
+});*/
+
+});
+
+
 var club_baseurl = "<?php if($_SERVER['HTTP_X_FORWARDED_HOST']){ echo $_SERVER['HTTP_X_REQUEST_SCHEME'].'://'.$_SERVER['HTTP_X_FORWARDED_HOST']; } ?>";
 //alert(club_baseurl);
 $('#Singles_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
@@ -137,7 +159,7 @@ $('.event_format, .tour_events_class').click(function(){
 
 		var label = $(this).next('span').html();
 
-		var html  = '<div id="div_'+src+'"><label class="control-label col-md-4 padtop"></label><input class="ui-autocomplete-input form-control test" style="width:55%" id="'+src+'" name="created_by" type="text" placeholder="'+label+' Partner Name" value="" size="5" /><input class="ui-autocomplete-input form-control" id="created_users_'+src+'" name="partners['+src+']" type="hidden" value="" size="5" /></div>';
+		var html  = '<div id="div_'+src+'"><label class="control-label col-md-4 padtop"></label><input class="ui-autocomplete-input form-control test" style="width:55%" id="'+src+'" name="created_by" type="text" placeholder="'+label+' Partner Name (Optional)" value="" size="5" /><input class="ui-autocomplete-input form-control" id="created_users_'+src+'" name="partners['+src+']" type="hidden" value="" size="5" /></div>';
 		
 		$('#partner_section').append(html);
 
@@ -808,7 +830,7 @@ else
 
 	$check_user_usatt_membership = league::is_logged_user_having_memeberhip($r->SportsType);
 //echo $ugender; exit;
-	if(!$udob or !$uaddr or !$uemail or !$ugender){
+	if(!$udob or !$uaddr or !$uemail or !$ugender or !$umob){
 ?>
 <form class="form-horizontal" id='myform_dob' method='post' role="form"  action="<?php echo $this->config->item('club_form_url'); ?>/league/uprofile">
 <div class='col-md-8'>
@@ -823,10 +845,11 @@ else
 	<label class='control-label col-md-3 padtop' for='id_accomodation'>Date of Birth:</label>
 	<div class='col-md-8 form-group internal text1'>
 		<div class='input-group date'>
-		<input type="text" class='form-control custom_date' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob" maxlength="10" required /> 
+		<!-- <input type="text" class='form-control custom_date' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob" maxlength="10" required /> 
 		<span class="input-group-addon custom_datepicker" id='txt_dob' style="cursor:pointer;">
 			<span class="fa fa-calendar"></span> 
-		</span>
+		</span> -->
+		<input type="date" class='form-control' placeholder="MM/DD/YYYY" id="custom_txt_dob" name="txt_dob"  max="<?php  echo date('Y-m-d', strtotime('-3 years')); ?>" required />
 		</div>
 	</div>
 	</div>
@@ -852,7 +875,15 @@ else
 	<input class='form-control' id="txt_email" type="text" name="txt_email" value="" required />
 	</div>
 	</div>
-	<?php } 
+	<?php }
+	if(!$umob) { ?>
+	<div class='form-group'>
+	<label class='control-label col-md-3 padtop' for='id_accomodation'>Mobile #:</label>
+	<div class='col-md-8 form-group internal text1'>
+	<input class='form-control' id="txt_mob" type="text" name="txt_mob" value="" required />
+	</div>
+	</div>
+	<?php }
 	if(!$uaddr) { ?>
 	<!-- Gather address info. if not available -->
 
@@ -1281,7 +1312,9 @@ $i = 0;
        $multi_events = league::array_flatten($events);	 
     }
 	 $event_format = league::regenerate_events($multi_events);
-
+//if($this->logged_user == 240){
+//echo "<pre>"; print_r($event_format); exit;
+//}
 	$eligible_events = array();
     $not_eligible_events = array();
     $gender_eligible_events = array();

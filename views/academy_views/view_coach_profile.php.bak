@@ -94,8 +94,10 @@ if(count($coaches_list) == 0)
 }
 else
 {
-
-foreach($coaches_list as $row){ ?><!-- img-djoko -->
+//echo "<pre>"; print_r($coaches_list); exit;
+foreach($coaches_list as $row){ 
+	if(count($coaches_list) == 1 or $row->Users_ID == $coach_id){
+?><!-- img-djoko -->
 <tr style="background-color:#eeefee">
 
 <td>
@@ -151,7 +153,10 @@ foreach($coaches_list as $row){ ?><!-- img-djoko -->
 </tr>
 <tr><td colspan='2'><hr /></td></tr>
 
-<?php } }?>
+<?php
+}
+}
+}?>
 </table>
 </div>
 
@@ -278,4 +283,4 @@ foreach ($get_coachratings as $key => $value) {
 
 </div>
 </div>
-</section
+</section>

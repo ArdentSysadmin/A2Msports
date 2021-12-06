@@ -176,8 +176,12 @@
 			$sports = array("1", "2", "3", "4","5","6","7","8");           // these numbers belongs to sport id in the SportType Table
 
 			foreach($sports as $type){
-
-				$data = array('SportsType_ID'=>$type,'Users_ID'=>$insert_id ,'A2MScore'=>100);
+				$def_score = 100;
+				if($type == '2') 
+				$def_score = 800;
+				if($type == '7') 
+				$def_score = 3.0;
+				$data = array('SportsType_ID'=>$type, 'Users_ID'=>$insert_id, 'A2MScore'=>$def_score, 'A2MScore_Doubles'=>$def_score, 'A2MScore_Mixed'=>$def_score);
 				$this->db->insert('A2MScore', $data); 
 						
 		    }

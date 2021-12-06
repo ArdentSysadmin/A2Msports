@@ -33,7 +33,7 @@ $(document).ready(function(){
 		//alert(x[4]);
 		//alert($(this).val())
 		if(Partner != ''){
-		if(confirm("Are you sure to change your event partner?")){
+		if(confirm("Are you sure to update your event partner?")){
 			//alert(Event);
 			var Tourn_type = $('#tourn_type').val();
 			var Tourn_id		= $('#tourn_id').val();
@@ -46,7 +46,7 @@ $(document).ready(function(){
 				$('#dbl-load-users').html(html);
 				var cur_sel = $('.event_change').val();
 				//get_partners_jq(Tourn_id, cur_sel);
-				alert("Partner updated successfully.");
+				alert("Event Partner updated successfully.");
 				location.reload();
 			}
 		});
@@ -139,14 +139,26 @@ else{
 <span style='color:blue;font-size:13px;font-weight:400;cursor:pointer;'>
 <input type='hidden' name='chp_event_<?=$p;?>' id='chp_event_<?=$p;?>' value='<?=$k;?>' />
 <?php
-echo $event_label." (<label id='$k'>".count($users)."</label>)";
+	$is_user_reg_event = 0;
+$inner_row_style = ' style="display: none;"';
+
+if($this->logged_user)
+	$is_user_reg_event = league :: is_user_reg_event($tour_details->tournament_ID, $event_key);
+
+if($is_user_reg_event){
+	echo "<b style='font-size: 15px; color: green; '>".$event_label." (<label id='$k'>".count($users)."</label>)</b>";
+	$inner_row_style = ' style="display: table-row;"';
+}
+else
+	echo $event_label." (<label id='$k'>".count($users)."</label>)";
+
 $event = $k;
-$waitlistuserids = league::in_array_r($event, $waitlist_users);
+$waitlistuserids = league :: in_array_r($event, $waitlist_users);
 ?>
 </span>
 </td>
 </tr>
-<tr class="content" style="display:none;">
+<tr class="content" <?=$inner_row_style; ?>>
 <!--td class="score-position" valign="center" align="center">&nbsp;&nbsp;</td-->
 <td class="score-position" valign="center" align="center">
 <table class="tab-score" >
@@ -176,7 +188,7 @@ $inverse_pp_comb = $user;
 	$inverse_pp_comb	 = $user_partners[$user][$k].'-'.$user;
 	}
 if(!in_array($pp_comb, $displayed_comb) and !in_array($inverse_pp_comb, $displayed_comb) and 
-	(strpos($event_label, 'Doubles') or strpos($event_label, 'Mixed') or strpos($event_key, 'Doubles') or strpos($event_key, 'Mixed'))){
+	(strpos($event_label, 'Doubles') or strpos($event_label, 'Mixed') or strpos($event_key, 'Doubles') or strpos($event_key, 'Mixed')) and !in_array($user, $displayed_users)){
    $wtlst_style = "";
   if(in_array($user, $waitlistuserids)){
     $wtlst_style = "background-color:yellow;";
@@ -202,6 +214,7 @@ $repeated = "<img src='".base_url()."icons/exclamation.png' style='width:18px; h
 }
 
 echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a> $repeated";
+//echo "<a>".$player['Firstname'] . " " .$player['Lastname']."</a> $repeated";
 //echo '$user_partners[$user][$k] '.var_dump($user_partners[$user][$k]).'<br />';
 if($user_partners[$user][$k] and $user_partners[$user][$k] != ""){
 	$player_partner	= league::get_username($user_partners[$user][$k]);
@@ -235,6 +248,7 @@ $user_score			= $user_a2msocre['A2MScore_Doubles'];
 	}
 
 	echo " - "."<a {$style} {$tooltip} href='".base_url()."player/{$user_partners[$user][$k]}'>" . $player_partner['Firstname'] . " " .$player_partner['Lastname']."</a> $repeated";
+	// echo " - "."<a {$style} {$tooltip}>" . $player_partner['Firstname'] . " " .$player_partner['Lastname']."</a> $repeated";
 	
 	/* ************************ */
 	if($now <= $reg_close and ($this->logged_user == $user or $this->logged_user == $user_partners[$user][$k]) and $this->logged_user) {
@@ -255,10 +269,12 @@ else{
 
 	/* ************************ */
 	if($now <= $reg_close and ($this->logged_user == $user or $this->logged_user == $user_partners[$user][$k]) and $this->logged_user) {
+		//if($this->logged_user == 507){	echo "<pre>"; print_r($user_partners); 	}
 		echo "<select class='user_change_partner' name='user_change_partner' id='{$p}_user_change_partner_{$this->logged_user}'>";
 		echo "<option value=''>Select Partner</option>";
 		foreach($users as $usr){
-			if($usr != $this->logged_user and $usr != $user_partners[$usr][$k]){
+			//if($usr != $this->logged_user and $usr != $user_partners[$usr][$k]){
+			if($usr != $this->logged_user and $user_partners[$usr][$k] == ''){
 				$select_get_user= league::get_user($usr);
 			echo "<option value='$usr'>".$select_get_user['Firstname']."".$select_get_user['Lastname']."</option>";
 			}
@@ -326,7 +342,7 @@ $get_user_usatt_rating = league::get_user_usatt_rating($get_user_mem_details['Me
 		else
 			$event_entry_count[$k] = 1;
 }
-else if(!strpos($event_label, 'Doubles') and !strpos($event_label, 'Mixed') and !strpos($event_key, 'Doubles') and !strpos($event_key, 'Mixed')){
+else if(!strpos($event_label, 'Doubles') and !strpos($event_label, 'Mixed') and !strpos($event_key, 'Doubles') and !strpos($event_key, 'Mixed') and !in_array($user, $displayed_users)){
 $player					= league::get_username($user);
 $user_a2msocre	= league::get_a2mscore($user, $tour_details->SportsType);
 $user_score			= $user_a2msocre['A2MScore'];
@@ -335,6 +351,7 @@ $user_score			= $user_a2msocre['A2MScore'];
 <td class="score-position" valign="center" align="center">
 <?php
 echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a>"; 
+//echo "<a>".$player['Firstname'] . " " .$player['Lastname']."</a>"; 
 ?>
 </td>
 <td class="score-position" valign="center" align="center"><?php echo $user_score; ?></td>

@@ -7,7 +7,18 @@
         <div class="col-md-5 col-sm-6">
           <div class="footer-tags-widget">
             <div class="footer-widget-heading">
+			<?php
+			if($org_details['Aca_ID'] == 1166){
+			?>
+              <h3 style="margin-top:0px;">General Inquiries</h3>
+			<?php
+			}
+			else{
+			?>
               <h3 style="margin-top:0px;">Comments / Feedback</h3>
+			<?php
+			}
+			?>
             </div>
             <div class="footer-widget-content">
 <form name='club-contact' id='club-contact' action="<?=$this->config->item('club_form_url');?>/contact_us" method="POST">
@@ -45,9 +56,12 @@
             <div class="footer-widget-content">
               <ul class="footer-conatct-menu">
 				<li style="margin-bottom: 10px; line-height: 25px;"> <a href="javascript:void(0)">
-				<i class="fa fa-map-o"></i><span>Address :</span> <?php echo $org_details['Aca_addr1']; ?>, <br><?php echo $org_details['Aca_city']; ?>, <?php echo $org_details['Aca_state']; ?>, <?php echo $org_details['Aca_zip']; ?></a> </li>
-                <!--<li> <a href="javascript:void(0)"><i class="fa fa-envelope"></i><span>Email :</span> <?php echo $org_details['Aca_contact_email']; ?></a> </li> -->
-                <li style="margin-bottom: 10px;"> <a href="javascript:void(0)"><i class="fa fa-phone"></i> <span>Phone : </span> <?php echo $org_details['Aca_contact_phone']; ?></a> </li>
+				<i class="fa fa-map-o"></i> <?php echo $org_details['Aca_addr1']; ?>, <br><?php echo $org_details['Aca_city']; ?>, <?php echo $org_details['Aca_state']; ?>, <?php echo $org_details['Aca_zip']; ?></a> </li>
+				<?php if($org_details['Aca_ID'] == 1166 and $org_details['Aca_contact_email']){ ?>
+                <li> <a href="javascript:void(0)"><i class="fa fa-envelope"></i> <?php echo $org_details['Aca_contact_email']; ?></a> </li>
+				<?php
+				} ?>
+                <li style="margin-bottom: 10px;"> <a href="javascript:void(0)"><i class="fa fa-phone"></i> <?php echo $org_details['Aca_contact_phone']; ?></a> </li>
                 
               </ul>
             </div>
@@ -98,7 +112,7 @@
   <div class="copyright-wrapper">
     <div class="container">
       <p>&copy; Copyright <span id="year"></span> <b><?php echo $org_details['Aca_name']; ?></b> | All Rights Reserved.</p>
-	  <p>Powered By <a href="https://a2msports.com"><img src="<?php echo base_url(); ?>assets/club_pages/images/a2mlogo.png" alt=""></a></p>
+	  <p>Powered By <a href="https://a2msports.com" target='_blank'><img src="<?php echo base_url(); ?>assets/club_pages/images/a2mlogo.png" alt=""></a></p>
     </div>
   </div>
 </div>
@@ -198,6 +212,14 @@ $('#club_members_list_view').dataTable({dom: "<'row'<'col-md-3'i><'col-md-5'p><'
 $('#gpa_clubs').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
 "<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
 });
+
+$(document).ready(function(){
+    $(".nav-tabs a").click(function(){
+        $(this).tab('show');
+    });
+    
+});
+
 </script>
 
 </body>

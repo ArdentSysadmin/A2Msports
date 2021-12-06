@@ -4,15 +4,16 @@
 
 $(document).ready(function(){
 
-$('input[name=confirm_password]').blur(function() {
-    var pass = $('input[name=Password]').val();
-    var repass = $('input[name=confirm_password]').val();
-    if(($('input[name=Password]').val().length == '') || ($('input[name=confirm_password]').val().length == '')) {
+$('input[name=confirm_upd_password]').blur(function() {
+    var pass = $('#upd_password').val();
+    var repass = $('#confirm_upd_password').val();
+	//alert(pass+ ' '+repass);
+    if(($('input[name=upd_password]').val().length == '') || ($('input[name=confirm_upd_password]').val().length == '')) {
         ///$('#Password').addClass('has-error');
     }
     else if (pass != repass) {
 		$( ".err" ).show();
-		$('#confirm_password').val("");
+		$('#confirm_upd_password').val("");
     }
     else {
 		$( ".err" ).hide();
@@ -23,8 +24,9 @@ $('input[name=confirm_password]').blur(function() {
 });
 </script>
 
-
-<section id="single_player" class="container secondary-page">
+<div class='container'>
+<div class='row'>
+<section id="single_player" class="secondary-page">
 
            <div class="top-score-title right-score col-md-9">
              <h3 style="text-align:left">Update Password</h3>
@@ -41,20 +43,21 @@ $('input[name=confirm_password]').blur(function() {
 				<?php } ?>
 
 
-                  <form method="post" class="login-form" method="post" action='<?php echo base_url(); ?>login/update_password'>            
+                  <form method="post" class="login-form" method="post" action='<?php echo $this->config->item('club_pr_url'); ?>/login/update_password' autocomplete='off'>            
                         <div class="name">
                             <label for="Password">* Password:</label><div class="clear"></div>
-                            <input id="Password" name="Password" type="password"  required/>
+                            <input id="upd_password" class='form-control' name="upd_password" type="password" style="width:40%" required  autocomplete="off" />
                         </div>
 
 						<div class="name">
                             <label for="confirm_password">* Confirm Password:</label><div class="clear"></div>
-                            <input id="confirm_password" name="confirm_password" type="password" required />
+                            <input id="confirm_upd_password" class='form-control' name="confirm_upd_password" type="password"  style="width:40%" required  autocomplete="off" />
 							<div class="err" style="display: none; color:red">Password mismatch</div>
                         </div>
-						<input id="Users_ID" name="Users_ID" value="<?php echo $user_details['Users_ID']; ?>" type="hidden"/>
+						<input id="Users_ID" name="Users_ID" value="<?php echo $user_details['Users_ID']; ?>" type="hidden" />
 
                     <div id="login-submit" style="line-height:25px">
+					<br />
                             <input type="submit" name="submit" value="Update"/>
 					</div>
                   </form>

@@ -118,8 +118,7 @@
 			return $data;
 		}
 
-		public function get_news_detail($news_id = '', $org_id = '')
-		{
+		public function get_news_detail($news_id = '', $org_id = '') {
 
 			$data = $this->get_org_details($this->org_id);
 
@@ -132,42 +131,27 @@
 			$this->load->view($this->footer_tpl);	
 		}
 
-		public function add()
-		{
-			
+		public function add()	{
 		  // $admin_users = array(214,215);
-		    $user_id = $this->session->userdata('users_id'); 
-			$data	 = $this->get_org_details($this->org_id);
-	
-		   //if(in_array($user_id, $admin_users)){
+		    $user_id  = $this->session->userdata('users_id'); 
+			$data	   = $this->get_org_details($this->org_id);
 			$admin_sess_user = $this->session->userdata('role');
+
 			if($user_id == $this->academy_admin){
+				$path	= '../js/ckfinder';
+				$width	= '780px';
+				$this->editor($path, $width);
 
-			//$data['results'] = $this->model_news->get_news();
+				$data['sports'] = $this->model_news->get_all_aports();
 
-			$path = '../js/ckfinder';
-			$width = '780px';
-			$this->editor($path, $width);
-
-			$data['sports'] = $this->model_news->get_all_aports();
-
-
-			$this->load->view($this->header_tpl, $data);
-			$this->load->view('academy_views/view_add_news', $data); 
-			$this->load->view($this->right_col_tpl,$data);
-			$this->load->view($this->footer_tpl);	
-
-			/*$this->load->view('includes/header');
-			$this->load->view('academy_views/view_add_news',$data);
-			$this->load->view('includes/view_right_column',$data);
-			$this->load->view('includes/footer');*/
-
+				$this->load->view($this->header_tpl, $data);
+				$this->load->view('academy_views/view_add_news', $data);
+				$this->load->view($this->right_col_tpl, $data);
+				$this->load->view($this->footer_tpl);
 		   }
-		   else
-		   {
+		   else{
 				echo "<h4>Unauthorized Access</h4>";
 		   }
-
 		}
 
 		public function editor($path,$width){

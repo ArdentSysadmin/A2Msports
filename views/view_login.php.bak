@@ -99,9 +99,19 @@ height="40px" width="245px" /></a><br /><br />
 	<h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
 	
 	<div id='phone-input' style="text-align: center;">
-	<input type="text" id="inputPhone" class="form-control" placeholder="+919999999999 (Enter number with country code)" required="" autofocus="">
+
+		<div style="display:flex;">
+		<select class="form-control" name='ph_country_code' id='ph_country_code' style="width:23%;margin-bottom:10px; margin-right:10px;">
+		<option value='+1'>U.S.A</option>
+		<option value='+91'>India</option>
+		</select>
+		<input type="text" id="inputPhone" class="form-control" placeholder="Enter your 10 digits Mobile Number" required="" autofocus="" style="width:75%;" />
+		</div>
+
 	<div id="recaptcha-container"></div>
-	<button class="ph_otp" type="button" id="phoneloginbtn" style="background-color: #ff8a00; margin:15px;"><i class="fas fa-sign-in-alt"></i> SEND OTP</button>
+		<div>
+		<button class="ph_otp" type="button" id="phoneloginbtn" style="background-color: #ff8a00; margin:15px;"><i class="fas fa-sign-in-alt"></i> SEND OTP</button>
+		</div>
 	</div>
 	<div id='otp-input' style="display:none; text-align: center;">
 	<input type="otp" id="inputOtp" class="form-control" placeholder="OTP" required="">
@@ -497,7 +507,7 @@ $(document).ready(function(){
 });
 </script>
 
-<!-- --------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+<!-- ----------------------------------------------------------------------------------------------------------------------------- -->
  <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
 
@@ -568,12 +578,36 @@ $(document).ready(function(){
 
    //========================= End Saving Details in My Server ===============
    //========================= Login With Phone ==========================
-   var loginphone=document.getElementById("phoneloginbtn");
-   var phoneinput=document.getElementById("inputPhone");
-   var otpinput=document.getElementById("inputOtp");
-   var verifyotp=document.getElementById("verifyotp");
+   var loginphone	=document.getElementById("phoneloginbtn");
+   var country_code	=document.getElementById("ph_country_code");
+   var phoneinput	=document.getElementById("inputPhone");
+   var otpinput		=document.getElementById("inputOtp");
+   var verifyotp		=document.getElementById("verifyotp");
 
    loginphone.onclick=function(){
+
+		var xyz = phoneinput.value;
+		var abc = country_code.value;
+
+		var mob = abc+xyz;
+		//alert(typeof(xyz));
+		/*console.log(xyz.length);
+		if(xyz.length == 10){
+			 $.ajax({
+					type:'POST',
+					url:baseurl+'logintest/get_country_code/',
+					data:'mob_num='+xyz,
+					success:function(res){
+						console.log(res);
+						phoneinput.value = res+xyz;
+						document.getElementById("inputPhone").value = res+xyz;
+						console.log(phoneinput.value);
+			//alert(typeof(phoneinput.value));
+
+					}
+			});
+		}*/
+
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
         'size': 'normal',
         'callback': function(response) {
@@ -587,9 +621,12 @@ $(document).ready(function(){
         }
         });
 
-        var cverify=window.recaptchaVerifier;
 
-        firebase.auth().signInWithPhoneNumber(phoneinput.value,cverify).then(function(response){
+   
+        var cverify=window.recaptchaVerifier;
+		//console.log(xyz);
+
+        firebase.auth().signInWithPhoneNumber(mob, cverify).then(function(response){
 			//alert("test");
 			var x = document.getElementById("phone-input");
 			var y = document.getElementById("otp-input");

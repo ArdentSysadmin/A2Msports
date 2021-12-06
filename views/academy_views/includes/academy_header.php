@@ -1,4 +1,8 @@
 <?php
+if($org_details['Aca_ID'] == 1166){
+echo $this->load->view('academy_views/includes/sreenidhi_academy_header');
+}
+else{
 $cur_class	 = $this->router->class; 
 
 //echo '<pre>'; print_r(trim($aca_pages['Alert_Message'])); exit;
@@ -20,9 +24,16 @@ $club_menu = $cur_class :: get_club_menu($org_details['Aca_ID']);
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<?php
+if($this->is_league_page OR $noIndex){
+?>
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+<?php
+}
+?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<title><?=$org_details['Aca_name'];?></title>
+<title><?=ucwords($org_details['Aca_name']);?></title>
 <!-- Bootstrap CSS -->
 <link href="<?php echo base_url(); ?>css/bootstrap.css" rel="stylesheet">
 <!-- Font Awesome CSS-->
@@ -261,7 +272,8 @@ if($this->logged_user == $this->academy_admin) {
 }
 else {
 ?>
-<li><a href="#" class="member_login">Join Now</a></li>
+<li><a href="#" class="member_login">Login</a></li>
+<li><a href="#" class="join_now">Join Now</a></li>
 <?php
 }
 ?>
@@ -274,9 +286,17 @@ else{
 
 <ul class="nav navbar-nav navbar-right">
 <?php
-if(!in_array('8', $club_menu)){ ?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+if($org_details['Aca_URL_ShortCode'] == 'sreenidhi'){
+?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/about-us">About Us</a></li>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#our_programs">Programs</a></li>
 <?php 
+}
+else{
+	if(!in_array('8', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+	<?php 
+	}
 }
 if(!in_array('1', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li>
@@ -292,8 +312,8 @@ if(!in_array('3', $club_menu)){ ?>
 }
 ?>
 <?php 
-/*echo $this->logged_user." - ".$this->academy_admin;
-exit;*/
+/* echo $this->logged_user." - ".$this->academy_admin; exit; */
+//echo "User - " . $this->session->userdata('user'); exit;
 if($this->academy_admin and ($this->logged_user == $this->academy_admin)){
 ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/list">Add/Edit Courts</a></li>
@@ -319,17 +339,15 @@ if(!in_array('6', $club_menu)){
 }
 ?>
 <?php
-if(!in_array('7', $club_menu) or  
-!in_array('9', $club_menu) or 
-!in_array('10', $club_menu) or 
-!in_array('11', $club_menu)){
+if(!in_array('7', $club_menu) or !in_array('9', $club_menu) or !in_array('10', $club_menu) 
+	or !in_array('11', $club_menu)) {
 ?>
 <li class="dropdown dropdown-toggle">
 <a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/#about">More <i class="fa fa-angle-down"></i></a>
 
 	<ul class="dropdown-menu">
 <?php
-	if(!in_array('9', $club_menu)){ ?>
+	if(!in_array('9', $club_menu)) { ?>
 	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/members">Members</a></li>
 	<?php
 	}
@@ -339,11 +357,12 @@ if(!in_array('7', $club_menu) or
 	</li> -->
 	<?php
 	//}
-	if(!in_array('10', $club_menu)){ ?>
+	if(!in_array('10', $club_menu)) { ?>
 	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/news">News</a></li>
 	<?php 
 	}
-	if(!in_array('11', $club_menu)){ ?>
+
+	if(!in_array('11', $club_menu)) { ?>
 	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/proshop">Pro Shop</a></li> 
 	<?php
 	}
@@ -429,7 +448,7 @@ else {
 	<?php
 		if(!$this->logged_user){
 	?>
-	<li><a href="#" class="member_login">Join Now</a></li>
+	<!-- <li><a href="#" class="member_login">Join Now</a></li> -->
 	<?php
 		}
 	?>
@@ -564,7 +583,21 @@ if($this->logged_user == $this->academy_admin) {
 }
 else {
 ?>
-<li><a href="#" class="member_login">Join Now</a></li>
+<!-- <li>
+	<a href="#" class="member_login">Login</a>
+	<ul>
+	<li><a href="#" class="join_now">Join Now</a></li>
+	</ul>
+</li> -->
+
+<li>
+<li>
+	<a href="#" class="member_login">Login</a>
+</li>
+	<ul>
+	<li><a href="#" class="join_now">Join Now</a></li>
+	</ul>
+</li>
 <?php
 }
 ?>
@@ -576,9 +609,19 @@ else{
 ?>
 
 <ul class="wpb-mobile-menu">
-<?php if(!in_array('8', $club_menu)){ ?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
+
+<?php if($org_details['Aca_URL_ShortCode'] == 'sreenidhi'){
+	if(!in_array('8', $club_menu)){ ?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/about-us">About Us</a></li>
+	<?php 
+	}
+}
+else{
+	if(!in_array('8', $club_menu)){ 	
+?>
+	<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/facility">About Us</a></li>
 <?php 
+	}
 }
 if(!in_array('1', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li>
@@ -592,8 +635,13 @@ if(!in_array('3', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/pricing">Pricing</a></li>
 <?php
 }
+
+if($this->academy_admin and ($this->logged_user == $this->academy_admin)){
 ?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/list">Add/Edit Courts</a></li>
 <?php
+}
+
 if($this->session->userdata('user') != "" and !in_array('5', $club_menu)) {
 ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/reserve">Reserve</a></li>
@@ -674,7 +722,15 @@ else {
 <script>
 $(document).ready(function(){
 
-$(document).on('click','.member_login',function(){
+
+$(document).on('click','.join_now', function(){
+	//alert('test');
+	
+$("#login_modal").modal();
+$('#new_member').trigger('click');
+});
+
+$(document).on('click','.member_login', function(){
 	$('#login_err').html('');
 	$("#member_login").trigger('reset');
 $('#member_login').show();
@@ -731,20 +787,20 @@ $(document).ready(function(){
 <div class="modal fade" id="login_modal" role="dialog">
 <div class="modal-dialog modal-lg">
 <div class="modal-content">
-<div class="modal-header">
+<div class="modal-header" style='text-align:center;'>
 <!-- Login window content -->
-<form id='member_login' method="post" action='<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/login/verify_user'  style='margin-left:20px;'>
+<form id='member_login' method="post" action='<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/login/verify_user'>
 <!-- <form id='member_login' method="post" action='<?php //echo base_url(); ?>/login/verify_user' class="login-form" style='margin-left:20px;' > --> 
 <div class="name" align='left'>
 <label for="name_login" id="login_err" style="color:red"></label>
 </div>
 <div class="name">
-<label for="name_login">Username or Email:</label>
-<input class='form-control' style='width:60%; margin-bottom:10px;' id="txt_login" name="name_login" type="text" required />
+<label for="name_login">Username (or) Email</label><br />
+<input class='form-control' style='width:60%; margin-bottom:10px; display:inline-block;' id="txt_login" name="name_login" type="text" required />
 </div>
 <div class="pwd">
-<label for="password_login">Password:</label>
-<input class='form-control' style='width:60%; margin-bottom:10px;' id="password_login" name="password_login" type="password" required />
+<label for="password_login">Password</label><br />
+<input class='form-control' style='width:60%; margin-bottom:10px; display:inline-block;' id="password_login" name="password_login" type="password" required />
 </div>
 
 <div id="login-submit" style="line-height:25px">
@@ -760,11 +816,11 @@ $(document).ready(function(){
 <?php
 //}
 ?>
-<!-- <br /> <h4 style="padding-bottom:10px; padding-top:10px">Or...<br /><br />
+<br /> <br /> <h4 style="padding-bottom:10px; padding-top:10px">OR<br /><br />
 <div id="phone-login" style="line-height:25px;"> 
-<a href="#" id="phone_login" class="btn btn-info" role="button" style="margin-bottom: 20px;background-color: #81a32b;border-color: #81a32b;">
+<a href="#" id="phone_login" class="btn btn-info" role="button" style="margin-bottom: 20px;background-color: #81a32b;border-color: #81a32b;color:#fff; text-transform:none;">
 Login with Mobile Number</a>
-</div> -->
+</div> 
 
 </div>
 
@@ -818,28 +874,28 @@ $this->load->view("academy_views/view_phone_login_forms");
 <form id='frm_signup' name='frm_signup' method='POST'  enctype="multipart/form-data" action='<?php echo base_url().$org_details['Aca_URL_ShortCode'];?>/register/save' style='display:none;'>
 <div class='form-group'>
 <label class='control-label col-md-4' for='id_accomodation'>First Name * </label>
-<input type="text" id="txtfname" name="Firstname" class='form-control' style="width:60%; margin-bottom:10px;" required pattern=".*\S+." />
+<input type="text" id="txtfname" name="Firstname" class='form-control' style="width:60%; margin-bottom:10px;" required  />
 </div>
 
 <div class='form-group'>
 <label class='control-label col-md-4' for='id_accomodation'>Last Name * </label>
-<input type="text" id="txtlname" name="Lastname" class='form-control' style="width:60%; margin-bottom:10px;" required pattern=".*\S+." />
+<input type="text" id="txtlname" name="Lastname" class='form-control' style="width:60%; margin-bottom:10px;" required  />
 </div>
 
 <div class='form-group'>
 <label class='control-label col-md-4' for='id_accomodation'>Phone * </label>
-<input type="text" id="txtphone" name="Mobilephone" class='form-control' style="width:60%; margin-bottom:10px;" required pattern=".*\S+." />
+<input type="text" id="txtphone" name="Mobilephone" class='form-control' style="width:60%; margin-bottom:10px;" required  />
 </div>
 
 <div class='form-group'>
 <label class='control-label col-md-4' for='id_accomodation'>Email * </label>
-<input type="text" id="txtemail" name="EmailID" class='form-control txt_email' style="width:60%; margin-bottom:10px;" required pattern=".*\S+." />
+<input type="text" id="txtemail" name="EmailID" class='form-control txt_email' style="width:60%; margin-bottom:10px;" required  />
 <span id='email_stat' style='color:red; margin-left:15px;'></span>
 </div>
 
 <div class='form-group'>
 <label class='control-label col-md-4' for='id_accomodation'>Password: * </label>
-<input class='form-control' id="Password" name="Password" type="password" style="width:60%; margin-bottom:10px;" required pattern="\S+" />
+<input class='form-control' id="Password" name="Password" type="password" style="width:60%; margin-bottom:10px;" required />
 </div>
 
 <div class='form-group'>
@@ -920,7 +976,7 @@ I Accept the club <?=$terms_link;?> and <?=$prv_pol_link;?>.
 </label>
 </div>
 
-<div id="login-submit" style="line-height:25px; margin-left:33%; margin-top:40px;">
+<div id="login-submit" style="line-height:25px; margin-top:40px;">
 <input name="academy"   type="hidden" value="<?=$org_details['Aca_ID'];?>" />
 <input name="shortcode" type="hidden" value="<?=$org_details['Aca_URL_ShortCode'];?>" />
 <input name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url');?>" />
@@ -930,6 +986,9 @@ I Accept the club <?=$terms_link;?> and <?=$prv_pol_link;?>.
 </div>
 
 </form>
+<input type='hidden' name='temp_uid'		id='temp_uid'	 value='' />
+<input type='hidden' name='temp_email'	id='temp_email' value='' />
+
 <!-- Register window content -->
 </div>
 </div>
@@ -956,7 +1015,7 @@ I Accept the club <?=$terms_link;?> and <?=$prv_pol_link;?>.
 <script>
 $(document).ready(function(){
 $('#new_member').click(function(){
-
+//alert('test2');
 $('#member_login').hide();
 $('#frm_signup').show();
 
@@ -970,25 +1029,60 @@ $('#frm_forgot_pwd').show();
 
 });
 
+$(document).on('click', '#reset_pwd', function() {
+	var baseurl	= "<?php echo base_url();?>";
+	var red_url	= "<?php echo $this->config->item('club_pr_url');?>";
+
+	var email_id = $('#temp_email').val();
+	var uid			= $('#temp_uid').val();
+	$('#reset_pwd').html("Please wait...");
+if(email_id && uid){
+	$.ajax({
+	type:'POST',
+	url:baseurl+'login/reset_email_pwd',
+	data:{req_email:email_id, user:uid},
+	success:function(res){
+		if(res){
+			alert("Reset Password link sent to your email.")
+			window.location.replace(red_url);
+		}
+		else{
+			alert("Something wrong! please try after some time.");
+			$('#reset_pwd').html("<b>Reset Password</b> ?");
+		}
+	}
+	}); 
+}
+
+});
+
+
 $('#txtemail').blur(function(){
-var baseurl = "<?php echo base_url();?>";
+var baseurl	= "<?php echo base_url();?>";
 var email_id = $(this).val();
 
-if(email_id!=""){
+if(email_id != ""){
 $.ajax({
 type:'POST',
-url:baseurl+'register/email_check/',
+url:baseurl+'register/ajax_email_verify/',
 data:'email_id='+email_id,
 success:function(html){
 var stat = html;
-if(stat!=""){
-$('#email_stat').html(stat);
-$('#txtemail').val("");
-$('#txtemail').focus();
-}
-else {
-$('#email_stat').html("");
-}
+		if(stat!=""){
+			var sp = stat.split('-');
+			$('#email_stat').html(sp[1] + " already exists! want to <a id='reset_pwd' style='cursor:pointer;'><b>Reset Password</b>?</a>");
+			//$('#email_stat').html(stat);
+			$('#temp_uid').val(sp[0]);
+			$('#temp_email').val(sp[1]);
+
+			$('#EmailID').val("");
+		}
+		else {
+			$('#email_stat').html("");
+			$('#temp_uid').val('');
+			$('#temp_email').val('');
+		}
+
 }
 }); 
 }
@@ -1067,16 +1161,17 @@ $(document).ready(function(){
 });
 </script>
 <?php
-if($this->session->flashdata('frg_pwd_msg')){
+if($this->session->flashdata('frg_pwd_msg3333')){
 ?>
 <script>
 $(document).ready(function(){
 	var al = "<php echo $this->session->flashdata('frg_pwd_msg'); ?>";
-	alert("Password reset link has been sent to your email.");
+	alert("Password reset link has been sent to your email..");
 	//$('#btn_frg_success').trigger('click');
 });
 </script>
 <?php
+//$this->session->unset_flashdata('frg_pwd_msg')
 }
 ?>
 
@@ -1089,3 +1184,6 @@ $(document).ready(function(){
 <!-- <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script> -->
 <script defer src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
 <script src="<?=base_url(); ?>js/custom/phone_login.js"></script>
+<?php
+}
+?>

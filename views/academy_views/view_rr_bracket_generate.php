@@ -37,7 +37,7 @@ var baseurl = "<?php echo base_url();?>";
 <h3>Round Robin Matches</h3>
 <div class="col-md-12">
 
-<form method="post" id="myform" action='<?php echo base_url(); ?>league/bracket_save' class="col-md-8 login-page" >  
+<form method="post" id="myform" action='<?php echo base_url(); ?>league/bracket_save' class="col-md-12 login-page" >  
 
 <label>Draw Title*</label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
 <input class="form-control" type="text" name="draw_title" id="draw_title" required />

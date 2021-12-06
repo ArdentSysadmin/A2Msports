@@ -52,16 +52,26 @@ var baseurl = "<?php echo base_url();?>";
 <!-- <div class="general general-results players"> -->
 <!-- LOGIN BOX -->
 <div class="top-score-title right-score col-md-12">
-<h3>Round Robin Matches</h3>
+<h3>Round Robin Matches (Switch Doubles)</h3>
 <div class="col-md-12">
 
 <form method="post" id="myform" action='<?php echo base_url(); ?>league/bracket_save' class="col-md-12 login-page">
 <?php
+	if($this->input->post('br_game_day') != ''){
+		$game_date = league::get_game_day($this->input->post('br_game_day'));
+		$draw_title_date = date('M d, Y', strtotime($game_date));	
+	}
+	else{
+		$draw_title_date =  date('M d, Y');	
+	}
+
 foreach($groups as $g => $group){
 	//echo "<pre>";	print_r($group);	exit;
+	$draw_title = $draw_title_date." - Group{$g}";
+
 ?>
 <label>Group-<?=$g;?></label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
-<input class="form-control" type="text" name="draw_title[<?=$g;?>]" id="draw_title" value="Group-<?=$g;?>" required />
+<input class="form-control" type="text" name="draw_title[<?=$g;?>]" id="draw_title" value="<?=$draw_title;?>" required />
 <? //--------------------------------------------------------------------------------------------------------------- 
 $sd_matches = $grp_sd_matches[$g];
 
@@ -207,6 +217,7 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 <input type='hidden' name='tformat' value="<?php echo $this->input->post('tformat'); ?>" />
 <input type='hidden' name='is_publish_draw' value="<?php echo $this->input->post('is_publish_draw'); ?>" />
 <input type='hidden' name='br_game_day'	value="<?php echo $this->input->post('br_game_day'); ?>" />
+<input type='hidden' name='draw_format'	value="<?php echo $this->input->post('draw_format'); ?>" />
 
 <?php
 if($this->input->post('tformat') == 'Teams'){?>

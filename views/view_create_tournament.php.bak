@@ -141,6 +141,41 @@ $('#org_id').val(names[1]);
 }	      	
 });
 
+
+$("#tourn_dir").autocomplete({
+
+source: function( request, response ) {
+$.ajax({
+url: baseurl+'search/autocomplete',
+dataType: "json",
+method: 'post',
+data: {
+name_startsWith: request.term,
+type: 'users',
+row_num : 1
+},
+success: function( data ) {
+response( $.map( data, function( item ) {
+var code = item.split("|");
+return {
+label: code[0]+' ('+code[1]+' | '+code[2]+')',
+value: code[0],
+data : item
+}
+}));
+}
+});
+},
+autoFocus: true,	      	
+minLength: 1,
+select: function( event, ui ){
+var names = ui.item.data.split("|");					
+$('#tourn_dir_id').val(names[1]);
+$('#org_contact').val(names[6]);
+}	      	
+});
+
+
 });
 </script>
 
@@ -1203,7 +1238,8 @@ foreach($intrests as $row) {
 <div class='form-group'>
 <label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Organizer Name<br />(Company / Individual) </label>
 <div class='col-md-6 form-group internal'>
-<input class='form-control' id='organizer' name='organizer' type='text' required />
+<input class='form-control' id='tourn_dir' name='organizer' type='text' autocomplete='off' required />
+<input class='form-control' id='tourn_dir_id' name='organizer_id' type='hidden' />
 </div>
 </div>
 
@@ -1868,7 +1904,7 @@ Paypal EmailID (Merchant):
 			<div class='form-group' style="margin-bottom:0px !important;">
 				<label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Merchant ID </label>
 				<div class='col-md-4 form-group internal'>
-				<input class='form-control' id='merchantid' name='merchantid' type='text' />&nbsp; 
+				<input class='form-control' id='paytm_merchantid' name='paytm_merchantid' type='text' />&nbsp; 
 				</div>
 				<div class="col-md-5">
 				<img src="<?=base_url();?>icons/info_ico.png" title="Paytm Business AccountID " width="25px" height="25px" />
@@ -1906,29 +1942,6 @@ Paypal EmailID (Merchant):
  		</div> 
  	</div>
 	<!-- ************************* Paytm Details Section Ends Here. ************************* -->
-
-<div class="col-md-12 league-form-bg" style="margin-top:30px;">
-<div class="fromtitle">Access </div>
-Visible to  &nbsp; <label for="visible">
-<input type="radio" id="visible" name="visible" value="public" checked="checked"  />
-Public
-</label>&nbsp;&nbsp;
-<label for="visible1">
-<input type="radio" id="visible1" name="visible" value="private" />
-Private
-</label>
-
-<div id="academy_text" style="display: none">
-<div class='form-group'>
-<label class='control-label col-md-3' for='id_accomodation'>Academy Name: </label>
-<div class='col-md-6 form-group internal'>
-<input id='academy' name="club_name" class='ui-autocomplete-input col-md-3 form-control ajax_blur' type="text" placeholder="Type your Club Name" />
-<input class='form-control' id='org_id' name='org_id' type='hidden' placeholder="Org_id" value=""  />
-</div>
-</div> 
-</div>
-
-</div>
 <!-- T-Shirt Section Start -->
 <div class="col-md-12 league-form-bg" style="margin-top:30px;" id="TShirt_Info">
 <div class="fromtitle">T-Shirts</div>
@@ -1998,6 +2011,30 @@ else { return true; }
 
 });
 </script>
+
+
+<div class="col-md-12 league-form-bg" style="margin-top:30px;">
+<div class="fromtitle">Publish </div>
+Do you want to publish the tournament?&nbsp;
+<label for="is_publish_yes">
+<input type="radio" id="is_publish_yes" name="is_publish" value="1" checked="checked"  />Yes
+</label>&nbsp;&nbsp;
+<label for="is_publish_no">
+<input type="radio" id="is_publish_no" name="is_publish" value="0" />No
+</label>
+
+<div id="academy_text" style="display: none">
+<div class='form-group'>
+<label class='control-label col-md-3' for='id_accomodation'>Academy Name: </label>
+<div class='col-md-6 form-group internal'>
+<input id='academy' name="club_name" class='ui-autocomplete-input col-md-3 form-control ajax_blur' type="text" placeholder="Type your Club Name" />
+<input class='form-control' id='org_id' name='org_id' type='hidden' placeholder="Org_id" value=""  />
+</div>
+</div> 
+</div>
+
+</div>
+
 
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:20px;">
 <div class="fromtitle">Review & Submit</div>

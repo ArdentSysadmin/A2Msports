@@ -28,7 +28,7 @@ foreach($lvlexists as $level=>$types){
 				$user_db_events[] = $key;
                ?> 
               <tr>
-                   <td style="padding-left:40px;"><input type="checkbox" value="<?php echo $key; ?>" name="match_type_<?php echo $player; ?>[]" class="singles_matchtype_<?php echo $player; ?>"  <?php echo $checked;?>><?php echo $evnt; ?>
+                   <td style="padding-left:40px;"><input type="checkbox" value="<?php echo $key; ?>" name="match_type_<?php echo $player; ?>[]" class="singles_matchtype_<?php echo $player; ?>"  <?php echo $checked;?>> <?php echo $evnt; ?>
                   </td> 
               </tr>
           <?php 

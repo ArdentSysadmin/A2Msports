@@ -136,4 +136,9 @@
 			$res  = $this->db->update('Academy_Testimonials', $data);
 			return $res;
 		}
+		public function upd_club_layout($club_id, $data){
+						 $this->db->where('Aca_ID', $club_id);
+			$res  = $this->db->update('Academy_Info', $data);
+			return $res;
+		}
 }

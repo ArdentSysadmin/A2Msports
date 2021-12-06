@@ -28,23 +28,7 @@ class League extends REST_Controller {
 		$this->load->model('score/model_user', 'muser');
 		$this->load->model('score/model_general', 'general');
     }
-/*
-{
-	"Registered": 1,
-	"Sportname": "Table Tennis",
-	"tournament_ID": 1321,
-	"TournamentImage": "",
-	"StartDate": "2020-05-09T09:00:00.000Z",
-	"EndDate": "2020-05-09T20:00:00.000Z",
-	"TournamentCountry": "United States of America",
-	"TournamentState": "Georgia",
-	"TournamentCity": "Cumming",
-	"tournament_title": "A2M Table Tennis Open",
-	"SportsType": 2,
-	"latitude": 0,
-	"longitude": 0,
-}
-*/
+
 	public function is_valid_league($tourn_id){
 		$tourn_det = $this->mleague->getonerow($tourn_id);
 		if(!$tourn_det){
@@ -146,10 +130,11 @@ class League extends REST_Controller {
 
 					if(count($check_register) > 0) {
 						$user_reg_events = json_decode($check_register['Reg_Events'], true);
+						//$user_reg_events = $this->regenerate_events($user_reg_events);
 						if($check_register['Partners']){
 						$temp = json_decode($check_register['Partners'], true);
 						
-						foreach($user_reg_events as $ev){
+						foreach($user_reg_events as $ev => $label){
 							$user = $temp[$ev];
 							$temp_user = null;
 							if($user){
@@ -157,10 +142,8 @@ class League extends REST_Controller {
 								$temp_user = array('Firstname' => $det['Firstname'], 'Lastname' => $det['Lastname'], 'ID' => $det['Users_ID']);
 							}
 
-
 							$user_partners[$ev] = $temp_user;
 						}
-						//$user_partners[]
 						}
 					}
 
@@ -552,6 +535,7 @@ class League extends REST_Controller {
 							$data['paymethods'] = array(array('pay_method'	 => $pay_mode, 
 															  'reference_id' => $payment_method));
 						$data['link'] = base_url()."league/".$tourn_id."/";
+						$data['terms_cond'] = base_url() . "terms_conditions/";
 						$res = array($data);
 					//}
 					/*else {
@@ -571,10 +555,8 @@ class League extends REST_Controller {
 	$this->response($res);
 	}
 
-	public function register_post() {
 
-		//$this->response($this->post());
-		//exit;
+	public function register_post() {
 
 		$post_data = json_decode(trim(file_get_contents('php://input')), true);
 
@@ -582,25 +564,15 @@ class League extends REST_Controller {
 			$this->response($post_data); 
 			exit;*/
 
-			if($post_data){
-			//print_r($post_data);
-			//	$this->response($post_data); 
-			}
-			else{
-			$this->response(array('Error: ' . "Empty!")); 
-			//exit;
-			}
-			//exit;
-
 		$tourn_id		 = $post_data['tourn_id'];
 		$user_id		 = $post_data['user_id'];
 
-		$fee_amount		 = $post_data['fee_amount'];
+		$fee_amount			 = $post_data['fee_amount'];
 		$gateway_charges = $post_data['gateway_charges'];
-		$transaction_id  = $post_data['transaction_id'];
-		$currency_code	 = $post_data['currency_code'];
-		$status			 = $post_data['status'];
-		$tshirt_size	 = $post_data['tshirt_size'];
+		$transaction_id		 = $post_data['transaction_id'];
+		$currency_code		 = $post_data['currency_code'];
+		$status				 = $post_data['status'];
+		$tshirt_size		 = $post_data['tshirt_size'];
 		$note_to_admin	 = $post_data['note_to_admin'];
 
 		$tourn_id		 = trim($tourn_id, '"');
@@ -636,6 +608,7 @@ class League extends REST_Controller {
 
 			$tformat = $tour_details['tournament_format'];
 			$ttype	 = $tour_details['Tournament_type'];
+			$is_league	 = $tour_details['Is_League'];
 			
 			if($tformat == "Teams" or $tformat == "TeamSport") {
 				$team_id		  = $post_data['team_id'];
@@ -692,10 +665,9 @@ class League extends REST_Controller {
 
 			$dev_email	 = "pradeepkumar.namala@gmail.com";
 			$dev_subject = "A2M Mobile Post variables - Production";
-			$data2		 = array(
-										'firstname'	=> "Developer",
+			$data2		 = array('firstname'	=> "Developer",
 										'post_vals'	=> print_r($data, true),
-										'page'			=> 'A2M Mobile Post');
+										'page'		=> 'A2M Mobile Post');
 
 			$this->email_to_player($dev_email, $dev_subject, $data2);
 
@@ -1188,6 +1160,82 @@ public function testpaypalChecksum_get(){
 		}
 	}
 
+	public function withdrawTemp_post(){
+
+		$post_data = json_decode(trim(file_get_contents('php://input')), true);
+
+			/*print_r($post_data);
+			$this->response($post_data); 
+			exit;*/
+
+		if(!$post_data){
+			$this->response(array('Error: '."Missing Input data")); 
+			exit;
+		}
+
+		$tourn_id		= $post_data['tourn_id'];
+		$user_id		= $post_data['user_id'];
+		$wd_events = $post_data['withdraw_events'];
+
+		$tourn_det	= $this->is_valid_league($tourn_id);
+		
+		if($tourn_det){
+			
+			if($wd_events){
+				
+				$get_user_reg = $this->mleague->get_user_reg($tourn_id, $user_id);
+				$reg_events   = json_decode($get_user_reg['Reg_Events'], true);
+				$rem_gd = NULL;
+
+				if($reg_events){
+					foreach($wd_events as $ev => $game_days){				
+						$pos = array_search($ev, $reg_events);
+						//echo $pos;
+						unset($reg_events[$pos]);
+
+						if($game_days){
+							foreach($game_days as $gd){
+								$rem_gd[] = $gd;
+							}
+						}
+					}
+				}
+
+				if($rem_gd){
+					foreach($rem_gd as $game_day){
+						$upd_events = $this->mleague->remove_user_game_day($game_day, $user_id);
+					}
+				}
+
+				if(!empty($reg_events)){
+					$reg_events						= array_values($reg_events);
+					$data2['upd_events']		= $reg_events;
+					$data2['Tournament_ID']	= $tourn_id;
+					$data2['Users_ID']			= $user_id;
+					
+					//echo "<pre>"; print_r($data2); exit;
+					$upd_events = $this->mleague->update_reg_tourn($data2);
+				}
+				else{
+					$del_events = $this->mleague->del_tourn_reguser($user_id, $tourn_id);
+				}
+
+				if($upd_events)
+					$this->response(array('Success: '."User is successfully withdrawn from the events")); 
+				else if($del_events)
+					$this->response(array('Success: '."User is successfully withdrawn from the league")); 
+
+				//$this->response($reg_events);
+			}
+			else{
+				$this->response(array('Error: '."Withdraw Events are missing")); 
+				exit;
+			}
+			//$this->response(array($data)); 
+
+		}
+	}
+
 	public function list_get(){
 //error_reporting(-1);
 //exit;
@@ -1522,32 +1570,39 @@ public function testpaypalChecksum_get(){
 				exit;
 			}
 			else {
-				$tformat	  = $tourn_det['tournament_format'];
-				$tourn_events	  = json_decode($tourn_det['Multi_Events'], true);
-		foreach($tourn_events as $event) {
-			$exp = explode("-", $event);
+				$tformat			= $tourn_det['tournament_format'];
+				$tourn_events	= json_decode($tourn_det['Multi_Events'], true);
 
-			$lv		= end($exp);
-			$temp	= $event;
+			foreach($tourn_events as $event) {
+				$exp		= explode("-", $event);
+				$lv		= end($exp);
+				$temp	= $event;
 //echo $exp[0];
 //exit;
-			if($exp[0] != 'Adults' and $exp[0][0] == 'A'){
-			$event_lable = $this->config->item($exp[0], 'age_values');
-			}
-			else{
-			$level_name  = $this->mleague->get_level_name($lv);
-			$level_title = $level_name['SportsLevel'];
-			$event_lable = str_replace($lv, $level_title, $temp);
+				if($exp[0] != 'Adults' and $exp[0][0] == 'A'){
+					$event_lable_temp = $this->config->item($exp[0], 'age_values');
+					$event_lable = str_replace($exp[0], $event_lable_temp, $temp);
+
+					$level_name  = $this->mleague->get_level_name($lv);
+					$level_title = $level_name['SportsLevel'];
+					$event_lable = str_replace($lv, $level_title, $event_lable);
+				}
+				else{
+					$level_name  = $this->mleague->get_level_name($lv);
+					$level_title = $level_name['SportsLevel'];
+					$event_lable = str_replace($lv, $level_title, $temp);
+				}
+
+				$event_lable = str_replace("Adults-", "",		$event_lable);
+				$event_lable = str_replace("-1-", "-Men's-",	$event_lable);
+				$event_lable = str_replace("1-", "Men's-",		$event_lable);
+				$event_lable = str_replace("-0-", "-Women's-", $event_lable);
+				$event_lable = str_replace("0-", "Women's-", $event_lable);
+				$event_lable = str_replace("Mixed-", "Mixed-Doubles-", $event_lable);
+
+				$formated_events[$event] = $event_lable;
 			}
 
-			$event_lable = str_replace("Adults-", "",			$event_lable);
-			$event_lable = str_replace("-1-", "-Men's-",		$event_lable);
-			$event_lable = str_replace("1-", "Men's-",		$event_lable);
-			$event_lable = str_replace("-0-", "-Women's-", $event_lable);
-			$event_lable = str_replace("0-", "Women's-", $event_lable);
-			$event_lable = str_replace("Mixed-", "Mixed-Doubles-", $event_lable);
-			$formated_events[$event] = $event_lable;
-		}
 					if($tformat == 'Individual') {
 					//$tourn_events = json_decode($tourn_det['Multi_Events'], true);
 
@@ -1726,17 +1781,24 @@ public function testpaypalChecksum_get(){
 			$bracket_id = $this->input->get('draw_id');
 			
 			if($bracket_id){
-					$get_draw = $this->mleague->get_draw($bracket_id);
+					$get_draw		 = $this->mleague->get_draw($bracket_id);
 					if($get_draw['Bracket_Type'] == 'Round Robin'){
-						$rr_matches = $this->mleague->get_tourn_matches($bracket_id);
-						$standings = $this->get_standings($rr_matches, $get_draw['Tourn_ID']);
+						$rr_matches  = $this->mleague->get_tourn_matches($bracket_id);
+						$standings	  = $this->get_standings($rr_matches, $get_draw['Tourn_ID']);
 						//$res['standings'] = $standings;
-					$this->response($standings);
+						$this->response($standings);
+					}
+					else if($get_draw['Bracket_Type'] == 'Switch Doubles'){
+						$rr_matches  = $this->mleague->get_tourn_matches($bracket_id);
+						$standings	  = $this->get_standings($rr_matches, $get_draw['Tourn_ID']);
+						//$res['standings'] = $standings;
+						$this->response($standings);
 					}
 					else{
 						$res = array('Error: '."Draw is not a Round Robin");
 						$this->response($res);
 					}
+
 					$this->response($res);
 			}
 			else{
@@ -1746,7 +1808,55 @@ public function testpaypalChecksum_get(){
 	
 		}
 
-		public function get_standings($get_rr_tourn_matches, $tourn_id=''){
+/*
+public function get_sd_standings($get_sd_tourn_matches, $tourn_id = ''){
+
+$get_tourny = $this->mleague->getonerow($tourn_id);
+$tourn_format = $get_tourny['tournament_format'];
+
+$rr_matches2 = $get_sd_tourn_matches->result();
+
+$list_players = array();
+$temp = 1;
+$m	  = array();
+$arr  = array();
+foreach($rr_matches2 as $m2 => $match2){
+//echo $m2."<br>";
+$bracket_id = $rr_matches2[$m2]->BracketID; 
+if($temp != $rr_matches2[$m2]->Round_Num){
+	// echo $temp." temp<br>";
+	$m[$temp] = $arr;
+	$temp	  = $rr_matches2[$m2]->Round_Num;
+	$arr  = array();
+}
+
+$arr[] = $rr_matches2[$m2]->Player1;
+$arr[] = $rr_matches2[$m2]->Player2;
+
+if($temp == $get_bracket['No_of_rounds'] and ($m2+1) == count($rr_matches2)){
+	$m[$temp]	= $arr;
+	$temp			= $rr_matches2[$m2]->Round_Num;
+	$arr				= array();
+}
+
+	if(!in_array($rr_matches2[$m2]->Player1, $list_players))
+	{	$list_players[] = $rr_matches2[$m2]->Player1; }
+
+	if(!in_array($rr_matches2[$m2]->Player1_Partner, $list_players))
+	{	$list_players[] = $rr_matches2[$m2]->Player1_Partner; }
+
+	if(!in_array($rr_matches2[$m2]->Player2, $list_players))
+	{	$list_players[] = $rr_matches2[$m2]->Player2; }
+
+	if(!in_array($rr_matches2[$m2]->Player2_Partner, $list_players))
+	{	$list_players[] = $rr_matches2[$m2]->Player2_Partner; }
+}
+
+
+}
+*/
+
+public function get_standings($get_rr_tourn_matches, $tourn_id=''){
 
 $get_tourny = $this->mleague->getonerow($tourn_id);
 $tourn_format = $get_tourny['tournament_format'];
@@ -2220,5 +2330,928 @@ return $new_arr1;
 			$this->response($new_arr);
 
 		}
+
+
+	public function get_eligible_events_Temp($tourn_events, $user_ag_grp, $user_db_age_grp, $user_gender, $user_age='', $get_event_limits = '', $events_limit_arr = '', $league_occrs = '', $event_reg_fee, $lg_whole_fee, $user_reg_events, $league_occrs_regs) {
+		$eligible_events			= array();
+		$non_eligible_events	= array();
+
+		foreach($tourn_events as $event) {
+			$exp = explode("-", $event);
+
+			$lv		= end($exp);
+			$temp	= $event;
+			$ag_grp   = $exp[0];
+
+			if($exp[0] != 'Adults' and $exp[0][0] == 'A'){
+			$event_lable = $this->config->item($exp[0], 'age_values');
+			}
+			else{
+			$level_name  = $this->mleague->get_level_name($lv);
+			$level_title = $level_name['SportsLevel'];
+			$event_lable = str_replace($lv, $level_title, $temp);
+			}
+
+			$event_lable = str_replace("Adults-", "",			 $event_lable);
+			$event_lable = str_replace("-1-", "-Men's-",		 $event_lable);
+			$event_lable = str_replace("1-", "Men's-",		 $event_lable);
+			$event_lable = str_replace("-0-", "-Women's-", $event_lable);
+			$event_lable = str_replace("0-", "Women's-",	 $event_lable);
+
+			$is_eligible = -1;
+
+			if($events_limit_arr[$event] and $get_event_limits[$event] >= $events_limit_arr[$event]){
+				//$non_eligible_events[trim($event)]  = $event_lable;
+				$is_eligible = 0;
+			}
+			else{
+
+			if ((in_array($user_ag_grp, $exp) or in_array($user_db_age_grp, $exp)) and (($exp[0] == $user_ag_grp or $exp[0] == $user_db_age_grp) or $exp[0] == 'Open' or $exp[1] == 'Open')) {
+				if(in_array($exp[1], array('0','1'))) {
+					if($user_gender == $exp[1] or in_array('Mixed', $exp)) {
+						//$eligible_events[trim($event)] = $event_lable;	
+						 $is_eligible = 1;
+					}
+					else {
+						//$non_eligible_events[trim($event)] = $event_lable;
+						$is_eligible = 0;
+					}
+				}
+				else {
+				  //$eligible_events[trim($event)] = $event_lable;
+				  $is_eligible = 1;
+				}
+			}
+			else if($exp[0] != 'Adults' and $exp[0][0] == 'A'){
+					if($user_age >= $lv){
+						//$eligible_events[trim($event)] = $event_lable;
+						 $is_eligible = 1;
+					}
+					else{
+						//$non_eligible_events[trim($event)]  = $event_lable;
+						$is_eligible = 0;
+					}
+			}
+			else if(in_array('Mixed', $exp)) {
+				 //$eligible_events[trim($event)] = $event_lable;
+				 $is_eligible = 1;
+			}
+			else if($user_ag_grp == 'U10' or $user_ag_grp == 'U11' or $user_ag_grp == 'U12' or $user_ag_grp == 'U13' or $user_ag_grp == 'U14' or $user_ag_grp == 'U15' or $user_ag_grp == 'U16' or $user_ag_grp == 'U17' or $user_ag_grp == 'U18' or $user_ag_grp == 'U19' or $user_ag_grp == 'Junior') {
+				if($exp[0] == 'Adults'){
+				 //$eligible_events[trim($event)] = $event_lable;
+				 $is_eligible = 1;
+				}
+			}
+			else {
+				 //$non_eligible_events[trim($event)]  = $event_lable;
+				 $is_eligible = 0;
+			}
+
+//echo "<pre>"; print_r($league_occrs_regs); exit;
+					$fee = json_decode($event_reg_fee, TRUE);
+					$lg_wh_fee = json_decode($lg_whole_fee, TRUE);
+					if($is_eligible == 0){
+						$non_eligible_events[trim($event)]['title'] = $event_lable;
+					}
+					else if($is_eligible == 1){
+							$eligible_events[trim($event)]['title'] = $event_lable;
+							$eligible_events[trim($event)]['ageGroup'] = $ag_grp;
+							//echo "<pre>"; print_r($league_occrs_regs);exit;
+
+						if($league_occrs){
+							$reg_ocrs = NULL;
+						foreach($league_occrs_regs as $ocr_reg){
+							$reg_ocrs[] = $ocr_reg['OCCR_ID'];
+						}
+							//echo "<pre>"; print_r($reg_ocrs);exit;
+
+
+							foreach($league_occrs as $occr){
+								$gd		= date('Y-m-d H:i', strtotime($occr->Game_Date));
+								$is_reg = false;
+								if(in_array($occr->OCR_ID, $reg_ocrs)){
+									$is_reg = true;
+								}
+
+								if($occr->Event == $event){
+									$eligible_events[trim($event)]['gameDays'][] =	array('id' =>$occr->OCR_ID, 'title' =>$gd, 'fees' => (float) $fee[$event], 'registered' => $is_reg);
+								}
+							}
+
+							$eligible_events[trim($event)]['discountFees'] = (float) $lg_wh_fee[$event];
+								
+
+						}
+						else{
+							$eligible_events[trim($event)]['registered'] = (in_array($event, $user_reg_events)) ? true : false;
+							$eligible_events[trim($event)]['totalFees'] = (float) $fee[$event];
+							$eligible_events[trim($event)]['gameDays'] = null;
+						}
+					}
+
+
+		  }
+		} // end of FOR
+
+		//return array('eligible' => $eligible_events, 'non_eligible' => $non_eligible_events);
+		//return array('eligible' => $eligible_events);
+		return $eligible_events;
+	}
+
+
+
+	public function registerTemp_get() {
+
+		$tourn_id = $this->input->get('tourn_id');
+		$user_id  = $this->input->get('user_id');
+
+		if($tourn_id) {
+			$tour_details = $this->mleague->get_league_details($tourn_id);
+			//echo "<pre>"; print_r($tour_details['Event_Reg_Limit']); exit;
+			if(count($tour_details) > 0) {
+
+				$now		= time();
+				$reg_close   = strtotime(date('Y-m-d', strtotime($tour_details['Registrationsclosedon'])));
+				$reg_open   = strtotime(date('Y-m-d', strtotime($tour_details['Registrations_Opens_on'])));
+				$ref_date     = strtotime(date('Y-m-d', strtotime($tour_details['RefundDate'])));
+
+				$reg_close  = strtotime(date('Y-m-d', strtotime($tour_details['Registrationsclosedon'])));
+				/*if($now > $reg_close) {
+					$res = array('Error: ' . "Registrations are closed for this tournament!");
+					$this->response($res);
+					exit;
+				}
+				else if($now <= $reg_open) {
+				*/
+				
+				$data['is_registration_closed'] = false;
+
+				if($now > $reg_close) {
+					$data['is_registration_closed'] = true;
+				}
+
+				if($now <= $reg_open) {
+					/*$res = array('Error: ' . "Registrations are not yet opened for this tournament!");
+					$this->response($res);
+					exit;*/
+					$data['is_registration_closed'] = true;
+				}
+
+				$data['is_withdraw_closed'] = false;
+
+				if($now > $ref_date) {
+					$data['is_withdraw_closed'] = true;
+				}
+
+				//	$is_tourn_admin = 0;
+			//	if($this->input->get('user_id') == $tour_details['Usersid'])
+			//		$is_tourn_admin = 1;
+
+					//$data['is_TournAdmin'] = $is_tourn_admin;
+
+				$tformat	  = $tour_details['tournament_format'];
+				$tourn_events = json_decode($tour_details['Multi_Events'], true);
+
+				if($tformat == 'Individual') {
+					$check_register = $this->mleague->is_registered($user_id, $tourn_id, 'Indv');
+//echo "<pre>"; print_r($check_register); exit;
+					//if(count($check_register) == 0) {
+					$user_reg_events = null;
+					$user_partners		 = null;
+
+					if(count($check_register) > 0) {
+						$user_reg_events = json_decode($check_register['Reg_Events'], true);
+						//echo "<pre>"; print_r($user_reg_events); exit;
+						if($check_register['Partners']){
+						$temp = json_decode($check_register['Partners'], true);
+						
+						foreach($user_reg_events as $ev){
+							$user = $temp[$ev];
+							$temp_user = null;
+							if($user){
+								$det = $this->mleague->get_user_details($user);
+								$temp_user = array('Firstname' => $det['Firstname'], 'Lastname' => $det['Lastname'], 'ID' => $det['Users_ID']);
+							}
+
+
+							$user_partners[$ev] = $temp_user;
+						}
+						//$user_partners[]
+						}
+					}
+
+					$user_details = $this->muser->get_user_details($user_id);
+					
+						if(count($user_details) > 0) {
+							$user_db_age_grp  = $user_details['UserAgegroup'];
+							$user_gender  = $user_details['Gender'];
+
+/* ****************** */
+							$user_dob    = $user_details['DOB'];
+							$birthdate	 = new DateTime($user_dob);
+							$today		 = new DateTime('today');
+							$user_age    = $birthdate->diff($today)->y;
+							$user_age_grp = "";
+
+        switch ($user_age) {
+                case $user_age <= 9:
+                   $user_age_grp = "U9";
+                   break;
+                case $user_age <= 10:
+                   $user_age_grp = "U10";
+                   break;
+                case $user_age == 11:
+                   $user_age_grp = "U11";
+                   break;
+                case $user_age == 12:
+                   $user_age_grp = "U12";
+                   break;
+                case $user_age == 13:
+                   $user_age_grp = "U13";
+                   break;
+                case $user_age == 14:
+                   $user_age_grp = "U14";
+                   break;
+                case $user_age == 15:
+                   $user_age_grp = "U15";
+                   break;
+                case $user_age == 16:
+	               $user_age_grp = "U16";
+	               break;
+                case $user_age == 17:
+                   $user_age_grp = "U17";
+                   break;
+                case $user_age == 18:
+                   $user_age_grp = "U18";
+                   break;
+                case $user_age == 19:
+                   $user_age_grp = "U19";
+                   break;
+                case $user_age>19 && $user_age<=29:
+                   $user_age_grp = "Adults";
+                   break;
+                case $user_age>=30 && $user_age<=39:
+                   $user_age_grp = "Adults_30p";
+                   break;
+                case $user_age>=40 && $user_age<=49:
+                   $user_age_grp = "Adults_40p";
+                   break;
+                case $user_age>=50 && $user_age<=60:
+                   $user_age_grp = "Adults_50p";
+                   break;
+        }
+
+/* ****************** */
+
+							if($user_age_grp == NULL) {
+								$res = array('Error: ' . "User Date of birth is not provided!");
+								$this->response($res);
+								exit;
+							}
+							$is_event_limit	   = 0;
+							$get_event_limits = '';
+							$events_limit_arr  = '';
+
+							if($tour_details['Event_Reg_Limit'] != '' and $tour_details['Event_Reg_Limit'] != NULL){
+							$is_event_limit	  = 1;
+							$events_limit_arr = json_decode($tour_details['Event_Reg_Limit'], TRUE);
+							foreach($tourn_events as $ev){
+							$get_event_limits[$ev] = $this->mleague->get_event_reg_count($tourn_id, $ev);
+							}
+							//echo "test"; exit;
+							//echo "<pre>"; print_r($get_event_limits); print_r($events_limit_arr); exit;
+							//$tour_details['Event_Reg_Limit']
+							}
+							$is_league					= 0;
+							$league_occrs			= NULL;
+							$league_occrs_regs	= NULL;
+
+							if($tour_details['Is_League']){
+								$is_league					= 1;
+								$league_occrs			= $this->mleague->get_league_occr($tourn_id);
+								$league_occrs_regs	= $this->mleague->get_league_occr_regs($tourn_id, $user_id);
+							}
+
+							$user_el_events = $this->get_eligible_events_Temp($tourn_events, $user_age_grp, $user_db_age_grp, $user_gender, $user_age, $get_event_limits, $events_limit_arr, $league_occrs, $tour_details['Event_Reg_Fee'], $tour_details['lg_Event_Reg_Fee'], $user_reg_events, $league_occrs_regs);
+
+							//StartDate, TournamentAddress, RegistrationCloseDate
+
+							$data['Tournament_Title']    = $tour_details['tournament_title'];
+							$data['Organizer']				= $tour_details['OrganizerName'];
+							$data['Contact_Num']			= $tour_details['ContactNumber'];
+							$data['Details']					= $tour_details['TournamentDescription'];
+							$data['Sport']						= $tour_details['SportsType'];
+							if($tour_details['StartDate'])
+							$data['StartDate'] = date('Y-m-d', strtotime($tour_details['StartDate']))."T".date('H:i:s', strtotime($tour_details['StartDate'])).".000Z";
+							else 
+							$data['StartDate']					= NULL;
+
+							if($tour_details['EndDate'])
+							$data['EndDate'] = date('Y-m-d', strtotime($tour_details['EndDate']))."T".date('H:i:s', strtotime($tour_details['EndDate'])).".000Z";
+							else 
+							$data['EndDate']					= NULL;
+
+							if($tour_details['Registrationsclosedon'])
+							$data['RegistrationCloseDate'] = date('Y-m-d', strtotime($tour_details['Registrationsclosedon']))."T".date('H:i:s', strtotime($tour_details['Registrationsclosedon'])).".000Z";
+							else 
+							$data['RegistrationCloseDate'] = NULL;
+
+	
+								if($tour_details['venue'])
+								$taddress = $tour_details['venue'];
+
+							if($tour_details['TournamentAddress'] and $tour_details['venue'])
+								$taddress .= ', ' . $tour_details['TournamentAddress'];
+							else if($tour_details['TournamentAddress'])
+								$taddress .= $tour_details['TournamentAddress'];
+
+							if($tour_details['TournamentAddress'] and $tour_details['venue'] != $tour_details['TournamentAddress'])
+								$taddress .= ", ".$tour_details['TournamentAddress'];
+
+							if($tour_details['TournamentAddress'] and $tour_details['TournamentCity'])
+								$taddress .= ", ".$tour_details['TournamentCity'];
+							else
+								$taddress .= $tour_details['TournamentCity'];
+
+							if($tour_details['TournamentState'])
+								$taddress .= ", ".$tour_details['TournamentState'];
+							if($tour_details['TournamentCountry'])
+								$taddress .= ", ".$tour_details['TournamentCountry'];
+							if($tour_details['PostalCode'])
+								$taddress .= ", ".$tour_details['PostalCode'];
+
+							$data['TournamentAddress']	= $taddress;
+
+							$data['Tournament_Format']	= $tour_details['tournament_format'];
+							$data['Tournament_Type']		= $tour_details['Tournament_type'];
+							$data['is_TournAdmin']			= 0;
+							//if($user_id == $data['Usersid'] or $user_id == 240)
+							if($user_id == $tour_details['Usersid'] or $user_id == 240)
+							$data['is_TournAdmin']			= 1;
+
+/*$data['Country']		  = ($tour_details['TournamentCountry'] == 'India') ? 'IN' : $tour_details['TournamentCountry'];*/
+
+							$data['Country']					= $tour_details['TournamentCountry'];
+							$data['userAgeGroup']		= $user_db_age_grp;
+							$data['Events']					= $user_el_events;
+							
+							$data['Registered_Events'] = $user_reg_events;
+							$data['Partners'] = $user_partners;
+
+$now = time();
+
+//Coupons
+/*
+$coupons = NULL;
+if($tour_details['Is_Coupon']){
+	$get_coupons = $this->mleague->get_tourn_coupons($tourn_id);
+
+	foreach($get_coupons as $coupon){
+		$exp = strtotime($coupon->Expiry_Date);
+		//if($coupon->Status and $coupon->Discount_Method == 'percentage' and $now <= $exp){
+		if($coupon->Status and $coupon->Discount_Method == 'percentage'){
+			$coupons['percentage'][$coupon->Coupon_Code] = (float) $coupon->Coupon_Value;
+		}
+		//if($coupon->Status and $coupon->Discount_Method == 'fixedprice' and $now <= $exp){
+		if($coupon->Status and $coupon->Discount_Method == 'fixedprice'){
+			$coupons['price'][$coupon->Coupon_Code] = (float) $coupon->Coupon_Value;
+		}
+	}
+}
+$data['couponCodes'] = $coupons;
+*/
+//Coupons
+							if($tour_details['SportsType'] == 2){
+								//$data['usatt_rating_eligibility_date'] = date('m-d-Y', strtotime($tour_details['EligibilityDate']));
+								$get_usatt_id		   = $this->muser->get_usatt_id($user_id);
+								$data['usatt_id']	   = $get_usatt_id;
+								if($get_usatt_id){
+									$get_usatt_rating		  = $this->muser->get_usatt_rating($get_usatt_id);
+									$data['usatt_rating']  = $get_usatt_rating;
+								}
+								else{
+									$data['usatt_rating']  = 'n/a';
+								}
+							}
+
+							$data['is_tshirt']				 = $tour_details['TShirt'];
+							$data['is_fee']					 = $tour_details['Tournamentfee'];
+							$data['is_agegroup_fee']	 = json_decode($tour_details['is_mult_fee'], TRUE);
+
+							$age_groups			= json_decode($tour_details['Age'], TRUE);
+							$fee						= json_decode($tour_details['mult_fee_collect'], TRUE);
+							$additional_fee		= json_decode($tour_details['addn_mult_fee_collect'], TRUE);
+							//$data['age_groups']			= json_decode($tour_details['Age'], TRUE);
+							//$data['fee']						= json_decode($tour_details['mult_fee_collect'], TRUE);
+							//$data['additional_fee']	= json_decode($tour_details['addn_mult_fee_collect'], TRUE);
+
+							$arr = array();
+
+							foreach($age_groups as $i => $ag){
+								$arr[$ag] = array(
+													'fee'				   => (float) $fee[$i],
+													'additional_fee' => (float) $additional_fee[$i]
+													); 
+							}
+							
+							$data['age_based_fee']		= $arr;
+
+							$data['is_event_fee']			= $tour_details['is_event_fee'];
+							//$data['fee_event_based']	= json_decode($tour_details['Event_Reg_Fee'], TRUE);
+							$data['is_event_limited']	= ($tour_details['Event_Reg_Limit'] != null) ? 1 : 0;
+							$data['event_limits']			= json_decode($tour_details['Event_Reg_Limit'], TRUE);
+							//$data['event_time']          = json_decode($tour_details['Multi_Event_Time'], TRUE);
+
+							/*$data['paytm_merchant_id']  = null;
+							$data['paypal_merchant_id'] = null;*/
+
+									//$data['payment_method']  = null;
+
+									//if($data['is_fee']){
+									//	if($tour_details['TournamentCountry'] == 'India') {
+										   /*$get_det = $this->muser->get_paytm($tour_details['Merchant_Paytm']);
+											$data['paytm_merchant_id'] = $get_det['paytm_merch_id'];*/
+									//		$data['payment_method']  = 3;
+									//	}
+									//	else {
+										   /*$get_det = $this->muser->get_paypal($tour_details['Merchant_Paypal']);
+											$data['paypal_merchant_id'] = $get_det['paypal_merch_id'];*/
+									//		$data['payment_method']  = 1;
+									//	}
+									//}
+
+									$pay_mode		 = null;
+									$payment_method  = null;
+
+									if($data['is_fee']) {
+										if($tour_details['TournamentCountry'] == 'India') {
+											$pay_mode = 'paytm';
+											if($tour_details['Merchant_Paytm']){
+											 //$get_det = $this->muser->get_paytm($tour_details['Merchant_Paytm']);
+											 //$payment_method = $get_det['paytm_merch_id'];
+											 $payment_method = $tour_details['Merchant_Paytm'];
+											}
+											else{
+											 $payment_method = 1;
+											}
+										}
+										else {
+											$pay_mode = 'paypal';
+											if($tour_details['Merchant_Paypal']) {
+										     //$get_det = $this->muser->get_paypal($tour_details['Merchant_Paypal']);
+											 //$payment_method = $get_det['paypal_merch_id'];
+											 $payment_method = $tour_details['Merchant_Paypal'];
+											}
+											else{
+											 $payment_method = 5;
+											}
+										}
+
+
+									}
+
+
+							$data['paymethods'] = array(array('pay_method'	 => $pay_mode, 
+															  'reference_id' => $payment_method));
+							$data['link'] = base_url()."league/".$tourn_id."/";
+							$res = array($data);
+						}
+						else {
+							$res = array('Error: ' . "Invalid User ID!");
+						}
+					//}
+					/*else {
+						$res = array('Error: ' . "User is already registered for this tournament!");
+					}*/
+
+				}
+				else if($tformat == 'Teams') {
+					$user_id		= $this->input->get('user_id');
+					//$check_register = $this->mleague->is_user_team_registered($user_id, $tourn_id, 'Team');
+
+					//if(count($check_register) == 0) {
+					$get_user_teams_1 = $this->muser->get_user_captain_teams($user_id, $tourn_id, $tour_details['SportsType']);
+					
+						foreach($get_user_teams_1 as $res){
+							$tp = json_decode($res->Players, TRUE);
+							$tplayers_1 = array();
+							foreach($tp as $player){
+								$u_det				 = $this->muser->get_user_details($player);
+								$tplayers_1[] = array('id' => $player, 'name' => $u_det['Firstname'] . " " . $u_det['Lastname']);
+							}
+
+							$user_teams[] = array(
+												'Team_ID'	   => $res->Team_ID, 
+												'Team_name'	   => $res->Team_name,
+												'Role'		   => 'Captain',
+												'Team_Players' => $tplayers_1
+											);
+						}
+
+					$get_user_teams_2 = $this->muser->get_user_non_captain_teams($user_id, $tourn_id, $tour_details['SportsType']);
+					
+						foreach($get_user_teams_2 as $res){
+							
+							$u_det				 = $this->muser->get_user_details($user_id);
+							$tplayers_2	  = array();
+							$tplayers_2[] = array('id' => $user_id, 'name' => $u_det['Firstname'] . " " . $u_det['Lastname']);
+
+							$user_teams[] = array(
+												'Team_ID'	   => $res->Team_ID, 
+												'Team_name'	   => $res->Team_name,
+												'Role'		   => 'Player',
+												'Team_Players' => $tplayers_2
+											);
+						}
+
+						$data['Tournament_Title'] = $tour_details['tournament_title'];
+							$data['Organizer']					= $tour_details['OrganizerName'];
+							$data['Contact_Num']			= $tour_details['ContactNumber'];
+							$data['Details']						= $tour_details['TournamentDescription'];
+							$data['Sport']						= $tour_details['SportsType'];
+							$data['Tournament_Format']	= $tour_details['tournament_format'];
+							$data['Tournament_Type']		= $tour_details['Tournament_type'];
+
+							$data['is_TournAdmin']			= 0;
+							//if($user_id == $data['Usersid'] or $user_id == 240)
+							if($user_id == $tour_details['Usersid'] or $user_id == 240)
+							$data['is_TournAdmin']			= 1;
+
+							if($tour_details['StartDate'])
+							$data['StartDate'] = date('Y-m-d', strtotime($tour_details['StartDate']))."T".date('H:i:s', strtotime($tour_details['StartDate'])).".000Z";
+							else 
+							$data['StartDate']					= NULL;
+
+							if($tour_details['EndDate'])
+							$data['EndDate'] = date('Y-m-d', strtotime($tour_details['EndDate']))."T".date('H:i:s', strtotime($tour_details['EndDate'])).".000Z";
+							else 
+							$data['EndDate']					= NULL;
+
+							if($tour_details['Registrationsclosedon'])
+							$data['RegistrationCloseDate'] = date('Y-m-d', strtotime($tour_details['Registrationsclosedon']))."T".date('H:i:s', strtotime($tour_details['Registrationsclosedon'])).".000Z";
+							else 
+							$data['RegistrationCloseDate'] = NULL;
+
+							if($tour_details['venue'])
+								$taddress = $tour_details['venue'];
+
+							if($tour_details['TournamentAddress'] and $tour_details['venue'])
+								$taddress .= ', ' . $tour_details['TournamentAddress'];
+							else if($tour_details['TournamentAddress'])
+								$taddress .= $tour_details['TournamentAddress'];
+
+							if($tour_details['TournamentAddress'] and $tour_details['venue'] != $tour_details['TournamentAddress'])
+								$taddress .= ", ".$tour_details['TournamentAddress'];
+
+							if($tour_details['TournamentAddress'] and $tour_details['TournamentCity'])
+								$taddress .= ", ".$tour_details['TournamentCity'];
+							else
+								$taddress .= $tour_details['TournamentCity'];
+
+							if($tour_details['TournamentState'])
+								$taddress .= ", ".$tour_details['TournamentState'];
+							if($tour_details['TournamentCountry'])
+								$taddress .= ", ".$tour_details['TournamentCountry'];
+							if($tour_details['PostalCode'])
+								$taddress .= ", ".$tour_details['PostalCode'];
+
+								$data['TournamentAddress']	= $taddress;
+
+						$data['Sport']					= $tour_details['SportsType'];
+						$data['is_fee']				= $tour_details['Tournamentfee'];
+						$data['user_teams']		  = $user_teams;
+						$data['is_agegroup_fee']  = json_decode($tour_details['is_mult_fee'], TRUE);
+						//$data['age_groups']		  = json_decode($tour_details['Age'], TRUE);
+						$age_groups			= json_decode($tour_details['Age'], TRUE);
+						$fee						= json_decode($tour_details['mult_fee_collect'], TRUE);
+						$additional_fee		= json_decode($tour_details['addn_mult_fee_collect'], TRUE);
+
+						$level_array					  = json_decode($tour_details['Sport_levels'], TRUE);
+						$arr = array();
+
+							foreach($age_groups as $i => $ag){
+								$arr[$ag] = array(
+													'fee'				   => (float) $fee[$i],
+													'additional_fee' => (float) $additional_fee[$i]
+													); 
+							}
+							
+							$data['age_based_fee']		= $arr;
+
+
+						foreach($level_array as $la){
+							$level_name = $this->mleague->get_level_name($la);
+							$levels[$la] = $level_name['SportsLevel'];
+						}
+						$data['levels']			  = $levels;
+
+						//$data['fee']			  = json_decode($tour_details['mult_fee_collect'], TRUE);
+						//$data['additional_fee']   = json_decode($tour_details['addn_mult_fee_collect'], TRUE);
+
+									$pay_mode		 = null;
+									$payment_method  = null;
+
+									if($data['is_fee']) {
+										if($tour_details['TournamentCountry'] == 'India') {
+											$pay_mode = 'paytm';
+											if($tour_details['Merchant_Paytm']){
+											 //$get_det = $this->muser->get_paytm($tour_details['Merchant_Paytm']);
+											 //$payment_method = $get_det['paytm_merch_id'];
+											 $payment_method = $tour_details['Merchant_Paytm'];
+											}
+											else{
+											 $payment_method = 1;
+											}
+										}
+										else {
+											$pay_mode = 'paypal';
+											if($tour_details['Merchant_Paypal']) {
+										     //$get_det = $this->muser->get_paypal($tour_details['Merchant_Paypal']);
+											 //$payment_method = $get_det['paypal_merch_id'];
+											 $payment_method = $tour_details['Merchant_Paypal'];
+											}
+											else{
+											 $payment_method = 5;
+											}
+										}
+
+
+									}
+
+							$data['paymethods'] = array(array('pay_method'	 => $pay_mode, 
+															  'reference_id' => $payment_method));
+						$data['link'] = base_url()."league/".$tourn_id."/";
+						$res = array($data);
+					//}
+					/*else {
+						$res = array('Error: ' . "Player is already registered for this tournament!");
+					}*/
+				}
+			}
+			else {
+				$res = array('Error: ' . "Invalid Tournament ID!");
+			}
+		}
+		else {
+			$res = array('Error: ' . "Tournament ID is required!");
+		}
+
+
+	$this->response($res);
+	}
+
+	public function validateCoupon_get(){
+		$tourn_id			= $this->input->get('tourn_id');
+		$couponCode	= $this->input->get('couponCode');
+		
+		if($tourn_id and $couponCode) {
+			$get_coupon = $this->mleague->validateCoupon($tourn_id, $couponCode);
+
+			if($get_coupon){
+				if($get_coupon['Status'] == 1 and time() <= strtotime($get_coupon['Expiry_Date']))
+					$res = array('type'  => $get_coupon['Discount_Method'], 
+										'price' => (float) $get_coupon['Coupon_Value']);
+
+					/*$res = array('type'  => $get_coupon['Discount_Method'], 
+										'price' => $get_coupon['Coupon_Value'], 
+										'now'  => time(), 
+										'exp'	 => strtotime($get_coupon['Expiry_Date']));*/
+				else
+					$res = array('Error: '."Coupon Expired!", 400);
+					//$res = array('now' => time(), 'exp' => (strtotime($get_coupon['Expiry_Date']) + 86399));
+			}
+			else{
+				$res = array('Error: '."Invalid Coupon!", 400);
+			}
+		}
+		else{
+			$res = array('Error: '."Provide all inputs!", 400);
+		}
+
+		$this->response($res);
+	}
+
+
+	public function registerTemp_post() {
+		$post_data = json_decode(trim(file_get_contents('php://input')), true);
+
+			//print_r($post_data);
+			//$this->response($post_data); 
+			//exit;
+
+		$tourn_id		 = $post_data['tourn_id'];
+		$user_id		 = $post_data['user_id'];
+
+		$fee_amount			 = $post_data['fee_amount'];
+		$gateway_charges = $post_data['gateway_charges'];
+		$transaction_id		 = $post_data['transaction_id'];
+		$currency_code		 = $post_data['currency_code'];
+		$status					 = $post_data['status'];
+		$tshirt_size			 = $post_data['tshirt_size'];
+		$note_to_admin		 = $post_data['note_to_admin'];
+
+		$tourn_id		 = trim($tourn_id, '"');
+		$tshirt_size	 = trim($tshirt_size, '"');
+
+		$tour_details	 = $this->mleague->get_league_details($tourn_id);
+				//	$this->response($tour_details); exit;
+
+		if(count($tour_details) > 0) {
+			$data = array();
+			$data['Tournament_ID']	 =  (int)$tourn_id;
+			if($fee_amount)
+			$data['Fee']			 =  number_format($fee_amount, 2);
+			if($transaction_id)
+			$data['Transaction_id']  =  $transaction_id;
+			if($gateway_charges)
+			$data['Gateway_Charges'] =  $gateway_charges;
+			if($status)
+			$data['Status']			 =  $status;
+			if($currency_code)
+			$data['Currency_Code']	 =  $currency_code;
+			if($tshirt_size)
+			$data['TShirt_Size']	 =  $tshirt_size;
+			$data['Reg_date']		 =  date("Y-m-d H:i:s");
+
+			$tformat		= $tour_details['tournament_format'];
+			$ttype			= $tour_details['Tournament_type'];
+			$is_league	= $tour_details['Is_League'];
+			
+			if($tformat == "Teams" or $tformat == "TeamSport") {
+				$team_id					= $post_data['team_id'];
+				$shortlisted_team		= $post_data['shortlisted_team'];
+				$reg_ag_group			= $post_data['reg_ag_group'];
+				$reg_sport_level		= $post_data['reg_sport_level'];
+
+				$data['Team_id']			 =  $team_id;
+				$data['Team_Players']	 =  json_encode($shortlisted_team);
+				$data['Reg_Age_Group']	 =  $reg_ag_group;
+				$data['Reg_Sport_Level']  =  $reg_sport_level;
+				
+				$check_register = $this->mleague->is_registered($team_id, $tourn_id, 'Team');
+			}
+			else {
+				$reg_events	= $post_data['reg_events'];
+				if($reg_events){
+					$partners	= $post_data['partners'];
+					$game_days = NULL;
+					$sp_events   = NULL;
+
+					if($is_league){
+						foreach($reg_events as $event => $game_day){
+							foreach($game_day as $gm){
+								if(!in_array($gm, $game_days)){
+								$game_days[] = $gm;
+								}
+							}
+							$sp_events[] = $event;
+						}
+					}
+					else{
+						$data['Reg_Events']	=  json_encode($reg_events);
+					}
+
+					if($partners)
+					$data['Partners']	=  json_encode($partners);
+
+					$data['Users_ID']	=  (int)$user_id;
+
+					$check_register = $this->mleague->is_registered($user_id, $tourn_id, 'Indv');
+				}
+				else{
+					$res = array('Error: ' . "Registered events should not be empty!");
+					$this->response($res);
+					exit;
+				}
+
+			}
+			//echo "<pre>"; print_r($sp_events); exit;
+			if($ttype == 'Flexible League') {
+				$hcl_id			= $post_data['hcl_id'];
+				$data['hcl_id']	= $hcl_id;
+			}
+			
+//echo count($check_register); exit;
+
+			if(count($check_register) == 0) {
+
+					if($sp_events){
+						$data['Reg_Events']	=  json_encode($sp_events);
+					}
+					
+					//echo "<pre>"; print_r($data); exit;
+
+					$ins			= $this->mleague->inset_reg_tourn($data);
+					$ins_a2m	= $this->mleague->inset_user_a2m($user_id, $tour_details['SportsType']);
+					$ins_si		= $this->mleague->inset_user_si($user_id, $tour_details['SportsType']);
+
+					if($tformat != "Teams" or $tformat != "TeamSport") {
+							$get_a2m = $this->mleague->get_user_a2m($user_id, $tour_details['SportsType']);
+							if($get_a2m){
+								$init_a2m = max($get_a2m['A2MScore'], $get_a2m['A2MScore_Doubles'], $get_a2m['A2MScore_Mixed']);
+								$upd_reg_a2m = $this->mleague->upd_reg_a2m($ins, $init_a2m);
+							}
+					}
+
+					$res				= array('Success: ' . "User / Team successfully registered.");
+
+					$dev_email	 = "pradeepkumar.namala@gmail.com";
+					$dev_subject = "A2M Mobile Post variables - Production";
+					$data2		 = array('firstname'	=> "Developer",
+												'post_vals'	=> print_r($data, true),
+												'page'		=> 'A2M Mobile Post');
+
+					$this->email_to_player($dev_email, $dev_subject, $data2);
+
+			//$res = array($data);
+			}
+			else {
+					//res = array('Error: ' . "User / Team already Registered for this tournament!");
+					$get_reg_events  = $this->mleague->get_reg_events($user_id, $tourn_id);
+					$ins					  = $get_reg_events['RegisterTournament_id'];
+
+					if($get_reg_events['Reg_Events']){
+
+						$prev_reg_events  = json_decode($get_reg_events['Reg_Events'], true);
+
+						foreach($sp_events as $new_ev){
+							if(!in_array($new_ev, $prev_reg_events)){
+								array_push($prev_reg_events, $new_ev);
+							}
+						}
+					}
+
+					$data3['upd_events']			= $prev_reg_events;
+					$data3['Tournament_ID']	= $data['Tournament_ID'];
+					$data3['Users_ID']				= $data['Users_ID'];
+
+					$data2['Tournament_ID'] = $data['Tournament_ID'];
+					$data2['pay_date']  = date('Y-m-d H:i:s');
+					$data2['pay_date']  = $data['Tournament_ID'];
+					$data2['Users_ID']  = $data['Users_ID'];
+					$data2['mtype']	    = 'tournament';
+					$data2['mtype_ref'] = $data['Tournament_ID'];
+					$data2['Amount']	= number_format($fee_amount, 2);
+					$data2['Transaction_id'] = $transaction_id;
+					$data2['Status']	= $status;
+
+					$upd	 = $this->mleague->update_reg_tourn($data3);
+					$ins_pay = $this->mleague->insert_pay_transaction($data2);
+
+					$res = array('Success: ' . "User / Team successfully registered.");
+
+			}
+			if($game_days){
+				$ins_game_days = $this->mleague->ins_game_days($ins, $user_id, $game_days);
+			}
+		}
+		else {
+			$res = array('Error: ' . "Invalid Tournament ID!");
+		}
+
+
+		if($res) {
+			$this->response($res);
+		}
+	}
+
+	public function regenerate_events($mult_events){
+			$revised_array = array();
+
+			foreach($mult_events as $key => $val){
+				if(is_numeric($key)){
+				   $arr = explode('-', $val);
+				   $ag		= $arr[0];
+				   if($arr[1] != 'Mixed'){
+					   if(in_array($arr[1], array('Singles','Doubles'))){
+						   $gen		= '';
+						   $format	= $arr[1];
+						   $level	= $arr[2];
+					   }
+					   else{
+						   $gen		= $arr[1];
+						   $format	= $arr[2];
+						   $level	= $arr[3];
+					   }
+				   }
+				   else{
+					   $gen		= $arr[1];
+					   $format	= '';
+					   $level	= $arr[2];
+				   }
+					
+				   $gen = $this->config->item($arr[0].'-'.$gen, 'age_gender_values');
+
+				   if( $arr[1] != 'Open')
+				   $get_level_label = $this->mleague->get_level_name($level);
+
+					$lbl = '';
+					$lbl = ' '.$get_level_label['SportsLevel'];
+				   $revised_array[$val] = $gen.' '.$format.$lbl;
+				}
+			}
+			return $revised_array;
+	}
+
 
 }

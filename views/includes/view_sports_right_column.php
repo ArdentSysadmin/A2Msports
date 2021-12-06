@@ -190,11 +190,11 @@ rssfeed_cache = "<?php echo md5($rss_feed_url); ?>";
 			</div>
 			<!-- Donate  -->
 			
-			<?php if($sport == 3){ ?>
-			<div class="top-score-title col-md-12" style="padding-top:37px;">
+			<!-- <?php if($sport == 3){ ?> -->
+			<!-- <div class="top-score-title col-md-12" style="padding-top:37px;">
 			<a href="mailto:admin@a2msports.com"><img src="<?=base_url();?>images/YouHe.jpg" alt="" /></a>
-			</div>
-			<?php } ?>
+			</div> -->
+			<!-- <?php } ?> -->
 
 			<!-- Google AdSense -->
 			<!-- <div id="google" align='center' style='margin-bottom:120px;'>

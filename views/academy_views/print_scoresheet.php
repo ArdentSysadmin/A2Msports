@@ -99,19 +99,24 @@
 
 				<td>
 				<table border="1" cellspacing = "2" cellpadding = "3">
+				<?php
+					$num_sets = 5;
+				if($res_result1[0][0]->Tot_Sets)
+					$num_sets = $res_result1[0][0]->Tot_Sets;
+				?>
 				<tr>
-					<td width="50">&nbsp;</td>
-					<td width="50">&nbsp;</td>
-					<td width="50">&nbsp;</td>
-					<td width="50">&nbsp;</td>
-					<td width="50">&nbsp;</td>
+				<?php
+				for($a = 1; $a <= $num_sets; $a++){
+					echo "<td width='50'>&nbsp;</td>";
+				}
+				?>
 				</tr>
 				<tr>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
+				<?php
+				for($a = 1; $a <= $num_sets; $a++){
+					echo "<td>&nbsp;</td>";
+				}
+				?>
 				</tr>
 				</table>
 				</td>

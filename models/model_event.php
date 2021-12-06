@@ -194,12 +194,17 @@
 			//$fee_oc			= $this->input->post('fee_oc');
 			$fee_amount			= $this->input->post('fee_amount');
 
+			$show_guest = 1;
+
+			 $ev_start_time = $this->input->post('ev_st');
+			 $ev_end_time	 = $this->input->post('ev_et');
+
 			if($event_schedule == 'singleday')
 			{
 				$ed = $this->input->post('ev_dt');
 				foreach($ed as $i => $evd){
-					$start_date = date('Y-m-d',strtotime($ed[$i]));
-					$end_date   = date('Y-m-d',strtotime($ed[$i]));
+					$start_date = date('Y-m-d H:i',strtotime($ed[$i]." ".$ev_start_time[$i]));
+					$end_date   = date('Y-m-d H:i',strtotime($ed[$i]." ".$ev_end_time[$i]));
 				}
 			}
 
@@ -219,15 +224,16 @@
 					'Ev_Desc'		=> $message,
 					'Ev_Sport'		=> $sport_type,
 					'Fee_Type'		=> $fee_oc,
-					'Fee'			=> number_format($fee_amount, 2)
+					'Fee'			=> number_format($fee_amount, 2),
+					'Show_Guests'	 => $show_guest
 					);
 				
 			 $result = $this->db->insert('Events', $data);
 			 $ev_id  = $this->db->insert_id();
 
 			 $ev_date		= $this->input->post('ev_dt');
-			 $ev_start_time = $this->input->post('ev_st');
-			 $ev_end_time	= $this->input->post('ev_et');
+			// $ev_start_time = $this->input->post('ev_st');
+			// $ev_end_time	= $this->input->post('ev_et');
 			 $ev_loc		= $this->input->post('ev_rploc_id');
 
 
@@ -758,9 +764,8 @@
 		}
 	
 		public function get_ts_count($ts, $ev_id){
+			$qry = $this->db->query("SELECT count(*) as ts_count FROM Users WHERE TShirt_Size = {$ts} AND Users_ID IN (SELECT Users_Id from Ev_Inv_Status WHERE Ev_ID = $ev_id)");
 
-				$qry = $this->db->query("SELECT count(*) as ts_count FROM Users WHERE TShirt_Size = {$ts} AND Users_ID IN (SELECT Users_Id from Ev_Inv_Status WHERE Ev_ID = $ev_id)");
-		
 			return $qry->row_array();
 		}
 	

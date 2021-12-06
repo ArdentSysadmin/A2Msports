@@ -286,10 +286,24 @@
 			return $query->result();
 		}
 
-		public function update_tm_prtcpnts_notif_stat($mid){
+		public function update_tm_prtcpnts_notif_stat($mid, $new_notified_plrs){
 			$cur_date = date('Y-m-d H:i');
-			$data = array('is_notified' => 1,
-						  'notified_on' => $cur_date);
+			$data = array('is_notified'				=> 1,
+								  'players'					=> NULL,
+								  'notified_to_players' => json_encode($new_notified_plrs),
+								  'notified_on'				=> $cur_date);
+
+			$this->db->where('mid', $mid);
+			$result = $this->db->update('TAdmin_Messages_Players', $data); 
+		}
+
+		public function update_tobe_notified_prtcpnts($mid, $tobe_notified, $new_notified_plrs){
+			//echo "<pre>";			print_r($tobe_notified);			print_r($new_notified_plrs);			exit;
+			$cur_date = date('Y-m-d H:i');
+			$data = array('is_notified'			  => 0,
+								'players' => json_encode($tobe_notified),
+								'notified_to_players' => json_encode($new_notified_plrs),
+								'notified_on'			  => $cur_date);
 
 			$this->db->where('mid', $mid);
 			$result = $this->db->update('TAdmin_Messages_Players', $data); 
@@ -319,6 +333,13 @@
 		public function UpdatePortal_AdmUsers_NotifyStat($data, $mid){
 			$this->db->where('mid', $mid);
 			$result = $this->db->update('Portal_Admin_Messages', $data); 
+		}
+
+		public function get_academy($academy_id){
+							$this->db->select('*');
+							$this->db->where('Aca_ID', $academy_id);
+			$query =	$this->db->get('Academy_Info');
+			return $query->row_array();
 		}
 
 	}

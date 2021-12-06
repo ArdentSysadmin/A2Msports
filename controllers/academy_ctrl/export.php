@@ -2,7 +2,7 @@
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
       // session_start(); 
-
+//error_reporting(-1);
 	class Export extends CI_Controller {
 	
 	 	public $header_tpl	   = "academy_views/includes/academy_header";
@@ -54,6 +54,89 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			if($this->logged_user != $this->academy_admin)
 			$this->admin_menu_items = array('0'=>'8');
 		}
+
+	public function club_members()
+	{
+		//if($this->org_id == 1123){
+		$this->load->model("academy_mdl/model_export");
+		$this->load->library("excel");
+		$object = new PHPExcel();
+
+		$object->setActiveSheetIndex(0);
+
+		$table_columns = array("First Name", "Last Name", "Email ID", "Phone Number", "DOB", "Age Group", "Membership Type", "Start Date", "End Date", "Status");
+
+		$column = 0;
+
+		foreach($table_columns as $field){
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column, 1, $field);
+			$column++;
+		}
+
+		$excel_row = 2;
+
+							$court_res = $this->model_courts->get_clubMembers();
+							if(!empty($court_res)){
+							//echo "<pre>";		print_r($court_res);exit;
+								foreach($court_res as $res){
+									//$court_name = $this->model_export->get_court_name($res->court_id);
+									//$get_loc		= $this->model_export->get_loc_info($res->loc_id);
+									//$username	= $this->model_export->get_user($res->reserved_by);
+
+									$object->getActiveSheet()->setCellValueByColumnAndRow(0, $excel_row, $res->Firstname);
+									$object->getActiveSheet()->setCellValueByColumnAndRow(1, $excel_row, $res->Lastname);
+									$object->getActiveSheet()->setCellValueByColumnAndRow(2, $excel_row, $res->EmailID);
+									$object->getActiveSheet()->setCellValueByColumnAndRow(3, $excel_row, $res->Mobilephone);
+									if($res->DOB){
+										$object->getActiveSheet()->setCellValueByColumnAndRow(4, $excel_row, date('Y-m-d', strtotime($res->DOB)));
+									}
+									else{
+										$object->getActiveSheet()->setCellValueByColumnAndRow(4, $excel_row, '');
+									}
+
+									$object->getActiveSheet()->setCellValueByColumnAndRow(5, $excel_row, $res->UserAgegroup);
+									$object->getActiveSheet()->setCellValueByColumnAndRow(6, $excel_row, $res->Member_type);
+									if($res->StartDate){
+									$object->getActiveSheet()->setCellValueByColumnAndRow(7, $excel_row, date('Y-m-d', strtotime($res->StartDate)));
+									}
+									else{
+										$object->getActiveSheet()->setCellValueByColumnAndRow(7, $excel_row, '');
+									}
+
+									if($res->EndDate){
+									$object->getActiveSheet()->setCellValueByColumnAndRow(8, $excel_row, date('Y-m-d', strtotime($res->EndDate)));
+									}
+									else{
+										$object->getActiveSheet()->setCellValueByColumnAndRow(8, $excel_row, '');
+									}
+									
+									if($res->Member_Status)
+										$stat = 'Active';
+									else
+										$stat = 'Inactive';
+
+									$object->getActiveSheet()->setCellValueByColumnAndRow(9, $excel_row, $stat);
+
+									$excel_row++;
+
+								}
+							}
+					
+					//echo "-------</br>";
+		
+		//exit;
+		//error_reporting(-1);	
+
+		$object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="MembersData.xls"');
+		$object_writer->save('php://output');
+
+		//}
+		//else{
+		//echo "Page Under Constructions!"; exit;
+		//}
+	}
 
 	public function court_reservations()
 	{

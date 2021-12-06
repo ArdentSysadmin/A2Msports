@@ -1,6 +1,7 @@
 <script>
 var club_baseurl = "<?php echo $club_url; ?>";
 </script>
+
 <?php
 if($this->is_team_league){
 ?>
@@ -37,7 +38,7 @@ $("#player_matches").html("Please wait, loading......");
 	$.ajax({
 		type:'POST',
 		url:baseurl+'league/get_cl_player_matches/',
-		data:{player:player, tourn_id:tourn_id},
+		data:{player:player, tourn_id:tourn_id,club_url:club_baseurl},
 		success:function(res){
 			$("#player_matches").html(res);
 
@@ -50,6 +51,14 @@ $("#player_matches").html("Please wait, loading......");
 </script>
 <?php
 }?>
+<div class='col-md-12' align='right'>
+<select class='form-control' name='format_filter' id='format_filter' style='width:15%;'>
+<option value='all'>All</option>
+<option value='singles'>Singles</option>
+<option value='doubles'>Doubles</option>
+<option value='mixed'>Mixed</option>
+</select>
+</div>
 <div class="table-responsive">
 <table id="standings" cellpadding="0" border="0" class="tab-score">
 <thead>
@@ -69,8 +78,8 @@ $("#player_matches").html("Please wait, loading......");
 //print_r($tour_det);
 if(!$this->is_team_league){
 ?>
-<th class="text-center">Init A2M</th>
-<th class="text-center">Final A2M</th>
+<th class="text-center">Init Rating</th>
+<th class="text-center">Final Rating</th>
 <th class="text-center">Change</th>
 <?php
 }
@@ -99,8 +108,17 @@ if(!$this->is_team_league){
 ?>
 <td align='center' style="font-weight:400;"><?php echo $values['init_a2m']; ?></td>
 <td align='center' style="font-weight:400;"><?php echo $values['final_a2m']; ?></td>
+<?php
+if($tour_det->SportsType != 7){
+?>
 <td align='center' style="font-weight:400;"><?php echo $values['change']; ?></td>
 <?php
+}
+else{
+?>
+<td align='center' style="font-weight:400;"><?php echo number_format($values['change'], 3); ?></td>
+<?php
+}
 }
 ?>
 </tr>
@@ -143,8 +161,8 @@ if(!$this->is_team_league){
 ?>
 	<script>
 	$(document).ready(function() {
-	$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-	"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null,null,null,null  ], language: {"search":"", "searchPlaceholder":"Search"} });
+		$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+		"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null,null,null,null  ], language: {"search":"", "searchPlaceholder":"Search"} });
 	});
 	</script>
 <?php
@@ -153,8 +171,8 @@ else{
 ?>
 	<script>
 	$(document).ready(function() {
-	$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-	"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+		$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+		"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
 	});
 	</script>
 <?php

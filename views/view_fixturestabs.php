@@ -1,3 +1,4 @@
+<!-- <link href="https://a2msports.com/css/wickedpicker.min.css" rel="stylesheet" type="text/css" /> -->
 <script> 
 $(document).ready(function(){
 	$('#reg_users_table').DataTable({
@@ -47,6 +48,15 @@ $(document).on("click", ".up, .down", function(){
  			}
 			else{
 				$('#no_of_groups').hide();
+			}
+		});
+
+ 		$("input[name='is_plof']").click(function (){
+	 	if($("#p_Yes").is(":checked")) {
+  				$('#playoff_size').show();
+ 			}
+			else{
+				$('#playoff_size').hide();
 			}
 		});
 
@@ -104,12 +114,22 @@ $(document).on("click", ".up, .down", function(){
 				$('#groups').show();
 				//$('#div_multi_rounds').show();
 			}
+
+
+			if(ttype_val == 'Round Robin'){
+				$('#groups').show(); 	$('#playoffs').show();
+			}
+			else{
+				$('#groups').hide(); 	$('#playoffs').hide();
+			}
+
 		});
 
 		var ttype_val = $('#ttype').val();
 
 		if(ttype_val == 'Round Robin'){
 				$('#groups').show();
+				$('#playoffs').show();
 				//$('#div_multi_rounds').show();
 		}
  	});
@@ -189,14 +209,18 @@ var is_event     = $('#is_event').val();
 var is_checkin = $('input[type=radio][name=is_checkin]:checked').val();
 
   $('input:checkbox.macthtype:checked').each(function () {
-       var match_type = this.value; 
+       var match_type = this.value;
+	   if($.inArray(match_type, types) === -1) 
        types.push(match_type);
   });
  
+ var dr_format = $('input[name="draw_format"]:checked').val();
+ $('#sel_game_days').val(sel_occr_ids);
+
    $.ajax({
         type:'POST',
         url:baseurl+'league/getusers_occr/',
-        data:{types:types,sel_occr_ids:sel_occr_ids,tour_id:tour_id,format:format,is_event:is_event,is_checkin:is_checkin,sport:sport},
+        data:{types:types,sel_occr_ids:sel_occr_ids,tour_id:tour_id,format:format,is_event:is_event,is_checkin:is_checkin,sport:sport,draw_type:dr_format},
         success:function(html){
 		$('#age_group_users').html(html);
 		
@@ -366,12 +390,14 @@ $('#match_type').on('change', function() {
   $("#match_type option:selected").each(function(){       
         types.push($(this).val());
     });
-  
+
+  var dr_format = $('input[name="draw_format"]:checked').val();
+
 //alert(types);
     $.ajax({
         type:'POST',
         url:baseurl+'league/getusers/',
-        data:{types:types,tour_id:tour_id},
+        data:{types:types,tour_id:tour_id,draw_type:dr_format},
         success:function(html){
          // console.log(html);
           //alert(html);
@@ -484,7 +510,7 @@ if(isset($exist)) { ?>
 <?php
 if($tourn_det){
 ?>
-<form class="form-horizontal" id='myform' method='post' role="form" action="<?php echo base_url()."league/bracket/".$tourn_det['tournament_ID'];?>"> 
+<form class="form-horizontal" id='myform' method='post' role="form" action="<?php echo base_url()."league/bracket/".$tourn_det['tournament_ID'];?>" autocomplete="on"> 
 
 <input type="hidden" id="tourn_id" name="tourn_id" value="<?php echo $tourn_det['tournament_ID'] ;?>" /> 
 <input type="hidden" id="is_event" name="is_event" value="<?php echo ($tourn_det['Multi_Events'] != NULL) ? '1' : '0'; ?>" /> 
@@ -540,6 +566,15 @@ if($tourn_det['Is_League'] == 1){
 if($tourn_det['tournament_format'] != 'Teams' and $tourn_det['tournament_format'] != 'TeamSport'){
 ?>
 <div class='form-group'>
+<label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Draw Format</label>
+<div class='col-md-6 form-group internal'>
+<input type='radio' id='format_singles' name='draw_format' value='singles' required /> Singles
+<input type='radio' id='format_doubles' name='draw_format' value='doubles' required /> Doubles
+<input type='radio' id='format_mixed'  name='draw_format' value='mixed' required /> Mixed Doubles
+</div>
+</div>
+
+<div class='form-group'>
 <label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Show only Check-In Players</label>
 <div class='col-md-6 form-group internal'>
 <input type='radio' id='checkin_yes' name='is_checkin' value='1' /> Yes
@@ -552,7 +587,7 @@ if($tourn_det['SportsType'] != 4 and $tourn_det['tournament_format'] != 'Teams' 
 ?>
 <div class='form-group' >
 <label class='control-label col-md-3' for='id_accomodation' style='padding-top:0px;'>Filters:</label>
-<div class='col-md-6 form-group internal' style="overflow-y:scroll;height:300px;" >
+<div class='col-md-6 form-group internal' style="overflow-y:scroll;height:auto;" >
 <?php
 $res  = league::get_reg_tourn_participants_withGender($tourn_det['tournament_ID'], $tourn_det['SportsType']);
 $reg_users  = $res[0];
@@ -606,7 +641,7 @@ $users		=		array_unique($users);
 if(count($users) != 0){
 ?>
 <tr>
-<td style="padding-left:40px;" ><input type="checkbox" value="<?php echo $key; ?>" name="match_type[]" class="macthtype" onclick="GetUsers('<?php echo $format;?>');"> &nbsp; <?php echo $evnt." (".count($users).")"; ?>
+<td style="padding-left:40px;" ><input type="checkbox" id="<?php echo $key; ?>" value="<?php echo $key; ?>" name="match_type[]" class="macthtype" onclick="GetUsers('<?php echo $format;?>');"> &nbsp; <?php echo $evnt." (".count($users).")"; ?>
 </td>
 </tr>
 <?php
@@ -615,11 +650,12 @@ if(count($users) != 0){
 		foreach($ev_occrs as $occr){
 		?>
 		<tr>
-		<td style="padding-left:70px;" ><input type="checkbox" value="<?php echo $key; ?>" name="match_type[]" class="macthtype" onclick="GetUsers_OCCR('<?php echo $occr->OCR_ID;?>', this.checked);"> &nbsp; <?php echo date('M d, Y H:i', strtotime($occr->Game_Date))." (".count($users).")"; ?>
+		<td style="padding-left:70px;" ><input type="checkbox" id="<?php echo $key."_".$occr->OCR_ID; ?>" value="<?php echo $key; ?>" name="match_type[]" class="macthtype" onclick="GetUsers_OCCR('<?php echo $occr->OCR_ID;?>', this.checked);"> &nbsp; <?php echo date('M d, Y H:i', strtotime($occr->Game_Date))." (".count($users).")"; ?>
 		</td>
 		</tr>
 		<?php
 		}
+	echo "<input type='hidden' name='sel_game_days[]' id='sel_game_days' value='' />";
 	}
 
 }
@@ -837,10 +873,26 @@ else{
 
 <!-- HTML Code For Groups Creation Starts Here. -->
 
+<div class='form-group' id='playoffs' style='display:none'>
+<label class='control-label col-md-5' style='padding-top:0px;'>Do you want to create playoff draw?</label>
+<label for="p_Yes"><input type="radio" id="p_Yes" name="is_plof" value="1" /> Yes</label>&nbsp;&nbsp;
+<label for="p_No"><input type="radio" id="p_No" name="is_plof" value="0" checked="checked" /> No<br /></label>
+</div>
+
+<div class='form-group' id='playoff_size' style='display:none'>
+<label class='control-label col-md-5' style='padding-top:0px;'>Size of playoff draw</label>
+	<select class="form-control" name="plof_size" id="plof_size" style="width:10%">
+		<option value='2'>2</option>
+		<option value='3'>3</option>
+		<option value='4'>4</option>
+		<option value='8'>8</option>
+	</select>
+</div>
+
 <div class='form-group' id='groups' style='display:none'>
 <label class='control-label col-md-5' style='padding-top:0px;'>Do you want to have groups?</label>
-	<label for="Yes"><input type="radio" id="t_Yes" name="is_groups" value="1" /> Yes</label>&nbsp;&nbsp;
-	<label for="No"><input type="radio" id="t_No" name="is_groups" value="0" checked="checked" /> No<br /></label>
+	<label for="t_Yes"><input type="radio" id="t_Yes" name="is_groups" value="1" /> Yes</label>&nbsp;&nbsp;
+	<label for="t_No"><input type="radio" id="t_No" name="is_groups" value="0" checked="checked" /> No<br /></label>
 </div>
 
 <div class='form-group' id='no_of_groups' style='display:none'>
@@ -861,6 +913,7 @@ else{
 	<label for="Yes" style="padding-top:7px;"><input type="radio" id="top_Yes" name="is_group_top_players" value="1" /> Yes</label>&nbsp;&nbsp;
 	<label for="No"><input type="radio" id="top_No"  name="is_group_top_players" value="0" checked="checked" /> No<br /></label>
 </div>
+
 
 <!-- HTML Code For Groups Creation Ends Here.  -->
 
@@ -884,14 +937,33 @@ $(document).ready(function() {
 
 		if (requested > count) {
 			for (i = count; i < requested; i++) {
-				var $ctrl = $("<div class='col-md-12 div_grp' style='padding-bottom:4px;'><div class='col-md-4'><input type='text' class='form-control' name='courts[]' placeholder='Court Name/#"+(i+1)+"' value='Court "+(i+1)+"' /></div><div class='col-md-3'><input type='text' class='form-control' name='match_date[]' placeholder='MM/DD/YYYY' value='' max='' /></div><div class='col-md-2'><select class='form-control' name='stime[]' id='stime_"+i+"' style='width: 108%; !important'><option value=''>Start Time</option><option value='05:00:00'>5:00 am</option><option value='06:00:00'>6:00 am</option><option value='07:00:00'>7:00 am</option><option value='08:00:00'>8:00 am</option><option value='09:00:00'>9:00 am</option><option value='10:00:00'>10:00 am</option><option value='11:00:00'>11:00 am</option><option value='12:00:00'>12:00 pm</option><option value='13:00:00'>1:00 pm</option><option value='14:00:00'>2:00 pm</option><option value='15:00:00'>3:00 pm</option><option value='16:00:00'>4:00 pm</option><option value='17:00:00'>5:00 pm</option><option value='18:00:00'>6:00 pm</option><option value='19:00:00'>7:00 pm</option><option value='20:00:00'>8:00 pm</option><option value='21:00:00'>9:00 pm</option><option value='22:00:00'>10:00 pm</option></select></div><div class='col-md-2'><select class='form-control' name='etime[]' id='etime_"+i+"' style='width: 108%; !important'><option value=''>End Time</option><option value='06:00:00'>6:00 am</option><option value='07:00:00'>7:00 am</option><option value='08:00:00'>8:00 am</option><option value='09:00:00'>9:00 am</option><option value='10:00:00'>10:00 am</option><option value='11:00:00'>11:00 am</option><option value='12:00:00'>12:00 pm</option><option value='13:00:00'>1:00 pm</option><option value='14:00:00'>2:00 pm</option><option value='15:00:00'>3:00 pm</option><option value='16:00:00'>4:00 pm</option><option value='17:00:00'>5:00 pm</option><option value='18:00:00'>6:00 pm</option><option value='19:00:00'>7:00 pm</option><option value='20:00:00'>8:00 pm</option><option value='21:00:00'>9:00 pm</option><option value='22:00:00'>10:00 pm</option><option value='23:00:00'>11:00 pm</option></select></div>");
+				var $ctrl = $("<div class='col-md-12 div_grp' style='padding-bottom:4px;'><div class='col-md-3'><input type='text' class='form-control' name='courts[]' placeholder='Court Name/#"+(i+1)+"' value='Court "+(i+1)+"' /></div><div class='col-md-3'><input type='date' class='form-control' name='match_date[]' placeholder='MM/DD/YYYY' value='' max='' /></div><div class='col-md-2'><input type='time' class='form-control' name='stime[]' id='stime_"+i+"' value='' /></div><div class='col-md-2'><input type='time' class='form-control' name='etime[]' id='etime_"+i+"' value='' /></div>");
 
 				$("#court_sch_times").append($ctrl);
 				//$('.addn_fee_all').prop('disabled', true);
 				//	$('#dynamic_startEndDates_Fees').append($ctrl1);
-	
+
+
+			/*var options1 = {
+				now: "06:00",			//hh:mm 24 hour format only, defaults to current time 
+				twentyFour: true,		//Display 24 hour format, defaults to false 
+				minutesInterval: 15,  //Change interval for minutes, defaults to 1
+				title: 'Start Time',		//The Wickedpicker's title, 
 			}
-		} else if (requested < count) {
+
+			var options2 = {
+				now: "18:00 ",			//hh:mm 24 hour format only, defaults to current time 
+				twentyFour: true,		//Display 24 hour format, defaults to false 
+				minutesInterval: 15,  //Change interval for minutes, defaults to 1 
+				title: 'End Time',		//The Wickedpicker's title, 
+			}
+
+		  $('.timepicker').wickedpicker(options1);
+		  $('.timepicker2').wickedpicker(options2);*/
+
+			}
+		}
+		else if (requested < count) {
 			var x = requested - 1;
 			//alert(x);
 			$("#court_sch_times .div_grp:gt(" + x + ")").remove();
@@ -935,6 +1007,18 @@ $(document).ready(function() {
 
 </div>
 
+
+<div class='form-group' id='div_multi_rounds'>
+<label class='control-label col-md-5' style='padding-top:0px;'>No. of Sets / Games per each match?</label>
+<select class="form-control" name="num_of_sets" id="num_of_sets" style="width:10%">
+<option value='1'>1</option>
+<option value='3'>3</option>
+<option value='5' selected>5</option>
+<option value='7'>7</option>
+</select>
+</div>
+
+
 <div class='form-group'>
 	<label class='control-label col-md-5' style='padding-top:10px;'>Do you want to Publish the draw to players?</label>
 	<select class="form-control" name="is_publish_draw" id="is_publish_draw" style="width:20%; margin-bottom:35px;">
@@ -944,7 +1028,7 @@ $(document).ready(function() {
 </div>
 
 <div class='form-group'>
-<label class='control-label col-md-3' for='id_accomodation'></label>
+<label class='control-label col-md-4' for='id_accomodation'></label>
 <div class='col-md-7 form-group internal'>
 <input type="submit" name='generate' id="generate" value="Generate" class="league-form-submit"/>
 </div>
@@ -967,3 +1051,67 @@ else
 </div><!--Close Top Match-->
 <div style='clear:both'></div>
 </div><!--Close Top Match-->
+<?php
+//print_r($this->session->userdata('draw'));
+?>
+
+<script>
+$(document).ready(function(){
+
+	var ttype = "<?php echo $this->session->userdata('draw')['ttype']; ?>";
+	if(ttype){
+		$('#ttype').val('');
+		$('#ttype').val(ttype).trigger('change');
+	}
+
+
+	var isGrp = "<?php echo $this->session->userdata('draw')['is_groups']; ?>";
+	if(isGrp != "0" && isGrp != "")
+		$("#t_Yes").prop("checked", true).trigger("click");
+
+	var isGrpTopPlayers = "<?php echo $this->session->userdata('draw')['is_group_top_players']; ?>";
+	if(isGrpTopPlayers != "0" && isGrpTopPlayers != "")
+		$("#top_Yes").prop("checked", true).trigger("click");
+
+	var isCourts = "<?php echo $this->session->userdata('draw')['is_sch_courts']; ?>";
+	if(isCourts != "0" && isCourts != "")
+		$("#sch_Yes").prop("checked", true).trigger("click");
+
+	var num_grps = "<?php echo $this->session->userdata('draw')['sel_groups']; ?>";
+	if(num_grps)
+		$("#sel_groups").val(num_grps).trigger("change");
+
+	var is_checkin = "<?php echo $this->session->userdata('draw')['is_checkin']; ?>";
+	if(is_checkin != "0" && is_checkin != "")
+		$("#checkin_yes").prop("checked", true).trigger("click");
+
+	var dr_format = "<?php echo $this->session->userdata('draw')['draw_format']; ?>";
+	if(dr_format == 'singles')
+		$("#format_singles").prop("checked", true).trigger("click");
+	else if(dr_format == 'doubles')
+		$("#format_doubles").prop("checked", true).trigger("click");
+	else if(dr_format == 'mixed')
+		$("#format_mixed").prop("checked", true).trigger("click");
+
+
+		//var prev_filter = "<?php echo $this->session->userdata('draw')['filters']; ?>";
+		var prev_filter = ["<?php echo implode('","', $this->session->userdata('draw')['filters']); ?>"];
+		var prev_game_days = ["<?php echo implode('","', $this->session->userdata('draw')['sel_game_days']); ?>"];
+		if(prev_filter){
+			$.each(prev_filter, function( index, value ) {
+				var ev_id = value;
+				if(prev_game_days){
+					$.each(prev_game_days, function( index2, value2 ) {
+					var ev_id2 = ev_id+'_'+value2;
+					//console.log(ev_id2);
+					$("#" + ev_id2).trigger('click');
+					});
+				}
+				else{
+				$("input[value='" + ev_id + "']").trigger('click');
+				}
+			});
+		}
+
+});
+</script>

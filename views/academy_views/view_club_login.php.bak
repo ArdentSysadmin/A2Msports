@@ -13,8 +13,7 @@ var club_baseurl = "<?php echo $this->config->item('club_form_url'); ?>";
 width:50%;
 }
 
-@media only screen and (max-width: 780px) 
-{
+@media only screen and (max-width: 780px) {
 	.mobile-modal-dialog{
 	width:100% !important;
 	}
@@ -94,8 +93,13 @@ var baseurl = "<?php echo base_url(); ?>";
 <div id="login-submit" style="line-height:25px">
 <input name="academy"  type="hidden" value="<?=$org_details['Aca_ID'];?>" />
 <input name="shortcode" type="hidden" value="<?=$org_details['Aca_URL_ShortCode'];?>" />
+<?php if($ev_id){ ?>
+<input name="aca_page" id="aca_page" type="hidden" value="events/<?=$ev_id;?>" />
+<?php }
+else { ?>
 <input name="aca_page" id="aca_page" type="hidden" value="" />
-
+<?php }
+?>
 <input type="submit" id='submit_web_login' name='submit_web_login'  value="  Login  " style="display:none;" /> 
 <input type="button" id='btn_web_login' name='btn_web_login'  value="  Login  " style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00" /> 
 &nbsp;&nbsp; | <a href="#" id="new_member">New User?</a>&nbsp;&nbsp; 
@@ -104,6 +108,38 @@ var baseurl = "<?php echo base_url(); ?>";
 <?php
 }?>
 </div>
+<!-- <br /> <h4 style="padding-bottom:10px; padding-top:10px">Or...<br /><br />
+<div id="phone-login" style="line-height:25px;"> 
+<a href="#" id="phone_login" class="btn btn-info" role="button" style="margin-bottom: 20px;background-color: #81a32b;border-color: #81a32b;">
+Login with Mobile Number</a>
+</div> -->
+
+</div>
+
+<?php
+if($login){
+$this->session->unset_userdata('redirect_to');
+$redirect_to = array('redirect_to' => base_url().$org_details['Aca_URL_ShortCode']);
+
+$this->session->set_userdata($redirect_to);
+?>
+<!-- <div style="padding-top: 25px;">
+<a href="<?php echo $login; ?>"><img src="<?php echo base_url(); ?>icons/facebook.jpg" 
+height="40px" width="245px"  /></a><br /><br />
+<a href="<?php echo $authUrl; ?>"><img src="<?php echo base_url(); ?>icons/google.jpg" 
+height="40px" width="245px" /></a><br /><br />
+</div> -->
+<?php
+}
+?>
+<!-- <a href="<?php echo base_url();?>Forgot-password">Forgot Password?</a><br><a href="<?php echo base_url(); ?>register/">Register Now!</a> <br> -->
+
+</form>
+<!-- Login window content -->
+
+<?php
+//$this->load->view("academy_views/view_phone_login_forms");
+?>
 
 <?php
 if($login){
@@ -321,5 +357,15 @@ $('#email_stat').html("");
 
 });
 </script>
+
+<!-- ----------------------------------------------------------------------------------------------------------------------------- -->
+ <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<!-- <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script> -->
+<script defer src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
+<script src="<?=base_url(); ?>js/custom/phone_login.js"></script>
 </body>
 </html>

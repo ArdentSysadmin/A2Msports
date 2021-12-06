@@ -24,7 +24,7 @@ if(isset($child_accounts)){
 echo "<h4>We found the given profiles that are linked to your account.<br />Please select the user to which you want to reset the password.</h4><br />";
 ?>
 
-<form method="post" class="login-form" method="post" action='<?php echo base_url(); ?>login/send_email_activation'> 
+<form method="post" class="login-form" method="post" action='<?php echo base_url(); ?>login/send_email_activation' style='float:none;'> 
 <?php foreach($child_accounts as $child){ ?>
 <div class="name">
 <input type="radio" name="child_user_id" value="<?php echo $child->Users_ID; ?>" /> 
@@ -42,16 +42,16 @@ echo  $name['Firstname'] . " ". $name['Lastname'] . "<br /><br />";?>
 else{
 ?>
 <div id="parent_form">
-<form id='forgot_pwd_frm' method="post" class="login-form" method="post" action='<?php echo base_url(); ?>login/ref_accounts'>            
+<form id='forgot_pwd_frm' method="post" class="login-form" method="post" action='<?php echo base_url(); ?>login/ref_accounts' style='float:none;'>            
 <div class="name">
 <label for="name_login">Registered Email:</label><div class="clear"></div>
 <input id="email" name="email" class='form-control' type="email" required />
 <input id="test" name="test" type="hidden" value='test' />
 </div>
-<!-- <div id="login-submit" style="line-height:25px">
- --><input type="submit" id='sub_btn' name="submit" value="Submit" />
-<!-- </div>
- --></form>
+<!-- <div id="login-submit" style="line-height:25px"> -->
+<input type="submit" id='sub_btn' name="submit" value="Send" style='margin-top:10px;' />
+<!-- </div> -->
+</form>
 </div>
 <?php 
 } ?>

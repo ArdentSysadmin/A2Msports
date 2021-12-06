@@ -16,6 +16,22 @@ a.register:hover {
 <script>
 $(document).ready(function(){
 
+  $('#check_in').on('click', function(e) {
+	  var gd = '';
+	  if(confirm("Are you sure to check in "+gd+"?")){
+
+		  $.ajax({
+			  type: 'POST',
+			  url: club_baseurl+'league/check_in',
+			  data:{tourn_id:tourn_id},
+			  success: function(res) {
+					alert(res);
+					$('#check_in').hide();
+			  }
+		  });
+	  }
+  });
+
 	$('#admin_actions').change(function() {
 		if(this.value != ''){
 			var cur_val = this.value;
@@ -62,10 +78,10 @@ $users_id = $this->logged_user;
 $is_reg	  = league::user_reg_or_not($users_id, $tour_details->tournament_ID);
 $logged_user_role = 'Visiter';
 
-if($tour_details->Usersid == $users_id or $this->is_super_admin){    /// tournament admin access links
+if(($tour_details->Usersid == $users_id or $tour_details->Tournament_Director == $users_id or $this->is_super_admin) and $this->logged_user) {    /// tournament admin access links
 	$logged_user_role = 'Admin';
 }
-else if($is_logged_user_reg){
+else if($is_logged_user_reg and $this->logged_user) {
 	$logged_user_role = 'RegPlayer';
 }
 
@@ -175,6 +191,16 @@ else{
 <?php if($tour_details->TournamentAddress) { echo $tour_details->TournamentAddress.", "; }?> 
 <?php if($tour_details->TournamentCity) { echo $tour_details->TournamentCity.", "; }?>
 <?php echo $tour_details->TournamentState.", ";?> <?php echo $tour_details->PostalCode;?>
+<?php
+if($this->logged_user_role == 'Admin') {
+?>
+<br>
+<b>Status: </b>
+<?php
+if($tour_details->Is_Publish) { echo "<span style='color:green;font-weight:bold;font-size: 20;'>Published</span>"; }
+else{ echo "<span style='color:red;font-weight:bold;font-size: 20;'>UnPublished</span>"; }
+}
+?>
 </div>
 </div><!--Close col-md-6-->
 
@@ -188,10 +214,13 @@ else{
 	$now	= time();
 	$sdate	= strtotime($tour_details->StartDate);
 
-
-if(($tour_details->Usersid == $users_id or $this->is_super_admin) and $cdate <= $exp_date) {   /// tournament admin access links
-?>
+if($users_id){
+	?>
 <select name='admin_actions' id='admin_actions' class='form-control' style="width:60%; font-weight:bold;text-align:center;margin-top:70px;border:2px solid #ff8a00" autocomplete='off'>
+<?php
+if(($tour_details->Usersid == $users_id or $tour_details->Tournament_Director == $users_id or $this->is_super_admin) and $cdate <= $exp_date) {   /// tournament admin access links
+?>
+
 <option value="">------ Actions ------</option>
 <option value="<?php echo base_url().$org_url_key;?>league/edit/<?php echo $tour_details->tournament_ID;?>">
 Edit Tournament</option>
@@ -203,13 +232,18 @@ Create Draws</option>
 	<!-- <a style='cursor:pointer;' onclick="myWin_flyer('<?php echo $tour_details->tournament_ID;?>');"><img src="<?php echo base_url();?>images/print-ico.png" alt="Print" title="Print Flyer" /> </a> -->
 <?php 
 	if(!$this->is_team_league) {
-
 		echo "<option value ='" . base_url() .$org_url_key. "play/reg_players/$tour_details->tournament_ID'>Register Players</option>";
 	}
 	else {
 		echo "<option value ='" . base_url() .$org_url_key. "league/reg_teams/$tour_details->tournament_ID'>Register Teams</option>";
 		echo "<option value ='" . base_url() .$org_url_key. "league/scorecard/$tour_details->tournament_ID'> Print Scorecard</option>";
 	}
+
+	if($tour_details->Is_Publish)
+		echo "<option value ='". base_url().$org_url_key."league/unpublish/$tour_details->tournament_ID'>UnPublish</option>";
+	else
+		echo "<option value ='". base_url().$org_url_key."league/publish/$tour_details->tournament_ID'>Publish</option>";
+
 }
 else if($is_logged_user_reg and !array_key_exists($this->logged_user, $team_captains)){
 	if($tour_details->tournament_format != 'Teams'){
@@ -228,6 +262,7 @@ else{
 }
 
 echo "</select>";
+}
 //$now   = time() + 3600;
 $now	 = time();
 $oneday	 = 86400;
@@ -259,8 +294,16 @@ else if($is_logged_user_reg and $tour_details->tournament_format != 'Teams'){
 	echo "<br />";
 	echo "<br />";
 	echo "<br />";
+
 	if($tour_details->Is_League){
-	echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/my_reg_events.png' alt='Register More' title='Register More'></a>";
+	echo "<a href='".base_url().$org_url_key."league/register_match/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/my_reg_events.png' alt='Register More' title='Register More'></a>";
+
+		if(!$is_check_in){
+		echo "<br /><a id='check_in' style='cursor:pointer; margin-right:40px;'><img src='".base_url()."icons/checkin.png' alt='Check In' title='Check In'></a>";
+		}
+		else if($this->session->flashdata('check_in_success')){
+			//echo "<br><br><b>".$this->session->flashdata('check_in_success')."</b>";
+		}
 	}
 	else{
 	echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/my_reg_events.png' alt='My Events' title='My Registered Events'></a>";

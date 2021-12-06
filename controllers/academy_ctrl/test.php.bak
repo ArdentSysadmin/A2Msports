@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-error_reporting(-1);
+//error_reporting(-1);
 
 	//League controller ..
 	class Test extends CI_Controller {
@@ -68,10 +68,16 @@ else{
 	}
 
 	public function server_vars(){
-		echo "<pre>"; 
-		print_r($_SERVER);
-		echo "--------------------------------------------------------";
-		print_r($GLOBALS);
+		echo "<pre><h1>Session Info</h1><br>"; 
+		//$_SESSION['test_name']	= 'Hamid';
+
+		$this->session->set_userdata('test_name', 'Moni');
+		echo( $_SESSION['test_name'] );
+		print_r($this->session);
+		echo "<br>--------------------------------------------------------<h1>Server Info</h1><br>";
+		//print_r($_SERVER);
+		echo "<br>--------------------------------------------------------<h1>Globals Info</h1><br>";
+		//print_r($GLOBALS);
 	}
 
 		public function rewrite_routes(){
@@ -522,4 +528,50 @@ $txt .= "\n"."/*****************************************************************
 			$this->load->view('academy_views/includes/academy_footer', $data);
 		}
 		
+		public function sess_test(){
+		print_r($this->session->userdata);
+		}
+
+// ----------------------
+
+		public function test_form(){
+			$this->load->view('academy_views/test_form');
+		}
+
+		public function sess_store(){
+			session_start();
+			
+			$_SESSION['temp_name'] = $this->input->post('test_name');
+			
+			$temp = array('temp_name' => $this->input->post('test_name'));
+			
+			$this->session->set_userdata($temp);
+			
+			//echo "PHP Session = ";
+			
+			//print_r($_SESSION['temp_name']);
+			
+			echo "<br>Codeigniter Session = ";
+			
+			print_r($this->session->userdata('temp_name'));
+
+			print_r($this->session);
+			
+			//print_r( $_COOKIE );
+			
+			echo "<br><br><a href='/league/check_sess'>Click to Next page</a>";
+		}
+
+		public function check_sess(){
+			session_start();
+			
+			echo "Session in next page <br> <br>PHP Session = ";
+			print_r($_SESSION['temp_name']);
+			echo "<br>Codeigniter Session = ";
+			print_r($this->session->userdata('temp_name'));
+			print_r($this->session);
+			//print_r( $_COOKIE );
+
+		}
+
 }

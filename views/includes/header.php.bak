@@ -140,8 +140,8 @@ var origin   = window.location.origin;				// Returns base URL (https://example.c
 </style>
 <style>
 .li_disabled {
-    pointer-events:none; //This makes it not clickable
-    opacity:0.6;         //This grays it out to look disabled
+    pointer-events:none; /*This makes it not clickable*/
+    opacity:0.6;         /*This grays it out to look disabled*/
 }
 </style>
 <script src="<?php echo base_url();?>js/bootsnav.js"></script>
@@ -211,7 +211,7 @@ var origin   = window.location.origin;				// Returns base URL (https://example.c
 						  <li><a href="<?php echo base_url();?>league/bracket_generator"><span align='center'>Free Brackets</span></a></li>
 						  <li><a href="<?php echo base_url();?>league"><span align='center'>League</span></a></li>
 						  <li><a href="<?php echo base_url();?>teams"><span align='center'>Team</span></a></li>
-						  <li><a href="<?php echo base_url();?>league"><span align='center'>Tournament</span></a></li>
+						  <li><a href="<?php echo base_url();?>tournament"><span align='center'>Tournament</span></a></li>
                         </ul>
                     </li>  
 <?php

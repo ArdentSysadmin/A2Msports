@@ -34,8 +34,13 @@
 			$firstname	= ucfirst(strtolower($this->input->post('Firstname')));
 			$lastname	= ucfirst(strtolower($this->input->post('Lastname')));
 
-			$email		= $this->input->post('EmailID');
-			$password	= md5( $this->input->post('Password'));
+			$email = NULL;
+			if($this->input->post('EmailID'))
+			$email = $this->input->post('EmailID');
+
+			$password = NULL;
+			if($this->input->post('Password'))
+			$password = md5($this->input->post('Password'));
 
 			//$alteremail = $this->input->post('AlternateEmailID');
 			if($this->input->post('Gender') == '')
@@ -98,7 +103,12 @@
 		
 			$zip = $this->input->post('Zipcode');
 			$reg_date = date("Y-m-d h:i:s");
+
+			if($email)
 			$code = md5($lastname . $email);
+			else
+			$code = md5($lastname . $mphone);
+
 			$auth_code = substr($code, 0, 16);
 
 			$issocial = 0 ;
@@ -681,6 +691,20 @@ return 0;
 				return false;
 			}
 		}
+
+		public function ajax_check_email($email)
+		{
+//echo "<alert>$email</alert>";
+			$data = array('EmailID'=> $email);
+			$result = $this->db->get_where('Users',$data);
+
+			if ($result->num_rows > 0){
+				return $result->row_array();
+			}
+			else{
+				return false;
+			}
+		}
 	
 		public function get_org_url($org_url)
 		{
@@ -832,17 +856,21 @@ return 0;
 			$firstname	= ucfirst(strtolower($this->input->post('fname')));
 			$lastname	= ucfirst(strtolower($this->input->post('lname')));
 
-			$email		= $this->input->post('email');
-			$phone		= $this->input->post('phone');
+			$email			= $this->input->post('email');
+			$phone			= $this->input->post('phone');
 			$gender		= $this->input->post('gender');
-			$zipcode    = $this->input->post('Zipcode');
-			$sportstype = $this->input->post('sportstype');
+			$zipcode		= $this->input->post('Zipcode');
+			$sportstype  = $this->input->post('sportstype');
 			
 			if(!$sportstype){
 				$sportstype = 10;
 			}
 
-			$str	   = md5($lastname . $email);
+			if($email)
+				$str	   = md5($lastname . $email);
+			else
+				$str	   = md5($lastname . $phone);
+
 			$auth_code = substr($str, 0, 8);
 			$sp_code   = substr(base64_encode('instant'), 0, 4);
 			
@@ -851,15 +879,15 @@ return 0;
 			$data = array(
 					'Firstname'		    => $firstname,
 					'Lastname'		    => $lastname,
-					'EmailID'		    => $email,
+					'EmailID'				=> $email,
 					'Mobilephone'	    => $phone,
-					'Gender'            => $gender,
-					'Zipcode'           => $zipcode ,
-					'Latitude'          => $latitude ,
-					'Longitude'         => $longitude ,
-					'IsUserActivation'	=> 0,
-					'ActivationCode'	=> $code,
-					'RegistrationDtTm'  => $reg_date
+					'Gender'				=> $gender,
+					'Zipcode'				=> $zipcode ,
+					'Latitude'				=> $latitude ,
+					'Longitude'			=> $longitude ,
+					'IsUserActivation'		=> 0,
+					'ActivationCode'		=> $code,
+					'RegistrationDtTm'	=> $reg_date
 					);
 
 			$this->db->insert('Users', $data);
@@ -907,35 +935,34 @@ return 0;
 
 		public function instant_clubmember($data){
 			$lat_long	= $data['latt'];
-			$pieces		= explode("@", $lat_long);
+			$pieces	= explode("@", $lat_long);
 			
 			$latitude	= $pieces[0];
 			$longitude	= $pieces[1];
 
-			$reg_date	= date("Y-m-d h:i:s");
+			$reg_date	= date("Y-m-d H:i:s");
 			$cur_date	= date("Y-m-d");
 
 			$firstname	= $this->input->post('txt_fname');
 			$lastname	= $this->input->post('txt_lname');
 
-			$email		= $this->input->post('txt_email');
-			$phone		= $this->input->post('txt_phone');
+			$email			= $this->input->post('txt_email');
+			$phone			= $this->input->post('txt_phone');
 			$gender		= $this->input->post('gender');
-			$zipcode    = $this->input->post('Zipcode');
+			$zipcode		= $this->input->post('Zipcode');
 			$aca_id		= $this->input->post('Aca_ID');
 			$aca_sport	= $this->input->post('Aca_Sport');
-			$start_date = NULL;
-			$end_date  = NULL;
+			$start_date	= NULL;
+			$end_date	= NULL;
 
 			$member_id	= NULL;
 			$member_type = NULL;
-			$member_freq = NULL;
+			$member_freq  = NULL;
 
 
 			if($this->input->post('membership_sd'))
 				$start_date = date('Y-m-d', strtotime($this->input->post('membership_sd')));
 
-				$end_date	= "";
 			if($this->input->post('membership_ed'))
 				$end_date  = date('Y-m-d', strtotime($this->input->post('membership_ed')));
 

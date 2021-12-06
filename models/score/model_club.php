@@ -43,10 +43,110 @@ class model_club extends CI_Model {
 		return $res;
 	}
 
+	public function check_reserve_courtTemp($data){
+		$bookings = $data['bookings'];
+		$failed		 = array();
+		$ins = 0;
+		foreach($bookings as $res){
+			$dt_from = explode(" ", $res['res_from']);
+			$dt_to	   = explode(" ", $res['res_to']);
+			$from_date = $dt_from[0];
+			$from_time = $dt_from[1];
+
+			$to_date = $dt_to[0];
+			$to_time = $dt_to[1];
+
+			$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE court_id = {$data['court_id']} AND res_date = '".$from_date."' AND (from_time = '".$from_time."' OR to_time = '".$to_time."') AND res_status = 'Active'");
+
+			if($query->num_rows() > 0) {
+				$failed[] = $res['res_from']. "-". $res['res_to'];
+			}
+			else {
+				$data2							= array();
+				$data2['res_date']		= $from_date;
+				$data2['from_time']		= $from_time;
+				$data2['to_time']			= $to_time;
+				$data2['court_id']			= $data['court_id'];
+				$data2['loc_id'] 			= $data['loc_id'];
+				$data2['reserved_by']	= $data['reserved_by'];
+				$data2['created_on']		= date('Y-m-d H:i:s');
+				$data2['fee_paid']			= $data['booking_amt'];
+				$data2['trans_id']			= $data['trans_id'];
+				$data2['match_format']	= $data['match_format'];
+				$data2['num_players']	= $data['num_players'];
+				$data2['players']			= $data['players'];
+				$data2['paid_date']		= date('Y-m-d H:i:s');
+				$data2['res_status']		= "Active";
+//echo "<pre>"; print_r($data2); exit;
+				$ins = $this->db->insert('Academy_Court_Reservations', $data2);
+			}
+		}
+//echo "<pre>"; print_r($failed); exit;
+		return $ins;
+	}
+
+	public function reserve_courtTemp($data){
+		$bookings = $data['bookings'];
+		$ins = 0;
+		foreach($bookings as $res){
+			$dt_from = explode(" ", $res['res_from']);
+			$dt_to	   = explode(" ", $res['res_to']);
+			$from_date = $dt_from[0];
+			$from_time = $dt_from[1];
+
+			$to_date = $dt_to[0];
+			$to_time = $dt_to[1];
+
+				$data2							= array();
+				$data2['res_date']		= $from_date;
+				$data2['from_time']		= $from_time;
+				$data2['to_time']			= $to_time;
+				$data2['court_id']			= $data['court_id'];
+				$data2['loc_id'] 			= $data['loc_id'];
+				$data2['reserved_by']	= $data['reserved_by'];
+				$data2['created_on']	 = date('Y-m-d H:i:s');
+				$data2['fee_paid']		 = $data['booking_amt'];
+				$data2['trans_id']		 = $data['trans_id'];
+				$data2['match_format']	= $data['match_format'];
+				$data2['num_players']	= $data['num_players'];
+				$data2['players']			= $data['players'];
+				$data2['paid_date']		= date('Y-m-d H:i:s');
+				$data2['res_status']		= "Active";
+
+				$ins = $this->db->insert('Academy_Court_Reservations', $data);
+		}
+
+		return $ins;
+	}
+
 	public function check_sharable($court){
 		$get_court =	$this->db->query("SELECT * FROM Academy_Courts WHERE court_id = {$court}");
 		$det			= $get_court->row_array();
 		return $det;
+	}
+
+	public function is_coach($club_id, $user_id){
+		if($club_id){
+			$get_user =	$this->db->query("SELECT * FROM Users WHERE coach_academy = {$club_id} AND Users_ID = {$user_id}");
+		}
+		else{
+			$get_user =	$this->db->query("SELECT * FROM Users WHERE Is_coach = 1 AND Users_ID = {$user_id}");
+		}
+
+		$det			= $get_user->row_array();
+		if($det)
+			return true;
+		else
+			return false;
+	}
+
+	public function is_location_nonmem_visible($loc_id){
+		$get_qry = $this->db->query("SELECT * FROM Academy_Court_Locations WHERE loc_id = {$loc_id}");
+		$det		   = $get_qry->row_array();
+		if($det['access_to_nonmem'])
+			return true;
+		else
+			return false;
 	}
 
 	public function get_clubs($user_id=''){
@@ -365,6 +465,25 @@ exit;
 		return $query->result();
 	}
 
+	public function get_coach_prices($coach_id){
+		$query = $this->db->query("SELECT * FROM Coach_Timings WHERE Coach_ID = {$coach_id}");
+		//echo $this->db->last_query();
+		if($query->num_rows() > 0)
+			return $query->result();
+		else
+			return false;
+	}
+
+	public function get_coach_bookings($user_id){
+		$today = date('Y-m-d');
+		$time   = date('H:i:s');
+		$query = $this->db->query("SELECT * FROM Coach_Bookings WHERE coach_id = {$user_id} 
+		AND ((res_date = '".$today."' AND from_time >= '".$time."' ) OR (res_date >= '".$today."')) AND res_status = 'Active'");
+		//echo $this->db->last_query();exit;
+		return $query->result();
+		//return false;
+	}
+
 	public function get_court_bookings($court_id){
 		$today = date('Y-m-d');
 		$time   = date('H:i:s');
@@ -450,6 +569,12 @@ acr.res_date ASC");
 		$data  = array('user_id' => $user_id, 'status' => 1);
 		$query = $this->db->get_where('userPushTokens', $data);
 		return $query->result();
+	}
+
+	public function is_club_member2($club_id, $user_id){
+			$query2 = $this->db->query("SELECT * FROM User_memberships WHERE Club_id = {$club_id} AND Users_id = {$user_id} AND Member_Status = 1");
+
+			return $query2->num_rows();
 	}
 
 }

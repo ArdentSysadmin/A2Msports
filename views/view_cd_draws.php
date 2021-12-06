@@ -166,7 +166,7 @@ $players = league::array_flatten($users);
 */
 ?>
 <div>
-<h4 style="color:#f59123"><b><?php echo $get_bracket['Draw_Title']; ?></b>
+
 <?php
 if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 ?>
@@ -183,10 +183,12 @@ else{
 ?>
 </div>
 
-<div class = "brackets" id="brackets">
+<div class="brackets-mobile">	<!-- Mobile DIV -->
+<div class="brackets-mobile-child"> <!-- Mobile child DIV -->
+<div class="brackets" id="brackets">
 <div class="group<?php echo $total_rounds+1; ?>" id="b1">
 <input type='hidden' name='bracket_id' value="<?php echo $get_bracket['BracketID']; ?>" />
-<input type='hidden' name='tour_id'	value="<?php echo $get_bracket['Tourn_ID']; ?>" />
+<input type='hidden' name='tour_id'		 value="<?php echo $get_bracket['Tourn_ID']; ?>" />
 
 <?php
 $nm = 0;
@@ -402,7 +404,7 @@ echo "<br>";
 
 		if($get_source_scores1['Player1_Score'] != "" && $get_source_scores1['Player1_Score'] != "Bye Match"){
 			if($get_source_scores1['Player1_Score'] == '[0]' && $get_source_scores1['Player2_Score'] == '[0]'){
-				 echo "Won by Forfeit";
+				 echo "(Won by Forfeit)";
 			}
 			else{
 				if($get_source_scores1['Player1_Score'] != "" and $get_source_scores1['Winner'] == $get_source_scores1['Player1']){
@@ -489,7 +491,7 @@ echo "<br>";
 
 		if($get_source_scores2['Player1_Score'] !=""){
 			if($get_source_scores2['Player1_Score'] == '[0]' && $get_source_scores2['Player2_Score'] == '[0]'){
-				 echo "Won by Forfeit";
+				 echo "(Won by Forfeit)";
 			}
 			else{ 
 				if($get_source_scores2['Player1_Score'] != "" and $get_source_scores2['Winner'] == $get_source_scores2['Player1']){
@@ -522,7 +524,7 @@ echo "<br>";
 	</div>
 <? }
 //echo $list_matches[$m]->Round_Num;
-	if($list_matches[$m]->Round_Num == $total_rounds 
+/*	if($list_matches[$m]->Round_Num == $total_rounds 
 		and $list_matches[0]->Round_Num == -1 
 		and $list_matches[$m]->Round_Num == $round) {
 
@@ -555,11 +557,11 @@ if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 <!-- <input  type="text" class='form-control' placeholder="Date" id="sdate<?php echo $match_num; ?>" name="match_date<?php echo $match_num; ?>" 
 value = "<?php if($list_matches[0]->Match_DueDate != "")
 { echo date('m/d/Y', strtotime($list_matches[0]->Match_DueDate)); } ?>" /> -->
-<script>/*
-$(function() {
- var spid = "<?php echo $match_num; ?>";
- $('#sdate'+spid).datepick();
-});*/
+<script>
+//$(function() {
+// var spid = "<?php echo $match_num; ?>";
+// $('#sdate'+spid).datepick();
+//});
 </script>
 
 <!-- <input type="text" placeholder="Date" name="match_date<?php echo $match_num; ?>" id="sdate<?php echo $match_num; ?>"
@@ -656,7 +658,7 @@ else {
 	?>
 	</span>
 	</div>
-<? }
+<? }*/
  }
 ?>
 </div>
@@ -720,7 +722,9 @@ switch($match_count){
 
 <!-- ----------------------------------------------------- -->
 
-<?php if($round == $total_rounds and $list_matches[0]->Round_Num == -1){ ?>
+<?php 
+/*if($round == $total_rounds and $list_matches[0]->Round_Num == -1) { 
+?>
   <div class="r<?php echo $total_rounds+1; ?>">
    		<div class="final">
         	<div class="third_final bracketbox">
@@ -797,7 +801,8 @@ switch($match_count){
         </div>
    </div>
 
-<?php } ?>
+<?php } */
+?>
 
 
 
@@ -805,6 +810,14 @@ switch($match_count){
 }
 ?>
 </div>
+
+
+</div><!-- Mobile child DIV -->
+</div> <!-- Mobile DIV -->
+
+
+
+
 <div style='clear:both;'></div>
 </div>
 <?php
@@ -817,7 +830,7 @@ switch($match_count){
 </form>
 </div>
 <div style='clear:both;'></div>
-
+<br />
 <?php
 //--------------------------------------- Consolation Draw --------------------------------------------------------------
 
@@ -827,7 +840,7 @@ $tour_id		= $get_bracket['Tourn_ID'];
 ?>
 <link rel="stylesheet" href="<?php echo base_url();?>css/grids/cr<?=$total_rounds;?>.css">
 <input type="button" class="league-form-submit1" name="capture" id="capture" value="Print" style="float:right;" onclick="myWinC(<?=$bracket_id;?>)" />
-<div style="display:grid;">
+<div style="display:grid; margin-top: 8%;">
 <form method="post" id="con_frm_upd_dates" class="login-form" style='width:100%;' autocomplete='off'>
 <div><h4><b><?php echo $get_bracket['Draw_Title']. " - "; ?></b>Consolation
 <?php
@@ -838,6 +851,9 @@ if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 }
 ?>
 </h4></div><br>
+
+<div class="brackets-mobile">	<!-- Mobile DIV -->
+<div class="brackets-mobile-child"> <!-- Mobile child DIV -->
 <div class = "brackets1" id="brackets1">
 
 <input type="hidden" name="update_draw_status" id="update_draw_status" value="2" />
@@ -1042,7 +1058,10 @@ $get_username2 = "";
 
 		if($get_source_scores1['Player1_Score'] != "" AND $get_source_scores1['Player1_Score'] != "Bye Match" AND $get_source_scores1['Player1_Score'] != "Canceled Match"){
 
-
+			if($get_source_scores1['Player1_Score'] == '[0]' && $get_source_scores1['Player2_Score'] == '[0]'){
+				 echo "(Won by Forfeit)";
+			}
+			else{
 			if($get_source_scores1['Player1_Score'] != "" and $get_source_scores1['Winner'] == $get_source_scores1['Player1']){
 			$p1 = json_decode($get_source_scores1['Player1_Score']);
 			$p2 = json_decode($get_source_scores1['Player2_Score']);
@@ -1059,6 +1078,7 @@ $get_username2 = "";
 					echo "($p1[$i] - $p2[$i]) ";
 				}
 			}
+		}
 		}
 		else if($get_source_scores1['Player1_Score'] == "Canceled Match")
 		{
@@ -1110,11 +1130,14 @@ $get_username2 = "";
 		$get_source_scores2 = league::get_match_scores_player2($list_matches[$m]->Player2_source,$bracket_id,$tour_id,$list_matches[$m]->Draw_Type);
 
 		if($get_source_scores2['Player1_Score'] !=""){
-
+			if($get_source_scores2['Player1_Score'] == '[0]' && $get_source_scores2['Player2_Score'] == '[0]'){
+				 echo "(Won by Forfeit)";
+			}
+			else{ 
 			if($get_source_scores2['Player1_Score'] != "" and $get_source_scores2['Winner'] == $get_source_scores2['Player1']){
 			$p1 = json_decode($get_source_scores2['Player1_Score']);
 			$p2 = json_decode($get_source_scores2['Player2_Score']);
-			} 
+			}
 			else if($get_source_scores2['Player2_Score'] != "" and $get_source_scores2['Winner'] == $get_source_scores2['Player2']){
 			$p1 = json_decode($get_source_scores2['Player2_Score']);
 			$p2 = json_decode($get_source_scores2['Player1_Score']);
@@ -1127,6 +1150,7 @@ $get_username2 = "";
 						echo "($p1[$i] - $p2[$i]) ";
 					}
 				}
+		}
 			} 
 		}
 		echo "<br>";
@@ -1223,6 +1247,12 @@ switch($match_count){
 ?>
 </div>
 </div>
+
+
+</div>	<!-- Consolation Mobile Child DIV -->
+</div>	<!-- Consolation Mobile DIV -->
+
+
 </form>
 
 <?php

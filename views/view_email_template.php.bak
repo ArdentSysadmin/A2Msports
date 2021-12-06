@@ -418,6 +418,36 @@ break;
 ?>
 
 <?php 
+case "Tournament Creation Admin Notif":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Hi <?php echo $admin_firstname . " " . $admin_lastname ; ?>, <br /></div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">A new tournament <b><?php echo $title; ?></b> is created. Given below are the tournament details.  <br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Tournament Link: <br />
+<?php
+//$sp = str_replace(' ', '-', $sport);
+$string = base_url()."league/".$tourn_id;
+$string = auto_link($string, 'url');
+echo $string;
+?>
+<br />
+</div>
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Thank you, <br /> 
+Admin, <br />
+A2M Sports. </div>
+
+</td>
+<?php
+break;
+?>
+
+
+<?php 
 case "Tournament Match Comments":
 ?>
 <td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
@@ -852,7 +882,14 @@ You have Successfully registered for the Tournament  <?php echo $title; ?> on <?
 
     } 
     ?>.<br />
-
+<?php
+if($game_days){
+	echo "Game Days:<br>";
+	foreach($game_days as $gd){
+		echo $gd."<br>";
+	}
+}
+?>
 <?php $string =  base_url()."league/".$tourn_id;
 $string = auto_link($string, 'url');
 echo $string;
@@ -942,6 +979,14 @@ Hi <?php echo $admin_firstname . " " . $admin_lastname . ","; ?>
 
     } 
 ?>.<br />
+<?php
+if($game_days){
+	echo "Game Days:<br>";
+	foreach($game_days as $gd){
+		echo $gd."<br>";
+	}
+}
+?>
 
 <?php $string =  base_url()."league/".$tourn_id;
 $string = auto_link($string, 'url');
@@ -1599,7 +1644,7 @@ Hi <?php echo $firstname;?>,<br />
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
 <?php echo "Given below are the paypal details:"; ?>	
 <br />
-<?php echo "Paypal Return: {$paypal_vals}"; ?><br />
+<?php echo "Paypal Return: "; print_r($paypal_vals); ?><br />
 <br />
 </div>
 
@@ -2179,7 +2224,7 @@ break;
 <table width="696" border="0" cellspacing="0" cellpadding="0">
 <tr>
 <td style="background:#81a32b; font-size:12px; padding:6px; color:#ffffff; text-align:center">
-© 2020 a2msports.com. All rights reserved.</td>
+© 2021 a2msports.com. All rights reserved.</td>
 </tr>
  <?php if($unsubscribe){?>
 <tr>

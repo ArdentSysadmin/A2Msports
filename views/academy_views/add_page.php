@@ -1,12 +1,21 @@
 <?php
-$data = './static_pages/test.php';
+$data = './static_pages/test2.php';
 $urls = file_get_contents($data);
 echo $urls;
 //if($this->is_club_admin){
 ?>
-
-<script src="https://cdn.ckeditor.com/ckeditor5/27.0.0/classic/ckeditor.js"></script>
+       <script src="<?=base_url();?>static_assets/js/jquery.jeditable.js"></script>
+       <script src="<?=base_url();?>static_assets/js/jquery.jeditable.autogrow.js"></script>
+<!-- <script src="https://cdn.ckeditor.com/ckeditor5/27.0.0/classic/ckeditor.js"></script> -->
 <script>
+$(".course-desc").editable("save.php", {
+    type      : "autogrow",
+    submit    : 'OK',
+    cancel    : 'cancel',
+    tooltip   : "Click to edit...",
+    onblur    : "ignore"
+});
+/*
 ClassicEditor
     .create( document.querySelector( '#txt-editor' ) )
     .then( editor => {
@@ -15,7 +24,7 @@ ClassicEditor
     .catch( error => {
         console.error( error );
     } );
-
+*/
 	//ClassicEditor.replace( 'extraAllowedContent', { customConfig: 'true' } );
 </script>
 <?php

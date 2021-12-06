@@ -50,6 +50,7 @@ foreach($res as $i => $match){
 //echo "<pre>";
 //print_r($res);
 //print_r($courts_arr);
+sort($court_titles);
 ?>
 <br />
 <br />
@@ -91,7 +92,7 @@ if($info[$court]){
 		if($i == 0)
 			echo $data['draw_title']." - <b>Match ".$data['match_num']."</b><br>";
 		else
-			echo "<font color='red'>"$data['draw_title']." - <b>Match ".$data['match_num']."</b></font><br>";
+			echo "<font color='red'>".$data['draw_title']." - <b>Match ".$data['match_num']."</b></font><br>";
 	}
 }
 //print_r($info[$court]);

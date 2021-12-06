@@ -784,7 +784,7 @@
 			}
 
 			$data = array (
-					'DOB'				=> $dob,
+					'DOB'				=> date('Y-m-d', strtotime($dob)),
 					'UserAgegroup'		=> $age_group
 					);
 		}
@@ -822,27 +822,35 @@
 					'Latitude'			=> $latitude,
 					'Longitude'			=> $longitude
 					);
+			$data = array_merge($data, $data1);
 		}
 
 		$data2 = array();
 
-		if($this->input->post('txt_email'))
-		{
-			$email = $this->input->post('txt_email');
+		if($this->input->post('txt_email')){
+			$email	= $this->input->post('txt_email');
 			$data2 = array('EmailID' => $email);
+			$data	= array_merge($data, $data2);
 		}
 
-		if($this->input->post('txt_gender') == '0' or $this->input->post('txt_gender') == '1')
-		{
-			$gender = $this->input->post('txt_gender');
-			$data3 = array('Gender' => $gender);
+		if($this->input->post('txt_gender') and ($this->input->post('txt_gender') == '0' or $this->input->post('txt_gender') == '1')){
+			$gender	= $this->input->post('txt_gender');
+			$data3		= array('Gender' => $gender);
+			$data		= array_merge($data, $data3);
 		}
 
-		$data = array_merge($data, $data1, $data2, $data3);
+		if($this->input->post('txt_mob')){
+			$mob	= $this->input->post('txt_mob');
+			$data4 = array('Mobilephone' => $mob);
+			$data	= array_merge($data, $data4);
+		}
+
+
+		//$data = array_merge($data, $data1, $data2, $data3);
 
 		$this->db->where('Users_ID', $user);
 		$res = $this->db->update('Users', $data); 
-
+//echo $this->db->last_query(); exit;
 		return $res;
 		}
 
@@ -916,6 +924,7 @@
 			
 			$title		 = $this->input->post('title');
 			$organizer	 = $this->input->post('organizer');
+			$organizer_id	 = $this->input->post('organizer_id');
 			$org_contact = $this->input->post('org_contact');
 
 			 $sdate = NULL;
@@ -1001,6 +1010,7 @@
 			$is_usatt_sancationed = $this->input->post('USATTInfo');
 			$extra_amt	 = $this->input->post('amt_two');
 			$tshirt_info = $this->input->post('T-Shirt');
+			$is_publish = $this->input->post('is_publish');
 			
 			$reg_users   = $this->get_reg_tourn_participants($tourn_id);
 
@@ -1106,9 +1116,10 @@
 	/* ***************Code To Update Data Into 'CouponCode Details' Ends Here. ******************** */
 
 			$data = array(
-					'Usersid'			    => $users_id,
+					/*'Usersid'			    => $users_id,*/
 					'tournament_title'	    => $title,
 					'OrganizerName'		    => $organizer,
+					'Tournament_Director'	    => $organizer_id,
 					'ContactNumber'		    => $org_contact,
 					'TournamentImage'	    => $filename,
 					'StartDate'			    => $sdate,
@@ -1149,11 +1160,39 @@
 					'Registrations_Opens_on' => $reg_openson,
 					'Is_Coupon'				 => $coupon_check_status,
 					'Star_Level'			 => $star_level,
-					'Is_USATT_Approved'		 => $is_usatt_sancationed
+					'Is_USATT_Approved'		 => $is_usatt_sancationed,
+					'Is_Publish'		 => $is_publish
  				);
 			//echo "<pre>";print_r($data);exit();
 			$this->db->where('tournament_ID', $tourn_id);
 			$result = $this->db->update('tournament', $data);
+
+			
+			$game_days = '';
+			if($this->input->post('is_league') and $this->input->post('game_days')){
+			$game_days = $this->input->post('game_days');
+				foreach($game_days as $event => $gd){
+					foreach($gd as $i => $game_day){
+						if($game_day != ''){
+						$gdate = date('Y-m-d H:i:s', strtotime($game_day)).".000";
+
+						$check_gd = $this->db->query("SELECT * FROM League_OCCR WHERE Tourn_ID = {$tourn_id} AND Event = '{$event}' AND Game_Date = '{$gdate}'");
+						//echo $this->db->last_query()."<br>";
+						if($check_gd->num_rows == 0){
+							//echo "Event {$event} ". $gdate."<br>";
+							$data = array(
+									'Tourn_ID'			 => $tourn_id,
+									'Game_Date'	 => date('Y-m-d H:i:s', strtotime($game_day)),
+									'Event'				 => $event
+									);
+
+						$this->db->insert('League_OCCR', $data);
+						}
+						}
+					}
+				}
+			}
+
 
 			$data = array('tourn_id'=>$tourn_id,'title'=>$title);
 			
@@ -2477,6 +2516,11 @@
 			$game_day = $this->input->post('br_game_day');
 			}
 
+			$draw_format = '';
+			if($this->input->post('draw_format')) {
+			$draw_format = $this->input->post('draw_format');
+			}
+
 			$data = array(
 					'Tourn_ID'			=> $tourn_id,
 					'Bracket_Type'	=> $bracket_type,
@@ -2487,7 +2531,8 @@
 					'Age_Group'		=> $age_group,
 					'is_Publish'			=> $is_publish_draw,
 					'Filter_Events'		=> $filter_events,
-					'OCCR_ID'			=> $game_day
+					'OCCR_ID'			=> $game_day,
+					'Draw_Format'		=> $draw_format
 				);
 			
 
@@ -2625,16 +2670,16 @@
 
 					if($tourn_det['tournament_format'] == 'Individual'){
 							if($player1_val[0]){
-								$this->insert_init_rating($player1_val[0], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player1_val[0], $tourn_id, $bracket_id, $draw_format);
 							}
 							if($player2_val[0]){
-								$this->insert_init_rating($player2_val[0], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player2_val[0], $tourn_id, $bracket_id, $draw_format);
 							}
 							if($player1_val[1]){
-								$this->insert_init_rating($player1_val[1], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player1_val[1], $tourn_id, $bracket_id, $draw_format);
 							}
 							if($player2_val[1]){
-								$this->insert_init_rating($player2_val[1], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player2_val[1], $tourn_id, $bracket_id, $draw_format);
 							}
 					}
 
@@ -2768,7 +2813,7 @@
 
 
 public function insert_sd_brackets() {   // Insert Switch Doubles Tournament Brackets into db
-			
+			//echo "<pre>"; print_r($_POST); 
             $filter_events			= $this->input->post('filter_events');
             $rr_multi_rounds	= $this->input->post('rr_multi_rounds');
 			$matches				= $this->input->post('match');
@@ -2783,9 +2828,9 @@ public function insert_sd_brackets() {   // Insert Switch Doubles Tournament Bra
 
 			$num_rounds			= count($rr_matches);
 
-/*echo "<pre>";
-print_r($rr_matches);
-exit;*/
+//echo "<pre>";
+//print_r($rr_matches);
+//exit;
 			$tourn_det	 = $this->get_fixtures_det($tourn_id);
 			$draw_title = $this->input->post('draw_title');
 			//$bracket_type = $tourn_det['Tournament_type'];
@@ -2838,19 +2883,21 @@ exit;*/
 			$winner = "";
 			$win_per = "";
 			
+			$temp = $this->input->post('match_date');
 			$index = 1;
 			foreach($rr_matches as $multi_round => $matches){
 			$j = 1;
 				foreach($matches as $match => $games){
 
-					$round = $match;
+					$round = $multi_round;
 
 				 //foreach($games as $game){
 
 					 $match_num = $j;
 
 					 $rdate = $this->input->post('round_date'.$multi_round);
-					 $mdate = $this->input->post('match_date'.$multi_round.'_'.$j);
+					// $mdate = $this->input->post('match_date'.$multi_round.'_'.$j);
+					 $mdate = $temp[$multi_round.$match][0];
 					 $gdate = $this->input->post('game_date'.$index);
 
 					 $duedate = NULL;
@@ -3002,23 +3049,7 @@ exit;*/
 
 			$bracket_id = $this->db->insert_id();      
 
-					if($tourn_det['tournament_format'] == 'Individual'){
-							if($player1_val){
-								$this->insert_init_rating($player1_val, $tourn_id, $bracket_id, $draw_format);
-							}
-							if($player2_val){
-								$this->insert_init_rating($player2_val, $tourn_id, $bracket_id, $draw_format);
-							}
-							if($player1_partner){
-								$this->insert_init_rating($player1_partner, $tourn_id, $bracket_id, $draw_format);
-							}
-							if($player2_partner){
-								$this->insert_init_rating($player2_partner, $tourn_id, $bracket_id, $draw_format);
-							}
-					}
-
-			 
-
+	 
 			$ev_start_date = $this->input->post('round_date1');
 			$ev_end_date   = $this->input->post('round_date'.$num_rounds);
 
@@ -3102,6 +3133,23 @@ exit;*/
 					$j++;
 					$index;
 				// }
+
+
+					if($tourn_det['tournament_format'] == 'Individual'){
+							if($player1_val){
+								$this->insert_init_rating($player1_val, $tourn_id, $bracket_id, $draw_format);
+							}
+							if($player2_val){
+								$this->insert_init_rating($player2_val, $tourn_id, $bracket_id, $draw_format);
+							}
+							if($player1_partner){
+								$this->insert_init_rating($player1_partner, $tourn_id, $bracket_id, $draw_format);
+							}
+							if($player2_partner){
+								$this->insert_init_rating($player2_partner, $tourn_id, $bracket_id, $draw_format);
+							}
+					}
+
 				}
 			 }
 
@@ -3137,6 +3185,16 @@ exit;*/
 /*echo "<pre>";
 print_r($rr_matches_arr);*/
 
+			$game_day = '';
+			if($this->input->post('br_game_day')) {
+			$game_day = $this->input->post('br_game_day');
+			}
+
+			$draw_format = '';
+			if($this->input->post('draw_format')) {
+			$draw_format = $this->input->post('draw_format');
+			}
+
 			foreach($draw_title as $g => $title){
 			$rr_matches		= unserialize($rr_matches_arr[$g]);
 			$rr_matches_loc = unserialize($rr_matches_loc_arr[$g]);
@@ -3151,11 +3209,6 @@ print_r($rr_matches_arr);*/
 			$bracket_type = 'Round Robin';
 			$created_on = date("Y-m-d H:i:s");
 
-			$game_day = '';
-			if($this->input->post('br_game_day')) {
-			$game_day = $this->input->post('br_game_day');
-			}
-
 			$data = array(
 					'Tourn_ID'		=> $tourn_id,
 					'Bracket_Type'	=> $bracket_type,
@@ -3164,7 +3217,8 @@ print_r($rr_matches_arr);*/
 					'Created_on'	=> $created_on,
 					'is_Publish'	=> $is_publish_draw,
 					'RR_Multi_Rounds' => $rr_multi_rounds,
-					'OCCR_ID'			=> $game_day
+					'OCCR_ID'			=> $game_day,
+					'Draw_Format'		=> $draw_format
 				
 					//'Match_Type'	=> $match_type,
 					//'Age_Group'		=> $age_group,
@@ -3234,16 +3288,16 @@ print_r($rr_matches_arr);*/
 
 					if($tourn_det['tournament_format'] == 'Individual'){
 							if($player1_val[0]){
-								$this->insert_init_rating($player1_val[0], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player1_val[0], $tourn_id, $bracket_id, $draw_format);
 							}
 							if($player2_val[0]){
-								$this->insert_init_rating($player2_val[0], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player2_val[0], $tourn_id, $bracket_id, $draw_format);
 							}
 							if($player1_val[1]){
-								$this->insert_init_rating($player1_val[1], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player1_val[1], $tourn_id, $bracket_id, $draw_format);
 							}
 							if($player2_val[1]){
-								$this->insert_init_rating($player2_val[1], $tourn_id, $bracket_id);
+								$this->insert_init_rating($player2_val[1], $tourn_id, $bracket_id, $draw_format);
 							}
 					}
 
@@ -5998,6 +6052,27 @@ echo "Winner AddScore -". $add_score_points."<br>";
 		}
 
 		public function get_max_a2m_players($player1_user, $player1_partner, $opp_user, $opp_user_partner, $player1_a2mscore, $player1_part_a2mscore, $player2_a2mscore, $player2_part_a2mscore){
+			
+			$p1_a2m = $player1_a2mscore + $player1_part_a2mscore;
+			$p2_a2m = $player2_a2mscore + $player2_part_a2mscore;
+
+			if($p1_a2m >= $p2_a2m){
+				$max_a2m_player   = $player1_user;
+				$max_a2m_partner = $player1_partner;
+			}
+			else{
+				$max_a2m_player   = $player2_user;
+				$max_a2m_partner = $player2_partner;
+			}
+
+			$data = array('max_a2m_player'	=> $max_a2m_player, 
+					  'max_a2m_partner' => $max_a2m_partner);
+
+		return $data;
+		
+		}
+
+		public function get_max_a2m_players_OLD($player1_user, $player1_partner, $opp_user, $opp_user_partner, $player1_a2mscore, $player1_part_a2mscore, $player2_a2mscore, $player2_part_a2mscore){
 
 
 		if($player1_a2mscore > $player1_part_a2mscore){
@@ -9807,9 +9882,11 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
                  $message      = $data['msg'];
                  $newfile      = $data['file'];    
 			     $players      = $data['players'];
+			     $is_academy      = $data['is_academy'];
+			     $academy_id      = $data['academy_id'];
 			     $created_date = date("Y-m-d h:i:s");
 
-                 $array = array('tourn_id'=>$tourn_id,'users_id'=>$user,'message'=>$message,'subject'=>$subject,'players'=>$players,'attachments_file'=>$newfile,'is_notified'=>0,'created_on'=>$created_date);
+                 $array = array('tourn_id' => $tourn_id, 'is_academy' => $is_academy, 'academy_id' => $academy_id, 'users_id' => $user, 'message' => $message, 'subject'=>$subject, 'players' => $players, 'attachments_file'=>$newfile,'is_notified'=>0,'created_on'=>$created_date);
              
             $result = $this->db->insert('TAdmin_Messages_Players', $array);
            
@@ -9970,6 +10047,9 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
         public function upd_paypal_ipn($data)
         {
 			$users_id		= $data['users_id'];
+			$reg_events			= $data['reg_events'];
+			$reg_occrs			= $data['reg_occrs'];
+
 			$tourn_id		= $data["tourn_id"];
 			$txn_id			= $data["txn_id"];
 			$payment_gross	= $data["payment_gross"];
@@ -10018,7 +10098,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 
 				$this->db->where('RegisterTournament_id', $reg_id);
 				$res	= $this->db->update('RegisterTournament', $data);
-			 return $this->db->last_query();
+				$ls_qry = $this->db->last_query();
 			}
 			//else if($get_res['Transaction_id'] == 'NULL' or $get_res['Transaction_id'] == ''){
 			//else if(count($get_res) == 0){
@@ -10036,6 +10116,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 						'Partners'		=> $partners,
 						'Coupon_Applied'  => $coup_code,
 						'Discount_Amount' => $coup_disc,*/
+					'Reg_Events'    => $reg_events,
 					'Fee'			 => $payment_gross,
 					'Gateway_Charges'=> $pp_charges,
 					'Status'		 => $payment_status,
@@ -10043,8 +10124,32 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 					'Transaction_id' => $txn_id);
 
 				$res = $this->db->insert('RegisterTournament', $data);
-				return $this->db->last_query();
+				$reg_id = $this->db->insert_id;
+				$ls_qry = $this->db->last_query();
 				}
+
+
+				if($reg_occrs){
+					$rg_ocr = json_decode($reg_occrs, TRUE);
+					foreach($rg_ocr as $ocr){
+						$data9 = array(
+						'Users_ID'		=> $users_id,
+						'Reg_ID'		=> $reg_id,
+						'OCCR_ID'	=> $ocr,
+						'Amount'				 => number_format($payment_gross, 2),
+						'OCCR_Reg_Date'	 => date('Y-m-d H:i:s'),
+						'Transaction_id'		 => $txn_id,
+						'Status'					 => $payment_status,
+						'Currency_Code'	 => $cur_code
+						);
+
+						$result   = $this->db->insert('League_OCCR_Regs', $data9);
+	
+					}
+				}
+
+				return $ls_qry;
+
 			}
 			else{
 				return $payment_status;
@@ -12107,6 +12212,17 @@ return $data;
 			 return $query->result_array();
 		}
 
+		public function is_player_checkin($tid, $user_id){
+				$this->db->select('is_checkin');
+				$this->db->from('RegisterTournament');
+				$this->db->where('Users_ID', $user_id);
+				$this->db->where('Tournament_ID', $tid);
+				$query  = $this->db->get();
+
+				$x = $query->row_array();
+				return $x['is_checkin'];
+		}
+
 		public function user_usatt_update()
 		{
 		    $user_id = $this->logged_user;
@@ -12409,8 +12525,13 @@ else if($score_diff >=0.40){
 		}
 
 		public function get_league_occr($tourn_id){
-			$qry = $this->db->query("SELECT * FROM League_OCCR WHERE Tourn_ID = {$tourn_id}");
+			$qry = $this->db->query("SELECT * FROM League_OCCR WHERE Tourn_ID = {$tourn_id} ORDER BY Event, Game_Date ASC");
 			return $qry->result();
+		}
+
+		public function get_occr_info($ocr_id){
+			$qry = $this->db->query("SELECT * FROM League_OCCR WHERE OCR_ID = {$ocr_id}");
+			return $qry->row_array();
 		}
 
 		public function get_event_occrs($tourn_id, $ev){
@@ -12424,5 +12545,75 @@ else if($score_diff >=0.40){
 			return $qry->result();
 		}
 
+		public function get_reg_tourn_event_occr_players($tourn_id, $types, $sel_occr_ids, $sport = '', $is_checkin = ''){
+			$reg_status = "WithDrawn";
+			$like_qry	= "";
+			$checkin_qry= "";
 
+			/*foreach($types as $i => $type){
+				if($i != 0){ $like_qry .= " OR "; } 
+				else{ $like_qry .= "("; }
+				$like_qry .= "Reg_Events LIKE '%\"{$type}\"%'";
+			}*/
+			$ocr_qry = '';
+			if($sel_occr_ids){
+				foreach($sel_occr_ids as $i => $ids){
+				 $ocr_ids .= $ids;
+				 if(count($sel_occr_ids) != ++$i)
+					$ocr_ids .= ", ";
+
+				$ocr_qry = "AND RegisterTournament_id IN (SELECT Reg_ID FROM League_OCCR_Regs WHERE OCCR_ID in ({$ocr_ids}))";
+
+				}
+			}
+
+
+			//if($is_checkin){
+			//	$checkin_qry .= " AND is_checkin = {$is_checkin}";
+			//}
+	
+			$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL) {$ocr_qry}");
+			//echo $this->db->last_query();
+			return $qry_check->result();
+		}
+
+		public function get_game_day($gd){
+			if($gd){
+				$qry = $this->db->query("SELECT * FROM League_OCCR where OCR_ID = {$gd}");
+				$xy  =  $qry->row_array();
+				return $xy['Game_Date'];
+			}
+		}
+
+				public function check_is_cd($tourn_id){
+			if($tourn_id){
+				$qry = $this->db->query("SELECT * FROM Brackets where Tourn_ID = {$tourn_id} AND Bracket_Type = 'Consolation'");
+				return $qry->num_rows();
+			}
+		}
+
+		public function unpulish_league($tourn_id) {
+			$db_qry = $this->db->query("UPDATE tournament SET Is_Publish = 0 WHERE tournament_ID = {$tourn_id}");
+			return $db_qry;
+		}
+
+		public function pulish_league($tourn_id) {
+			$db_qry = $this->db->query("UPDATE tournament SET Is_Publish = 1 WHERE tournament_ID = {$tourn_id}");
+			return $db_qry;
+		}
+
+		public function is_draw_complete($bid) {
+				$qry = $this->db->query("SELECT * from Tournament_Matches tm WHERE tm.BracketID = {$bid} AND (tm.Winner is null or tm.Winner ='' or tm.Winner = 0)");
+
+				return $qry->num_rows();
+		}
+
+		public function is_user_reg_event($tid, $event){
+				$qry_check = $this->db->query("SELECT * FROM RegisterTournament where Users_ID = {$this->logged_user} AND Tournament_ID = {$tid} AND Reg_Events LIKE '%$event%'");
+
+				if($qry_check->num_rows() > 0)
+					return 1;
+				else
+					return 0;
+		}
 }

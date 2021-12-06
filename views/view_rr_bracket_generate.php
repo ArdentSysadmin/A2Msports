@@ -36,7 +36,7 @@ var baseurl = "<?php echo base_url();?>";
 							});
 
 							if($count > 0){
-								alert('To create Events, we requre dates for all rounds!');
+								alert('To create Events, we require dates for all rounds!');
 							e.preventDefault();
 							return false;
 							}
@@ -55,7 +55,7 @@ var baseurl = "<?php echo base_url();?>";
 <h3>Round Robin Matches</h3>
 <div class="col-md-12">
 
-<form method="post" id="myform" action='<?php echo $this->club_form_url; ?>league/bracket_save' class="col-md-8 login-page"> 
+<form method="post" id="myform" action='<?php echo $this->club_form_url; ?>league/bracket_save' class="col-md-12 login-page"> 
 
 <label>Draw Title*</label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
 <input class="form-control" type="text" name="draw_title" id="draw_title" required />
@@ -310,7 +310,9 @@ echo "<tr align='center'><td><b>Match Date</b></td><td><b>{$head} 1 </b></td><td
 
 $match_dt_time = '';
 $court_name = '';
-if($match_timings[$n] and $is_bye == 0){
+//if($match_timings[$n] and $is_bye == 0){
+	
+if($match_timings[$n]){
 //echo "<br>".$match_timings[$match_num][0] . " - " .date('m/d/Y H:i', (trim($match_timings[$match_num][2])));
 $court_name = $match_timings[$pick_time][0];
 $match_dt_time = date('m/d/Y H:i', (trim($match_timings[$pick_time][2])));
@@ -391,8 +393,12 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 <input type='hidden' name='ttype' value="<?php echo $this->input->post('ttype'); ?>" />
 <input type='hidden' name='tformat' value="<?php echo $this->input->post('tformat'); ?>" />
 <input type='hidden' name='is_publish_draw' value="<?php echo $this->input->post('is_publish_draw'); ?>" />
+<input type='hidden' name='num_of_sets' value="<?php echo $this->input->post('num_of_sets'); ?>" />
 <input type='hidden' name='br_game_day'	value="<?php echo $br_game_day; ?>" />
 <input type="hidden" name="draw_format"  id="draw_format"  value='<?=$draw_format;?>' />
+<input type='hidden' name='is_plof' value="<?php echo $this->input->post('is_plof'); ?>" />
+<input type='hidden' name='plof_size' value="<?php echo $this->input->post('plof_size'); ?>" />
+
 
 <?php
 if($this->input->post('tformat') == 'Teams'){?>

@@ -6,7 +6,9 @@ $(document).ready(function(){
 
 var baseurl = "<?php echo base_url();?>";
 
+
 $('#update_draw').click(function (e) {
+if(confirm("Are you sure to update the Draw?")){
 	  $.ajax({
 		type: 'POST',
 		url: baseurl+'league/view_matches',
@@ -16,8 +18,9 @@ $('#update_draw').click(function (e) {
 		}
 	  });
 	  e.preventDefault();
-
+}
 	});
+
 });
 </script>
 <script src="<?php echo base_url();?>js/jquery.accordion.js" type="text/javascript"></script>
@@ -122,8 +125,18 @@ $grid_array = array();
 ?>
 <div class='tab-content' style='background-color:#ffffff'>
 <div>
+<?php
+if($this->logged_user_role == 'Admin' or $this->is_super_admin){
+?>
+<input class="form-control" type="text" name="draw_title" id="draw_title" style="width:25%;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
+<?php
+}
+else{
+?>
 <p><b><?php echo $get_bracket['Draw_Title']; ?></b></p>
-<? //--------------------------------------------------------------------------------------------------------------- ?>
+<? 
+}
+//--------------------------------------------------------------------------------------------------------------- ?>
 <div class="table-responsive">
 <table class='tab-score'>
 <?php
@@ -151,13 +164,11 @@ $p2_result  = '-';
 <td align='center' colspan='2'>Round <?=$rr_matches[$m]->Multi_Round_Num;?>
 
 <?php
-if($tour_details->Usersid == $this->logged_user){
+if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 ?>
 <input type='hidden' name='round[]' value="<?php echo $round; ?>" />
 
-<input type="text" placeholder="Date" name="round_date<?php echo $round; ?>" id="round_date<?php echo $round; ?>"
-value="<?php if($rr_matches[$m]->Match_DueDate != "")
-{ echo date('m/d/Y H:i', strtotime($rr_matches[$m]->Match_DueDate)); } ?>">
+<input type="text" placeholder="Date" name="round_date<?php echo $round; ?>" id="round_date<?php echo $round; ?>" value="<?php if($rr_matches[$m]->Match_DueDate != ""){ echo date('m/d/Y H:i', strtotime($rr_matches[$m]->Match_DueDate)); } ?>" style="width: 35%;">
 <script>
 var rid = "<?php echo $round; ?>";
 
@@ -270,7 +281,39 @@ $map_url = "https://www.google.com/maps/place/".$get_homeloc['hcl_address']."+".
 
 ?>
 <tr>
-<td align='center'><?php echo $game_num; ?></td>
+<td align='center'>
+<?php
+echo $game_num."&nbsp;&nbsp;"; 
+
+$match_date = "";
+if($rr_matches[$m]->Match_DueDate){
+
+ $split_date = explode(" ",$rr_matches[$m]->Match_DueDate);
+ $match_date = ($split_date[1] != "00:00:00.000" and $split_date[1] != "") ?
+ date("m/d/Y H:i", strtotime($rr_matches[$m]->Match_DueDate)) : date("m/d/Y", strtotime($rr_matches[$m]->Match_DueDate));
+}
+
+if($this->logged_user_role == 'Admin' or $tour_details->Usersid == $this->logged_user){
+	?>
+<input type="text" placeholder="Date" name="match_date<?php echo $rr_matches[$m]->Tourn_match_id; ?>" id="match_date<?php echo $rr_matches[$m]->Tourn_match_id; ?>" value="<?php echo $match_date; ?>" autocomplete="off">
+<input type='hidden' name='matches_id[]' value="<?php echo $rr_matches[$m]->Tourn_match_id; ?>" />
+<script>
+var gid = "<?php echo $rr_matches[$m]->Tourn_match_id; ?>";
+
+$('#match_date'+gid).fdatepicker({
+	format: 'mm/dd/yyyy hh:ii',
+	disableDblClickSelection: true,
+	language: 'en',
+	pickTime: true
+});
+</script>
+<?php
+}
+else{
+echo $match_date;
+}
+?>
+</td>
 	<td style="padding-left:15px;"><?php echo "<a href='".$club_url."player/".$player1['Users_ID']."' target='_blank'>".$player1['Firstname']." ".$player1['Lastname']."</a>".$p1_part." ".$loc_icon1; 
 	if($rr_matches[$m]->Winner == $rr_matches[$m]->Player1) {
 		echo "<img id='img-winner' src='".base_url()."images/gold_medal_small.png' width='20' height='20'></img>";
@@ -279,6 +322,37 @@ $map_url = "https://www.google.com/maps/place/".$get_homeloc['hcl_address']."+".
 		$p1_result = 'W';
 		$p2_result = 'L';
 	}
+	
+			if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+				echo "<br>";
+				echo "<select style='width:110px; margin-top:15px; margin-bottom:15px;' class='swap_player' id='p1_{$rr_matches[$m]->Player1}' name='p1[{$rr_matches[$m]->Tourn_match_id}]'>";
+				echo "<option value=''>Player</option>";
+				foreach($players as $p2){
+				$selected = ($rr_matches[$m]->Player1 == $p2) ? "selected" : "";
+				$get_player = league::get_username(intval($p2));
+				echo "<option value='$p2' $selected>".ucfirst(strtolower($get_player['Firstname']))." ".ucfirst(strtolower($get_player['Lastname']))."</option>";
+				}
+				$selected = ($rr_matches[$m]->Player1 == '0') ? "selected" : "";
+				//echo "<option value='0' $selected>Bye</option>";
+				echo "</select>";
+
+					$disabled = '';
+
+				echo "&nbsp;<select style='width:110px;' class='swap_player' id='{$rr_matches[$m]->Player1_Partner}' name='p1p[{$rr_matches[$m]->Tourn_match_id}]'>";
+				echo "<option value=''>Partner</option>";
+				foreach($players as $p1){
+				$selected = ($rr_matches[$m]->Player1_Partner == $p1) ? "selected" : "";
+				$get_player = league::get_username(intval($p1));
+
+				echo "<option value='$p1' $selected>".ucfirst(strtolower($get_player['Firstname']))." ".ucfirst(strtolower($get_player['Lastname']))."</option>";
+				}
+				$selected = ($rr_matches[$m]->Player1_Partner == '0') ? "selected" : "";
+				//echo "<option value='0' $selected>Bye</option>";
+				echo "</select>";
+				
+			}
+
+
 	?></td>
 	 <td style="padding-left:15px;"><?php echo "<a href='".$club_url."player/".$player2['Users_ID']."' target='_blank'>".$player2['Firstname']." ".$player2['Lastname']."</a>".$p2_part." ".$loc_icon2;
 
@@ -289,6 +363,37 @@ $map_url = "https://www.google.com/maps/place/".$get_homeloc['hcl_address']."+".
 		$p1_result = 'L';
 		$p2_result = 'W';
 	}
+
+	if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+		echo "<br>";
+		echo "<select style='width:110px; margin-top:15px; margin-bottom:15px;' class='swap_player' id='{$rr_matches[$m]->Player2}' name='p2[{$rr_matches[$m]->Tourn_match_id}]'>";
+		echo "<option value=''>Player</option>";
+		foreach($players as $p2){
+		$selected = ($rr_matches[$m]->Player2 == $p2) ? "selected" : "";
+		$get_player = league::get_username(intval($p2));
+		echo "<option value='$p2' $selected>".ucfirst(strtolower($get_player['Firstname']))." ".ucfirst(strtolower($get_player['Lastname']))."</option>";
+		}
+		$selected = ($rr_matches[$m]->Player2 == '0') ? "selected" : "";
+		//echo "<option value='0' $selected>Bye</option>";
+		echo "</select>";
+
+		
+			$disabled = '';
+		echo "&nbsp;<select style='width:110px;' class='swap_player' id='{$rr_matches[$m]->Player2_Partner}' name='p2p[{$rr_matches[$m]->Tourn_match_id}]' {$disabled}>";
+		echo "<option value=''>Partner</option>";
+		foreach($players as $p1){
+		$selected = ($rr_matches[$m]->Player2_Partner == $p1) ? "selected" : "";
+		$get_player = league::get_username(intval($p1));
+
+		echo "<option value='$p1' $selected>".ucfirst(strtolower($get_player['Firstname']))." ".ucfirst(strtolower($get_player['Lastname']))."</option>";
+		}
+		$selected = ($rr_matches[$m]->Player2_Partner == '0') ? "selected" : "";
+		//echo "<option value='0' $selected>Bye</option>";
+		echo "</select>";
+		
+	}
+
+
 	 ?></td>
 	
 	<?php //if($tour_details->Tournament_type == 'Flexible League'){ ?>
@@ -473,14 +578,14 @@ $grid_array[$rr_matches[$m]->Multi_Round_Num][$rr_matches[$m]->Player2]['lost'] 
 <br />
 <table>
 <tr><td>
-<input type="hidden" name="update_draw_status" id="update_draw_status" value="3" />
+<input type="hidden" name="update_draw_status" id="update_draw_status" value="4" />
 <input type='hidden' name='bracket_id' value="<?php echo $get_bracket['BracketID']; ?>" />
 <input type='hidden' name='tour_id'	value="<?php echo $get_bracket['Tourn_ID']; ?>" />
 <?php
-if($tour_details->Usersid == $this->logged_user){
+if($this->logged_user_role == 'Admin' or $tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 ?>
 <div class='col-md-1 form-group internal'>
-<input type="button" id='update_draw' name='update_rr_dates' class='league-form-submit1' value=" Update " />
+<input type="button" id='update_draw' name='update_sd_dates' class='league-form-submit1' value=" Update " />
 </div>
 <?php
 }
@@ -825,7 +930,7 @@ $res_ratings2 = league :: get_draw_init_ratings($get_players[1], $rr_matches2[0]
 <td align='center'><?php echo $tot_score['win_per2']; ?></td>
 <td align='center'><?php echo $init; ?></td>
 <td align='center'><?php echo $final; ?></td>
-<td align='center'><?php echo $change; ?></td>
+<td align='center'><?php echo number_format($change, 3); ?></td>
 </tr>
 <?php
 }

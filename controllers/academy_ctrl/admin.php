@@ -553,6 +553,9 @@ exit;*/
 				//echo "<pre>"; print_r($_POST); exit;
 
 				switch($this->input->post('frequency')){
+					case "O":
+						$freq_type = "OneTimeCharge";
+					break;
 					case "D":
 						$freq_type = "Daily";
 					break;
@@ -581,6 +584,12 @@ exit;*/
 					$data['Status']				= 1;
 					$data['CreatedOn']		= date('Y-m-d H:i:s');
 					$data['LastUpdated']	= date('Y-m-d H:i:s');
+					$exp_date = NULL;
+					if($this->input->post('expire_date') != '')
+						$exp_date = date('Y-m-d H:i:s', strtotime($this->input->post('expire_date')));
+
+					$data['Expire_Date']			= $exp_date;
+
 					//echo "<pre>"; print_r($data); exit;
 					$ins_data = $this->admin->add_memberships($data);
 			
@@ -614,6 +623,9 @@ exit;*/
 			$tab_id = $this->input->post('tab_row_id');
 
 				switch($this->input->post('upd_frequency')){
+					case "O":
+						$freq_type = "OneTimeCharge";
+					break;
 					case "D":
 						$freq_type = "Daily";
 					break;
@@ -642,6 +654,11 @@ exit;*/
 					$data['Status']						= $this->input->post('upd_membership_status');
 					//$data['Occurrence']				= $this->input->post('num_occr');
 					$data['LastUpdated']			= date('Y-m-d H:i:s');
+					$exp_date = NULL;
+					if($this->input->post('expire_date') != '')
+						$exp_date = date('Y-m-d H:i:s', strtotime($this->input->post('expire_date')));
+
+					$data['Expire_Date']			= $exp_date;
 					//echo "<pre>"; print_r($data); exit;
 					$ins_data = $this->admin->upd_memberships($data, $tab_id);
 			

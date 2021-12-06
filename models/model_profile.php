@@ -391,11 +391,14 @@
 			
 			
 			$user_id = $this->session->userdata('users_id');
-			
+	
 			$firstname = $this->input->post('fname');
 			$lastname = $this->input->post('lname');
 			
-			$alteremail = $this->input->post('alter_email');
+			$email_id		= $this->input->post('email');
+			$alteremail	= $this->input->post('alter_email');
+
+			$this->session->set_userdata(array('user' => $firstname." ".$lastname));
 
 			/*$month = $this->input->post('db_month');
 			$day = $this->input->post('db_day');
@@ -477,23 +480,23 @@
 
 			$prefer = json_encode($_POST['pref']);
 
-			$data = array (
+			$data = array(
 					'Firstname'			=> $firstname,
 					'Lastname'			=> $lastname,
 					'AlternateEmailID'	=> $alteremail,
-					'Gender'					=> $gender,
-					'DOB'						=> $user_dob,
-					'HomePhone'			=> $hphone,
+					'Gender'				=> $gender,
+					'DOB'					=> $user_dob,
+					'HomePhone'		=> $hphone,
 					'Mobilephone'		=> $mphone,
 					'UserAddressline1'	=> $address1,
 					'UserAddressline2'	=> $address2,
 					'Country'			=> $country,
 					'State'				=> $state,
-					'City'				=> $city,
+					'City'					=> $city,
 					'Latitude'			=> $latitude,
-					'Longitude'			=> $longitude,
+					'Longitude'		=> $longitude,
 					'Zipcode'			=> $zip,
-					'UserAgegroup'		=> $age_group,
+					'UserAgegroup'	=> $age_group,
 					'NotifySettings'	=> $prefer,
 					'School_Info'		=> $school
 					);
@@ -501,7 +504,13 @@
 			/*echo "<pre>";
 			print_r($data);
 			exit;*/
-
+			$get_user_qry = $this->db->query("SELECT * FROM Users WHERE Users_ID = {$user_id}");
+			$get_user			= $get_user_qry->row_array();
+			
+			if(!$get_user['EmailID']) {
+				$data['EmailID'] = $email_id;
+			}
+//echo "<pre>"; print_r($data); print_r($get_user); exit;
 			$this->db->where('Users_ID', $user_id);
 			$result = $this->db->update('Users', $data); 
 		
@@ -576,8 +585,10 @@
 			
 			$user_id = $this->session->userdata('users_id');
 			
-			$user_image = $data['profile_pic_data'];
-			$profile_pic = $user_image['file_name'];
+			//$user_image = $data['profile_pic_data'];
+			//$profile_pic = $user_image['file_name'];
+			
+			$profile_pic = $data['file_name'];
 
 			//$data = $this->upload->data();
 			//$filename = $data['file_name'];
@@ -648,10 +659,10 @@
 
 			$fname = $get_user['Firstname'];
 			$lname = $get_user['Lastname'];
-			$dob   = date('m/d/Y', strtotime($get_user['DOB']));
+			$dob   = date('Y-m-d', strtotime($get_user['DOB']));
 
 			$query = $this->db->query("SELECT * FROM USATTMembership WHERE Member_ID = '{$membership_id}' AND [First Name] = '{$fname}' AND [Last Name] = '{$lname}' AND [Date of Birth] = '{$dob}' ");
-
+//secho $this->db->last_query(); exit;
 			return $query->row_array();
 		}
 
@@ -700,10 +711,10 @@
 
 			$data = array(
 						'Club_id'				=> $org_id,
-						'Membership_ID' => $mem_id,
-						'Users_id'			=> $user_id,
-						'Related_Sport'	=> $related_sport,
-						'Member_Status' => 0
+						'Membership_ID'	=> $mem_id,
+						'Users_id'				=> $user_id,
+						'Related_Sport'		=> $related_sport,
+						'Member_Status'	=> 0
 						);
 
 			//print_r($data);
@@ -961,4 +972,10 @@
 			//echo $this->db->last_query();
 			return $qr_check->result();
 		}
+
+	public function basketball_matches($user_id){
+		$qr_check = $this->db->query("select * from RegisterTournament where Team_Players like '%".'"'.$user_id.'"'."%' and Tournament_ID in (select tournament_ID from tournament where SportsType = 18)");
+		return $qr_check->num_rows();
 	}
+
+}
