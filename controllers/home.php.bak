@@ -64,7 +64,7 @@
 				$sp_list[$sponsor->tournament_ID] = $sp; 
 			}*/
 
-			$limit = 6;
+			$limit = 8;
 			$data['results']					= $this->model_news->get_news($limit);
 			$data['members']				=  $this->home->get_count_members();
 			$data['tourns']					=  $this->home->get_count_tourns();
@@ -72,9 +72,13 @@
 			$data['tourn_matches']	=  $this->home->get_count_tourn_matches();
 			//$data['sp_list']					=  $sp_list;
 
-			$this->load->view('includes/view_home_header');
+			/*$this->load->view('includes/view_home_header');
 			$this->load->view('view_home2', $data);
-			$this->load->view('includes/view_home_footer');
+			$this->load->view('includes/view_home_footer');*/
+
+			$this->load->view('includes/view_home_header2');
+			$this->load->view('view_home3', $data);
+			$this->load->view('includes/view_home_footer2');
 		}
 
 		public function test_home()
@@ -198,9 +202,54 @@
 			return $data;
 		}
 
-		public function watch_intro()
-		{
+		public function watch_intro() {
 			$this->load->view('view_introvideo');
+		}
+
+		public function contact_submit(){
+			//echo "<pre>"; print_r($_POST);
+			$secretKey = '6LcmImgdAAAAAB3Dy1yC_4D_dt7VNdFQ-fFzbiP2';
+			$responseKey = $this->input->post('g-recaptcha-response');
+			$userIP = $_SERVER['REMOTE_ADDR'];
+			$url = "https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$responseKey&remoteip=$userIP";
+
+			$response = file_get_contents($url);
+			$response = json_decode($response);
+			if($response->success){   
+				//$success_msg = "<font color='blue'>Verification Success.</font>";
+
+						$name			= $this->input->post('contact_name');
+						$user_email = $this->input->post('contact_email');
+						$message	= $this->input->post('contact_message');
+						
+						$this->load->library('email');
+						$this->email->set_newline("\r\n");
+					
+						$this->email->from(FROM_EMAIL, $name);
+						$this->email->to('admin@a2msports.com', 'A2MSports');
+						$this->email->reply_to($user_email);
+						//$this->email->to('pradeepkumar.namala@gmail.com', 'A2MSports'); 
+						$this->email->subject('A2msports Enquiry - '. date('M d, Y'));
+
+						$data = array(
+									'name'		 => $name,
+									'email'		 => $user_email,
+									'message'  => $message,
+									'page'		 => 'Enquiry'
+									);
+						
+						$body = $this->load->view('view_email_template.php', $data, TRUE);
+
+						$this->email->message($body);
+						$this->email->send();
+						$success_msg = "Thank you for contacting us. we will be get in touch with you soon.";
+			}
+			else {
+				$success_msg = "<font color='red'>Verification failed.</font>";
+			}
+			
+				$this->session->set_flashdata('contact_status', $success_msg);
+				redirect($_SERVER['HTTP_REFERER']);
 		}
 	}
 ?>

@@ -29,6 +29,13 @@
 			return $query->result();
 		}
 
+		public function get_sport_leagues2($sport)
+		{
+			$query = $this->db->query("SELECT TOP 30 * FROM tournament WHERE SportsType=$sport AND Is_Publish = '1' ORDER BY StartDate DESC"); 
+
+			return $query->result();
+		}
+
 		public function is_logged_user_reg($tid){
 			$user = $this->logged_user;
 			$query = $this->db->query("SELECT * FROM RegisterTournament WHERE Users_ID = '{$user}' AND Tournament_ID = {$tid}");
@@ -2002,7 +2009,7 @@
 
 						$result2 = $this->db->query("UPDATE A2MScore SET A2MScore = {$def_singles}, A2MScore_Doubles = {$def_doubles}, A2MScore_Mixed = {$def_mixed} WHERE Users_ID = {$user_id} AND SportsType_ID = {$tour_sport}");
 
-						echo "Completed"; exit;
+						//echo "Completed"; exit;
 					}
 			}
 
@@ -11423,6 +11430,15 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			return $query->result();
 		}
 
+		public function sport_top_players($data){
+			$sport		= $data['sport'];
+			$kids_agegroup_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19');
+
+			$query = $this->db->query("SELECT TOP(15) u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
+
+			return $query->result();
+		}
+
 		public function get_user_sport_intrests($user_id,$sport){
 			$data = array('users_id'=>$user_id,'Sport_id' => $sport);
 			$qry_check = $this->db->get_where('Sports_Interests', $data);
@@ -13659,4 +13675,8 @@ return $data;
 				return false;
 	}*/
 
+		public function get_clubs(){
+			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations)");
+			return $query->result();
+		}
 }

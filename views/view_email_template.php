@@ -1160,6 +1160,36 @@ Phone: <?php echo $phone; ?> <br />
 break;
 ?>
 
+
+<?php 
+case "Enquiry":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Hi Admin,<br />
+</div> 
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php echo $message; ?><br />
+</div>
+
+<!-- <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Details: <br />
+Email: <?php echo $email; ?> <br />
+</div> -->
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">Thank you, <br /> 
+<?php echo $name; ?>,<br />
+<?php echo $email; ?>
+</div>
+
+</td>
+<?php
+break;
+?>
+
+
 <?php 
 case "Add-Score-SE-RR": 
 ?>

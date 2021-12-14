@@ -1,5 +1,8 @@
-     <div class="bg_fotter pt-5 pb-5">
-       <div class="container-fluid" id="contact">
+ <?php
+$source = base_url().'assets_new/';
+?>
+	 <div class="bg_fotter pt-5 pb-5">
+       <div class="container-fluid">
          <div class="row">
            <div class="col-lg-6">
              <div class="heading pb-3 text-center">
@@ -8,7 +11,7 @@
              <div class="row">
                <div class="col-lg-8 offset-lg-2">
                  
-                 <form class="row g-3" method="POST" action="<?=base_url();?>/contact/submit">
+                     <form class="row g-3" method="POST" action="<?=base_url();?>/contact/submit">
 				<?php
 					if($this->session->flashdata('contact_status')){
 				?>
@@ -45,7 +48,7 @@
              </div>
            </div>
            <div class="col-lg-6">
-             <div class="heading pb-3 text-center">
+             <div class="heading pb-3 text-center" style="padding-top: 10px;">
                <h1>Contact Us</h1>
              </div>
              <div class="row">
@@ -75,11 +78,55 @@
        <div class="container-fluid">
          <div class="row">
            <div class="col-lg-12">
-             <p class="text-center text-light mb-0">Copyright &copy; 2021 A2M Sports. All Rights Reserved.</p>
+             <p class="text-center text-light mb-0">Copyright © 2021 A2M Sports. All Rights Reserved.</p>
            </div>
          </div>
        </div>
      </div>
+
+      <!-- popup start -->
+     <div id="popup1" class="overlay">
+  <div class="popup">
+    <h2>Contact Us</h2>
+    <a class="close" href="#">&times;</a>
+    <div class="content">
+                     <form class="row g-3" method="POST" action="<?=base_url();?>/contact/submit">
+				<?php
+					if($this->session->flashdata('contact_status')){
+				?>
+				<script>
+				var st = "<?php echo $this->session->flashdata('contact_status'); ?>";
+				alert(st);
+				</script>
+				<?php
+					}
+				 ?>
+                    <div class="col-md-12">
+                      <input type="text" name="contact_name" class="form-control" id="inputl4" placeholder="Full Name" required>
+                    </div>
+                    <div class="col-md-12">
+                      <input type="email" name="contact_email"class="form-control" id="inputEmail4" placeholder="Email Address" required>
+                    </div>
+                    <div class="col-12">
+                      <textarea name="contact_message" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Add Your Message (optional)" required></textarea>
+                    </div>
+                    
+                      <div class="form-group">
+							<div class="g-recaptcha" data-sitekey="6LcmImgdAAAAAB70ZsDd9SBMA5JXNlFGwcttZv76"></div>
+                            <!-- <input name='recaptcha' class="form-control d-none" data-recaptcha="true" required data-error="Please complete the Captcha">
+                            <div class="help-block with-errors"></div> -->
+                        </div>
+                    <div class="col-12">
+                      <input name="contact_submit" type="submit" class="btn btn_orange w-100 pt-2 pb-2" value="Submit" />
+                    </div>
+
+                  </form>
+
+    </div>
+  </div>
+</div>
+      <!-- popup start end-->
+
 
     <!-- Optional JavaScript; choose one of the two! -->
 
@@ -93,7 +140,7 @@
     -->
     <script>
             $(document).ready(function() {
-              var owl = $('.owl-carousel');
+              var owl = $('#feature');
               owl.owlCarousel({
                 margin: 50,
                 nav: true,
@@ -113,6 +160,72 @@
             })
           </script>
 
+
+
+
+      <script>
+            $(document).ready(function() {
+              var owl = $('#Testimonials');
+              owl.owlCarousel({
+                margin: 50,
+                nav: true,
+                loop: true,
+                responsive: {
+                  0: {
+                    items: 1
+                  },
+                  600: {
+                    items: 3
+                  },
+                  1000: {
+                    items: 3
+                  }
+                }
+              })
+            })
+          </script>
+          <script>
+            $(document).ready(function() {
+              var owl = $('#Testimonials1');
+              owl.owlCarousel({
+                margin: 50,
+                nav: true,
+                loop: true,
+                responsive: {
+                  0: {
+                    items: 1
+                  },
+                  600: {
+                    items: 3
+                  },
+                  1000: {
+                    items: 3
+                  }
+                }
+              })
+            })
+          </script>
+<script>
+            $(document).ready(function() {
+              var owl = $('#company');
+              owl.owlCarousel({
+                margin: 50,
+                nav: true,
+                loop: true,
+                responsive: {
+                  0: {
+                    items: 1
+                  },
+                  600: {
+                    items: 3
+                  },
+                  1000: {
+                    items: 5
+                  }
+                }
+              })
+            })
+          </script>
     <script>
     
     $(document).ready(function(){
@@ -139,15 +252,15 @@
     });
 
     </script>
-          <script src="<?=base_url()."assets_new/";?>js/highlight.js"></script>
-    <script src="<?=base_url()."assets_new/";?>js/app.js"></script>
+          <script src="<?=$source;?>js/highlight.js"></script>
+    <script src="<?=$source;?>js/app.js"></script>
     <script src="https://kit.fontawesome.com/140af656c6.js" crossorigin="anonymous"></script>
   </body>
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
     <script src='https://www.google.com/recaptcha/api.js'></script>
-    <script src="<?=base_url()."assets_new/";?>validator.js"></script>
-    <script src="<?=base_url()."assets_new/";?>contact.js"></script>
+    <script src="<?=$source;?>validator.js"></script>
+    <script src="<?=$source;?>contact.js"></script>
 
 <script type="text/javascript">
    $(document).ready(function(){
@@ -225,31 +338,9 @@ function lightbox_close() {
   document.getElementById('fadevedio').style.display = 'none';
   lightBoxVideo.pause();
 }
-</script>
-<script type="text/javascript">
- 
-  $(document).ready(function(){
-    $('.customer-logos').slick({
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 1500,
-    arrows: true,
-    dots: false,
-    pauseOnHover: false,
-    prevArrow: '',
-    nextArrow: '',
-    responsive: [{
-      breakpoint: 768,
-      settings: {
-        slidesToShow: 3
-      }
-    }, {
-      breakpoint: 520,
-      settings: {
-        slidesToShow: 2
-      }
-    }]
-    });
-  });
+document.addEventListener("DOMContentLoaded", function(){
+  // add padding top to show content behind navbar
+  navbar_height = document.querySelector('.navbar').offsetHeight;
+  document.body.style.paddingTop = navbar_height + 'px';
+}); 
 </script>

@@ -118,8 +118,8 @@
 			$data['user_details']		= $this->general->get_user($this->logged_user);
 			}
 			
-			$this->load->view('includes/header1');
-			//$this->load->view('view_create_tournament',$data);
+			$this->load->view('includes/header');
+			$this->load->view('view_create_tournament',$data);
 			$this->load->view('includes/view_right_column',$data);
 			$this->load->view('includes/footer');
 		}
@@ -7172,6 +7172,169 @@ exit;*/
 				$this->load->view('view_league_list', $data);
 				$this->load->view('includes/view_sports_right_column',$data);
 				$this->load->view('includes/footer_sports_specific', $data);
+		}
+
+
+		public function sport_page($sport)
+		{
+			echo "<h1>N. Advithi</h1>"; echo "<h2>Grade - 1</h2><h3>Beta</h3>";exit;
+			//echo "<pre>"; print_r($_POST);exit();
+			$data['req_tab'] = 'tournaments';
+			if($_REQUEST['p']){
+				$data['req_tab'] = $_REQUEST['p'];
+			}
+
+            $data['sport']         = $sport;	
+			$data['club_results']	 = $this->model_league->get_clubs($data);
+
+            $data['loc_query']	   = $this->model_league->sport_top_players($data);
+            $data['coach_results'] = $this->model_league->search_coaches($data);
+           // $data['club_results']  = $this->model_league->search_clubs($data);
+			$country = 'United States of America';
+			$data['teams_result'] = $this->model_league->get_TeamsByCountry2($country, $sport);
+
+			if($this->input->post('search_mem_loc')) {
+				$data['search_uname'] = $this->input->post('name');
+				$data['country']	  = $this->input->post('country');
+				$data['state']	      = $this->input->post('state');
+				$data['age_group']	  = $this->input->post('age_group');
+				$data['gender']	      = $this->input->post('gender');
+				//$data['state1']	      = $this->input->post('state1');
+				$data['sport']		  = $this->input->post('sport');
+				$sport                = $data['sport'];
+				$data['loc_query']	  = $this->model_league->sport_top_players($data);
+				//echo "<pre>";print_r($data['countries']);exit();
+				$data['leagues']      = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']      = $this->model_news->getNews_By_SportsType($sport);
+			}
+			else if($this->input->post('coach_mem')) {
+				$data['coach_name']    = $this->input->post('coach_name');
+				$data['sport']   = $this->input->post('sport');
+			    $data['coach_country'] = $this->input->post('coach_country');
+				$data['coach_state']   = $this->input->post('coach_state');
+				$sport                 = $data['sport'];
+				$data['coach_results'] = $this->model_league->search_coaches($data);			
+				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']       = $this->model_news->getNews_By_SportsType($sport);	
+			}
+			else if($this->input->post('addclub')) {
+
+			    $club_timings    = $this->input->post('clubTimings');
+			    $club_time_from  = $this->input->post('club_time_from');
+			    $club_time_to    = $this->input->post('club_time_to');
+
+				foreach($club_timings as $ind => $day) {
+					$revised[$day] = array(0 => $club_time_from[$ind], 1 => $club_time_to[$ind]);
+				}
+				
+				/*echo json_encode($revised);
+				echo "<pre>"; print_r($revised); print_r($_POST); print_r($_FILES); exit;*/
+				
+				$data['sport']				= $this->input->post('sport');
+				$sport							= $data['sport'];
+				$data['club_name']       = $this->input->post('clubname');
+			    $data['club_country']    = $this->input->post('clubcountry');
+			    $data['club_addr1']       = $this->input->post('addr_line1');
+			    $data['club_addr2']       = $this->input->post('addr_line2');
+			    $data['club_zipcode']    = $this->input->post('zipcode');
+				$data['club_state']		= $this->input->post('addclub_state');
+				$data['club_city']			= $this->input->post('clubcity');
+				$data['club_website']    = $this->input->post('club_website');
+				$data['club_details']		= $this->input->post('club_details');
+				$data['contact_name']  = $this->input->post('contact_name');
+				$data['contact_email']	= $this->input->post('contact_email');
+				$data['contact_phone'] = $this->input->post('contact_phone');
+				$club_sports             = json_encode($this->input->post('clubsport'));
+				$data['club_sports']     = $club_sports;
+				$data['no_of_courts']    = $this->input->post('no_of_courts');
+				$data['club_timings']    = json_encode($revised);
+
+				/* logo section */
+				$filename2 = 'club_logo';
+				$this->load->library('upload');
+
+			    $config = array(
+						'upload_path'	=> "./org_logos/",
+						'allowed_types' => "gif|jpg|png|jpeg|pdf",
+						'overwrite'		=> FALSE,
+						'max_size'		=> "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+						'max_height'	=> "5000",
+						'max_width'		=> "8000"
+						);
+
+				$this->upload->initialize($config);
+
+				if($this->upload->do_upload($filename2)){
+					$data['club_logo_data'] = $this->upload->data();
+				}
+
+				/* logo section */
+
+				$data['add_clubs']    = $this->model_league->AddClub($data);
+				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']         = $this->model_news->getNews_By_SportsType($sport);
+			}
+			else if($this->input->post('club_mem')) {
+				//print_r($_POST);exit();
+				$data['sport']			= $this->input->post('sport');
+				$sport						= $data['sport'];
+				$data['club_name']   = $this->input->post('club_name');
+
+			    $data['club_country']   = $this->input->post('club_country');
+				$data['club_state']       = $this->input->post('club_state');
+				$data['club_results']    = $this->model_league->search_clubs($data);
+				$data['leagues']          = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']         = $this->model_news->getNews_By_SportsType($sport);
+			}
+			else {
+				$sport                 = $data['sport'];
+				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
+				$data['results']       = $this->model_news->getNews_By_SportsType($sport);
+				$data['events']        = $this->model_league->get_event_row($sport);
+			}
+
+			$data['sports'] = $this->model_league->GetSports();
+             //echo "<pre>";print_r($data);exit();
+			 //echo "<pre>"; print_r($data['leagues']); exit;
+
+			$data['sports_feeds_array'] = array(1,2,3,4,7,8,10); 
+			 switch($sport) {
+					case 1:
+					$rss_feed_url = "https://www.espn.com/espn/rss/tennis/news";
+					break;
+					case 2:
+					//$rss_feed_url = "https://www.teamusa.org/USA-Table-Tennis/Features?rss=1";
+					$rss_feed_url = "https://www.ittf.com/feed/";
+					break;
+					case 3:
+					$rss_feed_url = "https://www.espn.com/espn/rss/badminton/news";
+					break;
+					case 4:
+					$rss_feed_url = "https://www.espn.com/espn/rss/golf/news";
+					break;
+					case 7:
+					$rss_feed_url = "https://pickleballnews.com/feed/podcast/";
+					break;
+					case 8:
+					$rss_feed_url = "https://www.espn.com/espn/rss/chess/news";
+					break;
+					case 10:
+					$rss_feed_url = "https://volleycountry.com/feed";
+					break;
+					default:
+					$rss_feed_url = "";
+			 }
+
+				$data['rss_feed_url']   = $rss_feed_url;
+                //echo "<pre>"; print_r($data); exit;
+                $data['countries'] = $this->model_league->get_user_countries();
+				//$this->load->view('includes/header_sports_specific');
+				//var_dump($data['isMobile']);
+				//exit;
+				//$this->load->view('includes/header');
+				$this->load->view('view_sport_page', $data);
+				//$this->load->view('includes/view_sports_right_column',$data);
+				//$this->load->view('includes/footer_sports_specific', $data);
 		}
 
 		public function get_tourn_reg_team_lines()

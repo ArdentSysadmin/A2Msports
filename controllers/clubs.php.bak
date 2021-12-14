@@ -22,7 +22,7 @@ class Clubs extends CI_Controller {
 		$this->session->set_userdata($last_url);
 
 		$data['sports']	 = $this->general->get_sports();
-		$data['clubs']	 = $this->model_clubs->get_clubs();
+		//$data['clubs']	 = $this->model_clubs->get_clubs();
 		$data['results'] = $this->news->get_news();
 
 		$this->load->view('includes/header');
@@ -52,14 +52,14 @@ class Clubs extends CI_Controller {
 		if($user_id){
 			$check_is_valid_sub = $this->model_clubs->is_valid_subscr($mem_code, $user_id);
 			if(count($check_is_valid_sub) > 0){
-					echo "Testing!";
+					echo "Testing!<br>";
 			}
 			else{
-				echo "Invalid Access!";
+				echo "Invalid Access!<br>";
 			}
 		}
 		else{
-			echo "Invalid Access!";
+			echo "Invalid Access!<br>";
 		}
 
 		echo $user_id." ".$mem_code; exit;

@@ -226,6 +226,21 @@ nav.navbar.navbar-expand-lg.navbar-light.justify-content-end ul li a i {
           </button>
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav mx-4">
+			  <li class="nav-item">
+                <a class="nav-link" href="#clubFeatures">Club Features</a>
+              </li>
+
+			  <li class="nav-item dropdown ml-20">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink_two" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Player Features   <i class="fas fa-chevron-down"></i>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink_two">
+                  <li><a class="dropdown-item" href="<?php echo base_url();?>Addscore"> Add Score </a></li>
+                  <li><a class="dropdown-item" href="<?php echo base_url();?>opponent"> Challenge </a></li>
+                  <li><a class="dropdown-item" href="<?php echo base_url();?>clubs"> Pay and Play </a></li>
+                </ul>
+              </li>
+			<?php if($this->session->userdata('user') != "") {?>
               <li class="nav-item dropdown ml-20">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink_one" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                  Create <i class="fas fa-chevron-down"></i>
@@ -239,7 +254,7 @@ nav.navbar.navbar-expand-lg.navbar-light.justify-content-end ul li a i {
                   <li><a class="dropdown-item" href="<?php echo base_url();?>league">Tournament</a></li>
                 </ul>
               </li>
-             
+           <?php } ?>  
               <li class="nav-item">
                 <a class="nav-link" href="<?php echo base_url();?>calendar">Calendar</a>
               </li>
@@ -260,16 +275,7 @@ nav.navbar.navbar-expand-lg.navbar-light.justify-content-end ul li a i {
               <li class="nav-item">
                 <a class="nav-link" href="<?php echo base_url();?>Search">Search</a>
               </li>
-			  <li class="nav-item dropdown ml-20">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink_two" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Do   <i class="fas fa-chevron-down"></i>
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink_two">
-                  <li><a class="dropdown-item" href="<?php echo base_url();?>Addscore"> Add Score </a></li>
-                  <li><a class="dropdown-item" href="<?php echo base_url();?>opponent"> Challenge </a></li>
-                  <li><a class="dropdown-item" href="<?php echo base_url();?>clubs"> Pay and Play </a></li>
-                </ul>
-              </li>
+
               <li class="nav-item">
                 <a class="nav-link" href="<?php echo base_url();?>Help">Help</a>
               </li>
