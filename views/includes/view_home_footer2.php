@@ -48,7 +48,7 @@ $source = base_url().'assets_new/';
              </div>
            </div>
            <div class="col-lg-6">
-             <div class="heading pb-3 text-center" style="padding-top: 10px;">
+             <div class="heading pb-3 text-center" style="padding-top: 20px;">
                <h1>Contact Us</h1>
              </div>
              <div class="row">
@@ -78,7 +78,7 @@ $source = base_url().'assets_new/';
        <div class="container-fluid">
          <div class="row">
            <div class="col-lg-12">
-             <p class="text-center text-light mb-0">Copyright © 2021 A2M Sports. All Rights Reserved.</p>
+             <p class="text-center text-light mb-0">Copyright &copy; 2021 A2M Sports. All Rights Reserved.</p>
            </div>
          </div>
        </div>
@@ -343,4 +343,13 @@ document.addEventListener("DOMContentLoaded", function(){
   navbar_height = document.querySelector('.navbar').offsetHeight;
   document.body.style.paddingTop = navbar_height + 'px';
 }); 
+</script>
+<script>
+var baseURL = "<?php echo base_url(); ?>";
+$('#log_btn').click(function(){
+window.location.replace(baseURL+"login");
+});
+$('#news_btn').click(function(){
+window.location.replace(baseURL+"news");
+});
 </script>

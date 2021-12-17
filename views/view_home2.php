@@ -262,7 +262,9 @@ if(!empty($row)) {
 					case 11: echo "Fencing";	 break;
 					case 12: echo "Bowling";	 break;
 					case 16: echo "Cricket";	 break;
-					} ?></h6>
+					} ?><i class="fas fa-table-tennis"></i><i class="material-icons">cloud</i>
+					<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><?php exit; ?>
+					</h6>
 				 </div>
                   <div class="day d-flex mt-1 mb-1">
                     <h1 class="mb-0"><?php echo date('d', strtotime($row[0]->StartDate)); ?></h1>

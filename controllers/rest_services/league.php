@@ -383,7 +383,18 @@ class League extends REST_Controller {
 							$data['paymethods'] = array(array('pay_method'	 => $pay_mode, 
 															  'reference_id' => $payment_method));
 							$data['link'] = base_url()."league/".$tourn_id."/";
-							$data['terms_cond'] = base_url() . "terms_conditions/";
+
+						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
+							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+						}
+						else{
+							$url = base_url().'medical_form/';
+						}
+
+						$data['medical_form'] = $url;
+
+						$tc = base_url().'terms_conditions/';
+						$data['terms_conditions'] = $tc;
 
 							$res = array($data);
 						}
@@ -536,8 +547,8 @@ class League extends REST_Controller {
 
 							$data['paymethods'] = array(array('pay_method'	 => $pay_mode, 
 															  'reference_id' => $payment_method));
-						$data['link'] = base_url()."league/".$tourn_id."/";
-						$data['terms_cond'] = base_url() . "terms_conditions/";
+						$data['link']							= base_url()."league/".$tourn_id."/";
+						$data['terms_conditions']  = base_url()."terms_conditions/";
 						$res = array($data);
 					//}
 					/*else {
@@ -2816,6 +2827,20 @@ $data['couponCodes'] = $coupons;
 							$data['paymethods'] = array(array('pay_method'	 => $pay_mode, 
 															  'reference_id' => $payment_method));
 							$data['link'] = base_url()."league/".$tourn_id."/";
+
+
+						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
+							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+						}
+						else{
+							$url = base_url().'medical_form/';
+						}
+
+						$data['medical_form'] = $url;
+
+						$tc = base_url().'terms_conditions/';
+						$data['terms_conditions'] = $tc;
+
 							$res = array($data);
 						}
 						else {
@@ -2983,6 +3008,20 @@ $data['couponCodes'] = $coupons;
 							$data['paymethods'] = array(array('pay_method'	 => $pay_mode, 
 															  'reference_id' => $payment_method));
 						$data['link'] = base_url()."league/".$tourn_id."/";
+
+						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
+							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+						}
+						else{
+							$url = base_url().'medical_form/';
+						}
+
+						$data['medical_form'] = $url;
+
+						$tc = base_url().'terms_conditions/';
+						$data['terms_conditions'] = $tc;
+
+
 						$res = array($data);
 					//}
 					/*else {

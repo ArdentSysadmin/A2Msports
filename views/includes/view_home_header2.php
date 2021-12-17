@@ -20,6 +20,10 @@ $source = base_url().'assets_new/';
 <link rel="stylesheet" href="<?=$source;?>css/owl.carousel.min.css">
 <link rel="stylesheet" href="<?=$source;?>css/owl.theme.default.min.css">
 <title>A2MSports</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/js/all.min.js" integrity="sha512-cyAbuGborsD25bhT/uz++wPqrh5cqPh1ULJz4NSpN9ktWcA6Hnh9g+CWKeNx2R0fgQt+ybRXdabSBgYXkQTTmA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 <script src="<?=$source;?>js/jquery.min.js"></script>
 <script src="<?=$source;?>js/owl.carousel.js"></script>
 <style type="text/css">
@@ -39,7 +43,7 @@ $source = base_url().'assets_new/';
 <ul class="navbar-nav mx-4">
 
 <li class="nav-item">
-<a class="nav-link" href="#">Clubs Features</a>
+<a class="nav-link" href="#clubFeatures">Clubs Features</a>
 </li>
 
 <li class="nav-item dropdown ml-20">
@@ -69,7 +73,7 @@ $source = base_url().'assets_new/';
            <?php } ?>
 
 <li class="nav-item">
-<a class="nav-link" href="#">Calendar</a>
+<a class="nav-link" href="<?=base_url();?>calendar">Calendar</a>
 </li>
 
 <li class="nav-item dropdown ml-20 mr-auto">
@@ -86,10 +90,10 @@ $source = base_url().'assets_new/';
 </li>
 
 <li class="nav-item">
-<a class="nav-link" href="#">Search</a>
+<a class="nav-link" href="<?=base_url();?>Search">Search</a>
 </li>
 <li class="nav-item">
-<a class="nav-link" href="#">Help</a>
+<a class="nav-link" href="<?=base_url();?>Help">Help</a>
 </li>
 <?php if($this->session->userdata('user') != "") {?>
 <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -137,13 +141,3 @@ Login
 </div> 
 </div> 
 </nav>
-
-<script>
-var baseURL = "<?php echo base_url(); ?>";
-$('#log_btn').click(function(){
-window.location.replace(baseURL+"login");
-});
-$('#news_btn').click(function(){
-window.location.replace(baseURL+"news");
-});
-</script>

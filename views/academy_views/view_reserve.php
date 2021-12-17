@@ -256,7 +256,7 @@ Date.prototype.yyyymmdd = function() {
 
 function populateRes(resData) {
 	for (var ind in resData) {
-console.log(resData);
+	console.log(resData);
   //var name			= resData.firstname + " " + resData.lastname;
   var name				= resData[ind].player;
   var courtId				= resData[ind].courtid;
@@ -269,14 +269,16 @@ console.log(resData);
   var starttime		= new Date (new Date().toDateString() + ' ' + +startTimeHour + ':' + startTimeMin);
   var EndTime		= new Date (new Date().toDateString() + ' ' + +EndTimeHour + ':' + EndTimeMin);
   var diff				= Math.abs(EndTime - starttime);
- // alert(diff);
+  //alert(diff);
   var minutes		= Math.floor((diff/1000)/60);
-  //var height			= (minutes/60)* 50 -4
+  //var height		= (minutes/60)* 50 -4
+  if(courtId == 169)
+  alert(minutes);
   var tmp				= (minutes/60);
   var height			= (tmp * (80))  -4
   /*var TimeRow = (startTimeHour - 5) * 2 + 1*/
   var TimeRow		= (startTimeHour) * 2 + 1
-  var startAMPM	= (startTimeHour < 12) ? 'AM' : 'PM' ;
+  var startAMPM		= (startTimeHour < 12) ? 'AM' : 'PM' ;
   var endAMPM		= (EndTimeHour < 12) ? 'AM' : 'PM' ;
  // if (EndTimeMin === '30' || EndTimeMin > '30'){
   if (EndTimeMin === '30'){

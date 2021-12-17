@@ -378,7 +378,7 @@ echo $currency."0.00";
 			?>' />
 			</div>
 			<div style="margin-top:5px; display:table">
-				<?php echo "<span style='font-weight:bold; color:#464646'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."&nbsp;&nbsp;</span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
+				<?php echo "<span style='font-weight:bold; color:#464646'><a href='".base_url()."player/".$name['Users_ID']."' style='cursor: pointer;'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."</a></span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
 				<?php 
 			$text = strip_tags($comment->Comments);
 $textWithLinks = preg_replace('@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@', '<a href="$1" target="_blank" rel="nofollow">$1</a>', $text);

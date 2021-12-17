@@ -35,7 +35,7 @@ $source = base_url().'assets_new/';
 <img src="<?=$source;?>images/chino-rocha-2FKTyJqfWX8-unsplash-removebg-preview (1).png" class="slidrimg" width="100%" height="70%" />
 </div>
 <div class="slides">  
-<img src="<?=$source;?>images/tt-home.png" width="100%" height="70%" class="slidrimg"/>
+<img src="<?=$source;?>images/tt-home.png" width="100%" height="70%" class="slidrimg" />
 </div> 
 <div class="slides">  
 <img src="<?=$source;?>images/pickleball-home.png" width="100%" height="70%" class="slidrimg"/>
@@ -66,8 +66,8 @@ $source = base_url().'assets_new/';
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-12">
-<div class="heading text-center pt-5 pb-5">
-<h1>Become an A2M Premium Club Member</h1>
+<div class="heading text-center pt-5 pb-5" id='clubFeatures'>
+<h1>A2M Premium Club Features</h1>
 </div>
 </div>
 </div>
@@ -131,8 +131,8 @@ transition: opacity .6s ease;
 </style>
 <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
 <div class="carousel-indicators">
-<button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-<button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+<!-- <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button> -->
+<!-- <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button> -->
 <!-- <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button> -->
  </div>
 <div class="carousel-inner">
@@ -142,21 +142,22 @@ transition: opacity .6s ease;
 <div class="row">
 <div class="col-lg-6 pl-100" >
 <div class="banner_two_content pl-30 pt-5 mx-3">
-<h1>Organize Events,<br>Tournaments & Leagues</h1>
-<p>If you are a Coach trying to organize classes for different <br> groups, a team captain trying to manage.</p>
+<h1>Tournaments and League Management</h1>
+<p>List your Tournaments and Leagues for free!<br>Organize like a Pro on your own mobile app!</p>
 <a href="<?=base_url()."login";?>" class="btn_orange">Sign up</a>
 </div>
 </div>
 <div class="col-lg-6">
 <div class="banner_img text-center">
-<img src="<?=$source;?>images/mobile.png" class="w-50">
+<img src="<?=$source;?>images/Tournaments.png" class="wc-40">
 </div>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="carousel-item">
+
+<!-- <div class="carousel-item">
 <div class="banner_two  mx-3 pt-5 mb-5 ">
 <div class="container-fluid">
 <div class="row">
@@ -164,7 +165,7 @@ transition: opacity .6s ease;
 <div class="banner_two_content pl-30 pt-5 mx-3">
 <h1>Sell Equipment or <br> Merchandise </h1>
 <p>Give your Pro-shop a much needed uplift with online shopping experience</p>
-<!-- <a href="#" class="btn_orange">Become a A2M Club Member</a> -->
+<a href="#" class="btn_orange">Become a A2M Club Member</a> 
 </div>
 </div>
 <div class="col-lg-6">
@@ -175,7 +176,7 @@ transition: opacity .6s ease;
 </div>
 </div>
 </div>
-</div>
+</div> -->
 
 </div>
 </div>
@@ -196,8 +197,8 @@ transition: opacity .6s ease;
 <div class="row">
 <div class="col-lg-6">
 <div class="pt-5 px-5 banner_three_one text-center text-light">
-               <h2>Coach Booking</h2>
-               <p class="mb-5">Schedule a Group or Private Lesson with Coaches<br /></p>
+               <h2>Pay and Play</h2>
+               <p class="">Completely Configurable Courts or Shared Space Reservations<br /></p>
 <img src="<?=$source;?>images/mob_2.png" class="w-60">
 </div>
 </div>
@@ -246,14 +247,14 @@ transition: opacity .6s ease;
 <div class="row">
 <div class="col-lg-6">
 <div class="banner_two_content pl-30 pt-5 mx-3">
-<h1>Pay and Play <br>(Court Reservation System)</h1>
-<p>Weather it's a dedicated Tennis, Badminton, or Squash Court, Table Tennis Tables or a shared Swimming Pool, you can book them here .</p>
+<h1>Coach Scheduler <br>(Coach Booking System)</h1>
+<p>A free Calendar for Coaches for Group and Private Lessons!</p>
 <a href="<?=base_url()."login";?>" class="btn_orange">Sign up</a>
 </div>
 </div>
 <div class="col-lg-6">
 <div class="banner_img text-center">
-<img src="<?=$source;?>images/mobile.png" class="w-50">
+<img src="<?=$source;?>images/CoachBooking.png" class="wc-40">
 </div>
 </div>
 </div>
@@ -283,26 +284,40 @@ if(!empty($row)) {
 <div class="d-flex feature_box">
 <div class="feature_left bg-white p-3">
 <div class="d-flex justify-content-start"><img src="<?=base_url()."assets_new/";?>images/icons/<?php switch($row[0]->SportsType){
-					//case 1: echo "tennis.svg";		 break;
-					case 2: echo "tt-ico.png"; break;
-					case 3: echo "badminton-ico.png";	 break;
-					case 4: echo "golf-ico.png";		 break; 
+					case 1: echo "tennis-ico.png";				break;
+					case 2: echo "tt-ico.png";						break;
+					case 3: echo "badminton-ico.png";		break;
+					case 4: echo "golf-ico.png";					break; 
+					case 5: echo "raquet-icon.png";			break; 
+					case 6: echo "squash-icon.png";			break; 
+					case 7: echo "pickleball-icon.png";		break; 
+					case 8: echo "chess-icon.png";			break; 
+					case 9: echo "carrom-icon.png";			break; 
+					case 10: echo "volleyball-icon.png";		break; 
+					case 11: echo "fencing-icon.png";		break; 
+					case 12: echo "bowling-icon.png";		break; 
+					case 16: echo "cricket-icon.png";			break; 
+					case 18: echo "basketball-icon.png";	break; 
 					} ?>" class="w-10" >
-					<h6 class="uppercase mb-0 mx-3"><?php switch($row[0]->SportsType){
-					case 1: echo "Tennis";		 break;
-					case 2: echo "Table Tennis"; break;
-					case 3: echo "Badminton";	 break;
-					case 4: echo "Golf";		 break;
-					case 5: echo "RacquetBall";	 break;
-					case 6: echo "Squash";		 break;
-					case 7: echo "Pickleball";	 break;
-					case 8: echo "Chess";		 break;
-					case 9: echo "Carroms";		 break;
-					case 10: echo "Volleyball";	 break;
-					case 11: echo "Fencing";	 break;
-					case 12: echo "Bowling";	 break;
-					case 16: echo "Cricket";	 break;
-					} ?></h6></div>
+					<h6 class="uppercase mb-0 mx-3">
+					<?php switch($row[0]->SportsType){
+					case 1: echo "Tennis";				break;
+					case 2: echo "Table Tennis";		break;
+					case 3: echo "Badminton";		break;
+					case 4: echo "Golf";					break;
+					case 5: echo "RacquetBall";		break;
+					case 6: echo "Squash";				break;
+					case 7: echo "Pickleball";			break;
+					case 8: echo "Chess";				break;
+					case 9: echo "Carroms";			break;
+					case 10: echo "Volleyball";		break;
+					case 11: echo "Fencing";			break;
+					case 12: echo "Bowling";			break;
+					case 16: echo "Cricket";			break;
+					case 18: echo "Basketball";		break;
+					} ?></h6>
+					
+					</div>
 <div class="day d-flex mt-1 mb-1">
 <h1 class="mb-0"><?php echo date('d', strtotime($row[0]->StartDate)); ?></h1>
 <h6 class="mx-3 mb-0"><?php echo strtoupper(date('M', strtotime($row[0]->StartDate))); ?> <br><?php echo date('h:i A', strtotime($row[0]->StartDate)); ?></h6>
@@ -440,94 +455,6 @@ switch($row[0]->SportsType) {
 
 <!--fifth banner end -->
 
-<!--seven banner start -->
-<div class="Latest_newa  m_show">
-<div class="container-fluid">
-<div class="row">
-<div class="heading text-center pt-5 pb-5">
-<h1>A2M Latest News</h1>
-</div>
-</div>
-<div class="row">
-<div id="Testimonials" class="owl-carousel owl-theme Testimonials">
-<?php
-foreach($results as $row){
-?>
-
-<div class="item  ">
-<div class="latest_card d-flex mb-4 justify-content-between">
-<div class="latest_img">
-<img src="<?php echo base_url(); ?>tour_pictures/<?php 
-switch($row->SportsType_id) {
-case 1:
-echo "default_tennis_min.jpg";
-break;
-case 2:
-echo "default_table_tennis_min.jpg";
-break;
-case 3:
-echo "default_badminton_min.jpg";
-break;
-case 4:
-echo "default_golf_min.jpg";
-break;
-case 5:
-echo "default_racquet_ball_min.jpg";
-break;
-case 6:
-echo "default_squash_min.jpg";
-break;
-case 7:
-echo "default_pickleball_min.jpg";
-break;
-case 8:
-echo "default_chess_min.jpg";
-break;
-case 9:
-echo "default_carroms_min.jpg";
-break;
-case 10:
-echo "default_volleyball_min.jpg";
-break;
-case 11:
-echo "default_fencing_min.jpg";
-break;
-case 12:
-echo "default_bowling_min.jpg";
-break;
-case 16:
-echo "default_cricket_min.jpg";
-break;
-default:
-echo "logo_fb.jpg";
-break;
-} ?>" class="w-100">
-<!-- <span class="date_upload">May 4, 2021</span> -->
-</div>
-<div class="latest_content p-4 bg-white">
-<?php
-$nt		= strip_tags($row->News_title);
-$nts			= substr($nt, 0, 30);
-?>
-<h5><?php /*$nt = strip_tags($row->News_title);*/ echo strip_tags($nts) . "..."; ?></h5>                  <p><?php 
-$abc		= strip_tags($row->News_content);
-$s			= substr($abc, 0, 114);
-$result  = substr($s, 0, strrpos($s, '.'));
-echo strip_tags($s) . "...";
-?></p>
-<a href="<?=base_url().'news/'.$row->News_id; ?>">Read more</a>
-</div>
-</div>
-</div>
-<?php
-	 }
-?>
-
-</div>
-</div>
-</div>
-</div>
-<!--seven banner end -->
 
 <!--six banner start -->
 <div class="container-fluid">
@@ -650,6 +577,99 @@ echo strip_tags($s) . "...";
 </div>
 </div>
 <!--Nine banner end -->
+
+<!--seven banner start -->
+<div class="Latest_newa  m_show">
+<div class="container-fluid">
+<div class="row">
+<div class="heading text-center pt-5 pb-5">
+<h1>A2M Latest News</h1>
+</div>
+</div>
+<div class="row">
+<div id="Testimonials" class="owl-carousel owl-theme Testimonials">
+<?php
+foreach($results as $row){
+?>
+
+<div class="item  ">
+<div class="latest_card d-flex mb-4 justify-content-between">
+<div class="latest_img">
+<img src="<?php echo base_url(); ?>tour_pictures/<?php 
+switch($row->SportsType_id) {
+case 1:
+echo "default_tennis_min.jpg";
+break;
+case 2:
+echo "default_table_tennis_min.jpg";
+break;
+case 3:
+echo "default_badminton_min.jpg";
+break;
+case 4:
+echo "default_golf_min.jpg";
+break;
+case 5:
+echo "default_racquet_ball_min.jpg";
+break;
+case 6:
+echo "default_squash_min.jpg";
+break;
+case 7:
+echo "default_pickleball_min.jpg";
+break;
+case 8:
+echo "default_chess_min.jpg";
+break;
+case 9:
+echo "default_carroms_min.jpg";
+break;
+case 10:
+echo "default_volleyball_min.jpg";
+break;
+case 11:
+echo "default_fencing_min.jpg";
+break;
+case 12:
+echo "default_bowling_min.jpg";
+break;
+case 16:
+echo "default_cricket_min.jpg";
+break;
+default:
+echo "logo_fb.jpg";
+break;
+} ?>" class="w-100">
+<!-- <span class="date_upload">May 4, 2021</span> -->
+</div>
+<div class="latest_content p-4 bg-white">
+<?php
+$nt		= strip_tags($row->News_title);
+$nts		= substr($nt, 0, 30);
+?>
+<h5><?php /*$nt = strip_tags($row->News_title);*/ echo strip_tags($nts) . "..."; ?></h5>
+
+<p><?php 
+$abc		= strip_tags($row->News_content);
+$s			= substr($abc, 0, 114);
+$result		= substr($s, 0, strrpos($s, '.'));
+echo strip_tags($s) . "...";
+?>
+</p>
+<a href="<?=base_url().'news/'.$row->News_id; ?>">Read more</a>
+</div>
+</div>
+</div>
+<?php
+	 }
+?>
+
+</div>
+</div>
+</div>
+</div>
+<!--seven banner end -->
+
 
 <!--Eight banner start -->
 <div class="container-fluid d_show">
