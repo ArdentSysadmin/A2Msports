@@ -385,7 +385,7 @@ class League extends REST_Controller {
 							$data['link'] = base_url()."league/".$tourn_id."/";
 
 						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
-							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+							$url = base_url()."tour_pictures/".$tourn_id."/".$tour_details['MedicalRelease_pdf'];
 						}
 						else{
 							$url = base_url().'medical_form/';
@@ -2830,7 +2830,7 @@ $data['couponCodes'] = $coupons;
 
 
 						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
-							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+							$url = base_url()."tour_pictures/".$tourn_id."/".$tour_details['MedicalRelease_pdf'];
 						}
 						else{
 							$url = base_url().'medical_form/';
@@ -3010,7 +3010,7 @@ $data['couponCodes'] = $coupons;
 						$data['link'] = base_url()."league/".$tourn_id."/";
 
 						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
-							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+							$url = base_url()."tour_pictures/".$tourn_id."/".$tour_details['MedicalRelease_pdf'];
 						}
 						else{
 							$url = base_url().'medical_form/';
