@@ -114,7 +114,7 @@
 		  return $result;
 		}
 
-		public function getNews_By_SportsType($sportsType,$limit = '')
+		public function getNews_By_SportsType($sportsType, $limit = '')
 		{
 			if($limit == '') { $limit = 3; }
 			$user_id = $this->session->userdata('users_id');

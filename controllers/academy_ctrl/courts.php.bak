@@ -149,16 +149,15 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			//echo "<pre>"; print_r($_POST); exit;
 
 			if($this->input->post('submit_location')){
-
-				$get_long			= $this->get_lang_latt();
+				$get_long				= $this->get_lang_latt();
 				$data['long_latt']	= $get_long;
 				
-				$ins_data			= $this->model_courts->add_court($data);
+				$ins_data				= $this->model_courts->add_court($data);
 				//$ins_data			= $this->model_courts->add_court_test($data);
 
 				$data				= $this->get_org_details($this->org_id);
 				$data['results']	= $this->model_news->get_news($this->org_id);
-				$data['courts']		= $this->model_courts->get_locations($this->org_id);
+				$data['courts']	= $this->model_courts->get_locations($this->org_id);
 
 				$this->load->view($this->header_tpl, $data);
 				$this->load->view('academy_views/view_courts_list', $data);

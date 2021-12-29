@@ -263,7 +263,7 @@ if(!empty($row)) {
 					case 12: echo "Bowling";	 break;
 					case 16: echo "Cricket";	 break;
 					} ?><i class="fas fa-table-tennis"></i><i class="material-icons">cloud</i>
-					<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+					<div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><?php exit; ?>
 					</h6>
 				 </div>
                   <div class="day d-flex mt-1 mb-1">

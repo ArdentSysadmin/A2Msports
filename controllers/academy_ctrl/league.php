@@ -573,7 +573,7 @@
 			{
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);
 
-				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
+				if(($tr_det->Usersid == $this->logged_user) or ($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) or $this->is_super_admin){    /// tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
 				else if($is_reg){
@@ -8256,11 +8256,11 @@ print_r($mult_events);*/
 			if($this->logged_user){
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);			
 
-				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
-				$this->logged_user_role = 'Admin';
+				if(($tr_det->Usersid == $this->logged_user) or ($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) or $this->is_super_admin){    /// tournament admin access links
+					$this->logged_user_role = 'Admin';
 				}
 				else if($is_reg){
-				$this->logged_user_role = 'RegPlayer';
+					$this->logged_user_role = 'RegPlayer';
 				}
 				else{
 					$is_team_capt = $this->model_league->is_tourn_reg_team_captain($this->logged_user, $tid);

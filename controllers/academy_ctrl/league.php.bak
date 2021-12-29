@@ -10707,4 +10707,9 @@ $sno++;
 		public function is_draw_complete($bracket_id){
 			return $this->model_league->is_draw_complete($bracket_id);
 		}
+
+		public function is_user_reg_event($tid, $event){
+			$check_reg = $this->model_league->is_user_reg_event($tid, $event);
+			return $check_reg;
+		}
 }

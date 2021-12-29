@@ -406,4 +406,9 @@
 			return $qry_check->result_array();
 		}
 
+		public function check_user_phone($phone) {
+			$qry_check = $this->db->query("SELECT * FROM Users WHERE Mobilephone like '%".$phone."%'");
+			return $qry_check->row_array();
+		}
+
 	}

@@ -661,7 +661,8 @@ break;
 					$nt		= strip_tags($row->News_title);
 					$nts			= substr($nt, 0, 30);
 				 ?>
-                   <h5><?php /*$nt = strip_tags($row->News_title);*/ echo strip_tags($nts) . "..."; ?></h5>                  <p><?php 
+                   <h5><?php /*$nt = strip_tags($row->News_title);*/ echo strip_tags($nts) . "..."; ?></h5> 
+					<p><?php 
 					$abc		= strip_tags($row->News_content);
 					$s			= substr($abc, 0, 114);
 					$result  = substr($s, 0, strrpos($s, '.'));

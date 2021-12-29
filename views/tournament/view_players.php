@@ -219,6 +219,7 @@ $tourn_reg_names = $parent_class::get_reg_players($tour_details->tournament_ID, 
 <thead>
 <tr class="top-scrore-table" style='background-color:#f68b1c'>
 <?php
+//echo "test".$this->logged_user_role." - ".$this->is_super_admin." - "; exit;
 if($this->logged_user_role == 'Admin' or $this->logged_user_role == 'RegPlayer' or $this->is_super_admin){
 ?>
 <th class="score-position" valign="center" align="center">Check In</th>

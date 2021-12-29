@@ -216,6 +216,8 @@
 		{
 			//echo $this->session->userdata('redirect_to');
 			//exit;
+			//echo "Please try again after sometime! Sorry."; echo "<pre>"; print_r($_POST); exit;
+			
 			if($this->input->post('reg_user')){
 
 			$email_id = trim($this->input->post('EmailID'));
@@ -311,10 +313,11 @@
 						}
 					}
 					else{
-						$this->load->view('includes/header');
+						/*$this->load->view('includes/header');
 						$this->load->view('view_register_complete');
 						$this->load->view('includes/view_right_column' ,$data);
-						$this->load->view('includes/footer');
+						$this->load->view('includes/footer');*/
+						redirect(base_url()."register/success");
 					}
 				}
 			}
@@ -326,6 +329,13 @@
 					echo "Invalid Access!";
 				}
 			}
+	}
+
+	public function success(){
+			$this->load->view('includes/header');
+			$this->load->view('view_register_complete');
+			$this->load->view('includes/view_right_column' ,$data);
+			$this->load->view('includes/footer');
 	}
 
 	public function profile_update(){		

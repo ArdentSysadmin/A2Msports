@@ -1087,8 +1087,34 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 		}
 
 public function test_cn(){
-	echo $this->load->view('header');
+	echo $this->load->view('includes/header');
 	echo $this->load->view('view_calender_test');
 }
 
+	public function test_mobileNum(){
+		// Check mobile numbers and remove space and  - 
+		exit;
+
+			$res = $this->general->get_users_mobile();
+			$count = 0;
+echo "Count: ".count($res)."<br>";
+
+			foreach($res as $i => $a2m){
+				$rem_dash = str_replace('-','',$a2m->Mobilephone);
+				$rem_br1	= str_replace('(','',$rem_dash);
+				$rem_br2	= str_replace(')','',$rem_br1);
+				$rem_sp	= str_replace(' ','',$rem_br2);
+				$rem_sp1	= str_replace('+6','6',$rem_sp);
+				$rem_sp2	= str_replace('+3','3',$rem_sp1);
+				$rem_sp3	= str_replace('.','',$rem_sp2);
+				$rem_sp4	= str_replace('+1+','+',$rem_sp3);
+
+				echo $a2m->Users_ID." - ".$a2m->Mobilephone." = ".$rem_sp4."<br>";
+				//$this->general->upd_user_mobNum($a2m->Users_ID, $rem_sp4);
+			$count ++;
+			}
+echo "Total: ".$count."<br>";
+
+
+	}
 }

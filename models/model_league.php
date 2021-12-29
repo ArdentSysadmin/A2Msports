@@ -945,7 +945,7 @@
 
 		$data3 = array();
 
-		if($this->input->post('txt_gender') == '0' or $this->input->post('txt_gender') == '1' or $this->input->post('txt_gender') == 0 or $this->input->post('txt_gender') == 1){
+		if($this->input->post('txt_gender') and ($this->input->post('txt_gender') == '0' or $this->input->post('txt_gender') == '1' or $this->input->post('txt_gender') == 0 or $this->input->post('txt_gender') == 1)){
 			$gender = $this->input->post('txt_gender');
 			$data3   = array('Gender' => $gender);
 		}
@@ -11434,7 +11434,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			$sport		= $data['sport'];
 			$kids_agegroup_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19');
 
-			$query = $this->db->query("SELECT TOP(15) u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
+			$query = $this->db->query("SELECT TOP(15) u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
 
 			return $query->result();
 		}

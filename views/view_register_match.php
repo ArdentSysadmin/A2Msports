@@ -828,15 +828,15 @@ else
 	$check_user_usatt_membership = league::is_logged_user_having_memeberhip($r->SportsType);
 //echo $ugender; exit;
 //echo "<pre>"; print_r($check_user_usatt_membership); exit;
- $get_user_mem_details		= league :: get_user_mem_details($user_id, $r->SportsType);
+ $get_user_mem_details	= league :: get_user_mem_details($user_id, $r->SportsType);
  $get_user_usatt_rating		= league :: get_user_usatt_rating($get_user_mem_details['Membership_ID']);
 
 		$rating = 0;
-    if($get_user_usatt_rating['Rating']){
+    if($get_user_usatt_rating['Rating']) {
 		$rating = $get_user_usatt_rating['Rating']; 
 	}
 
-	if(!$udob or !$uaddr or !$uemail or !$ugender or !$umob){
+	if(!$udob or !$uaddr or !$uemail or !$ugender or !$umob) {
 ?>
 <form class="form-horizontal" id='myform_dob' method='post' role="form"  action="<?php echo base_url(); ?>league/uprofile">
 <div class='col-md-8'>
@@ -1626,6 +1626,8 @@ $rating = $est_usatt_rating;
    }
 
    $count_chekboxes = count($eligible_events);
+
+asort($eligible_events);
 
    foreach ($eligible_events as $key => $value) {
 

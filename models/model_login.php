@@ -401,8 +401,9 @@
 			return $query->row_array();
 		}
 
-		public function validate_user_phone($phone, $ph) {
-			$qry_check = $this->db->query("SELECT * FROM Users WHERE Mobilephone = '".$ph."' OR Mobilephone = '".$phone."'");
+		public function validate_user_phone($phone, $ph, $ph2) {
+			//$qry_check = $this->db->query("SELECT * FROM Users WHERE Mobilephone = '".$ph."' OR Mobilephone = '".$phone."'");
+			$qry_check = $this->db->query("SELECT * FROM Users WHERE Mobilephone = '".$ph."' OR Mobilephone = '".$phone."' OR Mobilephone = '".$ph2."'");
 			return $qry_check->result_array();
 		}
 

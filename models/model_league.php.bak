@@ -945,7 +945,7 @@
 
 		$data3 = array();
 
-		if($this->input->post('txt_gender') == '0' or $this->input->post('txt_gender') == '1' or $this->input->post('txt_gender') == 0 or $this->input->post('txt_gender') == 1){
+		if($this->input->post('txt_gender') and ($this->input->post('txt_gender') == '0' or $this->input->post('txt_gender') == '1' or $this->input->post('txt_gender') == 0 or $this->input->post('txt_gender') == 1)){
 			$gender = $this->input->post('txt_gender');
 			$data3   = array('Gender' => $gender);
 		}
@@ -11935,6 +11935,21 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			}
 
 			$qry_check = $this->db->query("SELECT u.Users_ID, u.Firstname,u.Lastname,t.Team_name,t.Captain,t.Created_by,t.Players,t.Team_ID,t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID 
+			JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND {$qry_str} ORDER BY a.A2MTeamScore DESC");
+
+			return $qry_check->result();
+		}
+
+		public function get_TeamsByCountry2($country, $sport){
+
+			if($country == 'United States of America'){
+				$qry_str = "(h.hcl_country = '$country' OR h.hcl_country = 'United States' OR h.hcl_country = 'US' OR h.hcl_country = 'U.S.A' OR h.hcl_country = 'USA')";
+			}
+			else{
+				$qry_str = "h.hcl_country = '$country'";
+			}
+
+			$qry_check = $this->db->query("SELECT TOP(20) u.Users_ID, u.Firstname,u.Lastname,t.Team_name,t.Captain,t.Created_by,t.Players,t.Team_ID,t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID 
 			JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND {$qry_str} ORDER BY a.A2MTeamScore DESC");
 
 			return $qry_check->result();

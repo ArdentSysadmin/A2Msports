@@ -219,6 +219,7 @@ $tourn_reg_names = $parent_class::get_reg_players($tour_details->tournament_ID, 
 <thead>
 <tr class="top-scrore-table" style='background-color:#f68b1c'>
 <?php
+echo "test".$this->logged_user_role." - ".$this->is_super_admin." - "; exit;
 if($this->logged_user_role == 'Admin' or $this->logged_user_role == 'RegPlayer' or $this->is_super_admin){
 ?>
 <th class="score-position" valign="center" align="center">Check In</th>
@@ -342,28 +343,28 @@ if($name->DOB) {
 
 			switch ($age) {
                 case ($age >= 40 and $age < 50):
-                   $age_group = "(40 +)";
+                   $age_group = "(<b>40+</b>)";
                    break;
                 case ($age >= 50 and $age < 60):
-                   $age_group = "(50 +)";
+                   $age_group = "(<b>50+</b>)";
                    break;
                 case ($age >= 60 and $age < 70):
-                   $age_group = "(60 +)";
+                   $age_group = "(<b>60+</b>)";
                    break;
                 case ($age >= 70 and $age < 80):
-                   $age_group = "(70 +)";
+                   $age_group = "(<b>70+</b>)";
                    break;
                 case ($age >= 80 and $age < 90):
-                   $age_group = "(80 +)";
+                   $age_group = "(<b>80+</b>)";
                    break;
                 case ($age >= 90 and $age < 100):
-                   $age_group = "(90 +)";
+                   $age_group = "(<b>90+</b>)";
                    break;
 			}
 
 			}
 			
-			echo $name->UserAgegroup." ".$age_group; ?></td>
+			echo $name->UserAgegroup.$age_group; ?></td>
 <?php } ?>
 <td style="padding-left:10px"><?=$name->City; ?></td>
 <td style="padding-left:10px"><?=$name->State; ?></td>

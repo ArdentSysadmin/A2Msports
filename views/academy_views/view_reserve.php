@@ -1,3 +1,7 @@
+<?php //if($this->logged_user == 237) {
+//echo "<pre>"; print_r($this); exit;
+//}
+?>
 <link href="<?php echo base_url(); ?>css/reserve.css" type="text/css" rel="stylesheet" />
 <link href="<?php echo base_url(); ?>css/tabs-reserve.css" type="text/css" rel="stylesheet" />
 <link href="<?php echo base_url(); ?>assets/club_pages/css/tabs.css" type="text/css" rel="stylesheet">
@@ -272,16 +276,17 @@ function populateRes(resData) {
   //alert(diff);
   var minutes		= Math.floor((diff/1000)/60);
   //var height		= (minutes/60)* 50 -4
-  if(courtId == 169)
-  alert(minutes);
+  //if(courtId == 169)
+  //alert(minutes);
   var tmp				= (minutes/60);
   var height			= (tmp * (80))  -4
   /*var TimeRow = (startTimeHour - 5) * 2 + 1*/
   var TimeRow		= (startTimeHour) * 2 + 1
   var startAMPM		= (startTimeHour < 12) ? 'AM' : 'PM' ;
   var endAMPM		= (EndTimeHour < 12) ? 'AM' : 'PM' ;
+
  // if (EndTimeMin === '30' || EndTimeMin > '30'){
-  if (EndTimeMin === '30'){
+  if (startTimeMin === '30' || startTimeMin === '45'){
 	  TimeRow++;
   }
   var tdId = courtId+'-'+TimeRow;
@@ -300,7 +305,7 @@ function populateRes(resData) {
 	resHtml= resHtml+"&nbsp(<b>"+num_players+"</b>)&nbsp;"+match_format+"<br> "
     resHtml= resHtml+startTimeHour%12+":"+startTimeMin +" " + startAMPM + " - " +EndTimeHour%12+":"+EndTimeMin+ " " + endAMPM + " <br>"
     //resHtml= resHtml + "" + match_format
-		"<?php if($this->logged_user == $this->academy_admin){ ?>"
+		"<?php if($this->logged_user == $this->academy_admin or $this->is_club_coach){ ?>"
     resHtml= resHtml+"<a class='rsAptDelete' id='del_"+resData[ind].id+"' style='visibility:visible; cursor:pointer'>delete</a>"
 		"<?php } else {?>"
     //resHtml= resHtml+"<a class='rsAptDelete' href='#'>delete</a>"

@@ -50,7 +50,7 @@
 			$this->is_tourn_director	= 0;
 			$this->is_league_page		= 1;
 			$this->club_form_url			= base_url();
-
+//echo 'Log '.$this->session->userdata('users_id'); exit;
 			if($this->session->userdata('users_id')){
 				$this->logged_user = $this->session->userdata('users_id');
 				if($this->session->userdata('email') == 'rajkamal.kosaraju@gmail.com' or $this->logged_user == 239){
@@ -72,8 +72,9 @@
 
 			}
 				$this->sports_dets = $this->session->userdata('menu_items');
+						//echo $this->logged_user_role; exit;
 		}
-		
+
 		// viewing league page ...
 		public function new_league()
 		{
@@ -562,7 +563,7 @@ else if($this->logged_user == 240){
 			if($tr_det) {
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);
 
-				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
+				if(($tr_det->Usersid == $this->logged_user) or ($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) or $this->is_super_admin){    /// tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
 				else if($is_reg){
@@ -7177,17 +7178,15 @@ exit;*/
 
 		public function sport_page($sport)
 		{
-			
 			//echo "<pre>"; print_r($_POST);exit();
 			$data['req_tab'] = 'tournaments';
-			if($_REQUEST['p']){
+			if($_REQUEST['p']) {
 				$data['req_tab'] = $_REQUEST['p'];
 			}
 
-            $data['sport']         = $sport;	
+            $data['sport']				 = $sport;	
 			$data['club_results']	 = $this->model_league->get_clubs($data);
-
-            $data['loc_query']	   = $this->model_league->sport_top_players($data);
+            $data['loc_query']		 = $this->model_league->sport_top_players($data);
             $data['coach_results'] = $this->model_league->search_coaches($data);
            // $data['club_results']  = $this->model_league->search_clubs($data);
 			$country = 'United States of America';
@@ -7205,7 +7204,7 @@ exit;*/
 				$data['loc_query']	  = $this->model_league->sport_top_players($data);
 				//echo "<pre>";print_r($data['countries']);exit();
 				$data['leagues']      = $this->model_league->get_sport_leagues2($sport);
-			    $data['results']      = $this->model_news->getNews_By_SportsType($sport);
+			    $data['results']      = $this->model_news->getNews_By_SportsType($sport, 4);
 			}
 			else if($this->input->post('coach_mem')) {
 				$data['coach_name']    = $this->input->post('coach_name');
@@ -7215,7 +7214,7 @@ exit;*/
 				$sport                 = $data['sport'];
 				$data['coach_results'] = $this->model_league->search_coaches($data);			
 				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
-			    $data['results']       = $this->model_news->getNews_By_SportsType($sport);	
+			    $data['results']       = $this->model_news->getNews_By_SportsType($sport, 4);	
 			}
 			else if($this->input->post('addclub')) {
 
@@ -7272,7 +7271,7 @@ exit;*/
 
 				$data['add_clubs']    = $this->model_league->AddClub($data);
 				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
-			    $data['results']         = $this->model_news->getNews_By_SportsType($sport);
+			    $data['results']         = $this->model_news->getNews_By_SportsType($sport, 4);
 			}
 			else if($this->input->post('club_mem')) {
 				//print_r($_POST);exit();
@@ -7284,12 +7283,12 @@ exit;*/
 				$data['club_state']       = $this->input->post('club_state');
 				$data['club_results']    = $this->model_league->search_clubs($data);
 				$data['leagues']          = $this->model_league->get_sport_leagues2($sport);
-			    $data['results']         = $this->model_news->getNews_By_SportsType($sport);
+			    $data['results']         = $this->model_news->getNews_By_SportsType($sport, 4);
 			}
 			else {
 				$sport                 = $data['sport'];
 				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
-				$data['results']       = $this->model_news->getNews_By_SportsType($sport);
+				$data['results']       = $this->model_news->getNews_By_SportsType($sport, 4);
 				$data['events']        = $this->model_league->get_event_row($sport);
 			}
 
@@ -7327,12 +7326,182 @@ exit;*/
 
 				$data['rss_feed_url']   = $rss_feed_url;
                 //echo "<pre>"; print_r($data); exit;
-                $data['countries'] = $this->model_league->get_user_countries();
-				//$this->load->view('includes/header_sports_specific');
-				//var_dump($data['isMobile']);
-				//exit;
-				//$this->load->view('includes/header');
+                $data['countries']				= $this->model_league->get_user_countries();
+				$data['get_tour_images']	= $this->general->get_tournImages_bySportsType($sport);
+
+				$get_pom  = $this->general->get_pom();
+				$data['org_pom']  = $org_pom = $get_pom['POM'];
+				$data['get_user'] = $this->general->get_user($org_pom);
+
+				$this->load->view('includes/view_sports_header');
 				$this->load->view('view_sport_page', $data);
+				$this->load->view('includes/view_home_footer');
+
+				//$this->load->view('includes/view_sports_right_column',$data);
+				//$this->load->view('includes/footer_sports_specific', $data);
+		}
+
+		public function sport_page2($sport)
+		{
+			//echo "<pre>"; print_r($_POST);exit();
+			$data['req_tab'] = 'tournaments';
+			if($_REQUEST['p']) {
+				$data['req_tab'] = $_REQUEST['p'];
+			}
+
+            $data['sport']				 = $sport;	
+			$data['club_results']	 = $this->model_league->get_clubs($data);
+            $data['loc_query']		 = $this->model_league->sport_top_players($data);
+            $data['coach_results'] = $this->model_league->search_coaches($data);
+           // $data['club_results']  = $this->model_league->search_clubs($data);
+			$country = 'United States of America';
+			$data['teams_result'] = $this->model_league->get_TeamsByCountry2($country, $sport);
+
+			if($this->input->post('search_mem_loc')) {
+				$data['search_uname'] = $this->input->post('name');
+				$data['country']	  = $this->input->post('country');
+				$data['state']	      = $this->input->post('state');
+				$data['age_group']	  = $this->input->post('age_group');
+				$data['gender']	      = $this->input->post('gender');
+				//$data['state1']	      = $this->input->post('state1');
+				$data['sport']		  = $this->input->post('sport');
+				$sport                = $data['sport'];
+				$data['loc_query']	  = $this->model_league->sport_top_players($data);
+				//echo "<pre>";print_r($data['countries']);exit();
+				$data['leagues']      = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']      = $this->model_news->getNews_By_SportsType($sport, 4);
+			}
+			else if($this->input->post('coach_mem')) {
+				$data['coach_name']    = $this->input->post('coach_name');
+				$data['sport']   = $this->input->post('sport');
+			    $data['coach_country'] = $this->input->post('coach_country');
+				$data['coach_state']   = $this->input->post('coach_state');
+				$sport                 = $data['sport'];
+				$data['coach_results'] = $this->model_league->search_coaches($data);			
+				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']       = $this->model_news->getNews_By_SportsType($sport, 4);	
+			}
+			else if($this->input->post('addclub')) {
+
+			    $club_timings    = $this->input->post('clubTimings');
+			    $club_time_from  = $this->input->post('club_time_from');
+			    $club_time_to    = $this->input->post('club_time_to');
+
+				foreach($club_timings as $ind => $day) {
+					$revised[$day] = array(0 => $club_time_from[$ind], 1 => $club_time_to[$ind]);
+				}
+				
+				/*echo json_encode($revised);
+				echo "<pre>"; print_r($revised); print_r($_POST); print_r($_FILES); exit;*/
+				
+				$data['sport']				= $this->input->post('sport');
+				$sport							= $data['sport'];
+				$data['club_name']       = $this->input->post('clubname');
+			    $data['club_country']    = $this->input->post('clubcountry');
+			    $data['club_addr1']       = $this->input->post('addr_line1');
+			    $data['club_addr2']       = $this->input->post('addr_line2');
+			    $data['club_zipcode']    = $this->input->post('zipcode');
+				$data['club_state']		= $this->input->post('addclub_state');
+				$data['club_city']			= $this->input->post('clubcity');
+				$data['club_website']    = $this->input->post('club_website');
+				$data['club_details']		= $this->input->post('club_details');
+				$data['contact_name']  = $this->input->post('contact_name');
+				$data['contact_email']	= $this->input->post('contact_email');
+				$data['contact_phone'] = $this->input->post('contact_phone');
+				$club_sports             = json_encode($this->input->post('clubsport'));
+				$data['club_sports']     = $club_sports;
+				$data['no_of_courts']    = $this->input->post('no_of_courts');
+				$data['club_timings']    = json_encode($revised);
+
+				/* logo section */
+				$filename2 = 'club_logo';
+				$this->load->library('upload');
+
+			    $config = array(
+						'upload_path'	=> "./org_logos/",
+						'allowed_types' => "gif|jpg|png|jpeg|pdf",
+						'overwrite'		=> FALSE,
+						'max_size'		=> "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+						'max_height'	=> "5000",
+						'max_width'		=> "8000"
+						);
+
+				$this->upload->initialize($config);
+
+				if($this->upload->do_upload($filename2)){
+					$data['club_logo_data'] = $this->upload->data();
+				}
+
+				/* logo section */
+
+				$data['add_clubs']    = $this->model_league->AddClub($data);
+				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']         = $this->model_news->getNews_By_SportsType($sport, 4);
+			}
+			else if($this->input->post('club_mem')) {
+				//print_r($_POST);exit();
+				$data['sport']			= $this->input->post('sport');
+				$sport						= $data['sport'];
+				$data['club_name']   = $this->input->post('club_name');
+
+			    $data['club_country']   = $this->input->post('club_country');
+				$data['club_state']       = $this->input->post('club_state');
+				$data['club_results']    = $this->model_league->search_clubs($data);
+				$data['leagues']          = $this->model_league->get_sport_leagues2($sport);
+			    $data['results']         = $this->model_news->getNews_By_SportsType($sport, 4);
+			}
+			else {
+				$sport                 = $data['sport'];
+				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
+				$data['results']       = $this->model_news->getNews_By_SportsType($sport, 4);
+				$data['events']        = $this->model_league->get_event_row($sport);
+			}
+
+			$data['sports'] = $this->model_league->GetSports();
+             //echo "<pre>";print_r($data);exit();
+			 //echo "<pre>"; print_r($data['leagues']); exit;
+
+			$data['sports_feeds_array'] = array(1,2,3,4,7,8,10); 
+			 switch($sport) {
+					case 1:
+					$rss_feed_url = "https://www.espn.com/espn/rss/tennis/news";
+					break;
+					case 2:
+					//$rss_feed_url = "https://www.teamusa.org/USA-Table-Tennis/Features?rss=1";
+					$rss_feed_url = "https://www.ittf.com/feed/";
+					break;
+					case 3:
+					$rss_feed_url = "https://www.espn.com/espn/rss/badminton/news";
+					break;
+					case 4:
+					$rss_feed_url = "https://www.espn.com/espn/rss/golf/news";
+					break;
+					case 7:
+					$rss_feed_url = "https://pickleballnews.com/feed/podcast/";
+					break;
+					case 8:
+					$rss_feed_url = "https://www.espn.com/espn/rss/chess/news";
+					break;
+					case 10:
+					$rss_feed_url = "https://volleycountry.com/feed";
+					break;
+					default:
+					$rss_feed_url = "";
+			 }
+
+				$data['rss_feed_url']   = $rss_feed_url;
+                //echo "<pre>"; print_r($data); exit;
+                $data['countries']				= $this->model_league->get_user_countries();
+				$data['get_tour_images']	= $this->general->get_tournImages_bySportsType($sport);
+
+				$get_pom  = $this->general->get_pom();
+				$data['org_pom']  = $org_pom = $get_pom['POM'];
+				$data['get_user'] = $this->general->get_user($org_pom);
+
+				$this->load->view('includes/view_home_header');
+				$this->load->view('view_sport_page1', $data);
+				$this->load->view('includes/view_home_footer');
+
 				//$this->load->view('includes/view_sports_right_column',$data);
 				//$this->load->view('includes/footer_sports_specific', $data);
 		}
@@ -8939,7 +9108,7 @@ print_r($mult_events);*/
 			if($this->logged_user){
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);			
 
-				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
+				if(($tr_det->Usersid == $this->logged_user) or ($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) or $this->is_super_admin){    /// tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
 				else if($this->session->userdata('users_id') == 3380 and $tid == 2383){
@@ -8985,16 +9154,15 @@ print_r($mult_events);*/
 			{
 
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);
+//echo $tr_det->Tournament_Director."=".$tr_det->Usersid."-".$this->logged_user."-".var_dump($this->is_super_admin); 
 
-				if($tr_det->Tournament_Director == $this->logged_user 
-					or $tr_det->Usersid == $this->logged_user 
-					or $this->is_super_admin){    // tournament admin access links
+				if(($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) or ($tr_det->Usersid == $this->logged_user) or $this->is_super_admin) {    // tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
-				else if($is_reg){
+				else if($is_reg) {
 				$this->logged_user_role = 'RegPlayer';
 				}
-
+//echo $this->logged_user_role; exit;
 				if($this->logged_user_role != 'Admin' and !$this->is_super_admin and !$tr_det->Is_Publish){
 					echo "<h3>Invalid Tournament!</h3>"; exit;
 				}
@@ -9615,6 +9783,110 @@ print_r($mult_events);*/
 			}*/
 		 }
 
+
+		 public function register_more1($tourn_id)
+		 {
+			if(!$this->logged_user){
+				redirect('login');
+			}
+
+			$tourn_id	 = $this->uri->segment(3);
+            //echo $tourn_id;
+			$details	 = $this->model_league->getonerow($tourn_id);
+			$now		 =  strtotime("now"); $oneday = 86400;
+			$reg_close	 = strtotime($details->Registrationsclosedon) + $oneday;
+			$tourn_sport = $details->SportsType;
+			$is_reg		 = 0;
+		
+			if(!$details->Is_Publish and !$this->is_super_admin and $this->logged_user != $details->Usersid and $this->logged_user != $details->Tournament_Director) {
+					echo "<h3>Invalid Tournament!</h3>"; exit;
+			}
+
+				$is_reg = $this->model_league->get_reg_tournment($tourn_id);	
+
+			//if($now < $reg_close or $is_reg){
+
+				$user_id = $this->logged_user;
+				$res = $this->model_league->get_reg_tournment($tourn_id);
+			   
+				$ag_group    = $this->general->get_user_agegroup();
+
+				$data['ag_grp'] = $ag_group['UserAgegroup'];
+				$data['user_age_dat'] = $ag_group;
+				
+				if(($res['Tournament_ID'] == $tourn_id && $res['Users_ID'] == $user_id) or $is_reg)
+				{
+					$results   = array();              
+					$user_reg_ag_grps   = array();  
+
+					if($res['Reg_Events'] != NULL){
+
+                        $reg_events = json_decode($res['Reg_Events']);
+
+						foreach ($reg_events as $key => $event) {
+							$results[] = $event;
+							$arr = explode('-', $event);
+							$user_reg_ag_grps[] = $arr[0];
+						}
+
+					}else{
+
+	                    $formats   = json_decode($res['Match_Type']);
+						$ag_group  = json_decode($res['Reg_Age_Group']);
+						$sp_levels = json_decode($res['Reg_Sport_Level']);
+
+					    foreach($formats as $i => $fr){
+							foreach($ag_group[$i] as $j => $ag1){
+								foreach($sp_levels[$i][$j] as $k => $lv1){
+							        $player=$this->general->get_user($res['Users_ID']);
+
+                                    $gender_key = $player['Gender'];
+		      						$results[] = $ag1."-".$gender_key."-".$fr."-".$lv1;
+									$user_reg_ag_grps[] = $ag1;
+									  
+								}
+								
+							}
+						}
+
+					}     
+					//if($this->logged_user == 237)
+	               //  echo "<pre>"; print_r($user_reg_ag_grps); exit;
+				
+					$details	= $this->model_league->getonerow($tourn_id);
+					$check_dob	= $this->model_league->check_user_dob($user_id);
+					$check_addr	= $this->model_league->check_user_addr($user_id);
+					$data['user_info'] = $check_addr;
+
+					($check_dob->DOB != NULL) ? $data['udob'] = 1 : $data['udob'] = 0;
+
+					(($check_addr->UserAddressline1 != NULL and $check_addr->UserAddressline1 != '') 
+						or 
+					 ($check_addr->UserAddressline2 != NULL and $check_addr->UserAddressline2 != '')) ? $data['uaddr'] = 1 : $data['uaddr'] = 0;
+					
+					($check_addr->EmailID != NULL or $check_addr->AlternateEmailID != NULL) ? $data['uemail'] = 1 : $data['uemail'] = 0;
+
+					$data['r'] = $details;
+					$data['regdata'] = $results;
+					$data['results'] = $this->model_news->get_news();
+					$data['user_reg_ag_grps'] = $user_reg_ag_grps;
+
+
+					$this->load->view('includes/header');
+					$this->load->view('view_register_more_matches1', $data); 
+					$this->load->view('includes/view_right_column',$data);
+					$this->load->view('includes/footer');	
+				}
+				else{
+				    echo "Oops! Something went wrong, Please contact admin@a2msports.com";
+				}
+			//}
+			/*else{
+				echo "Sorry, Registrations are closed!";
+			}*/
+		 }
+
+		 
 		 public function get_tour_fee_more_events()
 		 {
 			/*echo "<pre>";
@@ -11987,4 +12259,187 @@ $sno++;
 			$get_user = $this->model_league->get_user($user_id);
 			return $get_user;
 		}*/
+
+
+		public function viewtournament2($tid, $stat = '', $org_id = '')
+		{
+			$this->session->unset_userdata('draw');
+			
+			$data['org_url_key'] = "";
+
+			if($org_id){
+				$this->load->model('academy_mdl/model_academy');
+				$org_details			 = $this->model_academy->get_academy_details($org_id);
+				$data['org_details']	 = $org_details;
+				$data['org_url_key'] = $org_details['Aca_URL_ShortCode']."/";
+				$data['is_academy_league'] = 1;
+			}
+
+			if(!is_numeric($tid)){ echo "Invalid Request!"; exit; }
+
+			$tr_det = $this->model_league->getonerow($tid);
+			if($tr_det)
+			{
+
+				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);
+
+				if(($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) 
+					or ($tr_det->Usersid == $this->logged_user) or $this->is_super_admin){    // tournament admin access links
+					$this->logged_user_role = 'Admin';
+				}
+				else if($is_reg){
+					$this->logged_user_role = 'RegPlayer';
+				}
+
+				if($this->logged_user_role != 'Admin' and !$this->is_super_admin and !$tr_det->Is_Publish){
+					echo "<h3>Invalid Tournament!</h3>"; exit;
+				}
+
+				$this->is_team_league = ($tr_det->tournament_format  == 'Teams' || $tr_det->tournament_format  == 'TeamSport') ? 1 : 0;
+
+				$data['tr_det'] = $tr_det;
+				if($org_id)
+					$this->load->view('academy_views/includes/academy_league_header', $data);
+				else
+					$this->load->view('includes/view_league_header', $data);
+
+				$data['tour_details']	= $tr_det;
+				$data['results']		= $this->model_news->get_news();
+				$data['reg_suc']		= $stat;
+				
+				/* Filtering MyMatches */
+				$count = 0;
+				$data['valid_draws_count']  = $count;
+				$data['show_draw_bid']		= 0;
+               
+				if($this->logged_user and ($tr_det->Usersid != $this->logged_user and $tr_det->Tournament_Director != $this->logged_user)){
+
+
+					$brackets = $this->get_bracket_list($tid);
+					if(count(array_filter($brackets)) > 0){
+						foreach($brackets as $bk)
+						{
+							if($this->is_team_league){
+							$check_user = $this->check_team_is_user_exists($tid, $bk->BracketID, $tr_det->SportsType);
+							} else{
+							$check_user = $this->check_is_user_exists($tid, $bk->BracketID, $tr_det->SportsType);
+							}
+							if($check_user){
+							$show_bid = $bk->BracketID;
+								$count++; 
+							}
+						}
+					}
+				$data['valid_draws_count'] = $count;
+				$data['show_draw_bid']	   = $show_bid;
+
+				}
+				/* Filtering MyMatches */
+              
+				$data['is_logged_user_reg'] = $this->model_league->is_logged_user_reg($tid);
+				$data['participants_count'] = 0;
+
+				if($this->is_team_league){
+
+				$team_fee_type = $tr_det->Fee_collect_type;
+				$data['fee_payable'] = '';
+
+				//$data['is_logged_user_reg'] = $this->model_league->get_team_reg_tournment($tourn_id);		
+
+				$user_reg_team = $this->model_league->get_team_reg($this->logged_user, $tid);
+				//echo "<pre>";print_r($user_reg_team);exit;
+				$data['is_logged_user_reg'] = $user_reg_team;
+
+				 $cur_date = date('Y-m-d');
+				 $reg_closed_on = date('Y-m-d', strtotime($tr_det->Registrationsclosedon));
+
+				 /*if(!empty($user_reg_team) and $team_fee_type == 'Player' and $tr_det->Usersid != $this->logged_user and $reg_closed_on >= $cur_date){*/
+				 if(!empty($user_reg_team) and $team_fee_type == 'Player' and $reg_closed_on >= $cur_date){
+					 
+					$team_reg_age_group		= $user_reg_team['Reg_Age_Group'];
+					$logged_user_part_team	= $user_reg_team['Team_id'];
+			
+					$is_paid = $this->model_league->check_is_paid($this->logged_user, $tid, $logged_user_part_team);
+
+					if(!$is_paid){
+					$tr_age_group = json_decode($tr_det->Age);
+					$tr_fee		  = json_decode($tr_det->mult_fee_collect);
+
+					$key = array_search($team_reg_age_group, $tr_age_group);
+
+					$fee_payable = $tr_fee[$key];
+					$data['fee_payable'] = number_format($fee_payable, 2);
+					$data['my_reg_team'] = $logged_user_part_team;
+
+					$this->session->unset_userdata('tour_per_player_fee');
+					$this->session->unset_userdata('tourn_id_fee_pay');
+					$this->session->unset_userdata('tour_reg_team_id');
+
+					$sess_data = array('tour_per_player_fee'=>number_format($fee_payable, 2), 'tourn_id_fee_pay'=>$tid, 'tour_reg_team_id'=>$logged_user_part_team);
+
+					$this->session->set_userdata($sess_data);
+					}
+				  }
+				    $res = $this->model_league->get_team_participants_count($tid);
+
+					/*$tot_players = 0;
+					foreach($res as $i => $r){
+					$arr = json_decode($r->Team_Players);
+					$tot_players += count($arr);
+					}*/
+
+				  $data['teams_count'] = count($res);
+				}
+				else{
+               	  $data['participants_count'] = $this->model_league->get_indv_participants_count($tid);
+				}
+
+				if($data['is_logged_user_reg'] == '1' and $this->logged_user != ""){
+
+					$check_addr	= $this->model_league->check_user_addr($this->logged_user);
+					$data['user_info'] = $check_addr;
+
+					($check_addr->DOB != NULL) 
+						? $data['udob'] = 1 : $data['udob'] = 0;
+
+					(($check_addr->UserAddressline1 != NULL and $check_addr->UserAddressline1 != '') 
+					or 
+					($check_addr->UserAddressline2 != NULL and $check_addr->UserAddressline2 != '')) 
+						? $data['uaddr'] = 1 : $data['uaddr'] = 0;
+
+					($check_addr->EmailID != NULL or $check_addr->AlternateEmailID != NULL) 
+						? $data['uemail'] = 1 : $data['uemail'] = 0;	
+				}
+				//echo "<pre>";print_r($data); exit;
+
+				//echo 'ddd'.$data['uaddr'];
+				if($data['udob'] == '0' or $data['uaddr'] == '0' or $data['uemail'] == '0'){
+					$data['r']		   = $tr_det;
+					$data['results']  = $this->model_news->get_news();
+					$this->load->view('tournament/view_update_basic_profile', $data); 
+					$this->load->view('includes/view_right_column',$data);
+				}
+				else{
+					$data['show_landing_page'] = 1;
+					$data['tourn_comments'] = $this->general->get_tourn_comments($tid);
+					$data['no_of_brackets']	 = $this->model_league->get_bracket_count($tid);
+					$data['tourn_teams']		 = $this->model_league->Get_TournamentTeams($tid);
+					$data['sponsor_details']  = $this->model_league->get_sponsorships($tid);
+					$data['is_check_in']		 = $this->model_league->is_player_checkin($tid, $this->logged_user);
+
+					$this->load->view('view_nw_tournament', $data);
+				}
+
+				if($org_id)
+					$this->load->view('academy_views/includes/academy_league_footer');
+				else
+					$this->load->view('includes/view_league_footer');
+
+			}
+			else	{
+				echo "Invalid Access!";
+			}
+		}
+
+
 }

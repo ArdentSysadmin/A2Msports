@@ -16,6 +16,14 @@
 			return $res;
 		}
 
+		public function check_is_clubCoach($club, $user){
+			$data  = array('Is_coach' => 1,'Users_ID' => $user, 'coach_academy' => $club);
+			$query = $this->db->get_where('Users', $data);
+			$res   = $query->row_array();
+
+			return $res;
+		}
+
 		public function get_orgid($uid)
 		{
 			$data  = array('Aca_URL_ShortCode'=>$uid);

@@ -43,6 +43,11 @@
 			$this->load->view('view_home', $data);
 		}
 		
+		public function a2m_new5(){
+			$this->load->view('view_home5');
+
+		}
+
 		public function a2m_new(){
 		$sport = $this->general->get_sports();
 			
@@ -76,9 +81,9 @@
 			$this->load->view('view_home2', $data);
 			$this->load->view('includes/view_home_footer');*/
 
-			$this->load->view('includes/view_home_header2');
+			$this->load->view('includes/view_home_header');
 			$this->load->view('view_home3', $data);
-			$this->load->view('includes/view_home_footer2');
+			$this->load->view('includes/view_home_footer');
 		}
 
 		public function a2m_new9(){

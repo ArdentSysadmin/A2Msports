@@ -826,10 +826,21 @@ public function ajax_validate_login(){
 //echo "<pre>"; print_r($arr); exit;
  		if($cur_time < $exp_time){
 			$phone	= $arr['phone_number'];
-			//$ph			= substr($phone, -10);
-			$ph			= substr($phone, 1);
+			//$ph		= substr($phone, -10);
+			$cnt			= strlen($phone);
 
-			$validate_user = $this->login->validate_user_phone($phone, $ph);
+			if($cnt == 13)
+				$ph			= substr($phone, 3);
+			else if($cnt == 12)
+				$ph			= substr($phone, 2);
+			else
+				$ph			= substr($phone, 1);
+
+
+				$ph2			= substr($phone, 1);
+
+//echo $phone." , ".$ph;
+			$validate_user = $this->login->validate_user_phone($phone, $ph, $ph2);
 			if($validate_user){
 				$res['status'] = "Login Successfull";
 				$res['mobile'] = $phone;

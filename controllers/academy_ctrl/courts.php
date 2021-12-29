@@ -12,6 +12,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 		public $logged_user;
 		public $is_club_member;
+		public $is_club_coach;
 		public $short_code;
 		public $org_id;
 		public $academy_admin;
@@ -47,9 +48,14 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 			$this->logged_user   = $this->session->userdata('users_id');
 			$this->org_id	     = $this->general->get_orgid($this->short_code);
 			$this->academy_admin = $this->general->get_org_admin($this->short_code);
+
 			$det = $this->general->check_is_member($this->org_id, $this->logged_user);
 			$this->is_club_member = ($det['tab_id'] and $det['Member_Status']) ? 1 : 0;
-			
+
+			$det2 = $this->general->check_is_clubCoach($this->org_id, $this->logged_user);
+			$this->is_club_coach = ($det2['Users_ID']) ? 1 : 0;
+
+
 			$this->admin_menu_items = array('0'=>'');
 			if($this->logged_user != $this->academy_admin)
 			$this->admin_menu_items = array('0'=>'8');

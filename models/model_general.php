@@ -88,6 +88,16 @@
 			}
 		}
 
+		public function get_users_mobile(){
+			$query = $this->db->query("select * from Users where Mobilephone like '% %';");
+			return $query->result();
+		}
+
+		public function upd_user_mobNum($user_id, $mob){
+			$query = $this->db->query("UPDATE Users set Mobilephone = '{$mob}' WHERE Users_ID = {$user_id} ");
+			//return $query->result();
+		}
+
 		public function upd_user_a2m_usatt($user_id, $rating){
 			$query = $this->db->query("UPDATE A2MScore SET A2MScore={$rating},A2MScore_Doubles={$rating},A2MScore_Mixed={$rating} WHERE Users_ID = {$user_id} AND SportsType_ID = 2");
 			echo $this->db->last_query();

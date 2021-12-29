@@ -72,7 +72,7 @@ if(email_id!=""){
 });
 
 $('#myform').on('submit',function(){
-   $('#reg_user').val('Please Wait...');
+   //$('#reg_user').val('Please Wait...');
    $( ".addn_sports" ).removeAttr("disabled");
 
    window.onbeforeunload = function () {
@@ -910,6 +910,7 @@ I accept the <a style='cursor:pointer;' onclick='terms_conditions()'><b>Terms & 
 <input type='hidden' name='temp_email'	id='temp_email' value='' />
 
 <input name="reg_user" id="reg_user" type="submit" value="REGISTER" style="padding: 10px 30px; font-weight: bold; margin-top:20px; border:#81a32b; background-color:#81a32b" />
+<span id='wait_txt' style="display:none;"><h3>Please wait....</h3></span>
 </div>
 
 </form>
@@ -921,3 +922,12 @@ I accept the <a style='cursor:pointer;' onclick='terms_conditions()'><b>Terms & 
 </div>
 </div> 
 </section>
+<script>
+/*$(document).ready(function() {
+	$('#reg_user').click(function() {
+		$(this).hide();
+		$('#wait_txt').show();
+	});
+
+});*/
+</script>

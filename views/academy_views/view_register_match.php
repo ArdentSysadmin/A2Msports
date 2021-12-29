@@ -1511,6 +1511,8 @@ $i = 0;
 
    $count_chekboxes = count($eligible_events);
 
+asort($eligible_events);
+
    foreach ($eligible_events as $key => $value) {
 
    	if($r->Multi_Event_Time != NULL){
