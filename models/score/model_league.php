@@ -202,7 +202,7 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 		$tid = $data['Tournament_ID'];
 		$uid = $data['Users_ID'];
 		$upd_events = $data['upd_events'];
-
+echo json_encode($upd_events); exit;
 		$query = $this->db->query("UPDATE RegisterTournament SET Reg_Events = '".json_encode($upd_events)."' WHERE 
 		Tournament_ID = '".$tid."' AND Users_ID = '".$uid."'");
 
@@ -373,6 +373,8 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 				$def_score = 100;
 				if($sport == '2') 
 				$def_score = 800;
+				if($sport == '7' or $sport == '19' or $sport == '20') 
+				$def_score = 3.0;
 
 				$ins_user_a2m = $this->db->query("INSERT INTO A2MScore(Users_ID,SportsType_ID,A2MScore,A2MScore_Doubles,A2MScore_Mixed) VALUES ({$user_id},{$sport},{$def_score},{$def_score},{$def_score})");
 			}

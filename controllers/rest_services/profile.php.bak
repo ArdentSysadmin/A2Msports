@@ -49,7 +49,7 @@ class Profile extends REST_Controller {
 		$data['City']						= trim($post_data['city'], '"');
 		$data['Zipcode']				= trim($post_data['zip_code'], '"');
 		if($post_data['gender'] == 1 or $post_data['gender'] == 0 or $post_data['gender'] == '1' or $post_data['gender'] == '0'){
-		$data['Gender'] = trim($post_data['gender'], '"');
+		$data['Gender'] = $post_data['gender'];
 		}
 
 		if($post_data['dob']){

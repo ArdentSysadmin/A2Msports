@@ -40,9 +40,7 @@ else {
 <label for="name_login" id="err_msg" style="color:red"></label>
 </div>
 <?php
-//echo "<pre>";
-//print_r($user_membership);
-
+//echo "<pre>"; print_r($user_membership); exit;
 foreach($club_memberships as $mem) {
 ?>
 <div>

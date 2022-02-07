@@ -974,7 +974,7 @@ foreach($countries as $country)
 				<?php 
 				$age_array = json_decode($tournament_details->Age); 
 				
-				$agegroups_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','Adults','Adults_30p','Adults_40p','Adults_50p','Adults_veteran','Junior');
+				$agegroups_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','U21','Adults','Adults_30p','Adults_40p','Adults_50p','Adults_veteran','Junior');
 
                 $checked_age	  = "";
                 $readonly_age_grp = "";
@@ -1805,6 +1805,10 @@ else if(r[i].indexOf("U19-Open-Singles") > -1){
 //r[i]  = 'U19-Open-Singles';
 r[i]  = r[i].replace("U19-Open-Singles","U19-Singles");
 }
+else if(r[i].indexOf("U21-Open-Singles") > -1){
+//r[i]  = 'U21-Open-Singles';
+r[i]  = r[i].replace("U21-Open-Singles","U21-Singles");
+}
 else if(r[i].indexOf("Adults-Open-Singles") > -1){
 //r[i]  = 'Open-Singles';
 r[i]  = r[i].replace("Adults-Open-Singles","Adults-Singles");
@@ -1860,6 +1864,10 @@ r[i]  = r[i].replace("U18-Open-Doubles","U18-Doubles");
 else if(r[i].indexOf("U19-Open-Doubles") > -1){
 //r[i]  = 'U19-Open-Doubles';
 r[i]  = r[i].replace("U19-Open-Doubles","U19-Doubles");
+}
+else if(r[i].indexOf("U21-Open-Doubles") > -1){
+//r[i]  = 'U21-Open-Doubles';
+r[i]  = r[i].replace("U21-Open-Doubles","U21-Doubles");
 }
 else if(r[i].indexOf("Adults-Open-Doubles") > -1){
 //r[i]  = 'Open-Doubles';
@@ -1943,6 +1951,9 @@ var count = 0;
 		else if(r[i].indexOf("U19-1") > -1){
 			label = lbl_temp.replace("U19-1","U19-Boy's");
 		}
+		else if(r[i].indexOf("U21-1") > -1){
+			label = lbl_temp.replace("U21-1","U21-Boy's");
+		}
 		else if(r[i].indexOf("Adults-Singles") > -1){
 			label = lbl_temp.replace("Adults-Singles","Singles");
 		}
@@ -2002,6 +2013,9 @@ var count = 0;
 		}
 		else if(r[i].indexOf("U19-0") > -1){
 			label = lbl_temp.replace("U19-0","U19-Girl's");
+		}
+		else if(r[i].indexOf("U21-0") > -1){
+			label = lbl_temp.replace("U21-0","U21-Girl's");
 		}
 		else if(r[i].indexOf("Adults-Doubles") > -1){
 			label = lbl_temp.replace("Adults-Doubles","Doubles");

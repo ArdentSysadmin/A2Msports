@@ -83,6 +83,62 @@ class Coaches extends REST_Controller {
 	$this->response($res);
 	}
 
+	public function details_get(){
+		$user_id = $this->input->get('coach_id');
+		if($user_id){
+			$user = $this->coaches->get_coach_det($user_id);
+			
+			if($user){
+					
+					//foreach($coach_det as $user){
+			$prof_pic = base_url().'profile_pictures/'.'default-profile.png';
+			if($user["Profilepic"]){
+			$prof_pic = base_url().'profile_pictures/'.$user["Profilepic"];
+			}
+
+			$res[] =  
+			array(
+				"Users_ID"		=> $user['Users_ID'],
+				"Firstname"		=> $user['Firstname'],
+				"Lastname"		=> $user["Lastname"],
+				"EmailID"		=> $user["EmailID"],
+				"AlternateEmailID" => $user["AlternateEmailID"],
+				"DOB"			=> $user["DOB"],
+				"Gender"		=> $user["Gender"],
+				"UserAddressline1" => $user["UserAddressline1"],
+				"UserAddressline2" => $user["UserAddressline2"],
+				"Country"		=> $user["Country"],
+				"State"			=> $user["State"],
+				"City"			=> $user["City"],
+				"Zipcode"		=> $user["Zipcode"],
+				"HomePhone"		=> $user["HomePhone"],
+				"Mobilephone"	=> $user["Mobilephone"],
+				"IsUserActivation" => $user["IsUserActivation"],
+				"Profilepic"	=> $prof_pic,
+				"Latitude"		=> $user["Latitude"],
+				"Longitude"		=> $user["Longitude"],
+				"UserAgegroup"	=> $user["UserAgegroup"],
+				"Username"		=> $user["Username"],
+				"Is_coach"		=> $user["Is_coach"],
+				"coach_profile" => $user["coach_profile"],
+				"Coach_Website" => $user["Coach_Website"],
+				"coach_sport"	=> $user["coach_sport"],
+				"Sportname"		=> $user["Sportname"]
+				//sports_interests" => $sp
+				);
+					//}
+			}
+			else{
+			$res = array('Error: ' . "Invalid User ID!");
+			}
+		}
+		else{
+			$res = array('Error: ' . "Team ID Requied!");
+		}
+
+	$this->response($res);
+	}
+
 	/*public function list_get() {
 
 		$user_id   = $this->input->get('user_id');		

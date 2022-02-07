@@ -186,12 +186,16 @@ if($this->input->post('ag_grp')) {
 <select name="ag_grp" id="ag_grp" class='form-control'>
 <option value="">Age Group</option>
 <?php
-foreach($ag_grp_list as $i => $row) {
+//foreach($ag_grp_list as $i => $row) {
 ?>
-<option value="<?php echo $i;?>" <?php if($sel_ag == $i){ echo "selected=selected"; } ?>>
-<?php  echo $row; ?> 
-</option>
-<?php } ?>
+<!-- <option value="<?php //echo $i;?>" <?php //if($sel_ag == $i){ echo "selected=selected"; } ?>>
+<?php  //echo $row; ?> 
+</option> -->
+<?php //} ?>
+<option value="Kids">Kids </option>
+<option value="Adults">Adults </option>
+<option value="Adults_40P">40 + </option>
+<option value="Adults_50P">50 + </option>
 </select>
 </div>
 
@@ -411,13 +415,13 @@ if($this->session->userdata('users_id') == 240 or $this->session->userdata('user
 
 			<div class="course-img">
 			<input type='checkbox' name='notif_users[]' class='notif_check' value='<?php echo $row->Users_ID;?>' />
-			<a href="<?=$this->config->item('club_form_url').'/player/'.$row->Users_ID;?>" target='_blank'>
+			<a href="<?=$this->config->item('club_form_url').'/player/'.$row->Users_ID;?>">
 			<img class="club-rounded-circle1" src="<?php echo base_url(); ?>profile_pictures/<?php if($row->Profilepic!=''){ echo $row->Profilepic; } else { echo "NPA.png"; } ?>" alt="" style="width:165px; height:182px;" />
 			</a>
 			</div>
 			<div class="course-body">
 				<div class="course-desc" style='text-align:center'>
-					<b><h5><a href="<?=$this->config->item('club_form_url').'/player/'.$row->Users_ID;?>" target='_blank'>
+					<b><h5><a href="<?=$this->config->item('club_form_url').'/player/'.$row->Users_ID;?>">
 					<?php echo ucfirst($row->Firstname).' '.ucfirst($row->Lastname); ?>
 					</a></h5></b>
 				</div>
@@ -454,7 +458,7 @@ foreach($query as $key => $row) {
  ?><!-- img-djoko -->
 <tr>
 <!-- <td><?php echo $k;?></td> -->
-<td><a target="_blank" href="<?php echo $this->config->item('club_form_url')."/";?>
+<td><a href="<?php echo $this->config->item('club_form_url')."/";?>
 <?php echo "player"; ?>/<?php echo $row->Users_ID;?>">
 <?php echo ucfirst($row->Firstname)." ".ucfirst($row->Lastname); ?></a></td>
 <td><?php echo $row->UserAgegroup;?></td>

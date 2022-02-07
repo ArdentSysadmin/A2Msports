@@ -110,13 +110,12 @@ echo $row->State;
 if($row->Coach_Website != ""){
  $check = "ttp:";
 $pos = strpos($row->Coach_Website,$check);
-echo "POS = ".$pos; exit;
 if($pos){ ?>
  
- <a href="<?php echo $row->Coach_Website;?>"><?php echo "Click Here"; echo $row->Coach_Website;?></a> 
+ <a target="_blank" href="<?php echo $row->Coach_Website;?>"><?php echo "Click Here"; //$row->Coach_Website;?></a> 
  
 <?php } else { ?>
- <a href="<?php echo "http://".$row->Coach_Website;?>">
+ <a target="_blank" href="<?php echo "http://".$row->Coach_Website;?>">
  <?php echo "Click Here";//$row->Coach_Website;?></a>  
 <?php } 
 }else{

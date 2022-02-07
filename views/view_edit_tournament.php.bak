@@ -1495,17 +1495,6 @@ Do you want to publish the tournament?&nbsp;
 <input type="radio" id="is_publish_no" name="is_publish" value="0" <?php 
 if($tournament_details->Is_Publish==0){ echo "checked"; } ?> /> No
 </label>
-
-<div id="academy_text" style="display: none">
-<div class='form-group'>
-<label class='control-label col-md-3' for='id_accomodation'>Academy Name: </label>
-<div class='col-md-6 form-group internal'>
-<input id='academy' name="club_name" class='ui-autocomplete-input col-md-3 form-control ajax_blur' type="text" placeholder="Type your Club Name" />
-<input class='form-control' id='org_id' name='org_id' type='hidden' placeholder="Org_id" value=""  />
-</div>
-</div> 
-</div>
-
 </div>
 
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:20px;">

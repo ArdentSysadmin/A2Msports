@@ -128,6 +128,9 @@
                 case $age == 19:
                    $age_group = "U19";
                    break;
+				case $age == 21:
+                   $age_group = "U21";
+                   break;
                 default:
                    $age_group = "Adults";
                    break;
@@ -205,13 +208,13 @@
 
 			}
 
-			$sports = array("1", "2", "3", "4","5","6","7","8","9");           // these numbers belongs to sport id in the SportType Table
+			$sports = array("1", "2", "3", "4","5","6","7","8","9","19","20");           // these numbers belongs to sport id in the SportType Table
 
 			foreach($sports as $type){
 			$def_score = 100;
-			if($type == 2)
+			if($type == '2')
 			$def_score = 800;
-			if($type == 7)
+			if($type == '7' or $type == '19' or $type == '20')
 			$def_score = 3.0;
 
 				$data = array('SportsType_ID' => $type, 
@@ -447,6 +450,9 @@
                    break;
                 case $age == 19:
                    $age_group = "U19";
+                   break;
+				case $age == 21:
+                   $age_group = "U21";
                    break;
                 default:
                    $age_group = "Adults";
@@ -693,7 +699,7 @@
 						$def_score = 100;
 						if($club_primary_sport == '2')
 							$def_score = 800;
-						if($club_primary_sport == '7')
+						if($club_primary_sport == '7' or $club_primary_sport == '19' or $club_primary_sport == '20')
 							$def_score = 3.0;
 
 						$data2 = array(

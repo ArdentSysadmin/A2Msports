@@ -907,7 +907,7 @@ foreach($countries as $country)
 				<?php 
 				$age_array = json_decode($tournament_details->Age); 
 				
-				$agegroups_arry  = array('U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','Adults','Adults_30p','Adults_40p','Adults_50p','Adults_veteran','Junior');
+				$agegroups_arry  = array('U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','U21','Adults','Adults_30p','Adults_40p','Adults_50p','Adults_veteran','Junior');
 
                 $checked_age	  = "";
                 $readonly_age_grp = "";
@@ -1459,6 +1459,18 @@ $(document).ready(function(){
 });
 </script>
 
+<div class="col-md-12 league-form-bg" style="margin-top:30px;">
+<div class="fromtitle">Publish </div>
+Do you want to publish the tournament?&nbsp;
+<label for="is_publish_yes">
+<input type="radio" id="is_publish_yes" name="is_publish" value="1" <?php if($tournament_details->Is_Publish==1){ echo "checked"; } ?>  /> Yes
+</label>&nbsp;&nbsp;
+<label for="is_publish_no">
+<input type="radio" id="is_publish_no" name="is_publish" value="0" <?php 
+if($tournament_details->Is_Publish==0){ echo "checked"; } ?> /> No
+</label>
+</div>
+
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:20px;">
 <div class="fromtitle">Review & Submit</div>
 
@@ -1634,6 +1646,10 @@ else if(r[i].indexOf("U19-Open-Singles") > -1){
 //r[i]  = 'U19-Open-Singles';
 r[i]  = r[i].replace("U19-Open-Singles","U19-Singles");
 }
+else if(r[i].indexOf("U21-Open-Singles") > -1){
+//r[i]  = 'U21-Open-Singles';
+r[i]  = r[i].replace("U21-Open-Singles","U21-Singles");
+}
 else if(r[i].indexOf("Adults-Open-Singles") > -1){
 //r[i]  = 'Open-Singles';
 r[i]  = r[i].replace("Adults-Open-Singles","Adults-Singles");
@@ -1686,6 +1702,10 @@ r[i]  = r[i].replace("U18-Open-Doubles","U18-Doubles");
 else if(r[i].indexOf("U19-Open-Doubles") > -1){
 //r[i]  = 'U19-Open-Doubles';
 r[i]  = r[i].replace("U19-Open-Doubles","U19-Doubles");
+}
+else if(r[i].indexOf("U21-Open-Doubles") > -1){
+//r[i]  = 'U21-Open-Doubles';
+r[i]  = r[i].replace("U21-Open-Doubles","U21-Doubles");
 }
 else if(r[i].indexOf("Adults-Open-Doubles") > -1){
 //r[i]  = 'Open-Doubles';
@@ -1765,6 +1785,9 @@ selectedEventsList = [];
 		}
 		else if(r[i].indexOf("U19-1") > -1){
 			label = lbl_temp.replace("U19-1","U19-Boy's");
+		}
+		else if(r[i].indexOf("U21-1") > -1){
+			label = lbl_temp.replace("U21-1","U21-Boy's");
 		}
 		else if(r[i].indexOf("Adults-Singles") > -1){
 			label = lbl_temp.replace("Adults-Singles","Singles");

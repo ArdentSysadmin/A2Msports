@@ -72,12 +72,13 @@
 			return $query->result();
 		}
 
-		public function get_reg_tournment($tourn_id){
+		public function get_reg_tournment($tourn_id, $user_id = ''){
+			if($user_id == '')
 			$user_id = $this->logged_user;
-			$data = array('Tournament_ID'=>$tourn_id ,'Users_ID'=>$user_id);
+
+			$data = array('Tournament_ID'=>$tourn_id, 'Users_ID'=>$user_id);
 			$query = $this->db->get_where('RegisterTournament',$data);
-			//echo $this->db->last_query();
-			//exit;
+//echo $this->db->last_query();
 			return $query->row_array();
 		}
 
@@ -135,7 +136,9 @@
 
 		public function get_reg_tourn_player_names($tourn_id){
 			$reg_status='WithDrawn';
-			$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
+			//$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
+			$qry_check = $this->db->query("SELECT * FROM RegisterTournament rt JOIN Users u ON rt.Users_ID = u.Users_ID 
+where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) ORDER BY u.Firstname ASC");
 			return $qry_check->result();
 		}
 
@@ -647,14 +650,14 @@
 			$merchant_id = NULL;
 			if($this->input->post('pp')){
 				if($this->input->post('ppids') == ''){
-					$merchant_id = $this->input->post('merchantid');
-					$cur_code  = $this->input->post('currency_code');
+					$merchant_id	= $this->input->post('merchantid');
+					$cur_code		= $this->input->post('currency_code');
 
 					$data = array(
-						'users_id'        => $this->logged_user,
+						'users_id'				 => $this->logged_user,
 						'paypal_merch_id' => $merchant_id,
 						'currency_format'  => $cur_code,
-						'status'          => 1
+						'status'					 => 1
 					);
 
 					$this->db->insert('Paypal_Business_Accounts', $data);
@@ -888,6 +891,9 @@
                    break;
                 case $age == 19:
                    $age_group = "U19";
+                   break;
+				case $age == 21:
+                   $age_group = "U21";
                    break;
                 default:
                    $age_group = "Adults";
@@ -1569,8 +1575,9 @@
 			$last_id	= $this->db->insert_id(); 
 
 
-			if($partners and $tourn_id == 3513){
-				$this->reassign_partners($tourn_id, $user_id, $partners);
+			//if($partners and $tourn_id == 3526 and $this->logged_user == 237){
+			if($partners){
+				//$this->reassign_partners($tourn_id, $user_id, $partners);
 			}
 
 // A2MScore add if not exists for sport
@@ -1604,10 +1611,10 @@
 			$check_user_a2m = $this->get_a2mscore($user_id, $tour_sport);
 			if($check_user_a2m == ''){
 						$def_singles = 100;	$def_doubles = 100; 	$def_mixed = 100;
-						if($tour_sport == '2'){
+						if($tour_sport == 2){
 						$def_singles = 800;	$def_doubles = 800; 	$def_mixed = 800;
 						}
-						else if($tour_sport == '7'){
+						else if($tour_sport == 7 or $tour_sport == 19 or $tour_sport == 20){
 							//$def_score = 3.0;				
 							$def_singles = 3.0;	$def_doubles = 3.0; 	$def_mixed = 3.0;
 
@@ -1634,7 +1641,7 @@
 
 					$result2 = $this->db->insert('A2MScore', $a2m_ins_data);
 			}
-			else if($tour_sport == '7'){
+			else if($tour_sport == 7 or $tour_sport == 19 or $tour_sport == 20){
 							$def_singles = 3.0;	$def_doubles = 3.0; 	$def_mixed = 3.0;
 
 							$def_score = $this->get_pb_defRating($user_id, $tourn_id, $this->input->post('events'));
@@ -1932,8 +1939,9 @@
 				}
 			}
 
-			if($partners and $tourn_id == 3513){
-				$this->reassign_partners($tourn_id, $user_id, $partners);
+			//if($partners and $tourn_id == 3526 and $this->logged_user == 237){
+			if($partners){
+				//$this->reassign_partners($tourn_id, $user_id, $partners);
 			}
 			
 			if($est_usatt_rating){
@@ -1961,11 +1969,11 @@
 			
 			$check_user_a2m = $this->get_a2mscore($user_id, $tour_sport);
 			if($check_user_a2m == ''){
-						$def_singles = 100;	$def_doubles = 100; 	$def_mixed = 100;
-						if($tour_sport == '2'){
-						$def_singles = 800;	$def_doubles = 800; 	$def_mixed = 800;
+						$def_singles = 100;	$def_doubles = 100; $def_mixed = 100;
+						if($tour_sport == 2){
+						$def_singles = 800;	$def_doubles = 800; $def_mixed = 800;
 						}
-						else if($tour_sport == '7'){
+						else if($tour_sport == 7 or $tour_sport == 19 or $tour_sport == 20){
 							//$def_score = 3.0;				
 							$def_singles = 3.0;	$def_doubles = 3.0; 	$def_mixed = 3.0;
 
@@ -1992,9 +2000,9 @@
 
 					$result2 = $this->db->insert('A2MScore', $a2m_ins_data);
 			}
-			else if($tour_sport == '7'){
+			else if($tour_sport == 7 or $tour_sport == 19 or $tour_sport == 20){
 							$def_score = $this->get_pb_defRating($user_id, $tourn_id,  json_decode($reg_events, TRUE));
-														$def_singles = 3.0;	$def_doubles = 3.0; 	$def_mixed = 3.0;
+							$def_singles = 3.0;	$def_doubles = 3.0; 	$def_mixed = 3.0;
 
 //echo "Else<pre>"; print_r($def_score);// exit;
 					if($def_score){
@@ -9544,14 +9552,40 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			return $qry_check->result();		
 		}
 
-		public function get_bracket_list($tourn_id) {
-			if($this->logged_user_role == 'Admin' or $this->is_super_admin)
+		public function get_bracket_list($tourn_id, $flt = '', $flt_btn = '') {
+			$btn_filter = "";
+		if($flt_btn == 'rr')
+			$btn_filter = " AND Bracket_Type = 'Round Robin'";
+		else if($flt_btn == 'playoffs')
+			$btn_filter = " AND Bracket_Type = 'Single Elimination'";
+
+	//echo $flt_btn. " = ". $btn_filter;exit;
+			$cnd = "";
+			if($this->logged_user_role != 'Admin' and !$this->is_super_admin)
+				$cnd = "AND is_Publish = 1";
+
+			if($flt != 'All' and $flt == 'MyDraws'){
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd} AND BracketID IN (SELECT BracketID FROM Tournament_Matches WHERE (Player1 = {$this->logged_user} OR Player1_Partner = {$this->logged_user} OR Player2 = {$this->logged_user} OR Player2_Partner = {$this->logged_user}){$btn_filter} AND Tourn_ID = {$tourn_id}) ORDER BY Draw_Title ASC");
+			}
+			else if($flt != 'All' and $flt != ''){
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd} AND (Draw_Title LIKE '% {$flt} %' OR Draw_Title LIKE '{$flt} %'){$btn_filter} ORDER BY Draw_Title ASC");
+			}
+			else if($flt == 'All' and $flt_btn != ''){
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd}{$btn_filter} ORDER BY Draw_Title ASC");
+			}
+			else{
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd} ORDER BY Draw_Title ASC");
+			}
+			
+			//echo $this->db->last_query(); exit;
+
+			/*if($this->logged_user_role == 'Admin' or $this->is_super_admin)
 				$data = array('Tourn_ID' => $tourn_id);
 			else
 				$data = array('Tourn_ID' => $tourn_id, 'is_Publish' => 1);
 			$this->db->order_by("Draw_Title", "ASC");
-			$names = $this->db->get_where('Brackets',$data);
-			return $names->result();
+			$names = $this->db->get_where('Brackets',$data);*/
+			return $del_tm->result();
 		}
 
 		public function get_tourn_winners($tourn_id, $bid) {
@@ -9825,7 +9859,7 @@ else if($score_diff >=0.40){
 
 				$updated_a2m = $exist_a2m + $a2mscore;
 
-				if($sport != 7) {
+				if($sport != 7 and $sport != 19 and $sport != 20) {
 					if($updated_a2m < 75) {
 						$updated_a2m = 75; 
 					}
@@ -11434,7 +11468,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			$sport		= $data['sport'];
 			$kids_agegroup_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19');
 
-			$query = $this->db->query("SELECT TOP(15) u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
+			$query = $this->db->query("SELECT TOP(50) u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
 
 			return $query->result();
 		}
@@ -11949,7 +11983,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 				$qry_str = "h.hcl_country = '$country'";
 			}
 
-			$qry_check = $this->db->query("SELECT TOP(20) u.Users_ID, u.Firstname,u.Lastname,t.Team_name,t.Captain,t.Created_by,t.Players,t.Team_ID,t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID 
+			$qry_check = $this->db->query("SELECT TOP(50) u.Users_ID, u.Firstname,u.Lastname,t.Team_name,t.Captain,t.Created_by,t.Players,t.Team_ID,t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID 
 			JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND {$qry_str} ORDER BY a.A2MTeamScore DESC");
 
 			return $qry_check->result();
@@ -13488,8 +13522,15 @@ return $data;
 					return false;
 		}
 
-		public function get_tourn_reg_players($tourn_id){
-			$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id}");
+		public function get_tourn_reg_players($tourn_id, $filter_events = ''){
+			if($filter_events){
+				$filter_events = trim($filter_events, '[ ]');
+				
+				$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} AND rt.Reg_Events LIKE '%{$filter_events}%' ORDER BY u.Firstname Asc");
+			}
+			else{
+				$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} ORDER BY u.Firstname Asc");
+			}
 
 			return $qry->result();
 		}
@@ -13615,6 +13656,9 @@ return $data;
 									$getUserReg = $this->db->query("UPDATE RegisterTournament SET Partners = '{$upd_partners}' WHERE Tournament_ID = {$tourn_id} AND Users_ID = {$user}");
 									//echo "1 ". $this->db->last_query(); exit;
 								}
+								else{
+									// Implement the unset of chosen player for logged user as the partner is taken by someone
+								}
 							}
 						}
 					}
@@ -13690,8 +13734,205 @@ return $data;
 				return false;
 	}*/
 
-		public function get_clubs(){
+		public function get_clubs($sport = ''){
+			if($sport){
+			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%{$sport}%') AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations)");
+			//echo $this->db->last_query(); exit;
+			}
+			else{
 			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations)");
+			}
+
 			return $query->result();
+		}
+
+		public function get_team_stats($team_id){
+			$query = $this->db->query("SELECT * FROM Tournament_Matches WHERE Winner = {$team_id}");
+			$wins = $query->num_rows();
+
+			$query2 = $this->db->query("SELECT * FROM Tournament_Matches WHERE Winner != {$team_id} AND (Player1 = {$team_id} OR Player2 = {$team_id})");
+			$loss = $query2->num_rows();
+
+			return array('wins' => $wins, 'loss' => $loss);
+		}
+
+		public function get_logged_user_brackets($tourn_id, $user){
+			$query = $this->db->query("SELECT * FROM Tournament_Matches WHERE (Player1 = {$user} OR Player1_Partner = {$user} OR Player2 = {$user} OR Player2_Partner = {$user}) AND Tourn_ID = {$tourn_id}");
+			
+			return $query->result();
+		}
+
+		public function upd_rr_match_players($data){
+			$pos_arr = array('p1' => 'Player1', 'p1p' => 'Player1_Partner', 
+				'p2' => 'Player2', 'p2p' => 'Player2_Partner');
+
+			$oth_arr = array('p1' => 'Player1_Partner', 'p1p' => 'Player1', 
+				'p2' => 'Player2_Partner', 'p2p' => 'Player2');
+
+			$nw_pl_pos = $pos_arr[$data['pl_pos']];
+
+
+			$qry_match = $this->db->query("SELECT * FROM Tournament_Matches WHERE Tourn_match_id = {$data['mid']}");
+			
+			$get_match = $qry_match->row_array();
+			$oth_pl_pos = $oth_arr[$data['pl_pos']];
+			//echo "<pre>"; print_r($get_match); exit;
+			$other_player = $get_match[$oth_pl_pos];
+
+$query1 = $this->db->query("UPDATE Tournament_Matches SET Player1 = 0 WHERE Player1 = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+$query2 = $this->db->query("UPDATE Tournament_Matches SET Player1_Partner = 0 WHERE Player1_Partner = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+$query3 = $this->db->query("UPDATE Tournament_Matches SET Player2 = 0 WHERE Player2 = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+$query4 = $this->db->query("UPDATE Tournament_Matches SET Player2_Partner = 0 WHERE Player2_Partner = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+
+
+	if($nw_pl_pos == 'Player1' or $nw_pl_pos == 'Player2'){
+		$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
+
+		$query6 = $this->db->query("UPDATE Tournament_Matches SET Player2 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player2_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
+	}
+	else 	if($nw_pl_pos == 'Player1_Partner' or $nw_pl_pos == 'Player2_Partner'){
+		$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1_Partner = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1 = {$other_player} and BracketID = {$get_match['BracketID']})");
+
+		$query6 = $this->db->query("UPDATE Tournament_Matches SET Player2_Partner = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player2 = {$other_player} and BracketID = {$get_match['BracketID']})");
+	}
+
+$qry_bracket = $this->db->query("SELECT * FROM Brackets WHERE BracketID = {$get_match['BracketID']}");
+	$get_bracket = $qry_bracket->row_array();
+
+	$this->insert_init_rating($data['new_pl'], $data['tourn_id'], $get_match['BracketID'], $get_bracket['Draw_Format']);
+		
+
+if($query5)
+	return $query5;
+else if($query6)
+	return $query5;
+
+			/*if(($data['p1'] or $data['p1p']) and ($data['p2'] or $data['p2p'])){
+				$query = $this->db->query("UPDATE Tournament_Matches SET Player1 = {$data['p1']}, Player1_Partner = {$data['p1p']} , Player2 = {$data['p2']}, Player2_Partner = {$data['p2p']} WHERE Tourn_match_id = {$data['mid']}");
+			}
+
+			return $query;*/
+		}
+
+		public function changeUserEvent($data){
+			$user		= $data['user'];
+			$tid			= $data['tourn_id'];
+			$prevEvent = $data['prevEvent'];
+			$changeTo  = $data['changeTo'];
+
+			$is_reg = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = {$tid} AND Users_ID = {$user}");
+
+			if($is_reg->num_rows() > 0){
+				$get_reg_row	= $is_reg->row_array();
+
+				$reg_id						= $get_reg_row['RegisterTournament_id'];
+				$prev_reg_arr			= json_decode($get_reg_row['Reg_Events']);
+				$prev_partners_arr  = json_decode($get_reg_row['Partners'], TRUE);
+
+				//echo "<pre>"; print_r($prevEvent);
+				//echo "<pre>"; print_r($prev_reg_arr);
+				$pos		= array_search($prevEvent, $prev_reg_arr);
+				//echo $pos." - ";
+				//exit;
+				if($pos > -1){
+					unset($prev_reg_arr[$pos]);
+					//array_push($prev_reg_arr, $changeTo);
+					$prev_reg_arr[$pos] = $changeTo;
+					$new_arr = array_values($prev_reg_arr);
+					//print_r($new_arr);
+				}
+
+				$new_partners_arr = '';
+
+				foreach($prev_partners_arr as $ev => $partner){
+					if($ev == $prevEvent){
+						$new_partners_arr[$changeTo] = '';
+					}
+					else{
+						$new_partners_arr[$ev] = $partner;
+					}
+				}
+
+				$upd_js_events	= json_encode($new_arr);
+				$upd_js_partners = json_encode($new_partners_arr);
+		
+				$upd_qry = $this->db->query("UPDATE RegisterTournament SET Reg_Events = '{$upd_js_events}', Partners='{$upd_js_partners}' WHERE RegisterTournament_id = {$reg_id}");
+
+				// Release the user as partner for the previous event
+			$as_partner = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = {$tid} AND Partners LIKE '%".'"'.$prevEvent.'":"'.$user.'"'."%'");
+			//echo $this->db->last_query();
+
+			if($as_partner->num_rows > 0){
+			$res_as_partner = $as_partner->result();
+				foreach($res_as_partner as $i => $row){
+				$as_prtnrs = json_decode($row->Partners);
+				$as_prtnrs_rowID = $row->RegisterTournament_id;
+
+				$new_partners_arr2 = '';
+
+				foreach($as_prtnrs as $e => $pt){
+					if($e == $prevEvent and $pt == $user){
+						$new_partners_arr2[$e] = '';
+					}
+					else{
+						$new_partners_arr2[$e] = $pt;
+					}
+				}
+
+				$upd_js_partners2 = json_encode($new_partners_arr2);
+		
+				$upd_qry = $this->db->query("UPDATE RegisterTournament SET Partners='{$upd_js_partners2}' WHERE RegisterTournament_id = {$as_prtnrs_rowID}");
+
+				}
+			}
+
+				// Release the user as partner for the previous event
+
+
+				
+				return $upd_qry;
+			}
+			else{
+				return -1;
+			}
+		}
+
+		public function changeUserEventPartner($data){
+			$user		= $data['user'];
+			$tid			= $data['tourn_id'];
+			$event		= $data['event'];
+			$partner	= $data['partner'];
+			//echo "<pre>"; print_r($data);
+			$get_partner_reg = $this->db->query("SELECT * FROM RegisterTournament WHERE Users_ID = {$partner} AND Tournament_ID = {$tid}");
+			$partner_reg = $get_partner_reg->row_array();
+			$partner_reg_prts = json_decode($partner_reg['Partners'], TRUE);
+
+			$upd_partner = 0;
+
+			if(!$partner_reg_prts[$event]){
+				$get_user_reg = $this->db->query("SELECT * FROM RegisterTournament WHERE Users_ID = {$user} AND Tournament_ID = {$tid}");
+				$user_partner_reg = $get_user_reg->row_array();
+				$user_partner_reg_prts = json_decode($user_partner_reg['Partners'], TRUE);
+
+				$user_partner_reg_prts[$event] = $partner;
+				$upd_prts = json_encode($user_partner_reg_prts);
+				//echo $upd_prts;
+
+				$upd_partner = $this->db->query("UPDATE RegisterTournament SET Partners = '{$upd_prts}' WHERE Users_ID = {$user} AND Tournament_ID = {$tid}");
+
+				// ---
+
+				$partner_reg_prts[$event] = $user;
+				$upd_prts2 = json_encode($partner_reg_prts);
+				//echo $upd_prts2;
+
+				$upd_partner = $this->db->query("UPDATE RegisterTournament SET Partners = '{$upd_prts2}' WHERE Users_ID = {$partner} AND Tournament_ID = {$tid}");
+			}
+
+			return $upd_partner;
 		}
 }

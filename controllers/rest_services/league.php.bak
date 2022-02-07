@@ -194,7 +194,10 @@ class League extends REST_Controller {
                 case $user_age == 19:
                    $user_age_grp = "U19";
                    break;
-                case $user_age>19 && $user_age<=29:
+				case $user_age == 21:
+                   $user_age_grp = "U21";
+                   break;
+                case $user_age>21 && $user_age<=29:
                    $user_age_grp = "Adults";
                    break;
                 case $user_age>=30 && $user_age<=39:
@@ -203,8 +206,14 @@ class League extends REST_Controller {
                 case $user_age>=40 && $user_age<=49:
                    $user_age_grp = "Adults_40p";
                    break;
-                case $user_age>=50 && $user_age<=60:
+                case $user_age>=50 && $user_age<=59:
                    $user_age_grp = "Adults_50p";
+                   break;
+				case $user_age>=60 && $user_age<=69:
+                   $user_age_grp = "Adults_60p";
+                   break;
+				case $user_age>=70 && $user_age<=99:
+                   $user_age_grp = "Adults_70p";
                    break;
         }
 
@@ -822,7 +831,7 @@ class League extends REST_Controller {
 			else if(in_array('Mixed', $exp)) {
 				 $eligible_events[trim($event)] = $event_lable;
 			}
-			else if($user_ag_grp == 'U10' or $user_ag_grp == 'U11' or $user_ag_grp == 'U12' or $user_ag_grp == 'U13' or $user_ag_grp == 'U14' or $user_ag_grp == 'U15' or $user_ag_grp == 'U16' or $user_ag_grp == 'U17' or $user_ag_grp == 'U18' or $user_ag_grp == 'U19' or $user_ag_grp == 'Junior') {
+			else if($user_ag_grp == 'U9' or $user_ag_grp == 'U10' or $user_ag_grp == 'U11' or $user_ag_grp == 'U12' or $user_ag_grp == 'U13' or $user_ag_grp == 'U14' or $user_ag_grp == 'U15' or $user_ag_grp == 'U16' or $user_ag_grp == 'U17' or $user_ag_grp == 'U18' or $user_ag_grp == 'U19' or $user_ag_grp == 'U21' or $user_ag_grp == 'Junior') {
 				if($exp[0] == 'Adults'){
 				 $eligible_events[trim($event)] = $event_lable;
 				}
@@ -2346,7 +2355,7 @@ return $new_arr1;
 
 
 	public function get_eligible_events_Temp($tourn_events, $user_ag_grp, $user_db_age_grp, $user_gender, $user_age='', $get_event_limits = '', $events_limit_arr = '', $league_occrs = '', $event_reg_fee, $lg_whole_fee, $user_reg_events, $league_occrs_regs) {
-		$eligible_events			= array();
+		$eligible_events				= array();
 		$non_eligible_events	= array();
 
 		foreach($tourn_events as $event) {
@@ -2357,7 +2366,17 @@ return $new_arr1;
 			$ag_grp   = $exp[0];
 
 			if($exp[0] != 'Adults' and $exp[0][0] == 'A'){
-			$event_lable = $this->config->item($exp[0], 'age_values');
+
+			//$event_lable = $this->config->item($exp[0], 'age_values');
+			
+			// Added on 03-01-2022 to fix 50+ events
+				$gen = $this->config->item($exp[0]."-".$exp[1], 'age_gender_values');
+				
+				$level_name   = $this->mleague->get_level_name($lv);
+				$level_title		= $level_name['SportsLevel'];
+				$event_lable	= $gen." ".$exp[2]." ".$level_title;
+			// Added on 03-01-2022 to fix 50+ events
+
 			}
 			else{
 			$level_name  = $this->mleague->get_level_name($lv);
@@ -2409,7 +2428,7 @@ return $new_arr1;
 				 //$eligible_events[trim($event)] = $event_lable;
 				 $is_eligible = 1;
 			}
-			else if($user_ag_grp == 'U10' or $user_ag_grp == 'U11' or $user_ag_grp == 'U12' or $user_ag_grp == 'U13' or $user_ag_grp == 'U14' or $user_ag_grp == 'U15' or $user_ag_grp == 'U16' or $user_ag_grp == 'U17' or $user_ag_grp == 'U18' or $user_ag_grp == 'U19' or $user_ag_grp == 'Junior') {
+			else if($user_ag_grp == 'U9' or $user_ag_grp == 'U10' or $user_ag_grp == 'U11' or $user_ag_grp == 'U12' or $user_ag_grp == 'U13' or $user_ag_grp == 'U14' or $user_ag_grp == 'U15' or $user_ag_grp == 'U16' or $user_ag_grp == 'U17' or $user_ag_grp == 'U18' or $user_ag_grp == 'U19' or $user_ag_grp == 'U21' or $user_ag_grp == 'Junior') {
 				if($exp[0] == 'Adults'){
 				 //$eligible_events[trim($event)] = $event_lable;
 				 $is_eligible = 1;
@@ -2433,13 +2452,12 @@ return $new_arr1;
 
 						if($league_occrs){
 							$reg_ocrs = NULL;
-						foreach($league_occrs_regs as $ocr_reg){
-							$reg_ocrs[] = $ocr_reg['OCCR_ID'];
-						}
+							foreach($league_occrs_regs as $ocr_reg) {
+								$reg_ocrs[] = $ocr_reg['OCCR_ID'];
+							}
 							//echo "<pre>"; print_r($reg_ocrs);exit;
 
-
-							foreach($league_occrs as $occr){
+							foreach($league_occrs as $occr) {
 								$gd		= date('Y-m-d H:i', strtotime($occr->Game_Date));
 								$is_reg = false;
 								if(in_array($occr->OCR_ID, $reg_ocrs)){
@@ -2452,13 +2470,12 @@ return $new_arr1;
 							}
 
 							$eligible_events[trim($event)]['discountFees'] = (float) $lg_wh_fee[$event];
-								
 
 						}
 						else{
-							$eligible_events[trim($event)]['registered'] = (in_array($event, $user_reg_events)) ? true : false;
-							$eligible_events[trim($event)]['totalFees'] = (float) $fee[$event];
-							$eligible_events[trim($event)]['gameDays'] = null;
+							$eligible_events[trim($event)]['registered']	 = (in_array($event, $user_reg_events)) ? true : false;
+							$eligible_events[trim($event)]['totalFees']	 = (float) $fee[$event];
+							$eligible_events[trim($event)]['gameDays']  = null;
 						}
 					}
 
@@ -2600,7 +2617,10 @@ return $new_arr1;
                 case $user_age == 19:
                    $user_age_grp = "U19";
                    break;
-                case $user_age>19 && $user_age<=29:
+				case $user_age == 21:
+                   $user_age_grp = "U21";
+                   break;
+                case $user_age>21 && $user_age<=29:
                    $user_age_grp = "Adults";
                    break;
                 case $user_age>=30 && $user_age<=39:
@@ -2609,11 +2629,16 @@ return $new_arr1;
                 case $user_age>=40 && $user_age<=49:
                    $user_age_grp = "Adults_40p";
                    break;
-                case $user_age>=50 && $user_age<=60:
+                case $user_age>=50 && $user_age<=59:
                    $user_age_grp = "Adults_50p";
                    break;
-        }
-
+				case $user_age>=60 && $user_age<=69:
+                   $user_age_grp = "Adults_60p";
+                   break;
+				case $user_age>=70 && $user_age<=90:
+                   $user_age_grp = "Adults_70p";
+                   break;
+		}
 /* ****************** */
 
 							if($user_age_grp == NULL) {
@@ -2830,7 +2855,7 @@ $data['couponCodes'] = $coupons;
 
 
 						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
-							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+							$url = base_url()."tour_pictures/".$tourn_id."/".$tour_details['MedicalRelease_pdf'];
 						}
 						else{
 							$url = base_url().'medical_form/';
@@ -3010,7 +3035,7 @@ $data['couponCodes'] = $coupons;
 						$data['link'] = base_url()."league/".$tourn_id."/";
 
 						if($tour_details['MedicalRelease_pdf'] != NULL or $tour_details['MedicalRelease_pdf'] != '') { 
-							$url = base_url().'tour_pictures\\'.$r->tournament_ID.'\\'.$tour_details['MedicalRelease_pdf'];
+							$url = base_url()."tour_pictures/".$tourn_id."/".$tour_details['MedicalRelease_pdf'];
 						}
 						else{
 							$url = base_url().'medical_form/';
@@ -3076,10 +3101,6 @@ $data['couponCodes'] = $coupons;
 	public function registerTemp_post() {
 		$post_data = json_decode(trim(file_get_contents('php://input')), true);
 
-			//print_r($post_data);
-			//$this->response($post_data); 
-			//exit;
-
 		$tourn_id		 = $post_data['tourn_id'];
 		$user_id		 = $post_data['user_id'];
 
@@ -3088,7 +3109,7 @@ $data['couponCodes'] = $coupons;
 		$transaction_id		 = $post_data['transaction_id'];
 		$currency_code		 = $post_data['currency_code'];
 		$status					 = $post_data['status'];
-		$tshirt_size			 = $post_data['tshirt_size'];
+		$tshirt_size				 = $post_data['tshirt_size'];
 		$note_to_admin		 = $post_data['note_to_admin'];
 
 		$tourn_id		 = trim($tourn_id, '"');
@@ -3119,13 +3140,13 @@ $data['couponCodes'] = $coupons;
 			$is_league	= $tour_details['Is_League'];
 			
 			if($tformat == "Teams" or $tformat == "TeamSport") {
-				$team_id					= $post_data['team_id'];
+				$team_id						= $post_data['team_id'];
 				$shortlisted_team		= $post_data['shortlisted_team'];
 				$reg_ag_group			= $post_data['reg_ag_group'];
 				$reg_sport_level		= $post_data['reg_sport_level'];
 
-				$data['Team_id']			 =  $team_id;
-				$data['Team_Players']	 =  json_encode($shortlisted_team);
+				$data['Team_id']					=  $team_id;
+				$data['Team_Players']		=  json_encode($shortlisted_team);
 				$data['Reg_Age_Group']	 =  $reg_ag_group;
 				$data['Reg_Sport_Level']  =  $reg_sport_level;
 				
@@ -3175,7 +3196,7 @@ $data['couponCodes'] = $coupons;
 //echo count($check_register); exit;
 
 			if(count($check_register) == 0) {
-
+				//echo "test 1"; exit;
 					if($sp_events){
 						$data['Reg_Events']	=  json_encode($sp_events);
 					}
@@ -3207,6 +3228,7 @@ $data['couponCodes'] = $coupons;
 			//$res = array($data);
 			}
 			else {
+				//echo "test 2"; exit;
 					//res = array('Error: ' . "User / Team already Registered for this tournament!");
 					$get_reg_events  = $this->mleague->get_reg_events($user_id, $tourn_id);
 					$ins					  = $get_reg_events['RegisterTournament_id'];
@@ -3228,20 +3250,19 @@ $data['couponCodes'] = $coupons;
 
 					$data2['Tournament_ID'] = $data['Tournament_ID'];
 					$data2['pay_date']  = date('Y-m-d H:i:s');
-					$data2['pay_date']  = $data['Tournament_ID'];
 					$data2['Users_ID']  = $data['Users_ID'];
 					$data2['mtype']	    = 'tournament';
 					$data2['mtype_ref'] = $data['Tournament_ID'];
 					$data2['Amount']	= number_format($fee_amount, 2);
 					$data2['Transaction_id'] = $transaction_id;
 					$data2['Status']	= $status;
-
+echo "<pre>"; print_r($data2);print_r($data3); exit;
 					$upd	 = $this->mleague->update_reg_tourn($data3);
 					$ins_pay = $this->mleague->insert_pay_transaction($data2);
 
 					$res = array('Success: ' . "User / Team successfully registered.");
-
 			}
+
 			if($game_days){
 				$ins_game_days = $this->mleague->ins_game_days($ins, $user_id, $game_days);
 			}

@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="<?=base_url()."assets_new/";?>css/slick.css">
 
     <link rel="stylesheet" type="text/css" href="<?=base_url(); ?>assets_new/css/style.css">
+    <link rel="stylesheet" type="text/css" href="<?=base_url(); ?>assets_new/css/venobox.min.css" media="screen" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -35,21 +37,22 @@
     <!-- nav end -->
     <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light  justify-content-end">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#"><img src="<?=base_url(); ?>assets_new/images/logo.png"></a>
+        <a class="navbar-brand" href="<?php echo base_url().$this->uri->segment(1); ?>"><img src="<?=base_url(); ?>assets_new/images/logo.png"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="main_nav">
+
+		<div class="collapse navbar-collapse" id="main_nav">
           <ul class="navbar-nav mx-4">
-		   <li class="nav-item"><a  id="vtournaments_mn" class="nav-link show_all <?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="#viewAll<?php //echo base_url()."?p=tournaments";?>">Tournaments</a></li>
+		   <li class="nav-item"><a  id="vtournaments_mn" class="nav-link show_all <?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/tournaments";?>">Tournaments</a></li>
 
-<li class="nav-item"><a  id="vplayers_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="#viewAll<?php //echo base_url()."?p=rankings";?>">Players</a></li>
+<li class="nav-item"><a  id="vplayers_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/rankings";?>">Players</a></li>
 
-<li class="nav-item"><a  id="vteams_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="#viewAll<?php //echo base_url()."?p=teams";?>">Teams</a></li>
+<li class="nav-item"><a  id="vteams_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/teams";?>">Teams</a></li>
 
-<li class="nav-item"><a  id="vclubs_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="#viewAll<?php //echo base_url()."?p=clubs";?>">Clubs</a></li>
+<li class="nav-item"><a  id="vclubs_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/clubs";?>">Clubs</a></li>
 
-<li class="nav-item"><a  id="vcoaches_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="#viewAll<?php //echo base_url()."?p=coaches";?>">Coaches</a></li>
+<li class="nav-item"><a  id="vcoaches_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/coaches";?>">Coaches</a></li>
 
 <?php if($this->session->userdata('user') != "") {?>
 <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">

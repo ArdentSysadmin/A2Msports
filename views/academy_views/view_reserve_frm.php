@@ -63,11 +63,17 @@ $min_date = date('Y-m-d', strtotime('+1 day'));
 min='<?php echo $min_date; ?>' max='<?php echo date('Y-m-d', strtotime($max_date)); ?>' value="<?php if((strtotime($date) <= strtotime($max_date)) and (strtotime($date) >= strtotime($min_date))) { echo date('Y-m-d', strtotime($date)); } ?>" placeholder='Select Start Date/Time' required />
 </div>
 <div class='col-md-3 form-group internal'>
+<?php
+//$sel_time = ($time - 1) / 2;
+//$sel_time = date('H:i', strtotime($sel_time)); 
+?>
 <select name="res_time" id="res_time1" class='form-control check_price' >
 <option value=''>Time</option>
 <?php
-$begin = new DateTime( $court_price['Start_Time'] );
-$end    = new DateTime( $court_price['End_Time'] );
+//$begin = new DateTime( $court_price['Start_Time'] );
+//$end    = new DateTime( $court_price['End_Time'] );
+$begin = new DateTime( $min_time );
+$end    = new DateTime( $max_time );
 
 for($i = $begin; $i <= $end; $i->modify('+'.($slot_duration*60).' minutes')){
     echo "<option value='".$i->format("H:i")."'>" . $i->format("h:i A") . "</option>";
@@ -245,10 +251,9 @@ if($is_club_coach or $is_club_admin){
 			alert('Selected booking slot is N/A');
 			return false;
 		}
-		else if($('#repeat_booking_days').val() != '0'){
+		else if($('#repeat_booking_days').val() != '0' && $('#match_format1').val() != '' && $('#num_players1').val() != ''){
 			$(this).hide();
 			$('#book_error').html('Please wait...');
-
 		}
 	});
 

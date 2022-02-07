@@ -126,7 +126,9 @@
 
 		public function get_reg_tourn_player_names($tourn_id){
 			$reg_status='WithDrawn';
-			$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
+			//$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
+			$qry_check = $this->db->query("SELECT * FROM RegisterTournament rt JOIN Users u ON rt.Users_ID = u.Users_ID 
+where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) ORDER BY u.Firstname ASC");
 			return $qry_check->result();
 		}
 
@@ -777,6 +779,9 @@
                    break;
                 case $age == 19:
                    $age_group = "U19";
+                   break;
+				case $age == 21:
+                   $age_group = "U21";
                    break;
                 default:
                    $age_group = "Adults";
@@ -1493,7 +1498,7 @@
 							$def_score = 100;
 						if($tour_sport == '2')
 							$def_score = 800;
-						if($tour_sport == '7')
+						if($tour_sport == '7' or $tour_sport == '19' or $tour_sport == '20')
 							$def_score = 3.0;
 
 
@@ -1746,7 +1751,7 @@
 				$def_score = 100;
 				if($tour_sport == '2') 
 				$def_score = 800;
-				if($tour_sport == '7') 
+				if($tour_sport == '7' or $tour_sport == '19' or $tour_sport == '20') 
 				$def_score = 3.0;
 
 					$a2m_ins_data = array(
@@ -8775,14 +8780,40 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			return $qry_check->result();		
 		}
 
-		public function get_bracket_list($tourn_id)
-		{	
-			$data = array('Tourn_ID'=>$tourn_id);
+	public function get_bracket_list($tourn_id, $flt = '', $flt_btn = '') {
+			$btn_filter = "";
+		if($flt_btn == 'rr')
+			$btn_filter = " AND Bracket_Type = 'Round Robin'";
+		else if($flt_btn == 'playoffs')
+			$btn_filter = " AND Bracket_Type = 'Single Elimination'";
+
+	//echo $flt_btn. " = ". $btn_filter;exit;
+			$cnd = "";
+			if($this->logged_user_role != 'Admin' and !$this->is_super_admin)
+				$cnd = "AND is_Publish = 1";
+
+			if($flt != 'All' and $flt == 'MyDraws'){
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd} AND BracketID IN (SELECT BracketID FROM Tournament_Matches WHERE (Player1 = {$this->logged_user} OR Player1_Partner = {$this->logged_user} OR Player2 = {$this->logged_user} OR Player2_Partner = {$this->logged_user}){$btn_filter} AND Tourn_ID = {$tourn_id}) ORDER BY Draw_Title ASC");
+			}
+			else if($flt != 'All' and $flt != ''){
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd} AND (Draw_Title LIKE '% {$flt} %' OR Draw_Title LIKE '{$flt} %'){$btn_filter} ORDER BY Draw_Title ASC");
+			}
+			else if($flt == 'All' and $flt_btn != ''){
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd}{$btn_filter} ORDER BY Draw_Title ASC");
+			}
+			else{
+				$del_tm = $this->db->query("SELECT * FROM Brackets WHERE Tourn_ID = $tourn_id {$cnd} ORDER BY Draw_Title ASC");
+			}
+			
+			//echo $this->db->last_query(); exit;
+
+			/*if($this->logged_user_role == 'Admin' or $this->is_super_admin)
+				$data = array('Tourn_ID' => $tourn_id);
+			else
+				$data = array('Tourn_ID' => $tourn_id, 'is_Publish' => 1);
 			$this->db->order_by("Draw_Title", "ASC");
-			$names = $this->db->get_where('Brackets',$data);
-			//echo $this->db->last_query(); 
-			//exit;
-			return $names->result();
+			$names = $this->db->get_where('Brackets',$data);*/
+			return $del_tm->result();
 		}
 
 		public function delete_golf_brackets($bracket_id)
@@ -12147,8 +12178,14 @@ return $data;
 			$qry2 = $this->db->query("UPDATE CL_Positions SET Position = {$data['p_pos']} WHERE Bracket_ID = {$data['bracket_id']} AND (Player = {$data['challeger']} OR Player_Partner = {$data['challeger']})"); // Update Challenger Position
 		}
 
-		public function get_player_matches($tourn_id, $player){
-			$query = $this->db->query("SELECT * FROM Tournament_Matches WHERE Tourn_ID = {$tourn_id} AND (Player1 = {$player} OR Player2 = {$player} OR Player1_Partner = {$player} OR Player2_Partner = {$player}) AND Winner IS NOT NULL AND Winner != '' AND Player1 != 0 AND Player2 != 0");
+		public function get_player_matches($tourn_id, $player, $format = ''){
+			if($format and $format != 'all'){
+				$query = $this->db->query("SELECT * FROM Tournament_Matches WHERE Tourn_ID = {$tourn_id} AND (Player1 = {$player} OR Player2 = {$player} OR Player1_Partner = {$player} OR Player2_Partner = {$player}) AND Winner IS NOT NULL AND Winner != '' AND Player1 != 0 AND Player2 != 0 AND BracketID IN (SELECT BracketID FROM Brackets WHERE Draw_Format = '{$format}' AND Tourn_ID = {$tourn_id})");
+			}
+			else{
+				$query = $this->db->query("SELECT * FROM Tournament_Matches WHERE Tourn_ID = {$tourn_id} AND (Player1 = {$player} OR Player2 = {$player} OR Player1_Partner = {$player} OR Player2_Partner = {$player}) AND Winner IS NOT NULL AND Winner != '' AND Player1 != 0 AND Player2 != 0");
+			}
+
 			return $query->result_array();
 		}
 
@@ -12518,8 +12555,15 @@ else if($score_diff >=0.40){
 				return $add_score_points;
 		}
 
-		public function get_tourn_reg_players($tourn_id){
-			$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id}");
+		public function get_tourn_reg_players($tourn_id, $filter_events = ''){
+			if($filter_events){
+				$filter_events = trim($filter_events, '[ ]');
+				
+				$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} AND rt.Reg_Events LIKE '%{$filter_events}%' ORDER BY u.Firstname Asc");
+			}
+			else{
+				$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} ORDER BY u.Firstname Asc");
+			}
 
 			return $qry->result();
 		}
@@ -12616,4 +12660,68 @@ else if($score_diff >=0.40){
 				else
 					return 0;
 		}
+
+		public function get_logged_user_brackets($tourn_id, $user){
+			$query = $this->db->query("SELECT * FROM Tournament_Matches WHERE (Player1 = {$user} OR Player1_Partner = {$user} OR Player2 = {$user} OR Player2_Partner = {$user}) AND Tourn_ID = {$tourn_id}");
+			
+			return $query->result();
+		}
+
+		public function upd_rr_match_players($data){
+			$pos_arr = array('p1' => 'Player1', 'p1p' => 'Player1_Partner', 
+				'p2' => 'Player2', 'p2p' => 'Player2_Partner');
+
+			$oth_arr = array('p1' => 'Player1_Partner', 'p1p' => 'Player1', 
+				'p2' => 'Player2_Partner', 'p2p' => 'Player2');
+
+			$nw_pl_pos = $pos_arr[$data['pl_pos']];
+
+
+			$qry_match = $this->db->query("SELECT * FROM Tournament_Matches WHERE Tourn_match_id = {$data['mid']}");
+			
+			$get_match = $qry_match->row_array();
+			$oth_pl_pos = $oth_arr[$data['pl_pos']];
+			//echo "<pre>"; print_r($get_match); exit;
+			$other_player = $get_match[$oth_pl_pos];
+
+$query1 = $this->db->query("UPDATE Tournament_Matches SET Player1 = 0 WHERE Player1 = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+$query2 = $this->db->query("UPDATE Tournament_Matches SET Player1_Partner = 0 WHERE Player1_Partner = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+$query3 = $this->db->query("UPDATE Tournament_Matches SET Player2 = 0 WHERE Player2 = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+$query4 = $this->db->query("UPDATE Tournament_Matches SET Player2_Partner = 0 WHERE Player2_Partner = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
+
+
+
+	if($nw_pl_pos == 'Player1' or $nw_pl_pos == 'Player2'){
+		$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
+
+		$query6 = $this->db->query("UPDATE Tournament_Matches SET Player2 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player2_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
+	}
+	else 	if($nw_pl_pos == 'Player1_Partner' or $nw_pl_pos == 'Player2_Partner'){
+		$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1_Partner = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1 = {$other_player} and BracketID = {$get_match['BracketID']})");
+
+		$query6 = $this->db->query("UPDATE Tournament_Matches SET Player2_Partner = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player2 = {$other_player} and BracketID = {$get_match['BracketID']})");
+	}
+
+$qry_bracket = $this->db->query("SELECT * FROM Brackets WHERE BracketID = {$get_match['BracketID']}");
+	$get_bracket = $qry_bracket->row_array();
+
+	$this->insert_init_rating($data['new_pl'], $data['tourn_id'], $get_match['BracketID'], $get_bracket['Draw_Format']);
+		
+
+if($query5)
+	return $query5;
+else if($query6)
+	return $query5;
+
+			/*if(($data['p1'] or $data['p1p']) and ($data['p2'] or $data['p2p'])){
+				$query = $this->db->query("UPDATE Tournament_Matches SET Player1 = {$data['p1']}, Player1_Partner = {$data['p1p']} , Player2 = {$data['p2']}, Player2_Partner = {$data['p2p']} WHERE Tourn_match_id = {$data['mid']}");
+			}
+
+			return $query;*/
+		}
+
+
 }

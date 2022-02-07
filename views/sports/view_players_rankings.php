@@ -119,7 +119,7 @@ if($this->input->post('search_mem_loc')){
 	<select name="age_group[]" multiple id="age_group" class='form-control'>
 	<option value="">Select Age Group</option>
 	<?php
-	$agegroups_arry  = array('U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','Kids','Adults');
+	$agegroups_arry  = array('U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','U21','Kids','Adults');
 	foreach($agegroups_arry as $agegroup){
 		if(in_array($agegroup, $age_group)){
             echo "<option value='$agegroup' selected>$agegroup</option>";

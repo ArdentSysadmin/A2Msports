@@ -282,8 +282,9 @@ if(!empty($row)) {
 
 <div class="item  "><!-- d-flex justify-content-between -->
 <div class="d-flex feature_box">
-<div class="feature_left bg-white p-3">
-<div class="d-flex justify-content-start"><img src="<?=base_url()."assets_new/";?>images/icons/<?php switch($row[0]->SportsType){
+<div class="feature_left /*bg-white*/ p-3" style="border-top-right-radius:0px !important; border-bottom-right-radius:0px !important; background-color:#fcc9bc !important; height:280px; border:2px solid #f88264">
+<div class="d-flex justify-content-start">
+<img src="<?=base_url()."assets_new/";?>images/icons/<?php switch($row[0]->SportsType){
 					case 1: echo "tennis-ico.png";				break;
 					case 2: echo "tt-ico.png";						break;
 					case 3: echo "badminton-ico.png";		break;
@@ -333,61 +334,8 @@ if(!empty($row)) {
                   <div class="d-flex justify-content-start mb-1"><img src="<?=base_url()."assets_new/";?>images/league.svg" class="w-10" ><p class="uppercase mb-0 mx-1"><?php echo $row[0]->tournament_format; ?></p></div>
 <!-- <div class="d-flex justify-content-start mb-1"><img src="<?=$source;?>images/team.svg" class="w-10" ><p class="uppercase mb-0 mx-1"> 20 Teams</p></div> -->
 </div>
-<div class="feature_right">
+<div class="feature_right" style="border:2px solid #8050ef; background-color:#d7ccfa; height:280px; border-top-right-radius:16px !important; border-bottom-right-radius:16px !important; ">
 <div class="feature_img">
-<img src="<?php echo base_url(); ?>tour_pictures/
-<?php if($row[0]->TournamentImage!=""){ echo $row[0]->TournamentImage; }
-else{
-switch($row[0]->SportsType) {
-	case 1:
-		echo "default_tennis_min.jpg";
-		break;
-	case 2:
-		echo "default_table_tennis_min.jpg";
-		break;
-	case 3:
-		echo "default_badminton_min.jpg";
-		break;
-	case 4:
-		echo "default_golf_min.jpg";
-		break;
-	case 5:
-		echo "default_racquet_ball_min.jpg";
-		break;
-	case 6:
-		echo "default_squash_min.jpg";
-		break;
-	case 7:
-		echo "default_pickleball_min.jpg";
-		break;
-	case 8:
-		echo "default_chess_min.jpg";
-		break;
-	case 9:
-		echo "default_carroms_min.jpg";
-		break;
-	case 10:
-		echo "default_volleyball_min.jpg";
-		break;
-	case 11:
-		echo "default_fencing.jpg";
-		break;
-	case 12:
-		echo "default_bowling.jpg";
-		break;
-	case 16:
-		echo "default_cricket.jpg";
-		break;
-	case 18:
-		echo "default_basketball.jpg";
-		break;
-
-	default:
-		echo "";
-		break;
-}
-}
-?>" style="object-fit: fill; filter: blur(6px);  position: relative; height: 242px;" />
 
 <img src="<?php echo base_url(); ?>tour_pictures/
 <?php if($row[0]->TournamentImage!=""){ echo $row[0]->TournamentImage; }
@@ -441,7 +389,7 @@ switch($row[0]->SportsType) {
 		break;
 }
 }
-?>" style="object-fit: contain; top: 0px; position: absolute; width: 45%;" class="w-242">
+?>"  style="object-fit: contain; padding:5px; /*border:1px solid #d2d2d2; top: 0px; position: absolute; width: 45%; */  height:280px; " class="/*w-242*/">
 </div>
 </div>
 </div>

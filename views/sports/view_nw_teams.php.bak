@@ -116,7 +116,7 @@ foreach($teams_result as $key => $unp) {
 					}
 					?></p></td>
 					<?php if($this->logged_user){ ?>
-                                <td><p class="mt-3 mb-0">&nbsp;</p></td>
+                                <!-- <td><p class="mt-3 mb-0">&nbsp;</p></td> -->
 					<?php } ?>
                               </tr>
    <?php 

@@ -51,9 +51,9 @@ else if($sport == 18){ $event_image = "default_basketball1.jpg";  }
 <tr>
 <td valign="center" style="padding-left:2px; font-size:14px;">
 <div>
-<img class="scale_image" src="<?php echo base_url(); ?>events_pictures/<?php echo $event_image;?>" alt="img" width="70px" height="70px" />
 <?php $link = base_url()."events/".$event->Ev_ID; ?>
-&nbsp;<a href='<?=$link;?>'>
+<a href='<?=$link;?>'><img class="scale_image" src="<?php echo base_url(); ?>events_pictures/<?php echo $event_image;?>" alt="img" width="70px" height="70px" />
+&nbsp;
 <b><?=ucfirst($event->Ev_Title); ?></b>
 </a>
 </div>
@@ -109,7 +109,6 @@ foreach($leagues as $league) {
 <tr>
 <td valign="center" style="padding-left:2px; font-size:14px;">
 <div>
-<img class="scale_image" src="<?php echo base_url(); ?>tour_pictures/<?php echo $tour_image;?>" alt="img" width="70px" height="70px" />
 <?php
 if($league->Short_Code != 'NULL' and $league->Short_Code != "" and $league->Short_Code != 'null') {
 $link = base_url().$league->Short_Code;
@@ -118,7 +117,8 @@ else {
 $link = base_url().$sport_segment."/".$league->tournament_ID;
 }
 ?>
-&nbsp;<a href='<?=$link;?>'>
+<a href='<?=$link;?>'>
+<img class="scale_image" src="<?php echo base_url(); ?>tour_pictures/<?php echo $tour_image;?>" alt="img" width="70px" height="70px" />&nbsp;
 <b><?=ucfirst($league->tournament_title); ?></b>
 </a>
 </div>

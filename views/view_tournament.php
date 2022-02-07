@@ -691,6 +691,9 @@ else if($tour_details->is_mult_fee == 1 and $tour_details->Tournamentfee == 1)
 			case "U19":
 				echo "Under 19";
 				break;
+			case "U21":
+				echo "Under 21";
+				break;
 			case "Adults":
 			    echo "Adults ";
 			    break;
@@ -702,6 +705,12 @@ else if($tour_details->is_mult_fee == 1 and $tour_details->Tournamentfee == 1)
 				break;
 			case "Adults_50p":
 				echo "50s";
+				break;
+			case "Adults_60p":
+				echo "60s";
+				break;
+			case "Adults_70p":
+				echo "70s";
 				break;
 			case "Adults_veteran":
 				echo "Veteran";
@@ -774,6 +783,9 @@ break;
 case "U19":
 echo "Under 19";
 break;
+case "U21":
+echo "Under 21";
+break;
 case "Adults":
 echo "Adults ";
 break;
@@ -785,6 +797,12 @@ echo "40s";
 break;
 case "Adults_50p":
 echo "50s";
+break;
+case "Adults_60p":
+echo "60s";
+break;
+case "Adults_70p":
+echo "70s";
 break;
 case "Adults_veteran":
 echo "Veteran";

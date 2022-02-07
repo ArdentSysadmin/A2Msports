@@ -1173,6 +1173,9 @@ $i = 0;
 			case "U19":
 			$age_grp_list['U19'] = "Under 19";
 			break;
+			case "U21":
+			$age_grp_list['U21'] = "Under 21";
+			break;
 			case "Adults":
 			$age_grp_list['Adults'] = "Adults";
 			break;
@@ -1510,6 +1513,8 @@ $i = 0;
    }
 
    $count_chekboxes = count($eligible_events);
+
+asort($eligible_events);
 
    foreach ($eligible_events as $key => $value) {
 

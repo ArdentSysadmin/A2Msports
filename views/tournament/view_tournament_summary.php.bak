@@ -378,7 +378,7 @@ echo $currency."0.00";
 			?>' />
 			</div>
 			<div style="margin-top:5px; display:table">
-				<?php echo "<span style='font-weight:bold; color:#464646'><a href='".base_url()."player/".$name['Users_ID']."' style='cursor: pointer;'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."&nbsp;&nbsp;</a></span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
+				<?php echo "<span style='font-weight:bold; color:#464646'><a href='".base_url()."player/".$name['Users_ID']."' style='cursor: pointer;'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."</a></span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
 				<?php 
 			$text = strip_tags($comment->Comments);
 $textWithLinks = preg_replace('@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@', '<a href="$1" target="_blank" rel="nofollow">$1</a>', $text);
@@ -425,6 +425,7 @@ if($sponsorsjsn != ""){
 
 <div class="row" style="margin-top:5px;">
 <?php 
+//echo count($sponsors);
  	foreach ($sponsors as $sponsor => $sponsor_addr_link)
 	{
 	if($sponsor_addr_link){
@@ -432,7 +433,7 @@ if($sponsorsjsn != ""){
 		$sponsor_addr_link = "http://" . $sponsor_addr_link;
 		}
 	?>
-	 <div class="col-md-3" style="margin-bottom:20px; min-height: 150px;">  
+	 <div class="<?php if(count($sponsors) == 1){ echo "col-md-12"; } else if(count($sponsors) == 2){ echo "col-md-6"; } else { echo "col-md-3"; } ?>" style="margin-bottom:20px; min-height: 150px;">  
 	 <a target="_blank" href="<?php echo $sponsor_addr_link; ?>" style="cursor:pointer;">
 	 <img src="<?php echo base_url();?>tour_pictures/<?php echo $tour_details->tournament_ID;?>/sponsors/<?php echo $sponsor;?>" width="200" alt="" /></a>
 	 </div>
@@ -441,7 +442,7 @@ if($sponsorsjsn != ""){
   	}
 	else{
 	?>
-	<div class="col-md-3" style="margin-bottom:20px; min-height: 150px;">
+	<div class="<?php if(count($sponsors) == 1){ echo "col-md-12"; } else if(count($sponsors) == 2){ echo "col-md-6"; } else { echo "col-md-3"; } ?>" style="margin-bottom:20px; min-height: 150px;">
 	  <img src="<?php echo base_url();?>tour_pictures/<?php echo $tour_details->tournament_ID;?>/sponsors/<?php echo $sponsor;?>" width="200" alt="" /> 
 	</div>
 	<?php

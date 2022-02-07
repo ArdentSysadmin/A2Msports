@@ -1,6 +1,11 @@
-<?php //if($this->logged_user == 237) {
+<?php
+$blocked_clubs = unserialize (RESERVE_BLOCKED_CLUBS);
+
+if(in_array($this->org_id, $blocked_clubs)) {
 //echo "<pre>"; print_r($this); exit;
-//}
+echo "<h2>This feature is not available! Please contact admin.</h2>";
+exit;
+}
 ?>
 <link href="<?php echo base_url(); ?>css/reserve.css" type="text/css" rel="stylesheet" />
 <link href="<?php echo base_url(); ?>css/tabs-reserve.css" type="text/css" rel="stylesheet" />
@@ -303,7 +308,15 @@ function populateRes(resData) {
 	resHtml= resHtml+name +"</b>"
 	resHtml= /*resHtml+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"*/
 	resHtml= resHtml+"&nbsp(<b>"+num_players+"</b>)&nbsp;"+match_format+"<br> "
+	if(startTimeHour%12 == 0){
+    resHtml= resHtml+startTimeHour+":"+startTimeMin +" " + startAMPM + " - " +EndTimeHour%12+":"+EndTimeMin+ " " + endAMPM + " <br>"
+	}
+	else if(EndTimeHour%12 == 0){
+    resHtml= resHtml+startTimeHour%12+":"+startTimeMin +" " + startAMPM + " - " +EndTimeHour+":"+EndTimeMin+ " " + endAMPM + " <br>"
+	}
+	else{
     resHtml= resHtml+startTimeHour%12+":"+startTimeMin +" " + startAMPM + " - " +EndTimeHour%12+":"+EndTimeMin+ " " + endAMPM + " <br>"
+	}
     //resHtml= resHtml + "" + match_format
 		"<?php if($this->logged_user == $this->academy_admin or $this->is_club_coach){ ?>"
     resHtml= resHtml+"<a class='rsAptDelete' id='del_"+resData[ind].id+"' style='visibility:visible; cursor:pointer'>delete</a>"

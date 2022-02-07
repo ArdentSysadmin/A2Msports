@@ -447,6 +447,46 @@ $('#'+eid).html(ecnt);
 <?php
 }
 ?>
+
+<!-- New code -->
+<table style="color: blue;
+    font-size: 13px;
+    cursor: pointer;
+	background-color: #fff9f3;
+	width: 100%;">
+<?php
+foreach($empty_reg_men_events as $evnts){
+?>
+<tr><td style="height: 29px;">
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+
+foreach($empty_reg_women_events as $evnts){
+?>
+<tr><td style="height: 29px;">
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+
+foreach($empty_reg_mixed_events as $evnts){
+?>
+<tr><td style="height: 29px;">
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+
+foreach($empty_open_events as $evnts){
+?>
+<tr><td style="height: 29px;">
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+?>
+</table>
+
+
+<!-- New code -->
 </table>
 </div>
 

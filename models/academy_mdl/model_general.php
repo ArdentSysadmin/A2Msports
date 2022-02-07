@@ -24,13 +24,20 @@
 			return $res;
 		}
 
-		public function get_orgid($uid)
-		{
+		public function get_orgid($uid) {
 			$data  = array('Aca_URL_ShortCode'=>$uid);
 			$query = $this->db->get_where('Academy_Info',$data);
 			$res   = $query->row_array();
 
 			return $res['Aca_ID'];
+		}
+		
+		public function get_pp_details($pp_id) {
+			$data  = array('pp_busi_id'=>$pp_id);
+			$query = $this->db->get_where('Paypal_Business_Accounts', $data);
+			$res   = $query->row_array();
+
+			return $res;
 		}
 		
 		public function get_page(){

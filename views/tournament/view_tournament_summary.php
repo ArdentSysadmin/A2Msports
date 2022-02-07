@@ -1,3 +1,11 @@
+<?php
+if($this->is_team_league)
+{
+?>
+<link href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<?php
+}
+?>
 <script>
 $(document).ready(function(){
  	 $("#MoreEvents").hide();
@@ -425,6 +433,7 @@ if($sponsorsjsn != ""){
 
 <div class="row" style="margin-top:5px;">
 <?php 
+//echo count($sponsors);
  	foreach ($sponsors as $sponsor => $sponsor_addr_link)
 	{
 	if($sponsor_addr_link){
@@ -432,7 +441,7 @@ if($sponsorsjsn != ""){
 		$sponsor_addr_link = "http://" . $sponsor_addr_link;
 		}
 	?>
-	 <div class="col-md-3" style="margin-bottom:20px; min-height: 150px;">  
+	 <div class="<?php if(count($sponsors) == 1){ echo "col-md-12"; } else if(count($sponsors) == 2){ echo "col-md-6"; } else { echo "col-md-3"; } ?>" style="margin-bottom:20px; min-height: 150px;">  
 	 <a target="_blank" href="<?php echo $sponsor_addr_link; ?>" style="cursor:pointer;">
 	 <img src="<?php echo base_url();?>tour_pictures/<?php echo $tour_details->tournament_ID;?>/sponsors/<?php echo $sponsor;?>" width="200" alt="" /></a>
 	 </div>
@@ -441,7 +450,7 @@ if($sponsorsjsn != ""){
   	}
 	else{
 	?>
-	<div class="col-md-3" style="margin-bottom:20px; min-height: 150px;">
+	<div class="<?php if(count($sponsors) == 1){ echo "col-md-12"; } else if(count($sponsors) == 2){ echo "col-md-6"; } else { echo "col-md-3"; } ?>" style="margin-bottom:20px; min-height: 150px;">
 	  <img src="<?php echo base_url();?>tour_pictures/<?php echo $tour_details->tournament_ID;?>/sponsors/<?php echo $sponsor;?>" width="200" alt="" /> 
 	</div>
 	<?php

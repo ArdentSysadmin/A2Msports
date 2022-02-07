@@ -1595,6 +1595,8 @@ $sp_level = $this->input->post('level');
 		<input type="checkbox" class='age' id='age_u18' name="age[]" value="U18"><label class='control-label' for='age_u18'>&nbsp;Under 18</label>
 		<br>
 		<input type="checkbox" class='age' id='age_u19' name="age[]" value="U19"><label class='control-label' for='age_u19'>&nbsp;Under 19</label>
+		<br>
+		<input type="checkbox" class='age' id='age_u21' name="age[]" value="U21"><label class='control-label' for='age_u21'>&nbsp;Under 21</label>
 	</div>
 
 	<div class='col-md-2 col-xs-4'>
@@ -1603,6 +1605,10 @@ $sp_level = $this->input->post('level');
 		<input type="checkbox" class='age' id='age_40p' name="age[]" value="Adults_40p"><label class='control-label' for='age_40p'>&nbsp;40s</label>
 		<br>
 		<input type="checkbox" class='age' id='age_50p' name="age[]" value="Adults_50p"><label class='control-label' for='age_50p'>&nbsp;50s&nbsp;</label>
+		<br>
+		<input type="checkbox" class='age' id='age_60p' name="age[]" value="Adults_60p"><label class='control-label' for='age_60p'>&nbsp;60s&nbsp;</label>
+		<br>
+		<input type="checkbox" class='age' id='age_70p' name="age[]" value="Adults_70p"><label class='control-label' for='age_70p'>&nbsp;70s&nbsp;</label>
 	</div>
 
 	<div class='col-md-3 col-xs-4'>			

@@ -2030,10 +2030,10 @@ else { return true; }
 <div class="fromtitle">Publish </div>
 Do you want to publish the tournament?&nbsp;
 <label for="is_publish_yes">
-<input type="radio" id="is_publish_yes" name="is_publish" value="1" checked="checked"  />Yes
+<input type="radio" id="is_publish_yes" name="is_publish" value="1" checked="checked"  /> Yes
 </label>&nbsp;&nbsp;
 <label for="is_publish_no">
-<input type="radio" id="is_publish_no" name="is_publish" value="0" />No
+<input type="radio" id="is_publish_no" name="is_publish" value="0" /> No
 </label>
 
 <div id="academy_text" style="display: none">

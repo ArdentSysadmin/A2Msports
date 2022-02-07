@@ -741,6 +741,9 @@ if($numItems > 0)
 foreach($option_array as $group)
 {
 switch ($group){
+case "U9":
+echo "Under 9";
+break;
 case "U10":
 echo "Under 10";
 break;

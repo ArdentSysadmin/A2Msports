@@ -217,7 +217,7 @@ $reg_players = league::get_tourn_team_players($tour_details->tournament_ID);
 <th class="score-position" valign="center" align="center">City</th>
 <th class="score-position" valign="center" align="center">State</th>
 <!-- <th class="score-position" valign="center" align="center">Pay Status</th> -->
-<th class="score-position" valign="center" align="center">A2MScore</th>
+<th class="score-position" valign="center" align="center">A2M Rating</th>
 <th class="score-position" valign="center" align="center">Registered on</th>
 </tr>
 </thead>

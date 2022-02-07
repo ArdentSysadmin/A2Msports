@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 require(APPPATH.'/libraries/REST_Controller.php');
-
+//error_reporting(-1);
 
 // This can be removed if you use __autoload() in config.php OR use Modular Extensions
 /** @noinspection PhpIncludeInspection */
@@ -35,8 +35,9 @@ class Scores extends REST_Controller {
 		$match_date	= $this->input->post('match_date');
 
 		$match_info = $this->mscore->get_match_info($match_id);
-
+//echo "<pre>"; print_r($match_info);
 		if($win_type == 'ADDSCORE' and $match_info){
+			//echo "Test"; exit;
 		$p1_score = $this->input->post('p1_score');
 		$p2_score = $this->input->post('p2_score');
 		$add_score  = $this->mscore->add_score($match_id, $p1_score, $p2_score, $match_date, $match_info);

@@ -263,7 +263,7 @@ if($this->logged_user == $this->academy_admin) {
 <?php
 //}
 }?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Membership</a></li>
 <li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
 </ul>
@@ -401,7 +401,7 @@ if($this->logged_user == $this->academy_admin) {
 <?php
 //}
 }?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Membership</a></li>
 <li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
 </ul>
@@ -574,7 +574,7 @@ if($this->logged_user == $this->academy_admin) {
 <?php
 //}
 }?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Membership</a></li>
 <li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
 </ul>

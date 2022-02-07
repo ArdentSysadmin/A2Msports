@@ -587,7 +587,7 @@ $config = array(
 'upload_path'	  => $club_bnr_dir,
 'allowed_types' => "gif|jpg|png|jpeg",
 'overwrite'		=> TRUE,
-'max_size'		=> "6000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
+'max_size'		=> "15000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
 'max_height'	=> "8000",
 'max_width'	=> "10000");
 

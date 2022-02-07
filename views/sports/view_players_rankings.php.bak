@@ -150,12 +150,12 @@ if(count($loc_query) > 0 and $this->session->userdata('users_id') == 240){
 
 <!-- <p style="padding-top:10px"><a href="#"><u>Advanced Search</u></a></p> -->
 
-<div class="col-md-12 tab-content">
+<div class="col-md-12 tab-content table-responsive">
 <?php 
 if(count($loc_query) == 0)
 {
 ?>
-<table class="table tab-score table-responsive">
+<table class="table tab-score">
 <tr class="top-scrore-table">
 <td class="score-position">Rank</td>
 <td class="score-position">Player Name</td>
@@ -173,7 +173,7 @@ if(count($loc_query) == 0)
 <?php
 }else{
 ?>
-<table id="searchplayers" class="table tab-score  table-responsive">
+<table id="searchplayers" class="table tab-score">
 <thead>
 <tr class="top-scrore-table">
 <td class="score-position">Rank</td>

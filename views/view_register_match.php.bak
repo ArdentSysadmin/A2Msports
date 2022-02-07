@@ -1118,7 +1118,7 @@ $(document).ready(function(){
 
 </div>
 
-<form class="form-horizontal" id='myform' method='post' role="form"  action="<?php echo base_url(); ?>league/buy/<?php echo $r->tournament_ID;?>" <?=$block_status;?>>
+<form class="form-horizontal mb-border" id='myform' method='post' role="form"  action="<?php echo base_url(); ?>league/buy/<?php echo $r->tournament_ID;?>" <?=$block_status;?>>
  
 <div class='col-md-8'>
 	
@@ -1281,6 +1281,9 @@ $i = 0;
 			case "U19":
 			$age_grp_list['U19'] = "Under 19";
 			break;
+			case "U21":
+			$age_grp_list['U21'] = "Under 21";
+			break;
 			case "Adults":
 			$age_grp_list['Adults'] = "Adults";
 			break;
@@ -1292,6 +1295,12 @@ $i = 0;
 			break;
 			case "Adults_50p":
 			$age_grp_list['Adults_50p'] = "50s";
+			break;
+			case "Adults_60p":
+			$age_grp_list['Adults_60p'] = "60s";
+			break;
+			case "Adults_70p":
+			$age_grp_list['Adults_70p'] = "70s";
 			break;
 			case "Adults_veteran":
 			$age_grp_list['Adults_veteran'] = "Veteran";
@@ -1376,7 +1385,10 @@ $i = 0;
                 case $user_age == 19:
                    $user_age_grp = "U19";
                    break;
-                case $user_age>19 && $user_age<=29:
+				case $user_age == 21:
+                   $user_age_grp = "U21";
+                   break;
+                case $user_age>21 && $user_age<=29:
                    $user_age_grp = "Adults";
                    break;
                 case $user_age>=30 && $user_age<=39:
@@ -1385,8 +1397,14 @@ $i = 0;
                 case $user_age>=40 && $user_age<=49:
                    $user_age_grp = "Adults_40p";
                    break;
-                case $user_age>=50 && $user_age<=60:
+                case $user_age>=50 && $user_age<=59:
                    $user_age_grp = "Adults_50p";
+                   break;
+				case $user_age>=60 && $user_age<=69:
+                   $user_age_grp = "Adults_60p";
+                   break; 
+				case $user_age>=70 && $user_age<=90:
+                   $user_age_grp = "Adults_70p";
                    break;
         }
 
@@ -1416,9 +1434,9 @@ $i = 0;
     }
 
 	 $event_format = league::regenerate_events($multi_events);
-//if($this->logged_user == 240){
+if($this->logged_user == 240){
 //echo "<pre>"; print_r($event_format); exit;
-//}
+}
 	$eligible_events				= array();
     $not_eligible_events		= array();
     $gender_eligible_events = array();
@@ -1627,7 +1645,7 @@ $rating = $est_usatt_rating;
 
    $count_chekboxes = count($eligible_events);
 
-//sort($eligible_events);
+asort($eligible_events);
 
    foreach ($eligible_events as $key => $value) {
 
@@ -2053,9 +2071,8 @@ var count = (db+mx+sg);
 
 <div class='form-group text1' id='tc_div'>
 
-<label class='control-label col-md-4 padtop text1' for='id_accomodation'> <input type="checkbox" name="recommend" id="recommend" value="1" autocomplete='off' required /></label>
-  I accept the Tournament <a style='cursor:pointer;' onclick='terms_conditions()'><b>Terms & Conditions</b></a> of <br />A2M Sports.<br />
-  
+<label class='control-label col-md-4 padtop text1' for='id_accomodation'> <input type="checkbox" name="recommend" id="recommend" value="1" autocomplete='off'  /></label>
+  I accept the Tournament <a style='cursor:pointer;' onclick='terms_conditions()'><b>Terms & Conditions</b></a> of A2MSports.<br /><br />
 </div>
 
 <div class='form-group'>

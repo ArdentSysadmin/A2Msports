@@ -59,7 +59,7 @@ foreach($club_leagues as $row) {
 		 <div class="course-item">
 			<div class="course-img">
 			<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>">
-			<img src="<?php echo base_url(); ?>tour_pictures/<?php if($row->TournamentImage!=""){echo $row->TournamentImage; }
+			<img title="<?=$row->tournament_title;?>" src="<?php echo base_url(); ?>tour_pictures/<?php if($row->TournamentImage!=""){echo $row->TournamentImage; }
 			else {
 			switch($row->SportsType) {
 			case 1:
@@ -110,7 +110,7 @@ foreach($club_leagues as $row) {
 			</div>
 			<div class="course-body">
 				<div class="course-desc">
-					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>"><?php echo $row->tournament_title;?></a></h4>
+					<h4 class="course-title" style='font-size:15px;'><a title="<?=$row->tournament_title;?>" href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>"><?php echo substr($row->tournament_title, 0, 27); if(strlen($row->tournament_title) > 27) echo "..."; ?></a></h4>
 					  <p><b>Sport:</b> <?php 
 						$get_sport = events::get_sport($row->SportsType);
 						echo $get_sport['Sportname'];
@@ -202,7 +202,7 @@ foreach($club_events as $row) {
 						<?php 
 						$get_loc = events::get_location($row->Ev_Location);
 						?>
-						<b>Location:</b> <?php echo $get_loc['loc_address']. ', ' .$get_loc['loc_city']. ', ' .$get_loc['loc_state']; ?></p>
+						<b>Location:</b> <?php echo $get_loc['loc_city']. ', ' .$get_loc['loc_state']; ?></p>
 						<?php 
 						$now		  = strtotime("now");
 						$end_date = strtotime($row->Ev_End_Date);

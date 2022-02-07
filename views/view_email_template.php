@@ -365,6 +365,10 @@ case "U19":
 echo "Under 19";
 break;
 
+case "U21":
+echo "Under 21";
+break;
+
 case "Adults":
 echo "Adults ";
 break;
@@ -376,6 +380,12 @@ echo "40s";
 break;
 case "Adults_50p":
 echo "50s";
+break;
+case "Adults_60p":
+echo "60s";
+break;
+case "Adults_70p":
+echo "70s";
 break;
 case "Adults_veteran":
 echo "Veteran";
@@ -2039,7 +2049,12 @@ Hi <?php echo $name; ?>,<br />
 </div>
 
 <div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
-<?php echo "User, <b>{$member}</b> has enrolled for Membership Type <b>{$subscription}</b> (<b>$club_name</b>).<br />Following are the details."; ?><br /><br />
+<?php echo "The following user has enrolled for Membership Type <b>{$subscription}</b> (<b>$club_name</b>)."; ?>
+<br /><br />
+<?php echo "Name: ".$member; ?><br />
+<?php echo "Email: ".$member_email; ?><br />
+<?php echo "Contact No.: ".$member_contact; ?><br />
+
 <?php if($tx_id){ ?>
 <?php echo "Subscription: ".$subscription; ?><br />
 <?php echo "Subscription Code: ".$sub_code; ?><br />

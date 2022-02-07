@@ -668,6 +668,9 @@ $(function() {
 		$get_sport = league::getonerow($tourn_id);
 		$sport_id = $get_sport->SportsType;
 		?>
+					<input type='checkbox' name="<?php echo $rr_matches[$m]->Tourn_match_id; ?>" id='wff_add' class='wff_score' />&nbsp;
+					Declare winner by Win by Forfeit
+
 		<table class="score-cont">
 					 <?php if($sport_id == 1){ ?>
 					 <tr>

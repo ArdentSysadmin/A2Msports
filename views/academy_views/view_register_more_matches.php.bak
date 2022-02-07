@@ -1023,7 +1023,7 @@ if($now < $reg_close){
    		$event_time = '';
    	}
 
-      echo "<tr><td><input type='checkbox' class='".$fee_class."' name='events[]' value='".$key."'/>".$value.' '.$event_time."</td></tr>";
+      echo "<tr><td><input type='checkbox' class='".$fee_class."' name='events[]' value='".$key."'/>&nbsp;".$value.' '.$event_time."</td></tr>";
    }
    }else{
    	  echo "<tr><td>No Eligible Events</td></tr>";

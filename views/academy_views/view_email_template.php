@@ -1137,6 +1137,38 @@ Given below are the Elite Program Inquire details.
 
 
 <?php
+case "Club Member Notif - Membership SubScr":
+?>
+<td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+Hi <?php echo $name; ?>,<br />
+</div>
+
+<div style="Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px">
+<?php echo "Thank you for subscription to <b>{$subscription}</b> (<b>$club_name</b>). 
+<br />Following are the details"; ?><br /><br />
+<?php if($tx_id){ ?>
+<?php echo "Subscription: ".$subscription; ?><br />
+<?php echo "Subscription Code: ".$sub_code; ?><br />
+<?php echo "Amount: $".number_format($amount, 2); ?><br />
+<?php echo "Transaction ID: ".$tx_id; ?><br />
+<?php } ?>
+<br />
+<?php echo "If you have any questions, please contact us by reply to this email."; ?><br />
+</div>
+
+<div style="Margin-top:0;color:#565656;font-family:Georgia,serif;font-size:16px;line-height:25px;Margin-bottom:25px">
+Thank you,<br /> 
+Admin,<br />
+<?php echo $aca_name;?>.</div>
+</td>
+<?php
+break;
+?>
+
+
+<?php
 case "Contact Us - Club":
 ?>
 <td style="padding:15px; line-height:20px; background:#eeeeee; border-radius:10px;">

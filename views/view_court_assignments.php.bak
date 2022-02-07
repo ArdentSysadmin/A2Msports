@@ -28,7 +28,7 @@ window.open(path+'league/courts_print/'+tid,null,"height=1200,width=1400,status=
 <?php
 //echo "<pre>";
 //print_r($matches->result());
-$color_arr = array('8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc');
+$color_arr = array('8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc','8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc','8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc');
 
 $res = $matches->result();
 $c = 0;
@@ -50,7 +50,11 @@ foreach($res as $i => $match){
 //echo "<pre>";
 //print_r($res);
 //print_r($courts_arr);
+
 sort($court_titles);
+//const sortAlphaNum = (a, b) => a.localeCompare(b, 'en', { numeric: true });
+//$court_titles = $court_titles.sort(sortAlphaNum));
+
 ?>
 <br />
 <br />

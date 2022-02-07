@@ -461,31 +461,31 @@ else
 
 public function delete_lt($short_code){
 
-$org_id = $this->academy_id;
+	$org_id = $this->academy_id;
 
 	if(!$this->is_club_admin){ echo "Unauthorised Access!"; exit; }
 	if(!$org_id){ echo "Something went wrong!"; exit; }
 
-$del_images  = $this->input->post('sel_ps');
-$all_images   = json_decode($this->input->post('all_ps'), true);
+	$del_images  = $this->input->post('sel_ps');
+	$all_images   = json_decode($this->input->post('all_ps'), true);
 
-foreach($del_images as $index){
-		unset($all_images[$index]);
-}
-$upd_imgs = array_values($all_images);
+	foreach($del_images as $index){
+			unset($all_images[$index]);
+	}
+	$upd_imgs = array_values($all_images);
 
-/*echo "<pre>";
-print_r($_POST);
-print_r($this->input->post('sel_ps'));
-print_r($this->input->post('all_ps'));
-print_r($upd_imgs);
-exit;*/
+	/*echo "<pre>";
+	print_r($_POST);
+	print_r($this->input->post('sel_ps'));
+	print_r($this->input->post('all_ps'));
+	print_r($upd_imgs);
+	exit;*/
 
-$data['Aca_ID']			   = $org_id;
-if(!empty($upd_imgs))
-	$data['Facility_Leadership']  = json_encode($upd_imgs);
-else
-	$data['Facility_Leadership']  = NULL;
+	$data['Aca_ID']			   = $org_id;
+	if(!empty($upd_imgs))
+		$data['Facility_Leadership']  = json_encode($upd_imgs);
+	else
+		$data['Facility_Leadership']  = NULL;
 //echo "<pre>"; print_r($data); exit;
 	$upd_details = $this->model_academy->update_facility_lt_teams($data); 
 }
@@ -587,7 +587,7 @@ $config = array(
 'upload_path'	  => $club_bnr_dir,
 'allowed_types' => "gif|jpg|png|jpeg",
 'overwrite'		=> TRUE,
-'max_size'		=> "6000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
+'max_size'		=> "10000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
 'max_height'	=> "8000",
 'max_width'	=> "10000");
 

@@ -16,13 +16,28 @@
 			return $res;
 		}
 
-		public function get_orgid($uid)
-		{
+		public function check_is_clubCoach($club, $user){
+			$data  = array('Is_coach' => 1,'Users_ID' => $user, 'coach_academy' => $club);
+			$query = $this->db->get_where('Users', $data);
+			$res   = $query->row_array();
+
+			return $res;
+		}
+
+		public function get_orgid($uid) {
 			$data  = array('Aca_URL_ShortCode'=>$uid);
 			$query = $this->db->get_where('Academy_Info',$data);
 			$res   = $query->row_array();
 
 			return $res['Aca_ID'];
+		}
+		
+		public function get_pp_details($pp_id) {
+			$data  = array('pp_busi_id'=>$pp_id);
+			$query = $this->db->get_where('Paypal_Business_Accounts', $data);
+			$res   = $query->row_array();
+
+			return $res;
 		}
 		
 		public function get_page(){
@@ -50,7 +65,7 @@
 			$data  = array('Aca_URL_ShortCode' => $uid);
 			$query = $this->db->get_where('Academy_Info', $data);
 			$res   = $query->row_array();
-
+//echo "U ".$this->logged_user."  - ".$res['Aca_User_id']." - ".$uid; exit;
 			return $res['Aca_User_id'];
 		}
 

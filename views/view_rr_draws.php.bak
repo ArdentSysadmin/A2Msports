@@ -1,3 +1,8 @@
+<style>
+input:focus::placeholder {
+  color: transparent;
+}
+</style>
 <?php
 if($club_url == "https://a2msports.com/league"){
 	$profile_base = base_url();
@@ -155,13 +160,25 @@ if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 	if($reg_players){
 		//$player_select = "<select>";
 		foreach($reg_players as $rp){
-			$user_id = $rp->User_ID;
+			$user_id = $rp->Users_ID;
 			$fname = $rp->Firstname;
 			$lname = $rp->Lastname;
 		$player_select .= "<option value='".$user_id."'>".$fname ." ".$lname."</option>";
 		}
 		//$player_select .= "</select>";
 
+	}
+
+	if($event_reg_players){
+		//$player_select = "<select>";
+		foreach($event_reg_players as $rp){
+			$user_id = $rp->Users_ID;
+			$fname = $rp->Firstname;
+			$lname = $rp->Lastname;
+		$player_select_opt .= "<option value='".$user_id."'>".$fname ." ".$lname."</option>";
+		}
+		//$player_select .= "</select>";
+//echo "<pre>"; print_r($player_select_opt); exit;
 	}
 ?>
 <input class="form-control col-md-5" type="text" name="draw_title" id="draw_title" style="width:25%;margin-bottom: 10px;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
@@ -294,22 +311,24 @@ if($rr_matches[$m]->Player2_Partner){
 $tm_id = $rr_matches[$m]->Tourn_match_id;
 $player1_loc_icon = "";
 $player2_loc_icon = "";
+$home_user = 'player1';
+//$away_user = 'player2';
 
-	if($rr_matches[$m]->Match_Location_User == $rr_matches[$m]->Player1){
+	if($rr_matches[$m]->Match_Location_User and $rr_matches[$m]->Match_Location_User == $rr_matches[$m]->Player1){
 		$get_homeloc = league::get_home_location($player1['Home_loc_id']);
 		$player1_loc_icon = "<img src='".base_url()."icons/home.png' style='width:24px;height:24px;' />";
 		$player2_loc_icon = "<img src='".base_url()."icons/car.png' style='width:24px;height:24px;' />";
 		$home_user = 'player1';
 		$away_user = $rr_matches[$m]->Player2;
 	}
-	else if($rr_matches[$m]->Match_Location_User == $rr_matches[$m]->Player2){
+	else if($rr_matches[$m]->Match_Location_User and $rr_matches[$m]->Match_Location_User == $rr_matches[$m]->Player2){
 		$get_homeloc = league::get_home_location($player2['Home_loc_id']);
 		$player2_loc_icon = "<img src='".base_url()."icons/home.png' style='width:24px;height:24px;' />";
 		$player1_loc_icon = "<img src='".base_url()."icons/car.png' style='width:24px;height:24px;' />";
 		$home_user = 'player2';
 		$away_user = $rr_matches[$m]->Player1;
 	}
-
+//echo $home_user;
 ?>
 
 <tr>
@@ -364,9 +383,8 @@ $('#sdate'+mid).fdatepicker({
 		}
 	?>
 </td>
-<td>
+<td>&nbsp;
 <?php
-
 if($home_user == 'player1'){
 				 $bold_start = ""; $bold_end = ""; 
 
@@ -407,6 +425,30 @@ echo "<a href='".$profile_base."player/".$player2['Users_ID']."' target='_blank'
 	}
 }
 	?>
+	<br />
+	<?php
+	if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+		echo "<select id='p1_{$rr_matches[$m]->Tourn_match_id}' name='player1' class='rr_ch_player'>";
+		echo "<option value=''>Player1</option>";
+		echo $player_select_opt;
+		echo "</select>";
+
+			$is_disable = "";
+			$title = "";
+
+		if(!$rr_matches[$m]->Player1){
+			$is_disable = "disabled";
+			$title = "title = 'Player1 is not available'";
+		}
+
+		echo "&nbsp;&nbsp;";
+		echo "<select id='p1p_{$rr_matches[$m]->Tourn_match_id}' name='player1partner' class='rr_ch_player' $is_disable $title>";
+		echo "<option value=''>Player1 Partner</option>";
+		echo $player_select_opt;
+		echo "</select>";
+	}
+	?>
+
 	</td>
 	 <td style="padding-left:15px;">
 	 <?php 
@@ -442,7 +484,30 @@ echo "<a href='".$profile_base."player/".$player1['Users_ID']."' target='_blank'
 		$p2_result = 'W';
 	}
 	}
-	 ?></td>
+	 ?>
+	 	<br />
+	<?php
+	if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
+		echo "<select id='p2_{$rr_matches[$m]->Tourn_match_id}' name='player2' class='rr_ch_player'>";
+		echo "<option value=''>Player2</option>";
+		echo $player_select_opt;
+		echo "</select>";
+			$is_disable = "";
+			$title = "";
+		if(!$rr_matches[$m]->Player2){
+			$is_disable = "disabled";
+			$title = "title = 'Player2 is not available'";
+		}
+
+		echo "&nbsp;&nbsp;";
+		echo "<select id='p2p_{$rr_matches[$m]->Tourn_match_id}' name='player2partner' class='rr_ch_player' $is_disable $title>";
+		echo "<option value=''>Player2 Partner</option>";
+		echo $player_select_opt;
+		echo "</select>";
+	}
+	?>
+	<!-- <input style="padding:2px;" type="button" id='update_players_<?=$rr_matches[$m]->Tourn_match_id;?>' name='update_players' class='league-form-submit1 update_players' value=" Update " /> -->
+	 </td>
 	
 	<?php if($tour_details->Tournament_type == 'Flexible League'){ ?>
 	 <td style="padding-left:15px;">
@@ -1048,3 +1113,57 @@ $k++;
 <!--  Grid view -->
 <link href="<?php echo base_url();?>css/foundation-datepicker.css" rel="stylesheet">
 <script src="<?php echo base_url();?>js/foundation-datepicker.js"></script>
+<script>
+$(document).ready(function() {
+	/*$('.update_players').click(function(){
+		var this_id = $(this).attr('id');
+		var id_split	= this_id.split('_');
+		var mid		= id_split[2];
+		var tourn_id = "<?php echo $tourn_id; ?>";
+
+		var p1	= $("#p1_"+mid).val();
+		var p1p = $("#p1p_"+mid).val();
+		var p2	= $("#p2_"+mid).val();
+		var p2p = $("#p2p_"+mid).val();
+		if((p1 || p1p) && (p2 || p2p)){
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/upd_rr_players/',
+				data:{tourn_id:tourn_id, mid:mid, p1:p1, p1p:p1p, p2:p2, p2p:p2p},
+				success:function(res){
+					alert(res);
+				}
+			});
+		}
+		else{
+			alert("select the players!");
+		}
+	});*/
+	
+	$('.rr_ch_player').change(function(e){
+		if($(this).val() != ''){
+			if(confirm("All the applicable matches will be updated with this player! \n Are you sure to update the player?")){
+				var this_id = $(this).attr('id');
+				var new_pl = $(this).val();
+				var id_split	= this_id.split('_');
+				var pl_pos	= id_split[0];
+				var mid		= id_split[1];
+				var tourn_id = "<?php echo $tourn_id; ?>";
+
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/upd_rr_players/',
+				data:{tourn_id:tourn_id, mid:mid, new_pl:new_pl, pl_pos:pl_pos},
+				success:function(res){
+					alert(res);
+				}
+			});
+
+			}
+			else{
+				$(this).val('').trigger('change');
+			}
+		}
+	});
+});
+</script>

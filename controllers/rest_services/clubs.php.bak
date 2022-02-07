@@ -544,7 +544,8 @@ class Clubs extends REST_Controller {
 
 			$temp1  = null;
 			$get_club_loc = $this->mclub->get_clubs_locations($club->Aca_ID);
-			
+			$blocked_clubs = unserialize (RESERVE_BLOCKED_CLUBS);
+
 			if($get_club_loc){
 				foreach($get_club_loc as $club_loc){
 					$data2 = array();
@@ -565,6 +566,8 @@ class Clubs extends REST_Controller {
 					if(($club->Aca_User_id == $user_id) or $is_coach)
 					$data2['allow_payn_play'] = true;
 
+						if(!in_array($club->Aca_ID, $blocked_clubs))
+						$data2['allow_payn_play'] = false;
 
 					$temp1[] = $data2;
 				}
@@ -701,7 +704,10 @@ class Clubs extends REST_Controller {
 		
 		$get_club_list = $this->mclub->get_clubs_having_courts($user_id);
 		
+		$blocked_clubs = unserialize (RESERVE_BLOCKED_CLUBS);
+
 		foreach($get_club_list as $club){
+			if(!in_array($club->Aca_ID, $blocked_clubs)){
 			$data = array();
 			$temp = array();
 			$temp1 = array();
@@ -774,6 +780,7 @@ class Clubs extends REST_Controller {
 
 			$data['Club_court_locations'] = $temp1;
 			$data3[] = $data;
+			}
 		}
 
 		$this->response($data3);
@@ -1474,7 +1481,8 @@ $stTime = array(); $edTime = array(); $sunPrice = array(); $monPrice = array(); 
 							'break'			 => $break_times['sun'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['sun']
 						   );
 
@@ -1483,7 +1491,8 @@ $stTime = array(); $edTime = array(); $sunPrice = array(); $monPrice = array(); 
 							'break'			 => $break_times['mon'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['mon']
 						   );
 
@@ -1492,7 +1501,8 @@ $stTime = array(); $edTime = array(); $sunPrice = array(); $monPrice = array(); 
 							'break'			 => $break_times['tue'], 
 							'step'			 => $get_court_info['slot_duration'],  
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['tue']
 						   );
 
@@ -1501,7 +1511,8 @@ $stTime = array(); $edTime = array(); $sunPrice = array(); $monPrice = array(); 
 							'break'			 => $break_times['wed'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['wed']
 						   );
 
@@ -1510,7 +1521,8 @@ $stTime = array(); $edTime = array(); $sunPrice = array(); $monPrice = array(); 
 							'break'			 => $break_times['thu'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['thu']
 						   );
 
@@ -1519,7 +1531,8 @@ $stTime = array(); $edTime = array(); $sunPrice = array(); $monPrice = array(); 
 							'break'			 => $break_times['fri'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['fri']
 						   );
 
@@ -1528,7 +1541,8 @@ $stTime = array(); $edTime = array(); $sunPrice = array(); $monPrice = array(); 
 							'break'			 => $break_times['sat'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['sat']
 						   );
 
@@ -2348,7 +2362,7 @@ $bookings = $post_data['bookings'];
 						'is_shareable'	=> $is_sharable);
 					$data['court_timings'] = array('open_days' => array('sun','mon','tue','wed','thu','fri','sat'), 'close_days' => null);
 
-				$max_hours	= $get_court_info['max_hours'];
+				$max_hours	= $get_court_info['max_hours'];   //consider this as maximum slots
 				if($is_club_admin or $is_coach){
 				$max_hours	= 10;
 				}
@@ -2539,7 +2553,8 @@ foreach($court_valid_times as $tm){
 							'break'			 => $break_times['sun'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['sun']
 						   );
 
@@ -2548,7 +2563,8 @@ foreach($court_valid_times as $tm){
 							'break'			 => $break_times['mon'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['mon']
 						   );
 
@@ -2557,7 +2573,8 @@ foreach($court_valid_times as $tm){
 							'break'			 => $break_times['tue'], 
 							'step'			 => $get_court_info['slot_duration'],  
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['tue']
 						   );
 
@@ -2566,7 +2583,8 @@ foreach($court_valid_times as $tm){
 							'break'			 => $break_times['wed'], 
 							'step'			 => $get_court_info['slot_duration'], 
 							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['wed']
 						   );
 
@@ -2574,8 +2592,9 @@ foreach($court_valid_times as $tm){
 							'actual_timings' => $court_timings, 
 							'break'			 => $break_times['thu'], 
 							'step'			 => $get_court_info['slot_duration'], 
-							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'min_booking_hours'  => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['thu']
 						   );
 
@@ -2583,8 +2602,9 @@ foreach($court_valid_times as $tm){
 							'actual_timings' => $court_timings, 
 							'break'			 => $break_times['fri'], 
 							'step'			 => $get_court_info['slot_duration'], 
-							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'min_booking_hours'  => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['fri']
 						   );
 
@@ -2592,8 +2612,9 @@ foreach($court_valid_times as $tm){
 							'actual_timings' => $court_timings, 
 							'break'			 => $break_times['sat'], 
 							'step'			 => $get_court_info['slot_duration'], 
-							'min_booking_hours' => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
-							'max_booking_hours'	=> "{$max_hours}",
+							'min_booking_hours'  => ($get_court_info['slot_duration'] * $get_court_info['min_book_slots']), 
+							'max_booking_hours' => ($get_court_info['slot_duration'] * $max_hours), 
+							//'max_booking_hours'	=> "{$max_hours}",
 							'prices'		 => $pr['sat']
 						   );
 
@@ -2731,7 +2752,7 @@ $temp_arr = array();
 			if($get_coach_user['Coach_Priv_Members_Disc'])
 			$priv_member_disc	  = $get_coach_user['Coach_Priv_Members_Disc'];
 
-			if($get_coach_user['Coach_Priv_Members_Disc'])
+			if($get_coach_user['Coach_Grp_Members_Disc'])
 			$grp_member_disc	  = $get_coach_user['Coach_Grp_Members_Disc'];
 		}
 
@@ -3234,7 +3255,7 @@ $bookings = NULL;
 		$coach_id	= $this->input->get('coach_id');
 		$user_id	= $this->input->get('user_id');
 		$txn_amount = $this->input->get('amount');
-		$is_coach = $this->mclub->is_coach(0, $user_id);
+		$is_coach = $this->mclub->is_coach(0, $coach_id);
 
 		//$court_det  = $this->mclub->get_coach_info($court_id);
 		
@@ -3252,7 +3273,9 @@ $bookings = NULL;
 			//else{
 				$get_det = $this->muser->get_paypal('5');
 			//}
-		$user_det = $this->mclub->get_user_details($user_id);
+		$user_det	= $this->mclub->get_user_details($user_id);
+		$coach_det  = $this->mclub->get_user_details($coach_id);
+
 		$this->load->library('paypal_lib');
 		
 		$paypalID = $get_det['paypal_merch_id'];
@@ -3269,11 +3292,78 @@ $bookings = NULL;
 		//$this->paypal_lib->add_field('player', $this->logged_user);
 		$this->paypal_lib->add_field('on0', $user_id);
 		$this->paypal_lib->add_field('item_number',  $coach_id);
-		$this->paypal_lib->add_field('item_name',  "Coach - ".$user_det['Firstname']." ".$user_det['Lastname']);
+		$this->paypal_lib->add_field('item_name',  "Coach - ".$coach_det['Firstname']." ".$coach_det['Lastname']);
 		$this->paypal_lib->add_field('amount', $txn_amount);        
 		//$this->paypal_lib->image($logo);
 		
 		$htmlForm = $this->paypal_lib->paypal_api_form();
+
+
+		/*$data['MID']		= PAYTM_MERCHANT_MID;
+		$data['ORDER_ID']	= $order_id;
+		$data['CUST_ID']	= $user_id;
+		$data['TXN_AMOUNT'] = $txn_amount;
+		$data['CHECKSUMHASH'] = $checkSum;*/
+		$data['htmlForm'] = $htmlForm;
+
+		$res = array($data);	
+		//$this->response($res);
+		echo $htmlForm;
+		}
+		else{
+			$res = array('Error: '."Invalid Coach ID!");
+			$this->response($res, 400);
+		}
+
+	}
+
+
+		public function paypalSandboxCoachChecksum_get(){
+
+		$coach_id	= $this->input->get('coach_id');
+		$user_id	= $this->input->get('user_id');
+		$txn_amount = $this->input->get('amount');
+		$is_coach = $this->mclub->is_coach(0, $coach_id);
+
+		//$court_det  = $this->mclub->get_coach_info($court_id);
+		
+		if(!$coach_id or !$user_id or !$txn_amount){
+			$res = array('Error: '."Please provide all the information (CoachID, UserID, Amount)");
+			$this->response($res);
+			exit;
+		}
+	
+		if($is_coach){
+
+			//if($court_det['gateway_name'] == 'paypal'){
+			//	$get_det = $this->muser->get_paypal($court_det['payment_ref_id']);
+			//}
+			//else{
+				$get_det = $this->muser->get_paypal('8');
+			//}
+		$user_det = $this->mclub->get_user_details($user_id);
+		$coach_det = $this->mclub->get_user_details($coach_id);
+		$this->load->library('paypal_lib');
+		
+		$paypalID = $get_det['paypal_merch_id'];
+		//echo $paypalID; exit;
+		$logo = base_url().'images/logo.png';
+		$returnURL = 'https://a2msports.com/rest_services/clubs/paypalSuccess';
+		$cancelURL = 'https://a2msports.com/rest_services/clubs/paypalCancel';
+
+		$this->paypal_lib->add_field('business', $paypalID);
+		$this->paypal_lib->add_field('return', $returnURL);
+		$this->paypal_lib->add_field('cancel_return', $cancelURL);
+		//$this->paypal_lib->add_field('notify_url', $notifyURL);
+		$this->paypal_lib->add_field('coach_id', $coach_id);
+		//$this->paypal_lib->add_field('player', $this->logged_user);
+		$this->paypal_lib->add_field('on0', $user_id);
+		$this->paypal_lib->add_field('item_number',  $coach_id);
+		$this->paypal_lib->add_field('item_name',  "Coach - ".$coach_det['Firstname']." ".$coach_det['Lastname']);
+		$this->paypal_lib->add_field('amount', $txn_amount);        
+		//$this->paypal_lib->image($logo);
+		
+		$htmlForm = $this->paypal_lib->sandbox_paypal_api_form();
 
 
 		/*$data['MID']		= PAYTM_MERCHANT_MID;

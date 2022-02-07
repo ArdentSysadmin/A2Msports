@@ -21,7 +21,7 @@ $org_amt = $('#amtp'+$a[2]).val();
     }
   });
   if(atLeastOneIsChecked == false){
-		alert('Select atlease one player to proceed!');
+		alert('Select atleast one player to proceed!');
 		e.preventDefault();
 		return false;
   }
@@ -170,7 +170,7 @@ checkboxes.style.display = "block";
 
 <div class='col-md-12'>
 <?php $tourn_reg_names = league::get_reg_tourn_player_names($tour_details->tournament_ID); 
-//print_r($tourn_reg_names);?>
+//echo "<pre>";print_r($tourn_reg_names);?>
 
 <!-- <h4>Registered Players (<?php echo count($tourn_reg_names); ?>) [WithDraw Players]</h4> -->
 <div id="load-users" style="overflow-y: scroll;" class="tab-content table-responsive">
@@ -202,15 +202,15 @@ foreach($tourn_reg_names as $name){
 
 <td style="padding-left:10px">
 <?php
-$player = league::get_username($name->Users_ID);
-echo "<b>" . ucfirst($player['Firstname']) . " " . ucfirst($player['Lastname']) . "</b>";
+//$player = league::get_username($name->Users_ID);
+echo "<b>" . ucfirst($name->Firstname) . " " . ucfirst($name->Lastname) . "</b>";
 ?>
 </td>
 
 <td style="padding-left:10px">
 <?php
-if(isset($player['Mobilephone'])){ 
-	$phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "($1) $2-$3", $player['Mobilephone']);
+if(isset($name->Mobilephone)){ 
+	$phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "($1) $2-$3", $name->Mobilephone);
 	echo $phone; 
 }
 ?>
@@ -302,7 +302,7 @@ print_r($reg_events_array1);*/
 		}
 	}
 	?>
-<input name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url')."/league";?>" />
+<input name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url');?>" />
 	<input type="hidden" name="trans_id"	 id="trans_id<?=$name->Users_ID;?>"		value="<?=$name->Transaction_id;?>" />
 	<input type="hidden" name="refund_type"  id="refund_type<?=$name->Users_ID;?>"  value="Full" />
 	<input type="hidden" name="currencycode" id="currencycode<?=$name->Users_ID;?>" value="<?=$name->Currency_Code;?>" />

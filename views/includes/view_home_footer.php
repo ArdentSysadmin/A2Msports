@@ -258,7 +258,7 @@
 
     </script> -->
       <script src="<?=base_url(); ?>assets_new/js/highlight.js"></script>
-      <script src="<?=base_url(); ?>assets_new/js/app.js"></script>
+
       <script src="https://kit.fontawesome.com/140af656c6.js" crossorigin="anonymous"></script>
   </body>
 
@@ -269,7 +269,8 @@
 <script src="<?=base_url(); ?>assets_new/contact.js"></script>
       <script src="<?=base_url(); ?>assets_new/js/slick.min.js"></script>
       <script src="<?=base_url(); ?>assets_new/js/mixitup.min.js"></script>
-
+      <script src="<?=base_url(); ?>assets_new/js/venobox.min.js"></script>
+      <script src="<?=base_url(); ?>assets_new/js/app.js"></script>
 <script type="text/javascript">
   $(document).ready(function () {
     $('.customer-logos').slick({

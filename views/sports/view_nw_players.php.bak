@@ -78,9 +78,9 @@
                                 <th scope="col">Player Name</th>
                                 <th scope="col">City</th>
                                 <th scope="col">State</th>
-                                <th scope="col">A2M Rating (Singles)</th>
-                                <th scope="col">A2M Rating (Doubles)</th>
-                                <th scope="col">A2M Rating (Mixed)</th>
+                                <th scope="col">A2M Rating <br>(Singles)</th>
+                                <th scope="col">A2M Rating <br>(Doubles)</th>
+                                <th scope="col">A2M Rating <br>(Mixed)</th>
                               </tr>
                             </thead>
                             <tbody>

@@ -666,6 +666,8 @@ echo "Transaction complete!";
 			$get_club = $this->general->get_onerow('Academy_Info', 'Aca_URL_ShortCode', $this->short_code);
 			$get_mem_type = $this->general->get_onerow('Membership_Types', 'Membership_ID', $paypalInfo['item_number']);
 
+			$get_clubadm_user = $this->general->get_onerow('Users', 'Users_ID', $get_club['Aca_User_id']);
+
 			$upd_membership = 
 				$this->general->upd_user_membership($this->academy_id, $data2['User_ID'], $get_mem_type['tab_id']);
 
@@ -690,18 +692,23 @@ echo "Transaction complete!";
 				else
 					$cm_email	 = $get_user['AlternateEmailID'];
 
+				$club_adm_email = $get_clubadm_user['EmailID'];
+
 					$cm_subject = "User Membership Subscription Payment - ".$get_club['Aca_name'];
 					$data3 = array(
 										'name'			  => $get_user['Firstname']." ".$get_user['Lastname'],
 										'tx_id'				  => $data['Transaction_ID'],
 										'amount'		  => $data['Amount'],
-										'subscription'  => $get_membership_type['Membership_Type'],
+										'subscription'		=> $get_membership_type['Membership_Type'],
 										'sub_code'		  => $data2['Membership_Code'],
 										'club_name'	  => $get_club['Aca_name'],
+										'club_adm_mail'	  => $club_adm_email,
+										'aca_name'	  => $get_club['Aca_name'],
+										'aca_logo'		  => $get_club['Aca_logo'],
 										'page'				  => 'Club Member Notif - Membership SubScr');
 										//echo "test ".$cm_email; exit;
 
-				$this->email_to_player($cm_email, $cm_subject, $data3);
+				$this->email_to_playerUser($cm_email, $cm_subject, $data3);
 
 				// Club Admin Email
 				$get_user2 = $this->general->get_onerow('Users', 'Users_ID', $get_club['Aca_User_id']);
@@ -722,6 +729,8 @@ echo "Transaction complete!";
 										'sub_code'		  => $data2['Membership_Code'],
 										'club_name'	  => $get_club['Aca_name'],
 										'member'		  => $get_user['Firstname']." ".$get_user['Lastname'],
+										'member_email'		 => $get_user['EmailID'],
+										'member_contact'	 => $get_user['Mobilephone'],
 										'page'				  => 'Club Admin Notif - Membership SubScr');
 					//echo "<pre>"; print_r($data3);exit;
 					$this->email_to_player($ca_email, $ca_subject, $data3);
@@ -1023,14 +1032,21 @@ $this->session->set_flashdata('user_temp_id', $paypalInfo['reg_user']);
 		$body = $this->load->view('view_email_template.php', $data, TRUE);
 
 		$this->email->message($body);  
-		/*echo $body;
-		exit;*/
-		//echo "test<br>";
 		$x = $this->email->send();
-		
-		/*if(!$x){
-			echo $this->email->print_debugger();
-		}*/
+	}
+
+	public function email_to_playerUser($to_email, $subject, $data){	
+		$this->load->library('email');
+		$this->email->set_newline("\r\n"); 
+		$this->email->from(FROM_EMAIL, $data['aca_name']);
+		$this->email->to($to_email);
+		$this->email->reply_to($data['club_adm_mail']);
+		$this->email->subject($subject);
+
+		$body = $this->load->view('academy_views/view_email_template.php', $data, TRUE);
+
+		$this->email->message($body);  
+		$x = $this->email->send();
 	}
 
 	public function get_reg_tourn_participants($tourn_id){
@@ -1307,5 +1323,28 @@ print_r($mult_events);*/
 		public function get_level_name($sport_id, $level)
 		 {
 			return $this->model_league->get_level_name($sport_id, (int)$level);
+		 }
+
+		 public function testEmail(){
+
+					//$cm_email	 = 'rajkamal.kosaraju@gmail.com';
+					$cm_email	 = 'pradeepkumar.namala@gmail.com';
+
+					$cm_subject = "User Membership Subscription Payment - TestClub9";
+					$data3 = array(
+										'name'			  => 'Rajkamal Kosaraju',
+										'tx_id'				  => 'FSD3432SDFSD',
+										'amount'		  => '10',
+										'subscription'		=> 'Annual',
+										'sub_code'		  => 'DFDSF',
+										'club_name'	  => 'TestClub9',
+										'club_adm_mail'	  => 'npradkumar@gmail.com',
+										'aca_name'	  => 'TestClub9',
+										'aca_logo'		  => 'tana.jpeg',
+										'page'				  => 'Club Member Notif - Membership SubScr');
+										//echo "test ".$cm_email; exit;
+
+				$this->email_to_playerUser($cm_email, $cm_subject, $data3);
+echo "Mail Sent!";
 		 }
 }

@@ -1,5 +1,5 @@
 <?php
-$color_arr = array('8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc');
+$color_arr = array('8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc','8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc','8cf29b','b9f326','b38cf5','fef676','f3b06b','e6d2ce','e86eb1','48c2ed','44b86d','fee998','abd318','189bbd','f3b06b','e6d2ce','d9b3bf','88aa8e','e1d6f6','855dfc');
 
 $res = $matches->result();
 $c = 0;
@@ -15,14 +15,22 @@ foreach($res as $i => $match){
 		$c++;
 	}		
 }
-sort($court_titles);
+natsort($court_titles);
 ?>
+<html>
+<head>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
+<style>
+body {
+  -webkit-print-color-adjust: exact !important;
+}
+</style>
+</head>
+<body>
 <table id='tbl_court_grid' class="table table-bordered" style='font-size:14px;'>
 <tr>
 <th scope="col">&nbsp;</th>
@@ -48,7 +56,7 @@ $ev_date = date('Md,Y', $time);
 $temp_time = $ev_date;
 foreach($court_titles as $court){
 ?>
-<td style="background-color:<?php echo $uniq_draws[$info[$court][0]['draw_title']]; ?>">
+<td style="background-color:<?php echo $uniq_draws[$info[$court][0]['draw_title']]; ?> !important;">
 <?php
 if($info[$court]){
 	foreach($info[$court] as $i => $data){
@@ -65,3 +73,5 @@ if($info[$court]){
 }
 ?>
 </table>
+</body>
+</html>

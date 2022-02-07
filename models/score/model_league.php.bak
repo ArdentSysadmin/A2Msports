@@ -373,6 +373,8 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 				$def_score = 100;
 				if($sport == '2') 
 				$def_score = 800;
+				if($sport == '7' or $sport == '19' or $sport == '20') 
+				$def_score = 3.0;
 
 				$ins_user_a2m = $this->db->query("INSERT INTO A2MScore(Users_ID,SportsType_ID,A2MScore,A2MScore_Doubles,A2MScore_Mixed) VALUES ({$user_id},{$sport},{$def_score},{$def_score},{$def_score})");
 			}
@@ -524,7 +526,7 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 			return $qry->result();
 		}
 
-		public function remove_user_game_day($game_day, $user_id, $tourn_id){
+		public function remove_user_game_day($game_day, $user_id){
 			$qry = $this->db->query("DELETE FROM League_OCCR_Regs WHERE Users_ID = {$user_id} AND OCCR_ID = {$game_day}");
 			return $qry;
 		}

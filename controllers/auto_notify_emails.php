@@ -612,7 +612,10 @@ $i = 1;
                 case $user_age == 19:
                    $user_age_grp = "U19";
                    break;
-                case $user_age > 19:
+				case $user_age == 21:
+                   $user_age_grp = "U21";
+                   break;
+                case $user_age > 21:
                    $user_age_grp = "Adults";
                    break;
 			}

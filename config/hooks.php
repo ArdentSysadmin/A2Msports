@@ -10,6 +10,8 @@
 |
 */
 
+
+/*
 $hook['post_controller_constructor'] = array(
         'class'    => 'Custom',
         'function' => 'get_menu',
@@ -17,6 +19,8 @@ $hook['post_controller_constructor'] = array(
         'filepath' => 'hooks',
         'params'   => ""
 );
+*/
+
 
 /* End of file hooks.php */
 /* Location: ./application/config/hooks.php */

@@ -66,7 +66,7 @@
                   <li><a class="dropdown-item" href="<?php echo base_url();?>league/bracket_generator">Free Brackets</a></li>
                   <li><a class="dropdown-item" href="<?php echo base_url();?>league">League</a></li>
                   <li><a class="dropdown-item" href="<?php echo base_url();?>teams">Team</a></li>
-                  <li><a class="dropdown-item" href="<?php echo base_url();?>league">Tournament</a></li>
+                  <li><a class="dropdown-item" href="<?php echo base_url();?>tournament">Tournament</a></li>
                 </ul>
               </li>
            <?php } ?>  

@@ -664,6 +664,12 @@ $i = 0;
 			case "Adults_50p":
 			$age_grp_list[] = "50s";
 			break;
+			case "Adults_60p":
+			$age_grp_list[] = "60s";
+			break;
+			case "Adults_70p":
+			$age_grp_list[] = "70s";
+			break;
 			case "Adults_veteran":
 			$age_grp_list[] = "Veteran";
 			break;
@@ -741,7 +747,10 @@ $i = 0;
                 case $user_age == 19:
                    $user_age_grp = "U19";
                    break;
-                case $user_age>19 && $user_age<=29:
+				case $user_age == 21:
+                   $user_age_grp = "U21";
+                   break;
+                case $user_age>21 && $user_age<=29:
                    $user_age_grp = "Adults";
                    break;
                 case $user_age>=30 && $user_age<=39:
@@ -750,8 +759,14 @@ $i = 0;
                 case $user_age>=40 && $user_age<=49:
                    $user_age_grp = "Adults_40p";
                    break;
-                case $user_age>=50 && $user_age<=60:
+                case $user_age>=50 && $user_age<=59:
                    $user_age_grp = "Adults_50p";
+                   break;
+				case $user_age>=60 && $user_age<=69:
+                   $user_age_grp = "Adults_60p";
+                   break;
+				case $user_age>=70 && $user_age<=90:
+                   $user_age_grp = "Adults_70p";
                    break;
         }
 
@@ -891,7 +906,7 @@ $i = 0;
       
         if($ag_grp == 'Adults'){  
 
-				if($agegroup == 'U10' or $agegroup == 'U11' or $agegroup == 'U12' or $agegroup == 'U13' or $agegroup == 'U14' or $agegroup == 'U15' or $agegroup == 'U16' or $agegroup == 'U17' or $agegroup == 'U18' or $agegroup == 'U19'){
+				if($agegroup == 'U10' or $agegroup == 'U11' or $agegroup == 'U12' or $agegroup == 'U13' or $agegroup == 'U14' or $agegroup == 'U15' or $agegroup == 'U16' or $agegroup == 'U17' or $agegroup == 'U18' or $agegroup == 'U19' or $agegroup == 'U21'){
 			          $not_eligible_events['age-'.$event]=$event1;
 
 			    }else if (strpos($agegroup, '_') !== false) {

@@ -523,6 +523,9 @@
                 case $age == 19:
                    $age_group = "U19";
                    break;
+				case $age == 21:
+                   $age_group = "U21";
+                   break;
                 default:
                    $age_group = "Adults";
                    break;
@@ -5645,11 +5648,11 @@ exit;*/
 
 
 			// A2MScore Table Update
-			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport);
-			$this->a2mscore_update($winner_partner, $winner_part_a2mscore_updated, $match_sport);
+			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport, $mformat);
+			$this->a2mscore_update($winner_partner, $winner_part_a2mscore_updated, $match_sport, $mformat);
 
-			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport);
-			$this->a2mscore_update($looser_partner, $looser_part_a2mscore_updated, $match_sport);
+			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport, $mformat);
+			$this->a2mscore_update($looser_partner, $looser_part_a2mscore_updated, $match_sport, $mformat);
 
 			$this->update_player_standings($winner, $tourn_id, $bracket_id, $winner_a2mscore_updated);
 			$this->update_player_standings($winner_partner, $tourn_id, $bracket_id, $winner_part_a2mscore_updated);
@@ -5687,8 +5690,8 @@ exit;*/
 			}
 
 			// A2MScore Table Update 
-			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport);
-			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport);
+			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport, $mformat);
+			$this->a2mscore_update($looser, $looser_a2mscore_updated, $match_sport, $mformat);
 
 			$this->update_player_standings($winner, $tourn_id, $bracket_id, $winner_a2mscore_updated);
 			$this->update_player_standings($looser, $tourn_id, $bracket_id, $looser_a2mscore_updated);
@@ -5736,7 +5739,7 @@ exit;*/
 
 			/* ------------------------------------------------------------------------------ */
 
-			if($match_info['Draw_Type'] != 'Round Robin'){
+			if($match_info['Draw_Type'] != 'Round Robin' and $match_info['Draw_Type'] != 'Switch Doubles'){
 
 			/* ------- Update player1 and player2 sources --------- */
 			$qry_string = "";
@@ -6961,24 +6964,47 @@ if($draw_name == "Main"){
 			return array('0'=>$add_win_points_p1, '1'=>$add_win_points_p2);		
 		}
 
-		public function a2mscore_update($user_id, $a2mscore, $sport){
+		public function a2mscore_update($user_id, $a2mscore, $sport, $mformat){
 
 			if($user_id){
 				$data = array('Users_ID' => $user_id, 'SportsType_ID' => $sport);
 				$qry_a2m = $this->db->get_where('A2MScore', $data);
 				$get_a2m = $qry_a2m->row_array();
 
+				if($mformat == 'Singles'){
 				$exist_a2m = $get_a2m['A2MScore'];
+				}
+				elseif($mformat == 'Doubles'){
+				$exist_a2m	= $get_a2m['A2MScore_Doubles'];
+				}
+				elseif($mformat == 'Mixed'){
+				$exist_a2m	= $get_a2m['A2MScore_Mixed'];
+				}
+				else{
+				$exist_a2m	= $get_a2m['A2MScore'];
+				}
 
 				$updated_a2m = $exist_a2m + $a2mscore;
 
-					if($updated_a2m < 75){
+				if($sport != 7 and $sport != 19 and $sport != 20) {
+					if($updated_a2m < 75) {
 						$updated_a2m = 75; 
 					}
+				}
 
-					//echo "<br>".$user_id." - ".$updated_a2m;
-
+				if($mformat == 'Singles'){
 				$data = array ('A2MScore' => $updated_a2m);
+				}
+				elseif($mformat == 'Doubles'){
+				$data = array ('A2MScore_Doubles' => $updated_a2m);
+				}
+				elseif($mformat == 'Mixed'){
+				$data = array ('A2MScore_Mixed' => $updated_a2m);
+				}
+				else{
+				$data = array ('A2MScore' => $updated_a2m);
+				}
+
 				
 				$this->db->where('Users_ID', $user_id);
 				$this->db->where('SportsType_ID', $sport);

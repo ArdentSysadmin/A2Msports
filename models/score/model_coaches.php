@@ -16,6 +16,11 @@ class model_coaches extends CI_Model {
 		}
 	}
 
+	public function get_coach_det($user_id) {
+		$qry_check = $this->db->query("select s.Sportname, u.* from users u inner join SportsType s on s.SportsType_ID = u.coach_sport where u.Is_coach = 1 and u.Users_ID = {$user_id}");
+		return $qry_check->row_array();
+	}
+
 	public function get_coaches($user_id) {
 		$qry_check = $this->db->query("select s.Sportname, u.* from users u inner join SportsType s on s.SportsType_ID = u.coach_sport where u.Is_coach = 1 and u.Country = (SELECT Country FROM Users WHERE Users_ID = '".$user_id."')");
 		return $qry_check->result_array();

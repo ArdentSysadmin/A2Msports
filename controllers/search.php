@@ -549,7 +549,15 @@
 				//$from_email = "test@a2msports.com";
 				$from_name  = $this->session->userdata('user');
 				$from_id	= $this->session->userdata('users_id');
-				$sender_email	= $this->session->userdata('email');
+
+			$get_sender_user = $this->general->get_onerow('Users', 'Users_ID', $from_id);
+				
+				if($get_sender_user['EmailID'])
+					$sender_email = $get_sender_user['EmailID'];
+				else if($get_sender_user['AlternateEmailID'])
+					$sender_email = $get_sender_user['AlternateEmailID'];
+
+				//$sender_email	= $this->session->userdata('email');
 				$to_email = $this->input->post('contact_email');
 				$fname	  = $this->input->post('fname');
 				$lname	  = $this->input->post('lname');
@@ -562,7 +570,7 @@
 				$this->load->library('email');
 				$this->email->set_newline("\r\n");
 				$this->email->from($from_email, $from_name);
-				//$this->email->reply_to($sender_email);
+				$this->email->reply_to($sender_email);
 				$this->email->to($to_email);				
 				$this->email->subject('New Contact Message - '.$from_name.'/A2MSports');
 
@@ -584,7 +592,7 @@
 				else{ echo $this->email->print_debugger(); exit; }*/
 				
 				if(!$res){ 
-					echo $this->email->print_debugger(); 
+					//echo $this->email->print_debugger(); 
 					echo "<h3>Sorry, message not sent. Something went wrong! Please contact admin@a2msports.com. Thank you.</h3>";
 					exit; 
 				}

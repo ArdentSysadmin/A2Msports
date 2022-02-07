@@ -302,8 +302,14 @@ public function get_next_dates(){
 						$hrs				= $this->input->post('book_hours');
 			
 						$rdate			= date('Y-m-d', strtotime($res_date[0]));
-						$from_time	= date('H:i', strtotime($get_court_times[0]->Start_Time)); 
-						$to_time		= date('H:i', strtotime($get_court_times[0]->End_Time)); 
+						$min_time	= $this->model_courts->get_min_time($court_id);
+						$max_time	= $this->model_courts->get_max_time($court_id);
+
+						//$from_time	= date('H:i', strtotime($get_court_times[0]->Start_Time)); 
+						//$to_time		= date('H:i', strtotime($get_court_times[0]->End_Time)); 
+						
+						$from_time	= date('H:i', strtotime($min_time)); 
+						$to_time		= date('H:i', strtotime($max_time)); 
 					}
 					else{
 						//$hrs				= $this->input->post('book_hours');
@@ -498,17 +504,18 @@ else{
 					$data = array('court_id'	=> $court_id,
 								'loc_id'					=> $loc_id,
 								'reserved_by'		=> $reserved_by,
-								'res_date'				=> $rdate,
+								'res_date'			=> $rdate,
 								'from_time'			=> $from_time,
 								'to_time'				=> $to_time,
-								'created_on'			=> date('Y-m-d H:i:s'),
+								'created_on'		=> date('Y-m-d H:i:s'),
 								'res_status'			=> 'Active',
-								'match_format'		=> $match_format,
+								'match_format'	=> $match_format,
 								'num_players'		=> $num_players,
-								'players'				=> $players
+								'players'				=> $players,
+								'is_repeat'			=> $is_multi_occr
 								);	
 
-					$cofrm_booking = $this->model_courts->confirm_court($data);
+					$res_id = $this->model_courts->confirm_court($data);
 
 					if($is_multi_occr and $multi_weeks){
 						for($i = 1; $i <= $multi_weeks; $i++){
@@ -527,7 +534,9 @@ else{
 								'res_status'			=> 'Active',
 								'match_format'		=> $match_format,
 								'num_players'		=> $num_players,
-								'players'				=> $players
+								'players'				=> $players,
+								'is_repeat'				=> 1,
+								'is_repeat_ref'		=> $res_id
 								);	
 
 					$cofrm_booking = $this->model_courts->confirm_court($data);
@@ -552,7 +561,9 @@ else{
 										'res_status'			=> 'Active',
 										'match_format'		=> $match_format,
 										'num_players'		=> $num_players,
-										'players'				=> $players
+										'players'				=> $players,
+										'is_repeat'				=> 1,
+										'is_repeat_ref'		=> $res_id
 										);	
 
 							$cofrm_booking = $this->model_courts->confirm_court($data);
@@ -743,18 +754,20 @@ else{
 				if(!$plrs[0]){
 				$player = $fetch->firstname." ".$fetch->lastname;
 				}
-				$e['id']			= $fetch->res_id;
+				$e['id']					= $fetch->res_id;
 				$e['firstname']		= $fetch->firstname;
 				$e['lastname']		= $fetch->lastname;
-				$e['player']		= $player;
-				$e['courtid']		= $fetch->court_id;
+				$e['player']			= $player;
+				$e['courtid']			= $fetch->court_id;
 				//$e['courtid'][]		= $courts_info[$org_id][$fetch->court_id];
 				$e['locid']			= $fetch->loc_id;
-				$e['date']			= $fetch->res_date;
+				$e['date']				= $fetch->res_date;
 				$e['from_time']		= $fetch->from_time;
-				$e['to_time']		= $fetch->to_time;
+				$e['to_time']			= $fetch->to_time;
 				$e['num_players']	= $fetch->num_players;
 				$e['match_format']	= $fetch->match_format;
+				$e['is_repeat']			= $fetch->is_repeat;
+				$e['repeat_ref']		= $fetch->is_repeat_ref;
 				
 				$courts_info[$fetch->loc_id][$fetch->court_id]['reserve'][] = $e;
 			}
@@ -796,6 +809,8 @@ else{
 			$data['is_smb_allowed']		= $court_durations['allow_sameday_multi_booking'];
 			$data['slot_duration']	= $court_durations['slot_duration'];
 			$data['court_price']		= $this->model_courts->get_courtPrice($court_id);
+			$data['min_time']		= $this->model_courts->get_min_time($court_id);
+			$data['max_time']		= $this->model_courts->get_max_time($court_id);
 			
 			$data['is_nonmem_book'] = $get_loc_info['access_to_nonmem'];
 
@@ -1011,8 +1026,22 @@ document.f1.submit();
 
 		}
 
+		public function check_is_repeat(){
+			$rec_id = $this->input->post('rec');
+				$booking_info = $this->model_courts->check_is_repeat($rec_id);
+				$is_repeat = 0;
+			if($booking_info and $booking_info['is_repeat']){
+				$is_repeat = 1;
+			}
+
+			echo $is_repeat;
+		}
+
 		public function cancel_booking(){
 			$rec_id = $this->input->post('rec');
+			//$del_all = $this->input->post('del_all');
+
+			//echo $rec_id."-  ".$del_all; 			exit;
 			//echo $this->logged_user. ' '.$this->academy_admin;
 			if($rec_id and ($this->logged_user == $this->academy_admin)){
 				$booking_info = $this->model_courts->delete_booking($rec_id);

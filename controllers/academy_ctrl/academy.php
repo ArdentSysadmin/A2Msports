@@ -729,6 +729,7 @@ exit;*/
 									'U17'	=>'Under 17',
 									'U18'	=>'Under 18',
 									'U19'	=>'Under 19',
+									'U21'	=>'Under 21',
 									'Kids'	=>'Kids',		
 									'Adults'=>'Adults'		
 									);
@@ -825,6 +826,7 @@ exit;*/
 									'U17'	=>'Under 17',
 									'U18'	=>'Under 18',
 									'U19'	=>'Under 19',
+									'U21'	=>'Under 21',
 									'Kids'	=>'Kids',		
 									'Adults'=>'Adults'		
 									);
@@ -861,6 +863,7 @@ exit;*/
 									'U17'	=>'Under 17',
 									'U18'	=>'Under 18',
 									'U19'	=>'Under 19',
+									'U21'	=>'Under 21',
 									'Kids'	=>'Kids',		
 									'Adults'=>'Adults'		
 									);
@@ -919,6 +922,7 @@ exit;*/
 									'U17'	=>'Under 17',
 									'U18'	=>'Under 18',
 									'U19'	=>'Under 19',
+									'U21'	=>'Under 21',
 									'Kids'	=>'Kids',		
 									'Adults'=>'Adults'		
 									);
@@ -987,6 +991,7 @@ exit;*/
 										'U17'	=>'Under 17',
 										'U18'	=>'Under 18',
 										'U19'	=>'Under 19',
+										'U21'	=>'Under 21',
 										'Adults'=>'Adults',			
 										'Kids'	=>'Kids'			
 										);
@@ -1457,6 +1462,8 @@ if ($err) {
 	}
 	
 	public function subscribe($org_id){
+		$org_id = $this->general->get_orgid($org_id);
+		//echo $org_id; exit;
 		//echo $this->input->get('c'); exit;
 			if($this->input->get('c') and $this->logged_user){
 				$mem_code = $this->input->get('c');
@@ -1504,6 +1511,8 @@ if ($err) {
 		}
 
 		public function subscribe_buy($org_id){
+					$org_id = $this->general->get_orgid($org_id);
+
 			echo "<pre>"; print_r($_POST); exit;
 		}
 
@@ -1638,15 +1647,26 @@ if ($err) {
 		}
 
 		public function paypal_ot($ot_pay_id){
+			//echo "test"; exit;
 			$get_ot	 = $this->general->get_onerow('Membership_PaymentLinks', 'tab_id', $ot_pay_id);
 			$get_pay = $this->general->get_onerow('Membership_Types', 'Membership_ID', $get_ot['Membership_Code']);
 
 			if($this->logged_user == $get_ot['User_ID'] and $get_pay){
 					$this->load->library('paypal_lib');
+				$get_club = $this->general->get_onerow('Academy_Info', 'Aca_ID', $get_pay['Club_ID']);
+				//$paypal_id				= SANDBOX_PAYPAL_ID;
+				$get_pp = ''; 
+				if($get_club['Paypal_ID'])
+					$get_pp = $this->general->get_pp_details($get_club['Paypal_ID']);
 
-				$paypal_id				= SANDBOX_PAYPAL_ID;
+				if($get_pp['paypal_merch_id'])
+					$paypal_id = $get_pp['paypal_merch_id'];
+				else
+					$paypal_id = PAYPAL_ID;
+
 				$currency_code	= 'USD';
-				$paypalURL			= SANDBOX_PAYPAL_URL; //PayPal api url
+				//$paypalURL			= SANDBOX_PAYPAL_URL; //Sandbox PayPal api url
+				$paypalURL			= PAYPAL_URL; //PayPal api url
 				$logo = base_url().'images/logo.png';
 				$url	   = base_url().$this->uri->segment(1);
 
@@ -1666,31 +1686,46 @@ if ($err) {
 				$this->paypal_lib->add_field('amount', $get_pay['ActivationFee']);
 				$this->paypal_lib->image($logo);
 				
-				$this->paypal_lib->test_paypal_auto_form();		
+				//$this->paypal_lib->test_paypal_auto_form();		
+				$this->paypal_lib->paypal_auto_form();
 			}
 			else{
 				echo "Invalid Access!";
 			}
 		}
 		
-		public function paypal_subscr($sub_pay_id){
-			$get_subscr	 = $this->general->get_onerow('Membership_PaymentLinks', 'tab_id', $sub_pay_id);
+	public function paypal_subscr($sub_pay_id){
+			$get_subscr = $this->general->get_onerow('Membership_PaymentLinks', 'tab_id', $sub_pay_id);
 			$get_pay = $this->general->get_onerow('Membership_Types', 'Membership_ID', $get_subscr['Membership_Code']);
 
 			if($this->logged_user == $get_subscr['User_ID'] and $get_pay){
-					$this->load->library('paypal_lib');
+				$this->load->library('paypal_lib');
 
-				$paypal_id				= SANDBOX_PAYPAL_ID;
-				$currency_code	= 'USD';
-				$paypalURL			= SANDBOX_PAYPAL_URL; //PayPal api url
+				$get_club = $this->general->get_onerow('Academy_Info', 'Aca_ID', $get_pay['Club_ID']);
+
+				$get_pp = ''; 
+				if($get_club['Paypal_ID'])
+					$get_pp = $this->general->get_pp_details($get_club['Paypal_ID']);
+
+				if($get_pp['paypal_merch_id'])
+					$paypal_id = $get_pp['paypal_merch_id'];
+				else
+					$paypal_id = PAYPAL_ID;
+
+//echo $paypal_id;
+//exit;
+				//$paypal_id				= SANDBOX_PAYPAL_ID;
+				$currency_code		= 'USD';
+				$paypalURL			= PAYPAL_URL; //PayPal api url
 				$logo						= base_url().'images/logo.png';
 				$url							= base_url().$this->uri->segment(1);
 
-				$returnURL = $url.'/paypal/subscr_success?sub_type=subscr&amt='.$pp_items['Amount'].'&reg_user='.$pp_items['User_ID'];
+				$returnURL = $url.'/paypal/subscr_success?sub_type=subscr&amt='.$get_pay['Fee'].'&reg_user='.$get_subscr['User_ID'];
 
 				$cancelURL = $url.'/paypal/subscr_cancel';	//payment cancel url
 				$notifyURL  = $url.'/paypal/subscr_ipn';		//ipn url
 
+				if($get_pay['Frequency_Code'] != 'O'){
 				$this->paypal_lib->add_field('business', $paypal_id);
 				$this->paypal_lib->add_field('cmd', "_xclick-subscriptions");
 				$this->paypal_lib->add_field('return', $returnURL);
@@ -1712,7 +1747,82 @@ if ($err) {
 				$this->paypal_lib->add_field('item_number', $get_pay['Membership_ID']);
 				$this->paypal_lib->add_field('item_name', $get_pay['Membership_ID'].'-'.$get_pay['Membership_Type']);
 				$this->paypal_lib->image($logo);
-				$this->paypal_lib->test_paypal_auto_form();
+				$this->paypal_lib->paypal_auto_form();
+				}
+				else{
+				$this->paypal_lib->add_field('business', $paypal_id);
+				//$this->paypal_lib->add_field('cmd', "_xclick-subscriptions");
+				$this->paypal_lib->add_field('return', $returnURL);
+				$this->paypal_lib->add_field('cancel_return', $cancelURL);
+				$this->paypal_lib->add_field('currency_code', $currency_code);
+				$this->paypal_lib->add_field('notify_url', $notifyURL);
+				$this->paypal_lib->add_field('on0', $get_ot['User_ID']);
+				$this->paypal_lib->add_field('custom', $get_subscr['User_ID'].'-'.$this->academy_id);
+				$this->paypal_lib->add_field('item_number',  $get_pay['Membership_ID']);
+				$this->paypal_lib->add_field('item_name',  $get_pay['Membership_ID'].'-'.$get_pay['Membership_Type']);
+				$this->paypal_lib->add_field('amount', $get_pay['Fee']);
+				$this->paypal_lib->image($logo);
+				
+				//$this->paypal_lib->test_paypal_auto_form();		
+				$this->paypal_lib->paypal_auto_form();
+				}
+			}
+			else{
+				echo "Invalid Access!";
+			}
+		}
+
+
+		public function paypal_subscrTemp($sub_pay_id){
+			$get_subscr	 = $this->general->get_onerow('Membership_PaymentLinks', 'tab_id', $sub_pay_id);
+			$get_pay = $this->general->get_onerow('Membership_Types', 'Membership_ID', $get_subscr['Membership_Code']);
+
+			if($this->logged_user == $get_subscr['User_ID'] and $get_pay){
+					$this->load->library('paypal_lib');
+				$get_club = $this->general->get_onerow('Academy_Info', 'Aca_ID', $get_pay['Club_ID']);
+				$get_pp = ''; 
+				if($get_club['Paypal_ID'])
+					$get_pp = $this->general->get_pp_details($get_club['Paypal_ID']);
+
+				if($get_pp['paypal_merch_id'])
+					$paypal_id = $get_pp['paypal_merch_id'];
+				else
+					$paypal_id = PAYPAL_ID;
+				//echo "<pre>"; print_r($paypal_id); exit;
+				$currency_code	= 'USD';
+				$paypalURL			= PAYPAL_URL; //PayPal api url
+				$logo						= base_url().'images/logo.png';
+				$url							= base_url().$this->uri->segment(1);
+
+				$returnURL = $url.'/paypal/subscr_success?sub_type=subscr&amt='.$pp_items['Amount'].'&reg_user='.$pp_items['User_ID'];
+
+				$cancelURL = $url.'/paypal/subscr_cancel';	//payment cancel url
+				$notifyURL  = $url.'/paypal/subscr_ipn';		//ipn url
+
+				$this->paypal_lib->add_field('business', $paypal_id);
+				//$this->paypal_lib->add_field('cmd', "_xclick-subscriptions");
+				$this->paypal_lib->add_field('return', $returnURL);
+				$this->paypal_lib->add_field('cancel_return', $cancelURL);
+				$this->paypal_lib->add_field('currency_code', $currency_code);
+				$this->paypal_lib->add_field('notify_url', $notifyURL);
+				$this->paypal_lib->add_field('on0', $get_subscr['User_ID']);
+				$this->paypal_lib->add_field('item_number',  $get_pay['Membership_ID']);
+				$this->paypal_lib->add_field('item_name',  $get_pay['Membership_ID'].'-'.$get_pay['Membership_Type'].' - Subscription');
+				$this->paypal_lib->add_field('amount', $get_pay['Fee']);
+				//$this->paypal_lib->add_field('a3', $get_pay['Fee']);
+				//$this->paypal_lib->add_field('t3', $get_pay['Frequency_Code']);
+				//$this->paypal_lib->add_field('p3', 1);
+				//$this->paypal_lib->add_field('src', 1);
+				//echo "<pre>";
+				//print_r($get_subscr);
+				//exit;
+					/*if($get_subscr['Occurrence'])
+					$this->paypal_lib->add_field('srt',  $get_subscr['Occurrence']);
+				$this->paypal_lib->add_field('sra', 2);
+				$this->paypal_lib->add_field('item_number', $get_pay['Membership_ID']);
+				$this->paypal_lib->add_field('item_name', $get_pay['Membership_ID'].'-'.$get_pay['Membership_Type']);*/
+				$this->paypal_lib->image($logo);
+				$this->paypal_lib->paypal_auto_form();
 			}
 			else{
 				echo "Invalid Access!";

@@ -13,16 +13,19 @@
 			$this->load->model('model_league');
 			$this->load->helper(array('form', 'url'));
 			$this->load->library('session');
-
+//echo $this->uri->segment(2);
+//exit;
 			$this->logged_user = $this->session->userdata('users_id');
-			if($this->logged_user != 237 and $this->logged_user != 240){
-				echo "Unauthorised Access!";
-				if($this->logged_user)
-				echo "<a href='/logout'><h3>Logout & Login</h3></a>";
-				else
-				echo "<a href='/login'><h3>Login</h3></a>";
-				exit;
-			}
+			//if($this->uri->segment(2) != 'php_inf'){
+				if($this->logged_user != 237 and $this->logged_user != 240){
+					echo "Unauthorised Access!";
+					if($this->logged_user)
+					echo "<a href='/logout'><h3>Logout & Login</h3></a>";
+					else
+					echo "<a href='/login'><h3>Login</h3></a>";
+					exit;
+				}
+			//}
 		}
 		
 		// viewing league page ...
@@ -38,7 +41,7 @@ else{
 	echo 'Successfully connected';
 }
 echo "<pre>";
-print_r($dbobject1);
+//print_r($dbobject1);
 			//echo "Teams";
 			if(!class_exists("model_general")){
 				echo "test";
@@ -393,8 +396,8 @@ $txt .= "\n"."/*****************************************************************
 		}
 		
 		public function srv_name(){
-			echo "<pre>";
-			print_r($_SERVER);
+			//echo "<pre>";
+			//print_r($_SERVER);
 			//echo "<br>".$_SERVER['HTTP_REFERER'];
 		}
 

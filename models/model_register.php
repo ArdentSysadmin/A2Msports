@@ -242,7 +242,7 @@
 				    }
 			}
 
-			$sports = array("1", "2", "3", "4","5","6","7","8","9","11","12","17","18"); // these numbers belongs to sport id in the SportType Table
+			$sports = array("1", "2", "3", "4","5","6","7","8","9","11","12","17","18","19","20"); // these numbers belongs to sport id in the SportType Table
 			
 
 			foreach($sports as $type){
@@ -250,7 +250,7 @@
 
 				if($type == '2')
 					$def_score = 800;
-				if($type == '7')
+				if($type == '7' or $type == '19' or $type == '20')
 					$def_score = 3.0;
 
 				$data = array('SportsType_ID'	 => $type,
@@ -375,6 +375,7 @@
 						$data = array('Users_ID'=>$this->session->userdata('users_id'),'SportsType_ID'=>$i,'A2MScore'=>$def_score);
 						$qry = $this->db->insert('A2MScore', $data);
 					}
+
 				}
 			return $qry;
 		}
@@ -506,7 +507,8 @@ $txt .= "\n"."/*****************************************************************
 
 //echo $txt;
 //exit;
-			 $urls = file_put_contents($data, $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
+			 //$urls = file_put_contents($data, $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
+			 $urls = true;
 			 return $urls;
 }
 else{
@@ -634,14 +636,14 @@ return 0;
 			$this->db->insert('Users', $data);
 		    $insert_id = $this->db->insert_id();
 			
-			$sports = array("1", "2", "3", "4","5","6","7","8","9");           // these numbers belongs to sport id in the SportType Table
+			$sports = array("1", "2", "3", "4","5","6","7","8","9","19","20");           // these numbers belongs to sport id in the SportType Table
 			foreach($sports as $type){
 						$def_score = 100;
 
 						if($type == '2')
 						$def_score = 800;
 
-					if($type == '7')
+					if($type == '7' or $type == '19' or $type == '20')
 						$def_score = 3.0;
 
 				$data = array('SportsType_ID' => $type, 
@@ -912,7 +914,7 @@ return 0;
 						$def_score = 100;
 						if($type->SportsType_ID == '2')
 							$def_score = 800;
-						if($type->SportsType_ID == '7')
+						if($type->SportsType_ID == '7' or $type->SportsType_ID == '19' or $type->SportsType_ID == '20')
 							$def_score = 3.0;
 
 						$data = array(
@@ -1039,7 +1041,7 @@ return 0;
 						$def_score = 100;
 						if($aca_sport == '2')
 							$def_score = 800;
-						if($aca_sport == '7')
+						if($aca_sport == '7' or $aca_sport == '19' or $aca_sport == '20')
 							$def_score = 3.0;
 
 						$data = array(

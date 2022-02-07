@@ -3,11 +3,15 @@
 <link href="<?php echo base_url();?>css/bootstrap-timepicker.min.css" rel="stylesheet">
   
 <script>
+var multiEvent_indexs = [];
 var tour_format = "<?php echo $tournament_details->tournament_format;?>";
 var db_country = "<?php echo $tournament_details->TournamentCountry; ?>";
 
+$(document).ready(function(){
+
+
 tinymce.init({
-  selector: '#desc',
+  selector: 'textarea',
   height: 500,
   theme: 'modern',
   plugins: [
@@ -29,17 +33,16 @@ tinymce.init({
   ]
  });
 
-var multiEvent_indexs = [];
+
 "<?php foreach($multiEvents_keys as $val) { ?>"
  multiEvent_indexs.push("<?php echo $val; ?>");
 "<?php } ?>"
 
 	//alert(multiEvent_indexs);
- 
+	});
 </script>
 <script>
 $(document).ready(function(){
-
 
 var baseurl = "<?php echo base_url();?>";
 
@@ -176,14 +179,6 @@ $('#org_contact').val(names[6]);
 			$("#addr_group").show();
 		}
 	});
-
-	var tour_type = "<?php echo $tournament_details->Tournament_type; ?>";
-
-	if(tour_type == 'Flexible League'){
-		$("#addr_group").hide();
-		$("#addr_group :input").attr("disabled", true);
-	}
-
 	var existing_game_date = {};
 
 	var tour_type = "<?php echo $tournament_details->Tournament_type; ?>";
@@ -196,7 +191,7 @@ $('#org_contact').val(names[6]);
 		$("#addr_group :input").attr("disabled", true);
 	}
 
-/*
+
 	$('#custom_end_date').change(function(){
 
 
@@ -238,23 +233,23 @@ $('#org_contact').val(names[6]);
               [value.getHours(),
                ("0" + (value.getMinutes())).slice(-2)].join(':');
 
-			$('#game_day_div #inner_'+evnt).append("<div class='col-md-3 form-group internal'></div> <div class='col-md-8 form-group internal'> <input type='text' id='meeting-time' name='game_days["+evnt+"][]' value='"+form_dt+"' /></div>");
+			$('#game_day_div #inner_'+evnt).append("<div class='col-md-3 form-group internal'></div> <div class='col-md-8 form-group internal'> <input type='datetime' id='meeting-time' name='game_days["+evnt+"][]' value='"+form_dt+"' /></div>");
 		});
 		});
 	}
 
+	//alert(x);
+	//alert(weekdays[a.getDay()]);
+	//alert(weekdays[b.getDay()]);
 	});
-	
 	
 	$('.add_new_gd').click(function(){
 	 var id_val = $(this).attr('id');
 	 var btn_id = id_val.split('_');
 
-		$('#game_day_div #inner_'+btn_id[1]).append("<div class='col-md-3 form-group internal'></div> <div class='col-md-8 form-group internal'> <input type='text' id='meeting-time' name='game_days["+btn_id[1]+"][]' placeholder='mm/dd/yyyy hh:mm' value='' /></div>");
+		$('#game_day_div #inner_'+btn_id[1]).append("<div class='col-md-3 form-group internal'></div> <div class='col-md-8 form-group internal'> <input type='datetime' id='meeting-time' name='game_days["+btn_id[1]+"][]' placeholder='mm/dd/yyyy hh:mm' value='' /></div>");
+
 	});
-	*/
-
-
 });
 </script>
 
@@ -558,16 +553,15 @@ $(document).ready(function(){
 </script>
 
 <!-- view start -->
-<section id="single_player" class="secondary-page" style="padding-top:0px;">
-<div class='container'>
-<div class='row'>
-           <div class="col-md-9">
+<section id="single_player" class="container secondary-page">
+
+           <div class="top-score-title right-score col-md-9">
 
 		   <?php if($this->session->userdata('user')!="") { ?>		           
-		  <form class="form-horizontal" id='myform' method='post' role="form" enctype="multipart/form-data" action="<?php echo $this->config->item('club_form_url'); ?>/league/update_trnmt"  onsubmit="return doCompareDate()">  
+		  <form class="form-horizontal" id='myform' method='post' role="form" enctype="multipart/form-data" action="<?php echo base_url(); ?>league/update_trnmt"  onsubmit="return doCompareDate()">  
 		   <input type="hidden" value="<?php echo $tournament_details->Tournamentfee;?>" name="tourn_fee">
 		   <div class="col-md-12 league-form-bg" style="margin-top:30px;">
-           		<div class="fromtitle"><?php echo $tournament_details->tournament_title; ?></div>
+           		<div class="fromtitle"><?php echo "Edit League ".$tournament_details->tournament_title; ?></div>
 
 		<input class='form-control' id='' name='tourn_id' type='hidden' value="<?php echo $tournament_details->tournament_ID; ?>" />
 		<input class='form-control' id='' name='is_league' type='hidden' value="<?php echo $tournament_details->Is_League; ?>" />
@@ -691,7 +685,8 @@ $(document).ready(function(){
               <input class='form-control' id='title' name='title' type='text' value="<?php echo $tournament_details->tournament_title; ?>" required />
             </div>
           </div>
-	          <div class='form-group'>
+		  
+          <div class='form-group'>
             <label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Organizer Name<br />(Company / Individual) </label>
             <div class='col-md-6 form-group internal'>
               <input class='form-control' id='tourn_dir' name='organizer' type='text' value="<?php echo $tournament_details->OrganizerName;?>" required />
@@ -979,7 +974,7 @@ foreach($countries as $country)
 				<?php 
 				$age_array = json_decode($tournament_details->Age); 
 				
-				$agegroups_arry  = array('U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','Adults','Adults_30p','Adults_40p','Adults_50p','Adults_veteran','Junior');
+				$agegroups_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19','U21','Adults','Adults_30p','Adults_40p','Adults_50p','Adults_veteran','Junior');
 
                 $checked_age	  = "";
                 $readonly_age_grp = "";
@@ -1122,15 +1117,42 @@ foreach($countries as $country)
 	<br />
 	  <font color='blue'><b><span id='ListCount'></span></b></font>
 	<div id="selected_events" align="center"></div>
+<?php 
+if($tournament_details->tournament_format != 'TeamSport'){
+?>
+<div class='form-group' id="customCombined">
+Do you want to add custom combined age events? 
+<input type='radio' name='custom_com_age' id='custom_com_age_yes' value='1' /> Yes
+<input type='radio' name='custom_com_age' id='custom_com_age_no' value='0' checked /> No
+	<div class='form-group' id="customCombined_opts" >
+		<select id='customCombined_select' name='customCombined_select'>
+		<option value='A70'>Combined 70+</option>
+		<option value='A80'>Combined 80+</option>
+		<option value='A90'>Combined 90+</option>
+		</select>&nbsp;
+		<input type='number' name='custom_combi_min_age' id='custom_combi_min_age' value='' placeholder='Min. Age' />&nbsp;
+		<select id='customCombined_gender' name='customCombined_gender'>
+		<option value='2'>Open</option>
+		<option value='1'>Men's</option>
+		<option value='0'>Women's</option>
+		</select>&nbsp;
 
-	<div align="center">
-	<input type="button" name="confirm_proceed" id="confirm_proceed" value="Confirm & Proceed" style="margin-top:20px" class="league-form-submit" disabled>
-    </div>
+		<a id='add_custom_combi' style='cursor:pointer;'><b>ADD</b></a>
+		<br /><br /><br />
+	</div>
+</div>
+<div id='comb_select_div'></div>
+<?php
+	}
+?>
+<div align="center">
+<input type="button" name="confirm_proceed" id="confirm_proceed" value="Confirm & Proceed" style="margin-top:20px" class="league-form-submit" disabled>
+</div>
   
 </div>  
 
-<!--  </div>  -->
-<!--  ------------------------ New Functionality Ends Here -------------------------------------------------------  --->	
+<!--</div> -->
+<!-------------------------- New Functionality Ends Here ---------------------------------------------------------->	
 	<div id="limitsdiv" style="display:block">
 		
     <div class="col-md-12 league-form-bg" style="margin-top:30px;" id="limits_section">
@@ -1182,7 +1204,6 @@ foreach($countries as $country)
 	   </div> 												<!-- Event Fees Section end -->
 	</div>
 
-<!-- 
 <div class="col-md-12 league-form-bg" style="margin-top:30px;" id="event_section">
 <div class="fromtitle">Game Day for Events</div>
 
@@ -1228,9 +1249,18 @@ foreach($countries as $country)
 	}
 ?>
 </div>
-</div> 												
+</div> 												<!-- Events Section end -->
 </div>
- -->
+
+<!-- Change Game Days start -->
+<!-- <div class="col-md-12 league-form-bg" style="margin-top:30px;" id="change_event_section" style="display:none;" >
+<div class="fromtitle">Game Day for Events</div>
+
+<div class='form-group' id="div_change_event_gd_section">
+<div id='Events' style="display:block;">Events</div>
+</div> 												
+</div> -->
+<!-- Change Game Days end -->
 
    <div class="col-md-12 league-form-bg" style="margin-top:30px;" id="event_time_section">
 	<div class="fromtitle">Event Time</div>
@@ -1581,6 +1611,19 @@ $(document).ready(function(){
 });
 </script>
 
+<div class="col-md-12 league-form-bg" style="margin-top:30px;">
+<div class="fromtitle">Publish </div>
+Do you want to publish the tournament?&nbsp;
+<label for="is_publish_yes">
+<input type="radio" id="is_publish_yes" name="is_publish" value="1" 
+<?php if($tournament_details->Is_Publish==1){ echo "checked"; } ?>  /> Yes
+</label>&nbsp;&nbsp;
+<label for="is_publish_no">
+<input type="radio" id="is_publish_no" name="is_publish" value="0" 
+<?php if($tournament_details->Is_Publish==0){ echo "checked"; } ?> /> No
+</label>
+</div>
+
 <div class="col-md-12 league-form-bg" style="margin-top:30px; margin-bottom:20px;">
 <div class="fromtitle">Review & Submit</div>
 
@@ -1633,9 +1676,11 @@ else{
 if($tournament_details->tournament_format != "Teams"){
 ?>
 <script type="text/javascript">
+var selectedEventsList = [];
+
 $(document).ready(function() {
 
-var selectedEventsList = new Array();
+//var selectedEventsList = new Array();
 var registerEventsList = new Array();
 
 <?php foreach($reg_events_list as $ev){ ?>
@@ -1716,7 +1761,11 @@ r[i] = a;
 
 /* ************************ */
 
-if(r[i].indexOf("U10-Open-Singles") > -1){
+if(r[i].indexOf("U9-Open-Singles") > -1){
+//r[i]  = 'U9-Open-Singles';
+r[i]  = r[i].replace("U9-Open-Singles","U9-Singles");
+}
+else if(r[i].indexOf("U10-Open-Singles") > -1){
 //r[i]  = 'U10-Open-Singles';
 r[i]  = r[i].replace("U10-Open-Singles","U10-Singles");
 }
@@ -1756,6 +1805,10 @@ else if(r[i].indexOf("U19-Open-Singles") > -1){
 //r[i]  = 'U19-Open-Singles';
 r[i]  = r[i].replace("U19-Open-Singles","U19-Singles");
 }
+else if(r[i].indexOf("U21-Open-Singles") > -1){
+//r[i]  = 'U21-Open-Singles';
+r[i]  = r[i].replace("U21-Open-Singles","U21-Singles");
+}
 else if(r[i].indexOf("Adults-Open-Singles") > -1){
 //r[i]  = 'Open-Singles';
 r[i]  = r[i].replace("Adults-Open-Singles","Adults-Singles");
@@ -1768,8 +1821,11 @@ r[i]  = r[i].replace("Senior-Open-Singles","Senior-Singles");
 }
 
 
-
-if(r[i].indexOf("U10-Open-Doubles") > -1){
+if(r[i].indexOf("U9-Open-Doubles") > -1){
+//r[i]  = 'U9-Open-Doubles';
+r[i]  = r[i].replace("U9-Open-Doubles","U9-Doubles");
+}
+else if(r[i].indexOf("U10-Open-Doubles") > -1){
 //r[i]  = 'U10-Open-Doubles';
 r[i]  = r[i].replace("U10-Open-Doubles","U10-Doubles");
 }
@@ -1809,6 +1865,10 @@ else if(r[i].indexOf("U19-Open-Doubles") > -1){
 //r[i]  = 'U19-Open-Doubles';
 r[i]  = r[i].replace("U19-Open-Doubles","U19-Doubles");
 }
+else if(r[i].indexOf("U21-Open-Doubles") > -1){
+//r[i]  = 'U21-Open-Doubles';
+r[i]  = r[i].replace("U21-Open-Doubles","U21-Doubles");
+}
 else if(r[i].indexOf("Adults-Open-Doubles") > -1){
 //r[i]  = 'Open-Doubles';
 r[i]  = r[i].replace("Adults-Open-Doubles","Adults-Doubles");
@@ -1841,7 +1901,7 @@ var events_html1 = "";
 /* To Eliminate 1-Mixed/0-Mixed values */
 var events_html = "<div><div class='col-md-6'>";
 var count = 0;
-selectedEventsList = [];
+//selectedEventsList = [];
 
 	for (var i = 0; i < r.length; i++) {
 		var label;
@@ -1858,7 +1918,10 @@ selectedEventsList = [];
 		}
 
 
-		if(r[i].indexOf("U10-1") > -1){
+		if(r[i].indexOf("U9-1") > -1){
+			label = lbl_temp.replace("U9-1","U9-Boy's");
+		}
+		else if(r[i].indexOf("U10-1") > -1){
 			label = lbl_temp.replace("U10-1","U10-Boy's");
 		}
 		else if(r[i].indexOf("U11-1") > -1){
@@ -1888,6 +1951,9 @@ selectedEventsList = [];
 		else if(r[i].indexOf("U19-1") > -1){
 			label = lbl_temp.replace("U19-1","U19-Boy's");
 		}
+		else if(r[i].indexOf("U21-1") > -1){
+			label = lbl_temp.replace("U21-1","U21-Boy's");
+		}
 		else if(r[i].indexOf("Adults-Singles") > -1){
 			label = lbl_temp.replace("Adults-Singles","Singles");
 		}
@@ -1915,6 +1981,9 @@ selectedEventsList = [];
 
 
 
+		else if(r[i].indexOf("U9-0") > -1){
+			label = lbl_temp.replace("U9-0","U9-Girl's");
+		}
 		else if(r[i].indexOf("U10-0") > -1){
 			label = lbl_temp.replace("U10-0","U10-Girl's");
 		}
@@ -1944,6 +2013,9 @@ selectedEventsList = [];
 		}
 		else if(r[i].indexOf("U19-0") > -1){
 			label = lbl_temp.replace("U19-0","U19-Girl's");
+		}
+		else if(r[i].indexOf("U21-0") > -1){
+			label = lbl_temp.replace("U21-0","U21-Girl's");
 		}
 		else if(r[i].indexOf("Adults-Doubles") > -1){
 			label = lbl_temp.replace("Adults-Doubles","Doubles");
@@ -2012,6 +2084,7 @@ selectedEventsList = [];
 		}
 
 		if($.inArray(r[i], registerEventsList) !== -1){
+			//alert('1');
 			checked  = "checked='checked' ";
 			readonly = "readonly";	
 			chk_hide = "display:none;";
@@ -2023,20 +2096,23 @@ selectedEventsList = [];
 			});
 			//events_html1 += "<div style='padding-bottom:5px;'> <span>"+label+"</span></div>";
 		}
-
-	 if($.inArray(r[i],multiEvent_indexs) !== -1){
-		$('#SelectAll').prop('checked',true);
+		
+		if($.inArray(r[i],multiEvent_indexs) !== -1){
+		//$('#SelectAll').prop('checked',true);
 		selectedEventsList.push({
 		item  : label,
 		value : r[i]
 		});
-		
+					//alert('3');
+
 		checked = "checked='checked' ";
 
 	 	events_html += "<div style='padding-bottom:5px;'><input style='"+chk_hide+"' type='checkbox' id='"+r[i]+"' class='CombiChecked' name='mul_events[]' value='"+r[i]+"'"+checked+readonly+"/> <span>"+label+info_ico+"</span></div>";
 		//events_html1 += "<div style='padding-bottom:5px;'> <span>"+label+"</span></div>";
 	 }
 	 else{
+		 			//alert('4');
+
 		events_html += "<div style='padding-bottom:5px;'><input type='checkbox' id='"+r[i]+"' class='CombiChecked' name='mul_events[]' value='"+r[i]+"'"+checked+readonly+" /> <span>"+label+info_ico+"</span> </div>";
 	 }
 	
@@ -2047,6 +2123,9 @@ selectedEventsList = [];
 		$('#combinationsResult').append(events_html);
 		$('#selected_events').append(events_html1);
 		 
+		 if(counter > 0)
+			$('#customCombined').show();
+
 		//if($.inArray(r[i],multiEvent_indexs) !== -1 ){ 
 		//}
 
@@ -2066,10 +2145,10 @@ if(multiEvent_indexs.length == 0 && registerEventsList.length != 0){
 	$('#limitsdiv').hide();
 }
 
- multiEvent_indexs = [];
+ //multiEvent_indexs = [];
 
 	$('#ListCount').html('Selected List of Events are: ('+selectedEventsList.length+')');
-	$('#SelectAll').prop('checked',false);
+	//$('#SelectAll').prop('checked',false);
 
 });
 
@@ -2091,6 +2170,7 @@ if(multiEvent_indexs.length == 0 && registerEventsList.length != 0){
 					if(selectedEventsList.length > 0){
 						$('#confirm_proceed').attr('disabled',false);
 						$('#confirm_proceed').show();
+						$('#customCombined').show();
 					}
 					else{
 						$('#confirm_proceed').attr('disabled',true);
@@ -2110,6 +2190,37 @@ if(multiEvent_indexs.length == 0 && registerEventsList.length != 0){
 		$('#limitsdiv').hide();
 	});
  
+		$('#custom_com_age_yes').click(function(){
+			$('#customCombined_opts').show();
+		});
+
+		$('#custom_com_age_no').click(function(){
+			$('#customCombined_opts').hide();
+		});
+
+		$('#add_custom_combi').click(function(){
+			var x			= $('#customCombined_select').val();
+			var x_text	= $('#customCombined_select option:selected').text();
+			var y			= $('#customCombined_gender').val();
+			var y_text	= $('#customCombined_gender option:selected').text();
+			var z			= $('#custom_combi_min_age').val();
+			var z_text	= $('#custom_combi_min_age').val();
+
+			selectedEventsList.push({
+			item : x_text+' (min. age: '+z_text+')',
+			value : x+'-'+y+'-'+z
+			});
+
+			$('#selected_events').html('');
+
+			$.each(selectedEventsList, function(index, values){
+			$('#selected_events').append(values.item);
+			$('#selected_events').append("<br />");
+			});
+
+			$('#comb_select_div').append("<input type='checkbox' id='"+x+'-'+y+'-Doubles-'+z+"' class='CombiChecked' name='mul_events[]' value='"+x+'-'+y+'-Doubles-'+z+"' checked style='display:none;' />");
+
+		});
 
 	$("#confirm_proceed").click(function() {
 				 
@@ -2281,6 +2392,54 @@ if(tour_format == 'TeamSport'){
 if(db_country != '')
 $('#country').val(db_country).trigger('change');
 
+//$('#customCombined').hide();
+$('#customCombined_opts').hide();
+
+
+
+
+	$.each(multiEvent_indexs, function(index, values){
+		//alert(index+ ': '+values);
+		var comb = values.split("-");
+		if(comb[0] == 'A70' || comb[0] == 'A80' || comb[0] == 'A90'){
+			//alert(comb[0]);
+				// ---------------Assign to select list ---
+			var x			= comb[0];
+			var x_text	= 'Combine '+comb[0][1]+comb[0][2]+'+';
+			var y			= comb[1];
+			var y_text	= comb[1];
+			var z			= comb[3];
+			var z_text	= comb[3];
+	//alert(temp.length);
+			selectedEventsList.push({
+			item : x_text+' (min. age: '+z_text+')',
+			value : x+'-'+y+'-'+z
+			});
+
+			$('#selected_events').html('');
+//var temp = unique(selectedEventsList);
+				//alert(temp.length);
+			$.each(selectedEventsList, function(index, values){
+				$('#selected_events').append(values.item);
+				$('#selected_events').append("<br />");
+			});
+
+			$('#comb_select_div').append("<input type='checkbox' id='"+x+'-'+y+'-Doubles-'+z+"' class='CombiChecked' name='mul_events[]' value='"+x+'-'+y+'-Doubles-'+z+"' checked style='display:none;' />");
+				// ---------------Assign to select list ---
+		}
+	});
+
+ multiEvent_indexs = [];
+
 });
+
+function unique(list) {
+  var result = [];
+  $.each(list, function(i, e) {
+	 // alert(JSON.stringify(e));
+    if ($.inArray(e, result) === -1) result.push(e);
+  });
+  return result;
+}
 </script>
 <!----------------------------End of Multi Event Script------------------------------------------> 

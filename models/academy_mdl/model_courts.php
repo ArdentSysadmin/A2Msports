@@ -123,6 +123,11 @@ class model_courts extends CI_Model {
 			return $res_arr;
 		}
 		
+		public function check_is_repeat($res){
+			$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE res_id = {$res}");
+			return $query->row_array();
+		}
+
 		public function get_court_reservations_by_date($org_id,$date)
 		{
    		    $query = $this->db->query("select u.firstname,u.lastname ,res.* from Academy_Court_Reservations res inner join Academy_Court_Locations loc on loc.loc_id = res.loc_id inner join users u on res.reserved_by = u.users_id where loc.org_id = {$org_id} and res_date = '{$date}' and res_status != 'Canceled'");
@@ -1113,7 +1118,8 @@ class model_courts extends CI_Model {
 
 			$temp_from_time = $from_time;
 			$tot_price = 0.00;
-			for($h=1; $h<=($hrs*2); $h++) {
+			//for($h=1; $h<=($hrs*2); $h++) {  // commented as ABC club, at time 8 am its showing $15 [(20 + 10) / 2]
+			for($h=1; $h<=($hrs*1); $h++) {
 				
 				//$to_time = date('H:i', strtotime('+1'.' hours', strtotime($temp_from_time)));
 				$to_time = date('H:i', strtotime('+'.($sd * 60).' minutes', strtotime($temp_from_time)));
@@ -1126,6 +1132,7 @@ class model_courts extends CI_Model {
 
 				$qry_check2 = $this->db->query("SELECT * FROM Academy_Courts_Price WHERE Aca_Court_ID = $court_id 
 				AND Start_Time <= '$temp_from_time' AND End_Time >= '$to_time'"); 
+				//if($this->logged_user == 237)
 				//echo $this->db->last_query();
 
 				$row2 = $qry_check2->row_array();
@@ -1171,6 +1178,7 @@ class model_courts extends CI_Model {
 
 		public function confirm_court($data){
 			$result  = $this->db->insert('Academy_Court_Reservations', $data);
+			return $this->db->insert_id();
 		}
 
 		public function get_paypalIDs($uid){
@@ -1275,6 +1283,18 @@ class model_courts extends CI_Model {
 		public function get_courtPrice($court_id){
 			$qry = $this->db->query("SELECT * FROM Academy_Courts_Price WHERE Aca_Court_ID = {$court_id}");
 			return $qry->row_array();
+		}
+
+		public function get_min_time($court_id){
+			$qry = $this->db->query("SELECT MIN(Start_Time) AS Start_Time FROM Academy_Courts_Price WHERE Aca_Court_ID = {$court_id}");
+			$m = $qry->row_array();
+			return $m['Start_Time'];
+		}
+
+		public function get_max_time($court_id){
+			$qry = $this->db->query("SELECT MAX(End_Time) AS End_Time FROM Academy_Courts_Price WHERE Aca_Court_ID = {$court_id}");
+			$m = $qry->row_array();
+			return $m['End_Time'];
 		}
 
 		public function is_same_day_booking($court_id, $user_id, $book_date){
@@ -1785,7 +1805,9 @@ class model_courts extends CI_Model {
 }*/
 
 
-	foreach($pr as $day => $vt){
+// ---  upd on 01/13/2022
+
+/*foreach($pr as $day => $vt){
 		foreach($vt as $i => $values){
 			$st  = strtotime($values['start_time']);
 			$ed = strtotime($values['end_time']);
@@ -1798,7 +1820,34 @@ class model_courts extends CI_Model {
 				}
 			}
 	}
-}
+}*/
+
+//echo "<pre>"; 
+//print_r($pr); 
+
+//exit;
+
+
+/*
+foreach($pr as $day => $vt){
+		foreach($vt as $i => $values){
+			$st  = $values['start_time'];
+			$ed = $values['end_time'];
+
+			for($p = $st; $p <= $ed; ){
+				//echo $p."<br>";
+				$p2 = date("H:i", strtotime("$p +60 minutes"));
+				//if(!in_array($p."-".$p2, $court_valid_times)){
+				//		$break_times[$day][] = array('start_time' => $x[0], 'end_time' => $x[1]);
+				//}
+				$p = $p2;
+
+			}
+	}
+}*/
+
+// ---  upd on 01/13/2022
+
 /*echo "<pre>"; 
 print_r($court_valid_times); 
 echo "--------------------------";
@@ -1871,10 +1920,7 @@ exit;*/
 			$json_data['court_prices'] = $court_prices;
 			$json_format2 = json_encode($json_data);
 
-			/*echo "<pre>";
-			print_r($json_data);
-			echo $json_format2;
-			exit;*/
+			//echo "<pre>"; print_r($json_data); echo $json_format2; exit;
 
 			return $json_format2;
 		}

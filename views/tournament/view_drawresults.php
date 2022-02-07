@@ -1,3 +1,8 @@
+<style>
+/*button:active{
+    background:olive;
+}*/
+</style>
 <?php
 $draw_type_arr = array('Single Elimination' => 'S.E','Round Robin' => 'R.R','Consolation' => 'C.D','Switch Doubles' => 'S.D');
 ?>
@@ -120,6 +125,53 @@ var count=$('input:checkbox.delete_draws:checked').length;
 //return true;
 });
 </script>
+<?php
+ $btn_warning = 'warning';
+ $btn_primary = 'primary';
+
+?>
+<div class="col-md-12" style='margin-bottom:20px;'>
+<div class="col-md-8">
+<?php
+///echo "Test ".$btn_val;exit;
+?>
+<button id="all_btn" type="button" style='margin-bottom:10px;' class="filter_btns btn btn-<?php 
+if($btn_val == 'all') 
+	echo $btn_primary;
+else
+	echo $btn_warning;
+
+?>">All </button>&nbsp;&nbsp;
+<button id="playoffs_btn" type="button" style='margin-bottom:10px;' class="filter_btns btn btn-<?php 
+if($btn_val == 'playoffs') 
+	echo $btn_primary;
+else
+	echo $btn_warning;
+
+?>">Playoffs</button>&nbsp;&nbsp;
+<button id="rr_btn" type="button" style='margin-bottom:10px;' class="filter_btns btn btn-<?php 
+if($btn_val == 'rr') 
+	echo $btn_primary;
+else
+	echo $btn_warning;
+?>">Round Robin</button>
+</div>
+<div class="col-md-4" align="right">
+<select class="form-control" id='draw_filter' name='draw_filter' style="width:60%;">
+<option value='All'>Show All</option>
+<?php
+if($this->logged_user and $this->is_logged_user_reg){ ?>
+<option value='MyDraws' <?php if($df == "MyDraws") echo "selected"; ?>>My Draws</option>
+<?php } ?>
+<option value="Men''s Singles" <?php if($df == "Men''s Singles") echo "selected"; ?>>Men's Singles</option>
+<option value="Men''s Doubles" <?php if($df == "Men''s Doubles") echo "selected"; ?>>Men's Doubles</option>
+<option value="Women''s Singles" <?php if($df == "Women''s Singles") echo "selected"; ?>>Women's Singles</option>
+<option value="Women''s Doubles" <?php if($df == "Women''s Doubles") echo "selected"; ?>>Women's Doubles</option>
+<option value="Mixed Doubles" <?php if($df == "Mixed Doubles") echo "selected"; ?>>Mixed Doubles</option>
+</select>
+</div>
+</div>
+
 <div id='vdrawres' class="table-responsive">
 <?php
 
@@ -156,9 +208,25 @@ $is_have_cd = league::check_is_cd($tour_details->tournament_ID);
 </thead> 
 <tbody>
 <?php
-$brackets = league::get_bracket_list($tour_details->tournament_ID);
+//echo "dfdf ".$btn_val; 
+if($df or $btn_val)
+	$brackets = league::get_bracket_list($tour_details->tournament_ID, $df, $btn_val);
+else
+	$brackets = league::get_bracket_list($tour_details->tournament_ID);
 
-if(count(array_filter($brackets)) > 0){ 
+if(count(array_filter($brackets)) > 0){
+
+$logged_user_brackets = array();
+	if($this->logged_user){
+		$get_logged_user_brackets = league :: get_logged_user_brackets($tour_details->tournament_ID, $this->logged_user);
+
+		foreach($get_logged_user_brackets as $utm){
+			if(!in_array($utm->BracketID, $logged_user_brackets)){
+				$logged_user_brackets[] = $utm->BracketID;
+			}
+		}
+		//echo "<pre>"; print_r($get_logged_user_brackets); exit;
+	}
 	//echo "<pre>"; print_r($brackets); exit;
 foreach($brackets as $i => $bk){
 
@@ -558,8 +626,12 @@ $players = $temp_players_sort;
 	}
 
 	if(($this->is_super_admin or $this->logged_user_role == "Admin") or $bk->is_Publish){
+		$st = "";
+if(in_array($bk->BracketID, $logged_user_brackets)){
+		$st = "style='background-color:#dfb6e1;'";
+}
 ?>
-<tr id="tr_<?=$bk->BracketID;?>">
+<tr id="tr_<?=$bk->BracketID;?>" <?php echo $st; ?>>
 <?php
 $users_id = $this->session->userdata('users_id');
 if($this->logged_user_role == 'Admin'){   /// tournament admin access links
@@ -594,18 +666,21 @@ echo ($bk->is_Publish == 1) ? "Published" : "Unpublished";
 if($bk->OCCR_ID) {
 	$ocr_info		= league :: get_occr_info($bk->OCCR_ID);
 	$dis_date		= date('M d, h:i A', strtotime($ocr_info['Game_Date'])); 
-	$sort_date	= date('Ymd', strtotime($ocr_info['Game_Date'])); 
+	//$sort_date	= date('YmdHis', strtotime($ocr_info['Game_Date'])); 
+	$sort_date	= strtotime($ocr_info['Game_Date']); 
 }
 else {
 	$get_first_match = league::get_bracket_firstmatch($bk->BracketID);
 	//echo ""; print_r($get_first_match); exit;
 	if($get_first_match['Match_DueDate']) {
 		$dis_date		= date('M d, h:i A', strtotime($get_first_match['Match_DueDate'])); 
-		$sort_date	= date('Ymd', strtotime($get_first_match['Match_DueDate'])); 
+		//$sort_date	= date('YmdHis', strtotime($get_first_match['Match_DueDate'])); 
+		$sort_date 	= strtotime($get_first_match['Match_DueDate']); 
 	}
 	else {
 		$dis_date		= date('M d, h:i A', strtotime($tour_details->StartDate)); 
-		$sort_date	= date('Ymd', strtotime($tour_details->StartDate)); 
+		//$sort_date	= date('YmdHis', strtotime($tour_details->StartDate)); 
+		$sort_date 	= strtotime($tour_details->StartDate); 
 	}
 }
 ?><span style='display:none;'><?=$sort_date;?></span><b><?=$dis_date;?></b></td>
@@ -654,10 +729,10 @@ else{
 else{
 	echo "<tr>";
 	if($this->logged_user_role == 'Admin'){ 
-	echo"<td>No Draws are available</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>";
+	echo"<td>No Draws are available</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>";
 	}
 	else{
-	echo "<td>No Draws are available</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>";
+	echo "<td>No Draws are available</td><td></td><td></td><td></td><td></td><td></td><td></td>";
 	}
 	echo "</tr>";
 }
@@ -682,30 +757,33 @@ if(count(array_filter($brackets)) > 0){
 		//}
 		echo '&nbsp;&nbsp;<input type="button" name="btn_publish_draws" id="btn_publish_draws" class="league-form-submit1" value=" Publish ">';
 		echo '&nbsp;&nbsp;<input type="button" name="btn_unpublish_draws" id="btn_unpublish_draws" class="league-form-submit1" value=" UnPublish ">';
-		//if($this->logged_user == 240){
+
 		echo '&nbsp;&nbsp;<input type="button" name="btn_court_assgn" id="btn_court_assgn" class="league-form-submit1" value=" Show Court Assignments ">';		
 		echo '&nbsp;&nbsp;<input type="button" name="btn_hide_court_assgn" id="btn_hide_court_assgn" class="league-form-submit1" value=" Hide Court Assignments " style="display:none;">';
-		//}
 
 ?>
-		<div id='asg_courts_ip' style='display:none;'>
-			<div class='col-md-12'>
-				No. of Courts:&nbsp;<input type="number" name="num_courts" id="num_courts" value="" min='1' max='99' />
-			</div>
-			<div class='col-md-6'>
-				Match Duration&nbsp;<input type="number" name="num_courts" id="num_courts" value="" min='1' max='99' />
-			</div>
-			<div class='col-md-6'>
-				Break Time&nbsp;<input type="number" name="num_courts" id="num_courts" value="" min='1' max='99' />
-			</div>
-			<div class='col-md-12'>
-				<input type="button" name="btn_calc_timings" id="btn_calc_timings" class="league-form-submit1" value="Calculate Match Timings" />
-				<input type="button" name="cancel_assign_courts" id="cancel_assign_courts" class="league-form-submit1" value="Cancel" />
-			</div>
+	<div id='asg_courts_ip' style='display:none;'>
+		<div class='col-md-12'>
+			No. of Courts:&nbsp;<input type="number" name="num_courts" id="num_courts" value="" min='1' max='99' />
 		</div>
+		<div class='col-md-6'>
+			Match Duration&nbsp;<input type="number" name="num_courts" id="num_courts" value="" min='1' max='99' />
+		</div>
+		<div class='col-md-6'>
+			Break Time&nbsp;<input type="number" name="num_courts" id="num_courts" value="" min='1' max='99' />
+		</div>
+		<div class='col-md-12'>
+			<input type="button" name="btn_calc_timings" id="btn_calc_timings" class="league-form-submit1" value="Calculate Match Timings" />
+			<input type="button" name="cancel_assign_courts" id="cancel_assign_courts" class="league-form-submit1" value="Cancel" />
+		</div>
+	</div>
 <?php
 
 	}
+
+		echo '&nbsp;&nbsp;<input type="button" name="btn_lg_stds" id="btn_lg_stds" 
+		class="league-form-submit1" value=" Show League Standings ">';		
+		echo '&nbsp;&nbsp;<input type="button" name="btn_hide_lg_stds" id="btn_hide_lg_stds" class="league-form-submit1" value=" Hide League Standings " style="display:none;">';
 }
 ?>
 </div>
@@ -715,6 +793,8 @@ if(count(array_filter($brackets)) > 0){
 <?php //echo '<input type="button" name="vdrawres" id="vdrawres" class="league-form-submit1 close_div" value="Close">'; ?>
 </div> -->
 <div id="showdraw"></div>
+<div id="showstandings"></div>
+
 <script>
 $('.show_draws').click(function(){
 
@@ -742,6 +822,18 @@ $('#'+$bracket_id).val('Please wait....');
 	});
 });
 
+// League Standings
+$('#btn_hide_lg_stds').click(function(){
+	//alert('test');
+$("#btn_lg_stds").show();
+$(this).hide();
+$("#showstandings").html('');
+});
+
+
+
+// League Standings
+
 $('#btn_hide_court_assgn').click(function(){
 $("#btn_court_assgn").show();
 $(this).hide();
@@ -761,6 +853,10 @@ var tourn_id = $("#tourn_id").val();
 		$("#btn_court_assgn").hide();
 		$("#btn_hide_court_assgn").show();
 
+		$("#showstandings").html('');
+		$("#btn_hide_lg_stds").hide();
+		$("#btn_lg_stds").show();
+
 			$('html, body').animate({
 			scrollTop: ($('#showdraw').offset().top)
 			},500);
@@ -777,40 +873,57 @@ if($sport_det['SportFormat'] != "TeamSport" and $tour_details->tournament_format
 <script>
 $(document).ready(function(){
 
-	$('#format_filter').change(function(){
-		var df = $(this).val();
-		load_cl_standings(df);
-	});
+$(document).on("change", "#format_filter", function(){
+//	$('#format_filter').change(function(){
+	var df = $(this).val();
+	load_cl_standings(df);
+});
 
 
 
 function load_cl_standings(draw_format = ''){
 
-	if( !$.trim( $('#show_cl_standings').html() ).length || draw_format != ''){
+	//if( !$.trim( $('#show_cl_standings').html() ).length || draw_format != ''){
 		var tourn_id = $("#tourn_id").val();
-		$("#show_cl_standings").html("Please wait, standings are loading/refreshing ......");
+		$("#showdraw").html('');
+		$("#btn_court_assgn").show();
+		$("#btn_hide_court_assgn").hide();
+
+		$("#showstandings").html("Please wait, standings are loading/refreshing ......");
 		$.ajax({
 			type:'POST',
 			url:baseurl+'league/get_cl_standings/'+tourn_id,
 			data:{club_url:club_baseurl, df:draw_format},
 			success:function(res){
-				$("#show_cl_standings").html(res);
+				//$("#show_cl_standings").html(res);
 
-					/*$('html, body').animate({
-					scrollTop: ($('#showdraw').offset().top)
-					},500);*/
+
+		$("#showstandings").html(res);
+		$("#btn_lg_stds").hide();
+		$("#btn_hide_lg_stds").show();
+
+			$('html, body').animate({
+			scrollTop: ($('#showstandings').offset().top)
+			},500);
+
 			}
 		});
-	}
+	//}
 }
 
-if( !$.trim( $('#show_cl_standings').html() ).length ){
-	load_cl_standings(); 
-}
+//if( !$.trim( $('#show_cl_standings').html() ).length ){
+//	load_cl_standings(); 
+//}
 /*setInterval(function(){
     load_cl_standings() 
 }, 30000);*/
+
+$('#btn_lg_stds').click(function(){
+	load_cl_standings('Doubles'); 
 });
+
+});
+
 </script>
 <br /><br />
 
@@ -822,14 +935,20 @@ else if($tour_details->tournament_format == "Teams"){
 function load_cl_team_standings(){
 	if( !$.trim( $('#show_cl_standings').html() ).length ){
 		var tourn_id = $("#tourn_id").val();
-		$("#show_cl_standings").html("Please wait, standings are loading/refreshing ......");
+		$("#showdraw").html('');
+		$("#btn_court_assgn").show();
+		$("#btn_hide_court_assgn").hide();
+
+		$("#showstandings").html("Please wait, standings are loading/refreshing ......");
 
 		$.ajax({
 			type:'POST',
 			url:baseurl+'league/get_cl_team_standings/'+tourn_id,
 			success:function(res){
-				$("#show_cl_standings").html(res);
-
+				//$("#show_cl_standings").html(res);
+		$("#showstandings").html(res);
+		$("#btn_lg_stds").hide();
+		$("#btn_hide_lg_stds").show();
 					/*$('html, body').animate({
 					scrollTop: ($('#showdraw').offset().top)
 					},500);*/
@@ -838,9 +957,14 @@ function load_cl_team_standings(){
 	}
 }
 
-if( !$.trim( $('#show_cl_standings').html() ).length ){
-	load_cl_team_standings();
-}
+$('#btn_lg_stds').click(function(){
+	load_cl_team_standings(); 
+});
+
+//if( !$.trim( $('#show_cl_standings').html() ).length ){
+//	load_cl_team_standings();
+//}
+
 /*setInterval(function(){
     load_cl_standings() 
 }, 30000);*/
@@ -875,16 +999,80 @@ $(document).ready(function(){
 });
 </script>
 <script> 
+$(document).ready(function(){
+$('#draw_filter').change(function(){
+	var df = $(this).val();
+	var btn_val = "<?php echo $btn_val; ?>";
+
+	var tourn_id = $('#tourn_id').val();
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/drawresults_filter/',
+				data:{club_url:club_baseurl,tourn_id:tourn_id,df:df,btn_val:btn_val},
+				success:function(res){
+					$("#DrawsResults").html(res);
+				}
+			});
+});
+
+$('.filter_btns').click(function(){
+	var temp	 = $(this).attr('id');
+	var temp2 = temp.split('_');
+
+	var btn_val		= temp2[0];
+	var draw_filter  = $('#draw_filter').val();
+	var tourn_id		= $('#tourn_id').val();
+	
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/drawresults_filter/',
+				data:{club_url:club_baseurl, tourn_id:tourn_id, btn_val:btn_val, df:draw_filter},
+				success:function(res){
+					$("#DrawsResults").html(res);
+				}
+			});
+});
+
+});
+</script>
+	<?php if($is_super_admin or $this->logged_user_role == "Admin" or $this->logged_user_role == "TeamCaptain"){ ?>
+<script>
 	//$(document).ready(function(){
 		$('#Draws_table').DataTable({
 				searching: false, 
 				paging: false, 
 				lengthMenu: false,
 				//sDom	  : '<"clear">t<"H"p><"F"p>'
+				order: [[ 7, "asc" ]]
 		});
 	//});
 </script>
-<div class='col-md-12' align='right'>
+<?php
+}
+else{
+?>
+<script>
+	//$(document).ready(function(){
+		$('#Draws_table').DataTable({
+				searching: false, 
+				paging: false, 
+				lengthMenu: false,
+				//sDom	  : '<"clear">t<"H"p><"F"p>'
+				order: [[ 6, "asc" ]]
+		});
+	//});
+</script>
+<?php
+}
+if($this->logged_user and $this->is_logged_user_reg and !$df and $df != "MyDraws"){ ?>
+<script>
+$(document).ready(function (){
+$('#draw_filter').val('MyDraws').trigger('change');
+});
+</script>
+<?php } ?>
+
+<!-- <div class='col-md-12' align='right'>
 <select class='form-control' name='format_filter' id='format_filter' style='width:15%;'>
 <option value='all'>All</option>
 <option value='Singles'>Singles</option>
@@ -892,5 +1080,5 @@ $(document).ready(function(){
 <option value='Mixed'>Mixed</option>
 </select>
 </div>
-<div style="padding-top:20px;"><b>Tournament/League Standings</b></div>
-<div id="show_cl_standings"></div>
+<div style="padding-top:20px;"><b>Tournament/League Standings</b></div> -->
+<!-- <div id="show_cl_standings"></div> -->

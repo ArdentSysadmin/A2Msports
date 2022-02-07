@@ -446,9 +446,11 @@ class auto_notify_emails extends CI_Controller {
 		if($tourn_id){
 		  $ctype	 = "Tournament";
           $tourn_det = $this->general->get_tour_info($tourn_id);
-          $title	 = ucwords($tourn_det['tournament_title']);
-          $tadmin	 = ucwords($tourn_det['OrganizerName']);
 		  $get_user = $this->general->get_onerow('Users', 'Users_ID', $tourn_det['Usersid']);
+
+          $title	 = ucwords($tourn_det['tournament_title']);
+          //$tadmin	 = ucwords($tourn_det['OrganizerName']);
+          $tadmin	 = ucwords($get_user['Firstname']." ".$get_user['Lastname']);
 			  if($get_user['EmailID'])
 			   $reply_to = $get_user['EmailID'];
 			  else if($get_user['AlternateEmailID'])

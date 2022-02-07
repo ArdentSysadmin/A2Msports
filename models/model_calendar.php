@@ -8,9 +8,8 @@
 	
 		}
 
-		public function get_tournaments()
-		{
-			if($this->session->userdata('user')){
+		public function get_tournaments() {
+			/*if($this->session->userdata('user')){
 				$lat  = $this->session->userdata('lat');
 				$long = $this->session->userdata('long');
 				$range = 100;
@@ -18,11 +17,14 @@
 				$query = $this->db->query(" SELECT * , ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat )) + COS( RADIANS( Latitude ) )
 					* COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 AS distance FROM tournament WHERE ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat )) + COS( RADIANS( Latitude ) ) * COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 < {$range}
 					OR (latitude = 0 AND longitude = 0)");
-			} else {
-				$query = $this->db->get('tournament');
 			}
-			//echo $this->db->last_query();
-		return $query->result();
+			else {
+				$query = $this->db->get('tournament');
+			}*/
+
+			$query = $this->db->get('tournament');
+
+			return $query->result();
 		}
 
 		public function get_events(){	

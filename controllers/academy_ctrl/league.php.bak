@@ -20,6 +20,7 @@
 		public $logged_user_role;
 		public $sports_dets;
 		public $is_league_page;
+		public $is_logged_user_reg;
 	
 		public function __construct()
 		{
@@ -59,6 +60,8 @@
 
 			$this->is_super_admin = 0;
 			$this->is_league_page = 1;
+				$this->is_logged_user_reg = 0;
+
 			$this->club_form_url = $this->config->item('club_pr_url')."/";
 
 			if($this->session->userdata('users_id')){
@@ -573,7 +576,7 @@
 			{
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);
 
-				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
+				if(($tr_det->Usersid == $this->logged_user) or ($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) or $this->is_super_admin){    /// tournament admin access links
 				$this->logged_user_role = 'Admin';
 				}
 				else if($is_reg){
@@ -749,9 +752,9 @@
 		public function update_trnmt($org_id='')
 			{
 			//echo "test"; exit;
-				/*echo "<pre>";
+				echo "<pre>";
 				print_r($_POST);
-				exit;*/
+				exit;
 			  // $sdate = date('h:i', strtotime($this->input->post('stime')));echo $sdate;exit();
 	  
 				$data['tourn_id'] = $this->input->post('tourn_id'); 
@@ -1681,15 +1684,16 @@
 			}
 		}
 
-		 public function fixtures($org_code, $tourn_id)
+		 public function fixtures($tourn_id, $org_id)
 		 {
+			// echo $org_code." - ".$tourn_id;exit;
 			//echo $tourn_id; exit;
 			//print_r($this->session->userdata('user'));
 			//exit;
 		 	if(!$this->session->userdata('user')){ redirect('login'); }
 
-			$org_id					 = $this->aca_general->get_orgid($org_code);
-			$this->short_code = $org_code;
+			//$org_id					 = $this->aca_general->get_orgid($org_code);
+			//$this->short_code = $org_code;
 
 			if($org_id){
 				$this->load->model('academy_mdl/model_academy');
@@ -2594,12 +2598,14 @@
 			}
 		 }
 	
-		 public function bracket($org_code, $tourn_id)
+		 public function bracket($tourn_id, $org_id)
 		 {
+			 //echo $org_code." ".$tourn_id; exit;
 			//s echo "<pre>"; print_r($_POST); exit;
 		 	if(!$this->session->userdata('user')){ redirect('login'); }
-			$org_id					= $this->aca_general->get_orgid($org_code);
-			$this->short_code = $org_code;
+			
+			//$org_id					= $this->aca_general->get_orgid($org_code);
+			//$this->short_code = $org_code;
 			if($org_id){
 				$this->load->model('academy_mdl/model_academy');
 				$org_details					= $this->model_academy->get_academy_details($org_id);
@@ -3324,9 +3330,8 @@ print_r($bridge);*/
 			echo $res; exit();
          }
 
-		 public function get_bracket_list($tourn_id)
-		 {
-			return $this->model_league->get_bracket_list($tourn_id);
+		 public function get_bracket_list($tourn_id, $flt = '', $flt_btn = ''){
+			return $this->model_league->get_bracket_list($tourn_id, $flt, $flt_btn);
 		 }
 
 		 public function get_player($uid, $pid=''){
@@ -3337,6 +3342,7 @@ print_r($bridge);*/
 				return $this->general->get_player($uid);
 			}
 		 }
+
 		 public function get_team_name($tid){
 				return $this->general->get_team_name($tid);
 		 }
@@ -8256,11 +8262,12 @@ print_r($mult_events);*/
 			if($this->logged_user){
 				$is_reg	= $this->user_reg_or_not($this->logged_user, $tid);			
 
-				if($tr_det->Usersid == $this->logged_user or $tr_det->Tournament_Director == $this->logged_user or $this->is_super_admin){    /// tournament admin access links
-				$this->logged_user_role = 'Admin';
+				if(($tr_det->Usersid == $this->logged_user) or ($tr_det->Tournament_Director and $tr_det->Tournament_Director == $this->logged_user) or $this->is_super_admin){    /// tournament admin access links
+					$this->logged_user_role = 'Admin';
 				}
 				else if($is_reg){
-				$this->logged_user_role = 'RegPlayer';
+					$this->logged_user_role = 'RegPlayer';
+					$this->is_logged_user_reg = 1;
 				}
 				else{
 					$is_team_capt = $this->model_league->is_tourn_reg_team_captain($this->logged_user, $tid);
@@ -8581,6 +8588,7 @@ print_r($mult_events);*/
 			}
 			else if($get_bracket['Bracket_Type'] == 'Round Robin'){
 				 $data['get_rr_tourn_matches'] = $this->model_league->get_tourn_matches($data);
+				 $data['event_reg_players'] = $this->model_league->get_tourn_reg_players($get_bracket['Tourn_ID'], $get_bracket['Filter_Events']);
 				if($tourn_det->tournament_format == 'Teams'){
 				  $data['get_rr_line_matches'] = $this->model_league->get_tourn_line_matches($data);
 				   $this->load->view('teams/view_team_rr_draws', $data);
@@ -9070,6 +9078,7 @@ $this->short_code = $org_code;
 
 		public function load_draws_results($tid){
 			$tid	= $this->input->post('tid');
+			$data['btn_val']			= 'all';
 			$data['club_url'] = $this->input->post('club_url');
 
 			$tr_det = $this->get_logged_user_role($tid);
@@ -10017,10 +10026,11 @@ $groups = $temp_groups;
 			$reg_players = $this->model_league->get_reg_players($tourn_id);
 			$report		 = array();
 			$data['club_url'] = $this->input->post('club_url');
+			$format = $data['format'] = $this->input->post('df');
 
 			foreach($reg_players as $reg_pl){
 				$player				 = $reg_pl->Users_ID;
-				$get_player_matches  = $this->model_league->get_player_matches($tourn_id, $player);
+				$get_player_matches  = $this->model_league->get_player_matches($tourn_id, $player, $format);
 				
 				if(count($get_player_matches) > 0){
 					$player_det = $this->model_league->get_user_name($player);
@@ -10712,4 +10722,43 @@ $sno++;
 			$check_reg = $this->model_league->is_user_reg_event($tid, $event);
 			return $check_reg;
 		}
+
+		 public function get_logged_user_brackets($tourn_id, $user){
+			return $this->model_league->get_logged_user_brackets($tourn_id, $user);
+		 }
+
+		public function drawresults_filter(){
+			$tid					= $this->input->post('tourn_id');
+			$data['df']			= $this->input->post('df');
+			$data['btn_val']			= $this->input->post('btn_val');
+			$data['club_url'] = $this->input->post('club_url');
+			$tr_det				= $this->get_logged_user_role($tid);
+			$data['tour_details'] = $tr_det;
+
+			echo $this->load->view('tournament/view_drawresults', $data);
+		}
+
+
+	
+	public function upd_rr_players(){
+			//echo "<pre>"; print_r($_POST); exit;
+
+			$tourn_id	= $data['tourn_id']	= $this->input->post('tourn_id');
+			$mid			= $data['mid']			= $this->input->post('mid');
+			$pl_pos		= $data['pl_pos']	= $this->input->post('pl_pos');
+			$new_pl	= $data['new_pl']	= $this->input->post('new_pl');	
+
+		if($this->is_super_admin or $this->logged_user_role == 'Admin'){
+			$upd_players = $this->model_league->upd_rr_match_players($data);
+
+			if($upd_players)
+				echo "Update Done. Refresh the page to replicate the update";
+			else
+				echo "Update Failed!";
+		}
+		else{
+				echo "Invalid Access!";
+		}
+	}
+
 }

@@ -1164,7 +1164,7 @@ if($search['city'] or $search['state']){
 				$sportstype = 10;
 			}*/
 			
-			$sportstype = array(1,2,3,7);
+			$sportstype = array(1,2,3,7,19,20);
 			$str	   = md5($lastname . $email);
 			$auth_code = substr($str, 0, 8);
 			$sp_code   = substr(base64_encode('instant'), 0, 4);
@@ -1246,7 +1246,7 @@ if($search['city'] or $search['state']){
 							$def_score = 100;
 				if($sp == '2') 
 				$def_score = 800;
-				if($sp == '7') 
+				if($sp == '7' or $sp == '19' or $sp == '20') 
 				$def_score = 3.0;
 
 			$data = array(

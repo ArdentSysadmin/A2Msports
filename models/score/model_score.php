@@ -523,6 +523,9 @@
                 case $age == 19:
                    $age_group = "U19";
                    break;
+				case $age == 21:
+                   $age_group = "U21";
+                   break;
                 default:
                    $age_group = "Adults";
                    break;
@@ -5736,7 +5739,7 @@ exit;*/
 
 			/* ------------------------------------------------------------------------------ */
 
-			if($match_info['Draw_Type'] != 'Round Robin'){
+			if($match_info['Draw_Type'] != 'Round Robin' and $match_info['Draw_Type'] != 'Switch Doubles'){
 
 			/* ------- Update player1 and player2 sources --------- */
 			$qry_string = "";
@@ -6983,7 +6986,7 @@ if($draw_name == "Main"){
 
 				$updated_a2m = $exist_a2m + $a2mscore;
 
-				if($sport != 7) {
+				if($sport != 7 and $sport != 19 and $sport != 20) {
 					if($updated_a2m < 75) {
 						$updated_a2m = 75; 
 					}
@@ -8623,6 +8626,21 @@ else if($score_diff >=0.40){
 
 //echo "<br>".$add_score_points; exit;
 				return $add_score_points;
+		}
+
+
+
+		public function calculate_match_format($user, $partner){	// Format Calculation Section
+			
+			$mformat	= "Singles";
+			$user_det = $this->get_user_name($user);
+
+			if($partner){
+				$partner_det = $this->get_user_name($partner);
+				$mformat = ($user_det['Gender'] == $partner_det['Gender']) ? "Doubles" : "Mixed";
+			}
+		
+			return $mformat;
 		}
 
 

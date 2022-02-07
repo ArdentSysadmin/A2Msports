@@ -1,4 +1,7 @@
 <?php
+//echo "Testing"; exit;
+//echo $this->logged_user."  - ".$this->academy_admin;
+//exit;
 if($org_details['Aca_ID'] == 1166){
 echo $this->load->view('academy_views/includes/sreenidhi_academy_header');
 }
@@ -263,7 +266,7 @@ if($this->logged_user == $this->academy_admin) {
 <?php
 //}
 }?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Membership</a></li>
 <li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
 </ul>
@@ -401,7 +404,7 @@ if($this->logged_user == $this->academy_admin) {
 <?php
 //}
 }?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Membership</a></li>
 <li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
 </ul>
@@ -574,7 +577,7 @@ if($this->logged_user == $this->academy_admin) {
 <?php
 //}
 }?>
-<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Subscribe</a></li>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/subscribe">Membership</a></li>
 <li><a href="<?php echo base_url().'profile'; ?>" target='_blank'>A2M Profile</a></li>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/logout">Logout</a></li>
 </ul>
@@ -635,8 +638,13 @@ if(!in_array('3', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/pricing">Pricing</a></li>
 <?php
 }
+
+if($this->academy_admin and ($this->logged_user == $this->academy_admin)){
 ?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/list">Add/Edit Courts</a></li>
 <?php
+}
+
 if($this->session->userdata('user') != "" and !in_array('5', $club_menu)) {
 ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/courts/reserve">Reserve</a></li>

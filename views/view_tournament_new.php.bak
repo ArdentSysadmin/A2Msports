@@ -217,11 +217,12 @@ else{ echo "<span style='color:red;font-weight:bold;font-size: 20;'>UnPublished<
 if($users_id){
 	?>
 <select name='admin_actions' id='admin_actions' class='form-control' style="width:60%; font-weight:bold;text-align:center;margin-top:70px;border:2px solid #ff8a00" autocomplete='off'>
+<option value="">------ Actions ------</option>
 <?php
 if(($tour_details->Usersid == $users_id or $tour_details->Tournament_Director == $users_id or $this->is_super_admin) and $cdate <= $exp_date) {   /// tournament admin access links
 ?>
 
-<option value="">------ Actions ------</option>
+
 <option value="<?php echo base_url().$org_url_key;?>league/edit/<?php echo $tour_details->tournament_ID;?>">
 Edit Tournament</option>
 <option value="<?php echo base_url().$org_url_key;?>play/invite/<?php echo $tour_details->tournament_ID;?>">

@@ -646,13 +646,13 @@ var club_baseurl = "<?php if($this->config->item('club_form_url') != '') { echo 
 </script>
 <script src="<?php echo base_url();?>js/custom/league.js" type="text/javascript"></script>
 <script src="<?php echo base_url();?>js/custom/tour_detail.js" type="text/javascript"></script>
-<script>(function(d, s, id) {
+<script>/*(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
   fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+}(document, 'script', 'facebook-jssdk'));*/
 </script>
 <script src="<?=base_url();?>/assets/tinymce/tinymce.min.js"></script>
 <!--  -->

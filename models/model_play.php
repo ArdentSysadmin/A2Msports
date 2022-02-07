@@ -1777,16 +1777,16 @@ echo "Winner AddScore -". $add_score_points."<br>";
 					if($get_a2mscore1->num_rows == 0){
 
 						$def_score = 100;
-					if($sp == '2')
+					if($tour_sport == 2)
 						$def_score = 800;
-					if($sp == '7')
+					if($tour_sport == 7 or $tour_sport == 19 or $tour_sport == 20)
 						$def_score = 3.0;
 
 					$a2m_ins_data = array(
 							'Users_ID'					=> $sp,
 							'SportsType_ID'			=> $tour_sport,
-							'A2MScore'			    => $def_score,
-							'A2MScore_Doubles'  => $def_score,
+							'A2MScore'					=> $def_score,
+							'A2MScore_Doubles'	=> $def_score,
 							'A2MScore_Mixed'	    => $def_score
 							);
 

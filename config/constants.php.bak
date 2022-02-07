@@ -53,11 +53,13 @@ define('GEO_LOC_KEY', 'AIzaSyC3_BjoW6T6jkMOL31GmDBeeVTv-NaI2Cg');
 define('SANDBOX_PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
 define('SANDBOX_PAYPAL_ID', 'admin-facilitator@a2msports.com');
 
-//define('PAYPAL_URL', 'https://www.paypal.com/cgi-bin/webscr');
-//define('PAYPAL_ID', 'admin@a2msports.com');
+define('PAYPAL_URL', 'https://www.paypal.com/cgi-bin/webscr');
+define('PAYPAL_ID', 'admin@a2msports.com');
 
-define('PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
-define('PAYPAL_ID', 'admin-facilitator@a2msports.com');
+define('RESERVE_BLOCKED_CLUBS', serialize (array(1182)));
+
+//define('PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
+//define('PAYPAL_ID', 'admin-facilitator@a2msports.com');
 
 
 /* End of file constants.php */

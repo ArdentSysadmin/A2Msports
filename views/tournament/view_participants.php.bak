@@ -255,7 +255,8 @@ $user_score			= $user_a2msocre['A2MScore_Doubles'];
 		echo "<select class='user_change_partner' name='user_change_partner' id='{$p}_user_change_partner_{$this->logged_user}'>";
 		echo "<option value=''>Change Partner</option>";
 		foreach($users as $usr){
-			if($usr != $this->logged_user and $usr != $user_partners[$usr][$k]){
+			//if($usr != $this->logged_user and $usr != $user_partners[$usr][$k]){
+			if($usr != $this->logged_user and $user_partners[$usr][$k] == ''){
 				$select_get_user= league::get_user($usr);
 			echo "<option value='$usr'>".$select_get_user['Firstname']."".$select_get_user['Lastname']."</option>";
 			}
@@ -446,6 +447,45 @@ $('#'+eid).html(ecnt);
 <?php
 }
 ?>
+
+<!-- New code -->
+<table style="color: blue;
+    font-size: 13px;
+    cursor: pointer;
+	background-color: #fff9f3;
+	width: 100%;">
+<?php
+foreach($empty_reg_men_events as $evnts){
+?>
+<tr><td style="height: 29px;"><span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+
+foreach($empty_reg_women_events as $evnts){
+?>
+<tr><td style="height: 29px;">
+<span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+
+foreach($empty_reg_mixed_events as $evnts){
+?>
+<tr><td style="height: 29px;">
+<span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+
+foreach($empty_open_events as $evnts){
+?>
+<tr><td style="height: 29px;">
+<span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<?php
+}
+?>
+</table>
+
+
+<!-- New code -->
 </table>
 </div>
 

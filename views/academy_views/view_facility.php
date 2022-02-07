@@ -355,7 +355,7 @@ if($org_details['Aca_ID'] != 1166){
 			<div class="single-blog" style="min-height: 340px;">
 			<input type='checkbox' class='lt_select_chck_imgs' style="display:none;" name='sel_lt_imgs[]' value='<?=$i;?>' />
 			<div style="margin-top:10px">
-			<img src="<?=$lt_img; ?>" alt="" style="width:80%; height:197px; display: inline;">
+			<img src="<?=$lt_img; ?>" alt="" style="height:197px; /*display: inline;*/ object-fit: contain; background-color:#fff; border: 0px !important; ">
 			</div>
 			<div class="blog-content" style="margin-top:10px">
 			<h3 style="font-size: 17px; margin-bottom: 2px;"><?=$lt_name; ?></h3>

@@ -355,7 +355,7 @@ if($org_details['Aca_ID'] != 1166){
 			<div class="single-blog" style="min-height: 340px;">
 			<input type='checkbox' class='lt_select_chck_imgs' style="display:none;" name='sel_lt_imgs[]' value='<?=$i;?>' />
 			<div style="margin-top:10px">
-			<img src="<?=$lt_img; ?>" alt="" style="width:80%; height:197px; display: inline;">
+			<img src="<?=$lt_img; ?>" alt="" style="height:197px; /*display: inline;*/ object-fit: contain; background-color:#fff; ">
 			</div>
 			<div class="blog-content" style="margin-top:10px">
 			<h3 style="font-size: 17px; margin-bottom: 2px;"><?=$lt_name; ?></h3>
@@ -627,7 +627,7 @@ src="https://www.youtube.com/embed/S6vsWsWSRac">
 			<div class="col-lg-4 col-md-6 portfolio-item">
 			<div class='select_img' style='display:none;'>
 			<input type='checkbox' class='select_chck_imgs' name='sel_gallery_imgs[]' value='<?=$glry;?>' /></div>
-			<img src="<?php echo $orginal_path; ?>" class="pg-img-fluid" alt="">
+			<img src="<?php echo $img_path; ?>" class="pg-img-fluid" alt="">
 			<div class="portfolio-info">
 			<a href="<?php echo $orginal_path; ?>" data-gall="portfolioGallery" class="venobox preview-link" title="App 1"><i class="fa fa-search-plus" aria-hidden="true"></i></a>
 			</div>

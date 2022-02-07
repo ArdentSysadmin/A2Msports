@@ -1334,7 +1334,7 @@ if($search['city'] or $search['state']){
 		//$today = date('Y-m-d');
 		$time   = date('H:i:s');
 		$query = $this->db->query("SELECT * FROM Coach_Bookings WHERE reserved_by = {$user_id} 
-		AND (res_date < '".$user_time."') AND res_status = 'Active'");
+		AND (res_date < '".$user_time."') AND res_status = 'Active' ORDER BY res_date DESC");
 		//echo $this->db->last_query();exit;
 		return $query->result();
 	}
@@ -1343,7 +1343,7 @@ if($search['city'] or $search['state']){
 		//$today = date('Y-m-d');
 		$time   = date('H:i:s');
 		$query = $this->db->query("SELECT * FROM Coach_Bookings WHERE reserved_by = {$user_id} 
-		AND ((res_date = '".$user_time."' AND from_time >= '".$time."' ) OR (res_date >= '".$user_time."')) AND res_status = 'Active'");
+		AND ((res_date = '".$user_time."' AND from_time >= '".$time."' ) OR (res_date >= '".$user_time."')) AND res_status = 'Active' ORDER BY res_date DESC");
 		//echo $this->db->last_query();exit;
 		return $query->result();
 	}
@@ -1351,7 +1351,7 @@ if($search['city'] or $search['state']){
 	public function get_past_court_bookings($user_id, $user_time){
 		//$today = date('Y-m-d');
 		$time   = date('H:i:s');
-		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE reserved_by = {$user_id} AND (res_date < '".$user_time."') AND res_status = 'Active'");
+		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE reserved_by = {$user_id} AND (res_date < '".$user_time."') AND res_status = 'Active' ORDER BY res_date DESC");
 		//echo $this->db->last_query();
 		return $query->result();
 	}
@@ -1359,7 +1359,7 @@ if($search['city'] or $search['state']){
 	public function get_upc_court_bookings($user_id, $user_time){
 		//$today = date('Y-m-d');
 		$time   = date('H:i:s');
-		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE reserved_by = {$user_id} AND ((res_date = '".$user_time."' AND from_time >= '".$time."' ) OR (res_date >= '".$user_time."')) AND res_status = 'Active'");
+		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE reserved_by = {$user_id} AND ((res_date = '".$user_time."' AND from_time >= '".$time."' ) OR (res_date >= '".$user_time."')) AND res_status = 'Active' ORDER BY res_date DESC");
 		//echo $this->db->last_query();
 		return $query->result();
 	}

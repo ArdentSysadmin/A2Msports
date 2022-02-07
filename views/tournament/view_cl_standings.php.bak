@@ -50,15 +50,20 @@ $("#player_matches").html("Please wait, loading......");
 });
 </script>
 <?php
-}?>
+} exit;?>
+
 <div class='col-md-12' align='right'>
 <select class='form-control' name='format_filter' id='format_filter' style='width:15%;'>
 <option value='all'>All</option>
-<option value='singles'>Singles</option>
-<option value='doubles'>Doubles</option>
-<option value='mixed'>Mixed</option>
+<option value='Singles' <?php if($format == 'Singles') echo "selected"; ?>>Singles</option>
+<option value='Doubles' <?php if($format == 'Doubles') echo "selected"; ?>>Doubles</option>
+<option value='Mixed' <?php if($format == 'Mixed') echo "selected"; ?>>Mixed</option>
 </select>
 </div>
+<div style="padding-top:20px;"><b>Tournament/League Standings</b></div>
+
+
+<!--  -------------------------  -->
 <div class="table-responsive">
 <table id="standings" cellpadding="0" border="0" class="tab-score">
 <thead>
@@ -161,8 +166,15 @@ if(!$this->is_team_league){
 ?>
 	<script>
 	$(document).ready(function() {
-		$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-		"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null,null,null,null  ], language: {"search":"", "searchPlaceholder":"Search"} });
+		/*$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+		"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null,null,null,null  ], language: {"search":"", "searchPlaceholder":"Search"} });*/
+		$('#standings').DataTable({
+				searching: false, 
+				paging: false, 
+				lengthMenu: false,
+				//sDom	  : '<"clear">t<"H"p><"F"p>'
+				order: [[ 4, "asc" ]]
+		});
 	});
 	</script>
 <?php
@@ -171,8 +183,15 @@ else{
 ?>
 	<script>
 	$(document).ready(function() {
-		$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-		"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+		/*$('#standings').dataTable({"order": [[ 4, "desc" ]], dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+		"<'row'<'col-sm-12'tr>>", searching: false, paging: false, lengthMenu: false, aoColumns: [  null,null,null,null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });*/
+		$('#standings').DataTable({
+				searching: false, 
+				paging: false, 
+				lengthMenu: false,
+				//sDom	  : '<"clear">t<"H"p><"F"p>'
+				order: [[ 4, "asc" ]]
+		});
 	});
 	</script>
 <?php

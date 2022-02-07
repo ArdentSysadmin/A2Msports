@@ -12,6 +12,7 @@
 		public $sports_dets;
 		public $is_league_page;
 		public $club_form_url;
+		public $is_logged_user_reg;
 
 		public function __construct()
 		{
@@ -47,8 +48,9 @@
 			$this->load->library('paypal_lib');
 
 			$this->is_super_admin		= 0;
-			$this->is_tourn_director	= 0;
+			$this->is_tourn_director		= 0;
 			$this->is_league_page		= 1;
+			$this->is_logged_user_reg	= 0;
 			$this->club_form_url			= base_url();
 //echo 'Log '.$this->session->userdata('users_id'); exit;
 			if($this->session->userdata('users_id')){
@@ -1221,6 +1223,8 @@ Array
 			else{*/
 			//echo number_format($total_fee, 2);    // Returns the Total Payable price to the view 
 
+	//if($this->logged_user == 507)
+	//$total_fee = 0.00;
 			echo number_format($total_fee, 2)."#".$disc."#".$coupon;    // Returns the Total Payable price to the view 
 			exit;
 		 }
@@ -3648,8 +3652,12 @@ foreach($groups as $g => $group){
 			}
 		 }
 
-		 public function get_bracket_list($tourn_id){
-			return $this->model_league->get_bracket_list($tourn_id);
+		 public function get_bracket_list($tourn_id, $flt = '', $flt_btn = ''){
+			return $this->model_league->get_bracket_list($tourn_id, $flt, $flt_btn);
+		 }
+
+		 public function get_logged_user_brackets($tourn_id, $user){
+			return $this->model_league->get_logged_user_brackets($tourn_id, $user);
 		 }
 
 		 public function check_is_cd($tourn_id){
@@ -5897,7 +5905,7 @@ document.f1.submit();
 				$this->test_func($tid);
 				exit;
 			}
-			
+			//echo $paypal_id." ".$currency_code; exit;
 			//if($tour_det->TournamentCountry == 'India')
 			//$currency_code = 'INR';
 
@@ -5983,7 +5991,7 @@ document.f1.submit();
 					//Set variables for paypal form
 					$paypalURL = PAYPAL_URL; //PayPal api url
 					$paypalID  = $paypal_id;  //business email
-
+//echo $paypalURL. " ".$paypalID; exit;
 						$this->session->unset_userdata('json_ag');
 						$this->session->unset_userdata('json_formats');
 						$this->session->unset_userdata('json_levels');
@@ -6005,7 +6013,7 @@ document.f1.submit();
 				$est_usatt_rating = $this->input->post('est_usatt_rating');
 				}
 
-					$returnURL = base_url().'paypal/success?tourn_id='.$tid.'&player='.$reg_userid.'&age_group='.$age_group.'&mtypes='.$match_types.'&partners='.$partners.'&level='.$level.'&hc_loc='.$hc_loc_id.'&ttype='.$ttype.'&tsize='.$tsize.'&coup_code='.$coup_code.'&coup_disc='.$coup_disc.'&events='.$reg_events.'&occr='.$occr_json.'&nte_to_admin='.$note_to_admin.'&school_info='.$school_info.'&est_usatt_rating='.$est_usatt_rating;  
+					$returnURL = base_url().'paypal/success?tourn_id='.$tid.'&player='.$reg_userid.'&age_group='.$age_group.'&mtypes='.$match_types.'&partners='.$partners.'&level='.$level.'&hc_loc='.$hc_loc_id.'&ttype='.$ttype.'&tsize='.$tsize.'&coup_code='.$coup_code.'&coup_disc='.$coup_disc.'&events='.$reg_events.'&occr='.$occr_json.'&nte_to_admin='.$note_to_admin.'&school_info='.$school_info.'&est_usatt_rating='.$est_usatt_rating;
 					//payment success url
 					//echo $returnURL;
 					//exit;
@@ -7176,6 +7184,35 @@ exit;*/
 		}
 
 
+		public function sport_page_tab($sport, $tab){
+            $data['sport'] = $sport;	
+				$this->load->view('includes/view_sports_header');
+
+			if($tab == 'tournaments'){
+				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
+				echo $this->load->view('sports/view_nw_tournaments', $data);
+			}
+			else if($tab == 'players'){
+			$data['loc_query'] = $this->model_league->sport_top_players($data);
+				echo $this->load->view('sports/view_nw_players', $data);
+			}
+			else if($tab == 'teams'){
+			$country = 'United States of America';
+			$data['teams_result'] = $this->model_league->get_TeamsByCountry2($country, $sport);
+				echo $this->load->view('sports/view_nw_teams', $data);
+			}
+			else if($tab == 'clubs'){
+			$data['club_results']	 = $this->model_league->get_clubs($sport);
+				echo $this->load->view('sports/view_nw_clubs', $data);
+			}
+			else if($tab == 'coaches'){
+            $data['coach_results'] = $this->model_league->search_coaches($data);
+				echo $this->load->view('sports/view_nw_coaches', $data);
+			}
+
+				$this->load->view('includes/view_home_footer');
+		}
+
 		public function sport_page($sport)
 		{
 			//echo "<pre>"; print_r($_POST);exit();
@@ -7185,7 +7222,7 @@ exit;*/
 			}
 
             $data['sport']				 = $sport;	
-			$data['club_results']	 = $this->model_league->get_clubs($data);
+			$data['club_results']	 = $this->model_league->get_clubs($sport);
             $data['loc_query']		 = $this->model_league->sport_top_players($data);
             $data['coach_results'] = $this->model_league->search_coaches($data);
            // $data['club_results']  = $this->model_league->search_clubs($data);
@@ -9117,7 +9154,8 @@ print_r($mult_events);*/
 				}
 
 				else if($is_reg){
-				$this->logged_user_role = 'RegPlayer';
+				$this->logged_user_role		= 'RegPlayer';
+				$this->is_logged_user_reg = 1;
 				}
 				else{
 					$is_team_capt = $this->model_league->is_tourn_reg_team_captain($this->logged_user, $tid);
@@ -9413,6 +9451,7 @@ print_r($mult_events);*/
 			else if($get_bracket['Bracket_Type'] == 'Round Robin'){
 				 $data['get_rr_tourn_matches'] = $this->model_league->get_tourn_matches($data);
 				 $data['reg_players'] = $this->model_league->get_tourn_reg_players($get_bracket['Tourn_ID']);
+				 $data['event_reg_players'] = $this->model_league->get_tourn_reg_players($get_bracket['Tourn_ID'], $get_bracket['Filter_Events']);
 
 				if($tourn_det->tournament_format == 'Teams'){
 				  $data['get_rr_line_matches'] = $this->model_league->get_tourn_line_matches($data);
@@ -9992,8 +10031,20 @@ print_r($mult_events);*/
 
 		public function load_draws_results($tid=''){
 			$tid	= $this->input->post('tid');
+			$data['btn_val']			= 'all';
 			$data['club_url'] = $this->input->post('club_url');
 			$tr_det = $this->get_logged_user_role($tid);
+			$data['tour_details'] = $tr_det;
+
+			echo $this->load->view('tournament/view_drawresults', $data);
+		}
+
+		public function drawresults_filter(){
+			$tid					= $this->input->post('tourn_id');
+			$data['df']			= $this->input->post('df');
+			$data['btn_val']			= $this->input->post('btn_val');
+			$data['club_url'] = $this->input->post('club_url');
+			$tr_det				= $this->get_logged_user_role($tid);
 			$data['tour_details'] = $tr_det;
 
 			echo $this->load->view('tournament/view_drawresults', $data);
@@ -10941,7 +10992,7 @@ $groups = $temp_groups;
 			$reg_players = $this->model_league->get_reg_players($tourn_id);
 			$report		 = array();
 			$data['club_url'] = $this->input->post('club_url');
-			$format = $this->input->post('df');
+			$format = $data['format'] = $this->input->post('df');
 
 			foreach($reg_players as $reg_pl){
 				$player				 = $reg_pl->Users_ID;
@@ -12441,5 +12492,102 @@ $sno++;
 			}
 		}
 
+	public function get_team_stats($team_id){
+		 $res  = $this->model_league->get_team_stats($team_id);
+		return $res;
+	}
+
+	public function upd_rr_players(){
+			//echo "<pre>"; print_r($_POST); exit;
+
+			$tourn_id	= $data['tourn_id']		= $this->input->post('tourn_id');
+			$mid			= $data['mid']		= $this->input->post('mid');
+			$pl_pos	= $data['pl_pos']	= $this->input->post('pl_pos');
+			$new_pl	= $data['new_pl']	= $this->input->post('new_pl');	
+
+		if($this->is_super_admin or $this->logged_user_role == 'Admin'){
+			$upd_players = $this->model_league->upd_rr_match_players($data);
+
+			if($upd_players)
+				echo "Update Done. Refresh the page to replicate the update";
+			else
+				echo "Update Failed!";
+		}
+		else{
+				echo "Invalid Access!";
+		}
+	}
+
+	public function change_user_reg_event(){
+		if($this->logged_user){
+			$user	= $data['user']	= $this->logged_user;
+			$tid		= $data['tourn_id']			= $this->input->post('tourn_id');
+			$prevEvent = $data['prevEvent'] = $this->input->post('prevEvent');
+			$changeTo  = $data['changeTo'] = $this->input->post('changeTo');
+			
+			$change = $this->model_league->changeUserEvent($data);
+
+			if($change)
+				echo "Event changed successfully";
+			else
+				echo "Failed! Please contact admin";
+			
+		}
+		else{
+			echo "Session Timeout! Please login and try again!"; exit;
+		}
+
+	}
+
+	public function change_user_event_partner(){
+		if($this->logged_user){
+			$user	= $data['user']			= $this->logged_user;
+			$tid		= $data['tourn_id']		= $this->input->post('tourn_id');
+			$event = $data['event']			= $this->input->post('event');
+			$partner  = $data['partner']	= $this->input->post('partner');
+			
+			$change = $this->model_league->changeUserEventPartner($data);
+
+			if($change)
+				echo "Partner updated successfully";
+			else
+				echo "Failed! Please contact admin";
+			
+		}
+		else{
+			echo "Session Timeout! Please login and try again!"; exit;
+		}
+
+	}
+
+	public function check_isUserNoPartner($user, $event, $tid){
+		//echo $user." ".$event." ".$tid; 
+		$get_reg  = $this->model_league->get_reg_tournment($tid, $user);
+		
+		$partners = json_decode($get_reg['Partners'], TRUE);
+		//echo "<pre>d $user :"; print_r($partners);  
+		//echo "d $user :".$partners[$event]; //exit;
+		
+		if($partners[$event])
+			return false;
+		else
+			return true;
+
+	}
+
+	public function get_userPartner($user, $event, $tid){
+		$get_reg  = $this->model_league->get_reg_tournment($tid, $user);
+		$partners = json_decode($get_reg['Partners'], TRUE);
+//echo "<pre>"; print_r($get_reg['Partners']);
+//secho "d ".var_dump($partners[$event]);
+		if($partners[$event] != ''){
+			$get_user = $this->model_league->get_user_name($partners[$event]);
+			return $get_user['Firstname'] . " ". $get_user['Lastname'];
+		}
+		else{
+			return "No Partner Assigned";
+		}
+
+	}
 
 }

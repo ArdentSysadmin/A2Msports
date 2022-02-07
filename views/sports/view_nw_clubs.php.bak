@@ -102,11 +102,11 @@ else{?>
 <?php echo stripslashes($row->Aca_name);?>
 <?php
 }?></p></td>
-								<td><?php 
+								<td><p class="mt-3 mb-0"><?php 
 if($row->Aca_city != ""){
 echo $row->Aca_city; 
 }
-?></td>
+?></p></td>
                                 <td><p class="mt-3 mb-0"><?php 
 if($row->Aca_state != ""){
 echo $row->Aca_state; 

@@ -1352,10 +1352,13 @@ data-ad-format="auto"></ins>
 				<input type="checkbox" class='age' id='age_u17' name="age[]" value="U17"><label class='control-label' for='age_u17'>Under 17 &nbsp;</label><br/>
 				<input type="checkbox" class='age' id='age_u18' name="age[]" value="U18"> <label class='control-label' for='age_u18'>Under 18 &nbsp;</label><br />
 				<input type="checkbox" class='age' id='age_u19' name="age[]" value="U19"><label class='control-label' for='age_u19'>Under 19 &nbsp;</label>
+				<input type="checkbox" class='age' id='age_u21' name="age[]" value="U21"><label class='control-label' for='age_u21'>Under 21 &nbsp;</label>
 				<input type="checkbox" class='age' id='age_adults' name="age[]" value="Adults"> <label class='control-label' for='age_adults'>Adults&nbsp;</label>
 				<input type="checkbox" class='age' id='age_30p' name="age[]" value="Adults_30p"> <label class='control-label' for='age_30p'>30s&nbsp;&nbsp;</label>
 				<input type="checkbox" class='age' id='age_40p' name="age[]" value="Adults_40p"> <label class='control-label' for='age_40p'>40s&nbsp;&nbsp;</label>
 				<input type="checkbox" class='age' id='age_50p' name="age[]" value="Adults_50p"> <label class='control-label' for='age_50p'>50s&nbsp;&nbsp;</label>
+				<input type="checkbox" class='age' id='age_60p' name="age[]" value="Adults_60p"> <label class='control-label' for='age_60p'>60s&nbsp;&nbsp;</label>
+				<input type="checkbox" class='age' id='age_70p' name="age[]" value="Adults_70p"> <label class='control-label' for='age_70p'>70s&nbsp;&nbsp;</label>
 				<input type="checkbox" class='age' id='veteran' name="age[]" value="Adults_veteran"> <label class='control-label' for='veteran'>Veteran</label>
 				<input type="checkbox" class='age' id='veteran' name="age[]" value="Junior"> <label class='control-label' for='Junior'>Junior</label>
             </div>

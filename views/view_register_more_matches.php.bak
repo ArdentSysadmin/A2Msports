@@ -94,7 +94,7 @@ $('#created_by1').autocomplete({
 
 
 $(document).ready(function(){
-$('input:radio[name=multi_reg]').change(function () {
+/*$('input:radio[name=multi_reg]').change(function () {
 var is_multi_reg = $("input[name='multi_reg']:checked").val();
 if(is_multi_reg == 1){
 $("#eligible_events_div").show();
@@ -104,7 +104,14 @@ $("#display_multi_reg").show();
 $("#eligible_events_div").hide();	
 $("#display_multi_reg").hide();
 }
+});*/
+
+$('#multi_reg').click(function () {
+	$("#eligible_events_div").show();
+	$("#display_multi_reg").show();
 });
+
+
 $('#myform').submit(function(){
 	//alert('test');
     var tournament_format = '<?php echo $r->tournament_format;?>';
@@ -562,7 +569,7 @@ function GetRating() {
 
 <!-- start main body --> 
 <div class="col-md-12 league-form-bg" style="margin-top:30px;">
-<div class="fromtitle">Register more events for <?php echo $r->tournament_title; ?></div>
+<div class="fromtitle">My Events for <?php echo $r->tournament_title; ?></div>
 
 <?php if($this->session->userdata('user')=="") { 
 $cur_uri = array('redirect_to'=>$_SERVER['REQUEST_URI']);
@@ -573,7 +580,7 @@ $this->session->set_userdata($cur_uri);
 <?php if($this->session->userdata('user')!="") { ?>
 <form class="form-horizontal" id='myform' method='post' role="form" action="<?php echo base_url(); ?>league/buy_more/<?php echo $r->tournament_ID;?>" <?=$block_status;?>>
  
-<div class='col-md-8'>
+<div class='col-md-10'>
 <input type="hidden" id="id" name="id" value="<?php echo $r->tournament_ID; ?>" />
 <?php
 //$check_user_usatt_membership = league::is_logged_user_having_memeberhip($r->SportsType);
@@ -664,6 +671,12 @@ $i = 0;
 			case "Adults_50p":
 			$age_grp_list[] = "50s";
 			break;
+			case "Adults_60p":
+			$age_grp_list[] = "60s";
+			break;
+			case "Adults_70p":
+			$age_grp_list[] = "70s";
+			break;
 			case "Adults_veteran":
 			$age_grp_list[] = "Veteran";
 			break;
@@ -741,7 +754,10 @@ $i = 0;
                 case $user_age == 19:
                    $user_age_grp = "U19";
                    break;
-                case $user_age>19 && $user_age<=29:
+				case $user_age == 21:
+                   $user_age_grp = "U21";
+                   break;
+                case $user_age>21 && $user_age<=29:
                    $user_age_grp = "Adults";
                    break;
                 case $user_age>=30 && $user_age<=39:
@@ -750,9 +766,15 @@ $i = 0;
                 case $user_age>=40 && $user_age<=49:
                    $user_age_grp = "Adults_40p";
                    break;
-                case $user_age>=50 && $user_age<=60:
+                case $user_age>=50 && $user_age<=59:
                    $user_age_grp = "Adults_50p";
                    break;
+				case $user_age>=60 && $user_age<=69:
+                   $user_age_grp = "Adults_60p";
+                   break;
+				case $user_age>=70 && $user_age<=90:
+                   $user_age_grp = "Adults_70p";
+                   break; 
         }
 
 		if(in_array($user_age_grp, $db_age)){
@@ -783,6 +805,7 @@ $i = 0;
        $multi_events = league::array_flatten($events);	  
     }
     
+
     
 
 	$event_formats = league::regenerate_events($multi_events);
@@ -795,51 +818,10 @@ $i = 0;
 
      $res = league::get_reg_tourn_participants_new($r->tournament_ID);
      $reg_users = $res[0];
-     
-	 if(count($regdata)>0){
-        echo "<div class='form-group'>";
-		echo "<label class='control-label col-md-4 padtop' for='id_accomodation'>";
-		
-		echo "<b> Registered Events</b>";
-		
-		echo "</label>";
-	
-		echo "<div class='col-md-8 form-group internal text1'><table style='padding:1px;'>";
-		    $reg_events = league::regenerate_events($regdata);
-		foreach ($reg_events as $key => $value) {
-		           $event = $value;
-                   $evnt  = $key;
-		           $users = league::in_array_r($evnt, $reg_users);
-		           $cnt   = count($users);
-		          
-			echo "<tr class='header' style='cursor:pointer;'><td>";
-			echo "<b id='chg_icon'>( + )</b>";
-			echo " ".$event." (".$cnt.")";
-			echo "</td>";
-			/*echo "<td>";
-			echo "<select id='change_reg_event' name='change_reg_event'>";
-			echo "<option value=''>Change event to?</option>";
-			foreach(){
-			}
-			echo "</select>";
-			echo "</td>";*/
-			echo "</tr>"; 
-			echo "<tr class='content' style='display:none'><td>";
-            echo "<table>";
-            foreach($users as $user){
-            	$player	= league::get_username($user);
-            	echo "<tr>";
-				echo "<td style='color:#808080;'><a target='_blank' href='".base_url()."player/$user'>";
-				echo $player['Firstname'] . " " .$player['Lastname'];
-				echo "</a></td>";
-				echo "</tr>";
-            } 
-		    echo "</table>";
-			echo "</tr>"; 
-		}
-        echo "</table></div></div>";
-    }
-	 $eligible_events = array();
+  
+   
+ 	// ----------------- Fetching Eligible Events -------
+		 $eligible_events = array();
      $gender_eligible_events = array();
 	//echo $age_class;
 	   
@@ -898,7 +880,7 @@ $i = 0;
       
         if($ag_grp == 'Adults'){  
 
-				if($agegroup == 'U10' or $agegroup == 'U11' or $agegroup == 'U12' or $agegroup == 'U13' or $agegroup == 'U14' or $agegroup == 'U15' or $agegroup == 'U16' or $agegroup == 'U17' or $agegroup == 'U18' or $agegroup == 'U19'){
+				if($agegroup == 'U10' or $agegroup == 'U11' or $agegroup == 'U12' or $agegroup == 'U13' or $agegroup == 'U14' or $agegroup == 'U15' or $agegroup == 'U16' or $agegroup == 'U17' or $agegroup == 'U18' or $agegroup == 'U19' or $agegroup == 'U21'){
 			          $not_eligible_events['age-'.$event]=$event1;
 
 			    }else if (strpos($agegroup, '_') !== false) {
@@ -994,21 +976,143 @@ $i = 0;
    }
 
    $count_chekboxes = count($eligible_events);
-   					/*echo "<pre>";
-					print_r($user_reg_ag_grps);
-					exit;*/
 
+	// ----------------- Fetching Eligible Events -------
+
+	 if(count($regdata)>0){
+        echo "<div class='form-group'>";
+		echo "<label class='control-label col-md-4 padtop'  style='text-align: left; font-size:16px; margin-bottom: 10px;' for='id_accomodation'>";
+		echo "<b> Registered Events</b>";
+		echo "</label>";
+	echo "<div class='mobile-tbl'>";
+		echo "<div class='col-md-12 form-group internal text1'>
+		<table cellpadding='15' style='padding:1px;'>";
+		    $reg_events = league::regenerate_events($regdata);
+		foreach ($reg_events as $key => $value) {
+		           $event = $value;
+                   $evnt  = $key;
+		           $users = league::in_array_r($evnt, $reg_users);
+		           $cnt   = count($users);
+		          
+			//echo "<tr class='header' style='cursor:pointer;'><td>";
+			echo "<tr><td>";
+			//echo "<b id='chg_icon'>( + )</b>";
+			//echo " ".$event." (".$cnt.")";
+			echo " - ".$event."&nbsp;&nbsp;";
+			echo "</td>";
+			echo "<td><select class='user_event_change' name='change_to' id='change-to-{$key}'>";
+			echo "<option value=''>Change To?</option>"; 
+			if($count_chekboxes > 0){
+			   foreach ($eligible_events as $key2 => $value) {
+			echo "<option value='".$key2."'>".$value."</option>"; 
+			   }
+			}
+			echo "</select>";
+			echo "</tr>"; 
+			echo "<tr class='content' style='display:none'><td>";
+            echo "<table>";
+            foreach($users as $user){
+            	$player	= league::get_username($user);
+            	echo "<tr>";
+				echo "<td style='color:#808080;'><a target='_blank' href='".base_url()."player/$user'>";
+				echo $player['Firstname'] . " " .$player['Lastname'];
+				echo "</a></td>";
+				echo "</tr>";
+            } 
+		    echo "</table>";
+			echo "</tr>"; 
+		}
+        echo "</table></div></div></div>";
+    }
+
+
+/*echo "<pre>";
+print_r($user_reg_ag_grps);
+exit;*/
+?>
+
+<!-- Partners  -->
+<?php
+//if($this->logged_user == 237 or $this->logged_user == 240){
+?>
+        <div class="form-group" style="margin-top: 30px;">
+			<div class='form-group internal text1'>
+           <label class='control-label padtop col-md-7' style="text-align: left; padding-right: 0px; font-size:15px;" for="">
+		   <b>Select Partners?</b>&nbsp;&nbsp;&nbsp;</label>
+			   &nbsp;&nbsp;&nbsp;  			  
+			</div>
+         </div>
+
+<?php
+	 if(count($regdata)>0){
+        /*echo "<div class='form-group'>";
+		echo "<label class='control-label col-md-4 padtop'  style='text-align: left; font-size:16px; margin-bottom: 10px;' for='id_accomodation'>";
+		echo "<b> Registered Events</b>";
+		echo "</label>";*/
+	echo "<div class='mobile-tbl'>";
+		echo "<div class='col-md-12 form-group internal text1'>
+		<table cellpadding='15' style='padding:1px;'>";
+		    //$reg_events = league::regenerate_events($regdata);
+
+		foreach ($reg_events as $key => $value) {
+		           $event = $value;
+                   $evnt  = $key;
+		           $users = league::in_array_r($evnt, $reg_users);
+		           $cnt   = count($users);
+		           $get_partner = league :: get_userPartner($this->logged_user, $evnt, $r->tournament_ID);
+
+			//echo "<tr class='header' style='cursor:pointer;'><td>";
+			echo "<tr><td>";
+			//echo "<b id='chg_icon'>( + )</b>";
+			//echo " ".$event." (".$cnt.")";
+			echo " - ".$event."&nbsp;&nbsp;(".$get_partner.")&nbsp;&nbsp;";
+			echo "</td>";
+			echo "<td><select class='user_partner_change' name='partner_change_to' id='partner-change-to-{$key}'>";
+
+			if($get_partner == 'No Partner Assigned')
+				echo "<option value=''>Choose Partner</option>"; 
+			else
+				echo "<option value=''>Change Partner</option>"; 
+
+            foreach($users as $user){
+				if($user != $this->logged_user){
+					$check_is_no_partner = league :: check_isUserNoPartner($user, $evnt, $r->tournament_ID);
+					if($check_is_no_partner){
+					$player	= league::get_username($user);
+						if($get_partner != $player['Firstname']." ".$player['Lastname'])
+						echo "<option value='".$player['Users_ID']."'>".$player['Firstname']." ".$player['Lastname']."</option>";
+					}
+				}
+			}
+			echo "</select>";
+			echo "</tr>"; 
+		}
+        echo "</table></div></div>"; 
+		//echo "</div>";
+    }
+
+
+?>
+<!-- Partners  -->
+<?php
+//}
+?>
+<?php
 $now =  time();
 $reg_close = strtotime($r->Registrationsclosedon);
 $reg_open  = strtotime($r->Registrations_Opens_on);
 
 if($now < $reg_close or $this->logged_user == 237){
       ?>
-        <div class="form-group">
-			<div class='form-group internal text1'>
-           <label class='control-label padtop' for=""><b>Do you want to register more events?</b>&nbsp;&nbsp;&nbsp;</label>
-	           <input name="multi_reg" type="radio" value="1" style="margin-bottom:22px"> Yes  
-			   <input name="multi_reg" type="radio" value="0" checked> No  
+        <div class="form-group" style="/*margin-top: 150px;*/">
+			<div class='form-group internal text1' style="clear: both; padding-top: 30px;">
+           <label class='control-label padtop col-md-7' style="text-align: left; padding-right: 0px; font-size:15px;" for="">
+		   <b>Do you want to register more events?</b>&nbsp;&nbsp;&nbsp;</label>
+	           <!-- <input name="multi_reg" type="radio" value="1" style="margin-bottom:22px"> Yes  
+			   <input name="multi_reg" type="radio" value="0" checked> No -->  
+	           <div><input id="multi_reg" name="multi_reg" type="button" class="form-control" value=" Click here " style="margin-top:10px; margin-bottom:22px; width:40%; color:#fff; background-color:#f59123;" /></div>
+			   &nbsp;&nbsp;&nbsp;  
+			  
 			</div>
          </div>
       <?php
@@ -1223,9 +1327,9 @@ var count = (db+mx+sg);
 }
 
 ?>
-<div class='col-md-4' style="padding-bottom:20px">
+<!-- <div class='col-md-4' style="padding-bottom:20px">
 <?php 
-if(!isset($reg_status)) {
+/*if(!isset($reg_status)) {
 ?>
 	<img class="scale_image"  alt="" width="250px" height="224px" src="<?php echo base_url(); ?>tour_pictures/<?php 
 	if($r->TournamentImage != "" and $r->TournamentImage != NULL){ echo $r->TournamentImage; }
@@ -1244,9 +1348,65 @@ if(!isset($reg_status)) {
 	?>" />
 
 <?php
-}
+}*/
 ?>
-</div>
+</div> -->
 </div>
 <!-- end main body -->
 </div><!-- Close Top Match -->
+<script>
+$(document).ready(function(){
+var baseurl = "<?php echo base_url();?>";
+
+	$('.user_event_change').change(function(){
+		var temp = $(this).attr('id');
+		var tempNew = temp.split('-');
+		var prevEvent = tempNew[2];
+		var changeTo = $(this).val();
+
+		if(prevEvent && changeTo){
+			if(confirm("Are you sure to change the event?")){
+			var tid = $('#id').val();	
+			$.ajax({		
+				type:'POST',		
+				url:baseurl+'league/change_user_reg_event/',		
+				data:{tourn_id:tid,prevEvent:prevEvent,changeTo:changeTo},		
+				success:function(res){
+					alert(res);
+					location.reload();
+				}
+			});
+			}
+			else{
+				$(this).val('').trigger('change');
+			}
+		}
+	});
+
+	$('.user_partner_change').change(function(){
+		var temp		= $(this).attr('id');
+		var tempNew = temp.split('-');
+		var event		= tempNew[3];
+		var partner	= $(this).val();
+
+		if(event && partner){
+			if(confirm("Are you sure to choose this partner?")){
+			var tid = $('#id').val();	
+			$.ajax({		
+				type:'POST',		
+				url:baseurl+'league/change_user_event_partner/',		
+				data:{tourn_id:tid,event:event,partner:partner},		
+				success:function(res){
+					alert(res);
+					location.reload();
+				}
+			});
+			}
+			else{
+				$(this).val('').trigger('change');
+			}
+		}
+	});
+
+});
+</script>

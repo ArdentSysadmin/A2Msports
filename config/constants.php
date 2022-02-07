@@ -56,6 +56,8 @@ define('SANDBOX_PAYPAL_ID', 'admin-facilitator@a2msports.com');
 define('PAYPAL_URL', 'https://www.paypal.com/cgi-bin/webscr');
 define('PAYPAL_ID', 'admin@a2msports.com');
 
+define('RESERVE_BLOCKED_CLUBS', serialize (array(1182, 1187)));
+
 //define('PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
 //define('PAYPAL_ID', 'admin-facilitator@a2msports.com');
 

@@ -260,11 +260,11 @@
 				}
 
 			$qry_check = $this->db->query("SELECT *, ACOS( SIN( RADIANS( Latitude ) ) * SIN( RADIANS( $lat ) ) + COS( RADIANS( Latitude ) )
-			* COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 AS distance FROM tournament WHERE ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat ) ) + COS( RADIANS( Latitude ) ) * COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 < {$range}  AND  SportsType IN ($xyz) AND Visibility != '$visible' AND StartDate >= cast(GETDATE() as DATE) AND tournament_ID NOT IN (SELECT Tournament_ID FROM RegisterTournament WHERE Users_ID = {$users_id} OR Team_Players LIKE '%\"{$users_id}\"%') ORDER BY distance, StartDate DESC");
+			* COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 AS distance FROM tournament WHERE ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat ) ) + COS( RADIANS( Latitude ) ) * COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 < {$range}  AND  SportsType IN ($xyz) AND Visibility != '$visible' AND Is_Publish = 1 AND StartDate >= cast(GETDATE() as DATE) AND tournament_ID NOT IN (SELECT Tournament_ID FROM RegisterTournament WHERE Users_ID = {$users_id} OR Team_Players LIKE '%\"{$users_id}\"%') ORDER BY distance, StartDate DESC");
 			}
 			else
 			{
-			$qry_check = $this->db->query("SELECT *, ACOS( SIN( RADIANS( Latitude ) ) * SIN( RADIANS( $lat ) ) + COS( RADIANS( Latitude ) )	* COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 AS distance FROM tournament WHERE ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat ) ) + COS( RADIANS( Latitude ) ) * COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 < {$range}  AND Visibility != '$visible' AND StartDate >= cast(GETDATE() as DATE) AND tournament_ID NOT IN (SELECT Tournament_ID FROM RegisterTournament WHERE Users_ID = {$users_id} OR Team_Players LIKE '%\"{$users_id}\"%') ORDER BY distance, StartDate DESC");
+			$qry_check = $this->db->query("SELECT *, ACOS( SIN( RADIANS( Latitude ) ) * SIN( RADIANS( $lat ) ) + COS( RADIANS( Latitude ) )	* COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 AS distance FROM tournament WHERE ACOS( SIN( RADIANS( Latitude )) * SIN( RADIANS( $lat ) ) + COS( RADIANS( Latitude ) ) * COS( RADIANS( $lat )) * COS( RADIANS( Longitude ) - RADIANS( $long )) ) * 3964.3 < {$range}  AND Visibility != '$visible' AND Is_Publish = 1 AND StartDate >= cast(GETDATE() as DATE) AND tournament_ID NOT IN (SELECT Tournament_ID FROM RegisterTournament WHERE Users_ID = {$users_id} OR Team_Players LIKE '%\"{$users_id}\"%') ORDER BY distance, StartDate DESC");
 			}
 
 			return $qry_check->result();
@@ -1777,21 +1777,21 @@ echo "Winner AddScore -". $add_score_points."<br>";
 					if($get_a2mscore1->num_rows == 0){
 
 						$def_score = 100;
-					if($sp == '2')
+					if($tour_sport == 2)
 						$def_score = 800;
-					if($sp == '7')
+					if($tour_sport == 7 or $tour_sport == 19 or $tour_sport == 20)
 						$def_score = 3.0;
 
 					$a2m_ins_data = array(
 							'Users_ID'					=> $sp,
 							'SportsType_ID'			=> $tour_sport,
-							'A2MScore'			    => $def_score,
-							'A2MScore_Doubles'  => $def_score,
+							'A2MScore'					=> $def_score,
+							'A2MScore_Doubles'	=> $def_score,
 							'A2MScore_Mixed'	    => $def_score
 							);
 
 					$result = $this->db->insert('A2MScore', $a2m_ins_data);
-					//echo $this->db->last_query(); exit;
+					echo $this->db->last_query(); exit;
 					}
 			$check_user_si = $this->db->query("SELECT * FROM Sports_Interests WHERE users_id = {$sp} AND Sport_id = {$tour_sport}");
 			$prev_si = $check_user_si->row_array();

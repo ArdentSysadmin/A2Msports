@@ -4,7 +4,7 @@
                         <div class="head d-flex justify-content-between align-items-center">
                           <h4 class="gry mb-0">Filter</h4>
                           <div class="input-group w-30 mb-3 sreach_filter">
-                              <button class="btn btn-outline-secondary border-orange bg-orange" type="button" id="button-addon1">Sreach</button>
+                              <button class="btn btn-outline-secondary border-orange bg-orange" type="button" id="button-addon1">Search</button>
                               <input type="text" class="form-control" placeholder="Search by Name,City,State" aria-label="Example text with button addon" aria-describedby="button-addon1">
                             </div>
                         </div>

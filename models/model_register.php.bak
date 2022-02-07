@@ -36,7 +36,7 @@
 
 			$email = NULL;
 			if($this->input->post('EmailID'))
-			$email		= $this->input->post('EmailID');
+			$email = $this->input->post('EmailID');
 
 			$password = NULL;
 			if($this->input->post('Password'))
@@ -103,7 +103,12 @@
 		
 			$zip = $this->input->post('Zipcode');
 			$reg_date = date("Y-m-d h:i:s");
+
+			if($email)
 			$code = md5($lastname . $email);
+			else
+			$code = md5($lastname . $mphone);
+
 			$auth_code = substr($code, 0, 16);
 
 			$issocial = 0 ;

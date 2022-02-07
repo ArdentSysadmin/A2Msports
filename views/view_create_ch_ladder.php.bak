@@ -1091,13 +1091,13 @@ data-ad-format="auto"></ins>
             </div>
           </div>
 
-           <div class='form-group'>
+           <!-- <div class='form-group'>
             <label class='control-label col-md-3' for='id_accomodation'>Short URL</label>
             <div class='col-md-6 form-group internal'>
               <input class='form-control' id='shrt_cde' name='shrt_cde' type='text' placeholder = 'a2msports.com/' />
               <div id="short_code_div"></div>
             </div>
-          </div>
+          </div> -->
 		  
           <div class='form-group'>
             <label class='control-label col-md-3' for='id_accomodation'><font color='red'>* </font> Organizer Name<br />(Company / Individual)</label>
