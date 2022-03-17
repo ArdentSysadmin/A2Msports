@@ -196,12 +196,15 @@
 
 			$show_guest = 1;
 
+			 $ev_start_time = $this->input->post('ev_st');
+			 $ev_end_time	 = $this->input->post('ev_et');
+
 			if($event_schedule == 'singleday')
 			{
 				$ed = $this->input->post('ev_dt');
 				foreach($ed as $i => $evd){
-					$start_date = date('Y-m-d',strtotime($ed[$i]));
-					$end_date   = date('Y-m-d',strtotime($ed[$i]));
+					$start_date = date('Y-m-d H:i',strtotime($ed[$i]." ".$ev_start_time[$i]));
+					$end_date   = date('Y-m-d H:i',strtotime($ed[$i]." ".$ev_end_time[$i]));
 				}
 			}
 
@@ -229,8 +232,8 @@
 			 $ev_id  = $this->db->insert_id();
 
 			 $ev_date		= $this->input->post('ev_dt');
-			 $ev_start_time = $this->input->post('ev_st');
-			 $ev_end_time	= $this->input->post('ev_et');
+			// $ev_start_time = $this->input->post('ev_st');
+			// $ev_end_time	= $this->input->post('ev_et');
 			 $ev_loc		= $this->input->post('ev_rploc_id');
 
 
@@ -357,14 +360,14 @@
 	    }
 		
 		public function get_event_types(){
-
-			$get_sp_name = $this->db->get('Events_Type');
+			$data = array('Ev_Type_Status' => 1);
+			$get_sp_name = $this->db->get_where('Events_Type');
 			return $get_sp_name->result();
 		}
 
 		public function getonerow($ev_id){
 			
-			$data = array('Ev_ID'=>$ev_id);
+			$data = array('Ev_ID' => $ev_id);
 			$get_sp_name = $this->db->get_where('Events',$data);
 			return $get_sp_name->row_array();
 		}

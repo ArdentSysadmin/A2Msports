@@ -378,10 +378,15 @@
 			return $total;
 		}
 
-		public function get_tournImages_bySportsType($sportsType)
+		public function get_tournImages_bySportsType($sportsType, $limit='')
 		{
-			$query = $this->db->query('SELECT * FROM Tournament_Images WHERE tournament_ID IN (SELECT t.tournament_ID FROM tournament as t INNER JOIN Sports_News as sn ON t.SportsType=sn.SportsType_id WHERE t.SportsType='.$sportsType.') ORDER BY tournament_ID DESC');
+			$cond = "";
+			if($limit)
+			$cond = " OFFSET 0 ROWS FETCH NEXT {$limit} ROWS ONLY";
+
+			$query = $this->db->query("SELECT * FROM Tournament_Images WHERE tournament_ID IN (SELECT t.tournament_ID FROM tournament as t INNER JOIN Sports_News as sn ON t.SportsType=sn.SportsType_id WHERE t.SportsType={$sportsType}) ORDER BY tournament_ID DESC{$cond}");
 			//return $this->db->last_query();
+			//echo $this->db->last_query(); exit;
 			return $query->result();
 		}
 
@@ -412,9 +417,25 @@
 			}
 		}
 
+		public function ins_users_json($val){
+			$res = 0;
+			$upd_on = date('Y-m-d H:i:s');
+			if($val){
+				$res = $this->db->query("UPDATE Users_JSON SET json_val = '{$val}', updated_on = '{$upd_on}' WHERE tab_id = 1");
+			}
+			//echo $this->db->last_query(); exit;
+			return $res;
+		}
+
 		public function get_all_users(){
 			$qr_check = $this->db->query("SELECT * FROM users");
 			return $qr_check->result();
+		}
+
+		public function get_users_json(){
+			$qr_check = $this->db->query("SELECT * FROM Users_JSON");
+			$res = $qr_check->row_array();
+			return $res['json_val'];
 		}
 
 		public function a2mscore_doubles_update(){

@@ -291,6 +291,7 @@ function getfee(events,classname,ag_grp,format){
 	var is_flag_age  = $('#is_flag_age').val();
 	var user_age_grp = $('#user_age_grp').val();
 	var user_reg_age_grps = $('#user_reg_age_grps').val();
+	var isp = $('#isp').val();
 
 	if(format.indexOf('Doubles')!=-1){
 		            $('#doubles_div').css('display', 'block'); 
@@ -320,7 +321,7 @@ function getfee(events,classname,ag_grp,format){
                     $.ajax({
 						type:'POST',
 						url:baseurl+'league/get_tour_fee_more_events/',
-				        data:{ tour_id:tour_id, ag_grp:ag_grp, format:format, is_flag_age:is_flag_age, user_age_grp:user_age_grp, user_reg_age_grps:user_reg_age_grps},
+				        data:{ tour_id:tour_id, ag_grp:ag_grp, format:format, is_flag_age:is_flag_age, user_age_grp:user_age_grp, user_reg_age_grps:user_reg_age_grps, isp:isp},
 						success:function(html){
 							//alert(html);
 						  $('#tour_fee').val(html);
@@ -902,7 +903,8 @@ $i = 0;
 		  	        }else{
 					   $eligible_events[$event]=$event1;
 					}
-		            }else if($age==50 && $user_age>=50){
+		            }
+					else if($age==50 && $user_age>=50){
                         if($r->SportsType == '2'){
 		  		        $level_name = substr($LevelName,1);		  		
 					    if(is_numeric($level_name)){
@@ -919,7 +921,62 @@ $i = 0;
 		  	        }else{
 					   $eligible_events[$event]=$event1;
 					}
-		            }else{
+		            }
+					else if($age==60 && $user_age>=60){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+					    if(is_numeric($level_name)){
+			 	            if($level_name < $rating){
+			 	            	$not_eligible_events['rating-'.$event]=$event1;
+					          
+					        }else{
+					        	$eligible_events[$event]=$event1;
+					        	
+					        }
+					    }else{
+					    	$eligible_events[$event]=$event1;
+					    }
+		  	        }else{
+					   $eligible_events[$event]=$event1;
+					}
+		            }
+					else if($age==70 && $user_age>=70){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+					    if(is_numeric($level_name)){
+			 	            if($level_name < $rating){
+			 	            	$not_eligible_events['rating-'.$event]=$event1;
+					          
+					        }else{
+					        	$eligible_events[$event]=$event1;
+					        	
+					        }
+					    }else{
+					    	$eligible_events[$event]=$event1;
+					    }
+		  	        }else{
+					   $eligible_events[$event]=$event1;
+					}
+		            }
+					else if($age==80 && $user_age>=80){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+					    if(is_numeric($level_name)){
+			 	            if($level_name < $rating){
+			 	            	$not_eligible_events['rating-'.$event]=$event1;
+					          
+					        }else{
+					        	$eligible_events[$event]=$event1;
+					        	
+					        }
+					    }else{
+					    	$eligible_events[$event]=$event1;
+					    }
+		  	        }else{
+					   $eligible_events[$event]=$event1;
+					}
+		            }
+					else{
 				          $not_eligible_events['age-'.$event] = $event1;
 				        }
    
@@ -1184,9 +1241,10 @@ if($now < $reg_close or $this->logged_user == 237){
 
 
 ?>
-<input type="hidden" id="is_flag_age" value="<?php echo $is_flag_age;?>" >
-<input type="hidden" id="user_age_grp" value="<?php echo $user_age_grp;?>">
+<input type="hidden" id="is_flag_age"		value="<?php echo $is_flag_age;?>" >
+<input type="hidden" id="user_age_grp"	value="<?php echo $user_age_grp;?>">
 <input type="hidden" id="user_reg_age_grps" value='<?php echo json_encode($user_reg_ag_grps);?>'>
+<input type="hidden" id="isp" value='<?php echo $is_paid;?>'>
 
 <div class='form-group'  id="doubles_div" style="display : none">
 <label class='control-label col-md-4 padtop' for='id_accomodation'><b>Partner<br />(Doubles):</b></label>

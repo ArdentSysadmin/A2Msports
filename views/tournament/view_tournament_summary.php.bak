@@ -1,3 +1,11 @@
+<?php
+if($this->is_team_league)
+{
+?>
+<link href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+<?php
+}
+?>
 <script>
 $(document).ready(function(){
  	 $("#MoreEvents").hide();
@@ -362,13 +370,17 @@ echo $currency."0.00";
 	   <?php } ?>
 
 		<div class="col-md-12"><br></div>
-		<div class="col-md-12" style="overflow-y:scroll;height:270px;">
+		<div class="col-md-12" id='temp_com_div' style="overflow-y:scroll;height:270px;">
 
 		<div id="comments_div" class="col-md-12">
 		<?php
-		if($tourn_comments){
-		foreach($tourn_comments as $comment){ 
-		$name = league :: get_user($comment->Users_Id);
+		$tourn_comments = league :: get_tourn_comments($tour_details->tournament_ID);
+		//echo "<pre>"; print_r($tourn_comments[0]['messages']); 
+		if($tourn_comments[0]['messages']){
+
+		$tourn_cmts = array_reverse($tourn_comments[0]['messages']);
+		foreach($tourn_cmts as $comment){ 
+		$name = league :: get_user($comment['sender']);
 		?>
 			<div class='pull-left' style="margin-right:20px"><img style="width:50px !important; height:50px !important;" class='img-circle' src='<?php 
 			if($name['Profilepic'] != "" and $name['Profilepic'] != 'NULL'){
@@ -378,9 +390,9 @@ echo $currency."0.00";
 			?>' />
 			</div>
 			<div style="margin-top:5px; display:table">
-				<?php echo "<span style='font-weight:bold; color:#464646'><a href='".base_url()."player/".$name['Users_ID']."' style='cursor: pointer;'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."</a></span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", strtotime($comment->Comment_On))."</span><br>"; ?>
+				<?php echo "<span style='font-weight:bold; color:#464646'><a href='".base_url()."player/".$name['Users_ID']."' style='cursor: pointer;'>".ucfirst($name['Firstname'])." ".ucfirst($name['Lastname'])."</a></span>"; ?> <br /><?php echo "<span style='font-size:11px; color:#959595'>".date("m/d/Y H:i", $comment['created_on'])."</span><br>"; ?>
 				<?php 
-			$text = strip_tags($comment->Comments);
+			$text = strip_tags($comment['content']);
 $textWithLinks = preg_replace('@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@', '<a href="$1" target="_blank" rel="nofollow">$1</a>', $text);
 echo $textWithLinks;
 
@@ -396,8 +408,15 @@ echo $textWithLinks;
 		<?php 
 		}?>
 		</div>
+		
 		</div>	
 	</div>
+<script>
+	$(document).ready(function(){
+		var element = document.getElementById("temp_com_div");
+		element.scrollTop = element.scrollHeight;
+	});
+</script>
 
 <!-- Sponsor Section -->
 <div  class="col-md-12" align='center'>

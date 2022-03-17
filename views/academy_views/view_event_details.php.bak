@@ -493,8 +493,8 @@ $location = $loc['loc_title'];
 echo "<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>".$loc['loc_add']; 
 
 if($loc['loc_city']) echo $loc['loc_city']; 
-if($loc['loc_state']) echo ",".$loc['loc_state']; 
-if($loc['loc_country']) echo ",".$loc['loc_country']; 
+if($loc['loc_state']) echo ", ".$loc['loc_state']; 
+if($loc['loc_country']) echo ", ".$loc['loc_country']; 
 
 ?></p>
 
@@ -524,9 +524,11 @@ echo $event_init['Firstname']." ".$event_init['Lastname'];?>
 <img class="scale_image" src="<?php echo base_url(); ?>events_pictures/<?php echo $ev_det['EventImage']; ?>" alt="" width="200px" height="200px" />
 <?php
 }
+if($users_id){
 ?>
 <div align='center' style="margin-top: 20px;"><a href='#comments'><b>Add / View Comments</b></a></div>
 <?php
+}
 if($ev_det['Fee'] != '' and $ev_det['Fee'] != NULL and $ev_det['Fee'] > 0 
 	and $pay_status == 'Due' and $users_id and count($is_ev_user) > 0){
 ?>

@@ -123,19 +123,71 @@ $("form#send_mail_frm").submit(function(){
 });
 
 /*End Send mail with an attachment to all participants*/
+$(document).ready(function (){
+	$('#ev_draw_filter').change(function(){
+	var df			= $(this).val();
+	var btn_val	= "<?php echo $btn_val; ?>";
+	var tourn_id = $('#tourn_id').val();
+
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/load_adm_participants/',
+				data:{club_url:club_baseurl,tid:tourn_id,df:df},
+				success:function(res){
+				   $('#tourn_participants').html("");
+				   $("#tourn_participants").html(res);
+				}
+			});
+	});
+
+$('#show_pay_info').click(function(){
+		$('#tourn_participants').toggle();
+		$('#tourn_participants_payment').toggle();
+		
+		if($('#pinfo_label').html() == 'Show Payment Info.'){
+				$('#pinfo_label').html('Show Participants');
+		}
+		else{
+				$('#pinfo_label').html('Show Payment Info.');
+		}
+	});
+
+});
 </script>
 
 <div class='form-group'>
 <div class='col-md-12 control-label'>
-<?php
-$res  = league::get_reg_tourn_participants_withGender($tour_details->tournament_ID);
+<div class="col-md-5"></div>
+<div class="col-md-3" style="text-align: right; font-size:16px;">
+	<?php
+	//if(($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){
+	?>
+	<!-- <div>
+	<a id="show_pay_info" style="cursor:pointer;"><span id='pinfo_label'>Show Payment Info.</span></a>
+	</div>  -->
+	<?php
+	//}
+	?>
+</div>
+<div class="col-md-4" align="right">
+<select class="form-control" id='ev_draw_filter' name='draw_filter' style="width:60%;">
+<option value=''>Show All</option>
+<option value="Men's Singles" <?php if($df == "Men's Singles") echo "selected"; ?>>Men's Singles</option>
+<option value="Men's Doubles" <?php if($df == "Men's Doubles") echo "selected"; ?>>Men's Doubles</option>
+<option value="Women's Singles" <?php if($df == "Women's Singles") echo "selected"; ?>>Women's Singles</option>
+<option value="Women's Doubles" <?php if($df == "Women's Doubles") echo "selected"; ?>>Women's Doubles</option>
+<option value="Mixed Doubles" <?php if($df == "Mixed Doubles") echo "selected"; ?>>Mixed Doubles</option>
+</select>
+</div>
 
-$reg_users		= $res[0];
-$user_tsize		= $res[1];
-$user_partners  = $res[2];
-if($this->logged_user == 240){
-//echo "<pre>"; print_r($res); //exit;
-}
+<?php
+$res  = league::get_reg_tourn_participants_withGender($tour_details->tournament_ID, $tour_details->SportsType);
+
+$reg_users			= $res[0];
+$user_tsize			= $res[1];
+$user_partners		= $res[2];
+$user_names		= $res[3];
+//if($this->logged_user == 240 and $df){ echo "<pre>"; print_r($res); /*exit;*/ }
 ?>
 
 <div class="col-md-12 league-form-bg" style="margin-top:15px; margin-bottom:0px;">
@@ -156,7 +208,11 @@ if($tour_details->Usersid == $this->logged_user or $this->is_super_admin) {
 <?php
 $keys = 0;
 //if(count($reg_users) > 0){
-	$waitlist_users = league::GetWaitListUsersNew($tour_details->tournament_ID);
+
+$waitlist_users = NULL;
+if($tour_details->Event_Reg_Limit)
+$waitlist_users = league :: GetWaitListUsersNew($tour_details->tournament_ID);
+
 $event_format = array();
 	if($tour_details->Multi_Events != NULL){
 	  $events		= json_decode($tour_details->Multi_Events, true);
@@ -172,8 +228,23 @@ $event_format = array();
 	  }
 	}
 if($this->logged_user == 240){
-//echo "<pre>"; print_r($event_format); exit;
+//echo "<pre>"; print_r($event_format);
+//echo "<pre>"; print_r($res); exit;
 }
+
+
+if($df){
+	$new_event_format = array();
+	foreach($event_format as $ev => $ef) {
+		$pos = strpos($ef, $df);
+
+		if ($pos > -1) {
+			$new_event_format[$ev] = $ef; 
+		}
+	}
+	$event_format = $new_event_format;
+}
+
 //foreach ($events as $ages => $evnts) {
    foreach ($event_format as $k => $evnt){
 
@@ -188,17 +259,17 @@ if($this->logged_user == 240){
 	$get_level	= league::get_level_name($tour_details->SportsType, $lv);
 	//$users			= league::in_array_r($k, $reg_users);
 	$users			= league::in_array_r_sort($k, $reg_users, $user_partners);
-if($this->logged_user == 240){
+//if($this->logged_user == 240){
 //echo "<pre>"; echo $k."<br />--------<br />"; print_r($users); echo "<br />--------<br />"; //exit;
-}
+//}
 	}
-if($this->logged_user == 240){
+//if($this->logged_user == 240){
 	//echo "<pre>"; print_r($reg_users); //exit;
 	//echo "<pre>"; print_r($user_partners); //exit;
 	//echo "<pre>"; print_r($users); exit;
 	//	$users			= league::in_array_r_sort($k, $reg_users, $user_partners);
 	//echo "<pre>"; print_r($users); //exit;
-}
+//}
 	$event_label = $evnt;
 	$event_key = $k;
 
@@ -280,8 +351,10 @@ $inverse_pp_comb = $user;
 if(!in_array($pp_comb, $displayed_comb, TRUE) and !in_array($inverse_pp_comb, $displayed_comb, TRUE) and 
 	(strpos($event_label, 'Doubles') or strpos($event_label, 'Mixed') or strpos($event_key, 'Doubles') or strpos($event_key, 'Mixed')) and !in_array($user, $displayed_users)){
 
-	$player					= league::get_username($user);
-	$user_a2msocre	= league::get_a2mscore($user, $tour_details->SportsType);
+	//$player					= league::get_username($user);
+	$player					= $user_names[$user];
+	//$user_a2msocre	= league::get_a2mscore($user, $tour_details->SportsType);
+	$user_a2msocre	= $user_names[$user];
 	$user_score			= $user_a2msocre['A2MScore'];
 	$avg_score			= $user_score;
  ?>
@@ -289,7 +362,7 @@ if(!in_array($pp_comb, $displayed_comb, TRUE) and !in_array($inverse_pp_comb, $d
 <?php
 if($tour_details->Usersid == $this->logged_user or $this->is_super_admin) {
  ?>
- <td style='padding-bottom:5px;'><input type='checkbox' name='prtcpnts_mail_check' class="tm_participants_cls tm_participants_cls_<?php echo $keys;?>" id="tm_participants_<?php echo $player['Users_ID'];?>" value="<?php echo $player['Users_ID']; if($user_partners[$user][$k]) echo "-{$user_partners[$user][$k]}"; ?>" ></td>
+ <td style='padding-bottom:5px;'><input type='checkbox' name='prtcpnts_mail_check' class="tm_participants_cls tm_participants_cls_<?php echo $keys;?>" id="tm_participants_<?php echo $user;?>" value="<?php echo $user; if($user_partners[$user][$k]) echo "-{$user_partners[$user][$k]}"; ?>" ></td>
  <?php
  }
  ?>
@@ -302,7 +375,8 @@ $repeated = "<img src='".base_url()."icons/exclamation.png' style='width:18px; h
 }
 
 //echo "<a>".$player['Firstname'] . " " .$player['Lastname']."</a> $repeated";
-$p1 = league :: get_user($user);
+//$p1 = league :: get_user($user);
+$p1 = $user_names[$user];
 
 	$age_group = '';
 	if($p1['DOB']) {		
@@ -336,7 +410,7 @@ $p1 = league :: get_user($user);
 	}
 
 
-echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a> ".$age_group; 
+echo "<a href='".base_url()."player/$user'>".$player['Firstname']." ".$player['Lastname']."</a> ".$age_group; 
 
 
 //echo '$user_partners[$user][$k] '.var_dump($user_partners[$user][$k]).'<br />';
@@ -359,7 +433,8 @@ if($user_partners[$user][$k] and $user_partners[$user][$k] != ""){
 	$repeated = "<img src='".base_url()."icons/exclamation.png' style='width:18px; height:15px;' {$tooltip} />";
 	}
 
-$p2 = league :: get_user($user_partners[$user][$k]);
+//$p2 = league :: get_user($user_partners[$user][$k]);
+$p2 = $player_partner;
 
 	$age_group = '';
 	if($p2['DOB']) {		
@@ -445,10 +520,10 @@ if($get_user_usatt_rating){
 
 	if(is_numeric($level)){
 	  if($rating_eligibility!="" and $rating_eligibility != NULL and $rating_eligibility != 'NULL'){
-		if($level < $get_user_rating['Rating']){
+		if($level < $get_user_rating['Rating']){	
 		$rating_eligibility = $get_user_rating['Rating'].'<i class="fa fa-exclamation-triangle"></i>';
 		$rating_eligibility_title = "exceeds the rating";
-		$rating_eligibility_class = "";
+		$rating_eligibility_class = "";					
 	  }
 	  }
 	  else{
@@ -476,11 +551,16 @@ if($get_user_usatt_rating){
 
 }
 else if(!strpos($event_label, 'Doubles') and !strpos($event_label, 'Mixed') and !strpos($event_key, 'Doubles') and !strpos($event_key, 'Mixed') and !in_array($user, $displayed_users, TRUE)){
-$player					= league::get_username($user);
-$user_a2msocre  = league::get_a2mscore($user, $tour_details->SportsType);
+//$player					= league::get_username($user);
+//$user_a2msocre  = league::get_a2mscore($user, $tour_details->SportsType);
+//if($this->logged_user == 240)
+//	echo "<pre>"; print_r($user_names); exit;
+$player					= $user_names[$user];
+$user_a2msocre	= $user_names[$user];
 $user_score			= $user_a2msocre['A2MScore'];
-
-$p1 = league :: get_user($user);
+//echo "<pre>"; print_r($player);
+//$p1 = league :: get_user($user);
+$p1 = $player;
 
 	$age_group = '';
 	if($p1['DOB']) {		
@@ -515,7 +595,7 @@ $p1 = league :: get_user($user);
 
  ?>
 <tr style='<?php echo $wtlst_style;?>'>
- <td style='padding-bottom:5px;'><input type='checkbox' name='prtcpnts_mail_check' class="tm_participants_cls tm_participants_cls_<?php echo $keys;?>" id="tm_participants_<?php echo $player['Users_ID'];?>"  value="<?php echo $player['Users_ID'];?>" ></td>
+ <td style='padding-bottom:5px;'><input type='checkbox' name='prtcpnts_mail_check' class="tm_participants_cls tm_participants_cls_<?php echo $keys;?>" id="tm_participants_<?php echo $user;?>"  value="<?php echo $user;?>" ></td>
 <td class="score-position" valign="center" align="center">
 <?php
 echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player['Lastname']."</a>  ".$age_group;
@@ -527,10 +607,12 @@ echo "&nbsp;&nbsp;<b>W.L # ".$waitlistuserids[$user]."</b>";
 </td>
 <td class="score-position" valign="center" align="center">
 <?php
-if($tour_details->SportsType == 7 )
+if($tour_details->SportsType == 7 ){
 	echo number_format($user_score, 3); 
-else
+}
+else{
 	echo $user_score;
+}
 ?></td>
 <?php
 if($tour_details->SportsType == '2'){

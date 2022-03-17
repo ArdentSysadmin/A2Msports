@@ -284,7 +284,6 @@
 
 								$pp_data['User_ID'] = $ins_user;
 
-							if($pp_data['Frequency_Code'] != 'O'){
 							$ins_ot_pay_id = '';
 							if($mem_det['ActivationFee'] > 0){
 							$data9 = array('Club_ID' => $academy, 'User_ID' => $ins_user, 'Membership_Code' => $mem_det['Membership_ID'], 'Type' => 'OT', 'Pay_Status' => 'NOT PAID', 'Created_On' => date('Y-m-d H:i:s'));
@@ -304,17 +303,6 @@
 								else
 								$this->paypal_subscr($ins_subscr_pay_id);
 								exit;
-							}
-							else{
-							$data9 = array('Club_ID' => $academy, 'User_ID' => $ins_user, 'Membership_Code' => $mem_det['Membership_ID'], 'Type' => 'OTC', 'Pay_Status' => 'NOT PAID', 'Created_On' => date('Y-m-d H:i:s'));
-
-							$ins_ot_pay_id = $this->general->insert_table_data('Membership_PaymentLinks', $data9);
-
-								if($ins_ot_pay_id)
-								$this->paypal_otc($ins_ot_pay_id);
-
-							}
-
 							}
 					}
 		// ---------------------------------------------------
@@ -623,6 +611,7 @@
 			
 		if($is_activated){
 			//$this->session->set_flashdata('redirect_page', 'Play');
+			//echo $this->config->item('club_pr_url'); exit;
 			redirect($this->config->item('club_pr_url')."?st=2");
 		}
 		else{
@@ -1026,42 +1015,6 @@
 				$paypalURL			= SANDBOX_PAYPAL_URL; //PayPal api url
 				$logo = base_url().'images/logo.png';
 				$url	   = base_url().$this->uri->segment(1);
-
-				$returnURL = $url.'/paypal/ot_user?sub_type=ot&club_id='.$get_pay['Club_ID'].'&reg_user='.$get_ot['User_ID'];
-
-				$cancelURL = $url.'/paypal/ot_cancel';	//payment cancel url
-				$notifyURL  = $url.'/paypal/ot_ipn';			//ipn url
-				$this->paypal_lib->add_field('business', $paypal_id);
-				//$this->paypal_lib->add_field('cmd', "_xclick-subscriptions");
-				$this->paypal_lib->add_field('return', $returnURL);
-				$this->paypal_lib->add_field('cancel_return', $cancelURL);
-				$this->paypal_lib->add_field('currency_code', $currency_code);
-				$this->paypal_lib->add_field('notify_url', $notifyURL);
-				$this->paypal_lib->add_field('on0', $get_ot['User_ID']);
-				$this->paypal_lib->add_field('item_number',  $get_pay['Membership_ID']);
-				$this->paypal_lib->add_field('item_name',  $get_pay['Membership_ID'].'-'.$get_pay['Membership_Type'].'-One Time Setup');
-				$this->paypal_lib->add_field('amount', $get_pay['ActivationFee']);
-				$this->paypal_lib->image($logo);
-				
-				$this->paypal_lib->test_paypal_auto_form();		
-			}
-			else{
-				echo "Invalid Access!";
-			}
-		}
-
-		public function paypal_otc($ot_pay_id){
-			$get_ot		= $this->general->get_onerow('Membership_PaymentLinks', 'tab_id', $ot_pay_id);
-			$get_pay = $this->general->get_onerow('Membership_Types', 'Membership_ID', $get_ot['Membership_Code']);
-
-			if($get_ot['User_ID'] and $get_pay){
-					$this->load->library('paypal_lib');
-
-				$paypal_id			= SANDBOX_PAYPAL_ID;
-				$currency_code	= 'USD';
-				$paypalURL			= SANDBOX_PAYPAL_URL; //PayPal api url
-				$logo					= base_url().'images/logo.png';
-				$url						= base_url().$this->uri->segment(1);
 
 				$returnURL = $url.'/paypal/ot_user?sub_type=ot&club_id='.$get_pay['Club_ID'].'&reg_user='.$get_ot['User_ID'];
 

@@ -510,7 +510,7 @@
 
 			$sp_intrests .= ")";*/
 
-			$sp_intrests .= "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)";
+			$sp_intrests .= "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20)";
 
 
 
@@ -521,12 +521,12 @@
 
 	//echo "<pre>"; print_r($data['user_tournment_matches']); exit;
 	//echo "<pre>"; print_r($get_stats1); exit;
-			$played = 0;
-			$won    = 0;
-			$lost   = 0;
-			$points_for     = 0;
-			$points_against = 0;
-			$stats			= array();
+			$played	= 0;
+			$won		= 0;
+			$lost			= 0;
+			$points_for			= 0;
+			$points_against	= 0;
+			$stats					= array();
 
 			foreach($get_stats as $utm){
 				if($utm->Winner != 0 and $utm->Winner != NULL){
@@ -588,7 +588,7 @@
 			//exit;
 			$this->load->view('academy_views/includes/academy_header', $data2);
 			$this->load->view('academy_views/includes/a2m_header_inc');
-			$this->load->view('academy_views/view_player_details',$data);
+			$this->load->view('academy_views/view_player_details', $data);
 			$this->load->view('academy_views/includes/academy_right_column');
 			$this->load->view('academy_views/includes/academy_footer');
 			$this->load->view('academy_views/includes/a2m_footer_inc');

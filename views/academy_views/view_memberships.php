@@ -289,6 +289,8 @@ $(document).ready(function() {
 	<option value="6">Squash</option>
 	<option value="7">Pickleball</option>
 	<option value="18">Basketball</option>
+	<option value="19">Handball</option>
+	<option value="20">Paddleball</option>
 	</select>
 </div>
 
@@ -399,6 +401,8 @@ $(document).ready(function() {
 	<option value="6" <?php if($sport=="6"){ echo "selected=selected"; } ?>>Squash</option>
 	<option value="7" <?php if($sport=="7"){ echo "selected=selected"; } ?>>Pickleball</option>
 	<option value="18" <?php if($sport=="18"){ echo "selected=selected"; } ?>>Basketball</option>
+	<option value="19" <?php if($sport=="19"){ echo "selected=selected"; } ?>>Handball</option>
+	<option value="20" <?php if($sport=="18"){ echo "selected=selected"; } ?>>Paddleball</option>
 	</select>
 </div>
 
@@ -477,6 +481,12 @@ switch($row->Sport_Type){
 		break;
 	case '18':
 		$sport_name = 'Basketball';
+		break;
+	case '19':
+		$sport_name = 'Handball';
+		break;
+	case '20':
+		$sport_name = 'Paddleball';
 		break;
 	default:
 		$sport_name = '';

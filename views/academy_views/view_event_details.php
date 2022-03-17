@@ -493,8 +493,8 @@ $location = $loc['loc_title'];
 echo "<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>".$loc['loc_add']; 
 
 if($loc['loc_city']) echo $loc['loc_city']; 
-if($loc['loc_state']) echo ",".$loc['loc_state']; 
-if($loc['loc_country']) echo ",".$loc['loc_country']; 
+if($loc['loc_state']) echo ", ".$loc['loc_state']; 
+if($loc['loc_country']) echo ", ".$loc['loc_country']; 
 
 ?></p>
 
@@ -506,7 +506,7 @@ echo $event_init['Firstname']." ".$event_init['Lastname'];?>
 <p><label>Fee:</label> <?php echo number_format($ev_det['Fee'], 2);?></p>
 <?php } ?>
 <p><label>Description:</label>
-	<div class='comment'>
+	<div class='comment' style='text-align: justify;'>
 	<?php 
 	if($ev_det['Ev_Desc']) {
 	$description = html_entity_decode($ev_det['Ev_Desc']);

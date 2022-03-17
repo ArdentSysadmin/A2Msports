@@ -200,48 +200,6 @@ gtag('config', 'UA-110374306-1');
 <!-- jQuery DataTables -->
 <script src="<?php echo base_url(); ?>js/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
 <script src="<?php echo base_url(); ?>js/DataTables-1.10.16/js/dataTables.bootstrap.min.js"></script>
-<?php
-if(($this->logged_user_role == 'Admin' or $this->is_super_admin) and $tour_details->TShirt) {
-?>
-<script>
-$(document).ready(function() {
-$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
-});
-</script>
-<?php
-}
-else if($this->logged_user_role == 'Admin' or $this->is_super_admin) {
-?>
-<script>
-$(document).ready(function() {
-$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
-});
-</script>
-<?php
-}
-else if($this->logged_user_role == 'RegPlayer') {
-?>
-<script>
-$(document).ready(function() {
-$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
-});
-</script>
-<?php
-}
-else {
-?>
-<script>
-$(document).ready(function() {
-$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
-"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
-});
-</script>
-<?php
-}
-?>
 
 
 <script>

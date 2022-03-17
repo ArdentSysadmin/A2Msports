@@ -71,6 +71,7 @@ if(team_id!="" && tour_id!=""){
 <table class="tab-score">
 <?php 
 $tourn_reg_teams = league::get_reg_team_participants($tour_details->tournament_ID);
+//print_r($tourn_reg_teams);
 if(count(array_filter($tourn_reg_teams)) > 0) {
 
 $is_tourn_player = league::is_tourn_reg_player($tour_details->tournament_ID);

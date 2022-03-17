@@ -103,10 +103,10 @@ else { ?>
 <input type="submit" id='submit_web_login' name='submit_web_login'  value="  Login  " style="display:none;" /> 
 <input type="button" id='btn_web_login' name='btn_web_login'  value="  Login  " style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00" /> 
 &nbsp;&nbsp; | <a href="#" id="new_member">New User?</a>&nbsp;&nbsp; 
-<?php if($org_details['Aca_URL_ShortCode'] == 'testclub9' or $org_details['Aca_URL_ShortCode'] == 'sba'){ ?>
+<?php //if($org_details['Aca_URL_ShortCode'] == 'testclub9' or $org_details['Aca_URL_ShortCode'] == 'sba'){ ?>
 | <a href="#" id="forgot_pwd">Forgot Password?</a>
 <?php
-}?>
+//}?>
 </div>
 <!-- <br /> <h4 style="padding-bottom:10px; padding-top:10px">Or...<br /><br />
 <div id="phone-login" style="line-height:25px;"> 

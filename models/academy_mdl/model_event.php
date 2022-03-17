@@ -356,8 +356,8 @@
 	    }
 		
 		public function get_event_types(){
-
-			$get_sp_name = $this->db->get('Events_Type');
+			$data = array('Ev_Type_Status' => 1);
+			$get_sp_name = $this->db->get_where('Events_Type', $data);
 			return $get_sp_name->result();
 		}
 

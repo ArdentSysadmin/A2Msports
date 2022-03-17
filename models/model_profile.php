@@ -482,8 +482,13 @@
 			$zip	= $this->input->post('zipcode');
 
 			$hphone = $this->input->post('hphone');
-			$mphone = $this->input->post('mphone');
 
+			$mphone = NULL;
+			if($this->input->post('mphone')){
+			$mphone = str_replace('(', '', $this->input->post('mphone'));
+			$mphone = str_replace(')', '', $mphone);
+			$mphone = str_replace('-', '', $mphone);
+			}
 			$prefer = json_encode($_POST['pref']);
 
 			$data = array(

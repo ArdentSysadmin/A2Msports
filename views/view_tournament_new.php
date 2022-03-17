@@ -297,7 +297,8 @@ else if($is_logged_user_reg and $tour_details->tournament_format != 'Teams'){
 	echo "<br />";
 
 	if($tour_details->Is_League){
-	echo "<a href='".base_url().$org_url_key."league/register_match/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/my_reg_events.png' alt='Register More' title='Register More'></a>";
+	echo "<a href='".base_url().$org_url_key."league/register_match/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>
+	<img src='".base_url()."icons/my_reg_events.png' alt='Register More' title='Register More'></a>";
 
 		if(!$is_check_in){
 		echo "<br /><a id='check_in' style='cursor:pointer; margin-right:40px;'><img src='".base_url()."icons/checkin.png' alt='Check In' title='Check In'></a>";
@@ -307,7 +308,8 @@ else if($is_logged_user_reg and $tour_details->tournament_format != 'Teams'){
 		}
 	}
 	else{
-	echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>	<img src='".base_url()."icons/my_reg_events.png' alt='My Events' title='My Registered Events'></a>";
+	echo "<a href='".base_url().$org_url_key."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer; margin-right:40px;'>
+	<img src='".base_url()."icons/my_reg_events.png' alt='My Events' title='My Registered Events'></a>";
 	}
 }
 ?>
@@ -340,7 +342,7 @@ if($tour_details->TournamentDescription != NULL and $tour_details->TournamentDes
 }
 if(!$this->is_team_league){?>
 <li role="presentation"><a href="#AdmParticipants" id="ShowAdmParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
-<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<li role="presentation"><a href="#ShowPlayers" id="ShowPlayersTab" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
 <?php
 }
 else if($this->is_team_league){?>
@@ -386,7 +388,7 @@ else if($logged_user_role == 'RegPlayer'){
 if(!$this->is_team_league){
 ?>
 <li role="presentation"><a href="#Participants" id="ShowParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
-<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<li role="presentation"><a href="#ShowPlayers"  id="ShowPlayersTab" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
 <?php
 }
 else if($this->is_team_league){
@@ -438,7 +440,7 @@ else if($logged_user_role == 'Visiter'){
 if(!$this->is_team_league){
 ?>
 <li role="presentation"><a href="#Participants" id="ShowParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
-<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<li role="presentation"><a href="#ShowPlayers" id="ShowPlayersTab" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
 <?php
 }
 else if($this->is_team_league){?>
@@ -483,7 +485,6 @@ $data['tour_details'] = $tour_details;
 
 <div role="tabpanel" class="tab-pane fade" id="AdmParticipants">
 	<?php
-	/*if(!$this->is_team_league and ($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){*/
 	if(($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){
 	?>
 	<div style="text-align:right;">
@@ -524,7 +525,7 @@ else{
 <div role="tabpanel" class="tab-pane fade" id="ShowPlayers">
 <?php
 if(!$this->is_team_league){
-$this->load->view('tournament/view_players');  // Load Tournament Players
+//$this->load->view('tournament/view_players');  // Load Tournament Players
 }
 ?>
 </div>
@@ -614,7 +615,7 @@ $(this).next().toggle();
 return false;
 }).next().hide();
 });*/
-	$('#show_pay_info').click(function(){
+	/*$('#show_pay_info').click(function(){
 		$('#tourn_participants').toggle();
 		$('#tourn_participants_payment').toggle();
 		
@@ -624,7 +625,7 @@ return false;
 		else{
 				$('#pinfo_label').html('Show Payment Info.');
 		}
-	});
+	});*/
 });
 </script>
 <script src="<?php echo base_url();?>js/jquery-1.10.2.js" type="text/javascript"></script>

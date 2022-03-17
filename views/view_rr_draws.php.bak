@@ -149,6 +149,7 @@ foreach($rr_matches as $m => $match){
 
 }
 
+//echo "<pre>"; print_r($event_reg_players); exit;
 $grid_array = array();
 ?>
 <div class='tab-content' style='background-color:#ffffff'>
@@ -182,6 +183,10 @@ if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
 	}
 ?>
 <input class="form-control col-md-5" type="text" name="draw_title" id="draw_title" style="width:25%;margin-bottom: 10px;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
+
+<input type="button" class="<?=$get_bracket['BracketID']; ?>" style="margin-left: 20px; border: 1px solid #e78315;
+    background-color: #f59123;    padding: 5px 10px;    font-size: 13px;    text-transform: uppercase;
+    color: #fff;    margin-bottom: 13px;" name="edit_draw_title" id="edit_draw_title" value="Update Title" />
 
 &nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" id='update_draw' name='update_rr_dates' class='league-form-submit1' value=" Update " />
@@ -348,7 +353,7 @@ $('#sdate'+mid).fdatepicker({
 	<?php
 		if($rr_matches[$m]->Court_Info != NULL and $rr_matches[$m]->Court_Info != ''){
 			if($tour_details->Usersid == $this->logged_user or $this->is_super_admin){
-				echo "<input type='text' name='match_court{$match_num}' value='{$rr_matches[$m]->Court_Info}' style='width:13%' />";
+				echo "<input type='text' name='match_court{$match_num}' value='{$rr_matches[$m]->Court_Info}' style='width:20%' />";
 			}
 			else{
 				echo $rr_matches[$m]->Court_Info;
@@ -438,7 +443,7 @@ echo "<a href='".$profile_base."player/".$player2['Users_ID']."' target='_blank'
 
 		if(!$rr_matches[$m]->Player1){
 			$is_disable = "disabled";
-			$title = "title = 'Player1 is not available'";
+			$title = "title = 'Update Player1'";
 		}
 
 		echo "&nbsp;&nbsp;";
@@ -496,7 +501,7 @@ echo "<a href='".$profile_base."player/".$player1['Users_ID']."' target='_blank'
 			$title = "";
 		if(!$rr_matches[$m]->Player2){
 			$is_disable = "disabled";
-			$title = "title = 'Player2 is not available'";
+			$title = "title = 'Update Player2'";
 		}
 
 		echo "&nbsp;&nbsp;";
@@ -772,8 +777,7 @@ $num_matches = ($players_count % 2 == 0) ? $players_count-1 : $players_count;
 <?php if($match_type == "Doubles"){ echo "Teams"; } else { echo "Players"; } ?>
 </td>
 <?php
-for($i = 1;$i <= $num_matches; $i++)
-{
+for($i = 1;$i <= $num_matches; $i++) {
 	echo "<td class='score-position' valign='center' align='center'>Match $i&nbsp;&nbsp;</td>";	
 }
 ?>
@@ -950,12 +954,13 @@ foreach($players_sort as $player => $tot_score){
 <?php
 		$get_players = explode("-", $player);
 
-		$get_name					= league::get_username($get_players[0]);
+		$get_name				= league::get_username($get_players[0]);
 		$get_name_partner	= league::get_username($get_players[1]);
 		
 		if($get_name_partner){
-			echo "<b>"."<a href='".$profile_base."player/".$get_name['Users_ID']."' target='_blank'>".$get_name['Firstname'][0]." ".$get_name['Lastname']."</a>";
-			echo "; <a href='".$profile_base."player/".$get_name_partner['Users_ID']."' target='_blank'>".$get_name_partner['Firstname'][0].".".$get_name_partner['Lastname']."</a></b>";
+			echo "<b>"."<a href='".$profile_base."player/".$get_name['Users_ID']."' target='_blank'>".$get_name['Firstname']." ".$get_name['Lastname']."</a>";
+			echo "<br>";
+			echo "&nbsp;<a href='".$profile_base."player/".$get_name_partner['Users_ID']."' target='_blank'>".$get_name_partner['Firstname'].".".$get_name_partner['Lastname']."</a></b>";
 		}
 		else{
 			echo "<b>"."<a href='".$profile_base."player/".$get_name['Users_ID']."' target='_blank'>".$get_name['Firstname']." ".$get_name['Lastname']."</a></b>";
@@ -1139,7 +1144,23 @@ $(document).ready(function() {
 			alert("select the players!");
 		}
 	});*/
-	
+
+	$('#edit_draw_title').click(function() {
+			var dtitle = $('#draw_title').val();
+			var bid = $(this).attr('class');
+
+		if(bid && dtitle){
+			$.ajax({
+						type: 'POST',
+						url: baseurl+'league/update_draw_title',
+						data: {bid:bid,dtitle:dtitle},
+						success: function(res) {
+							alert(res);
+						}
+			});
+		}
+	});
+
 	$('.rr_ch_player').change(function(e){
 		if($(this).val() != ''){
 			if(confirm("All the applicable matches will be updated with this player! \n Are you sure to update the player?")){

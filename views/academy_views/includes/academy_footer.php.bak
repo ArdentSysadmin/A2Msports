@@ -10,7 +10,7 @@
 			<?php
 			if($org_details['Aca_ID'] == 1166){
 			?>
-              <h3 style="margin-top:0px;">Inquiries</h3>
+              <h3 style="margin-top:0px;">General Inquiries</h3>
 			<?php
 			}
 			else{
@@ -126,7 +126,7 @@
 <script src="<?php echo base_url(); ?>assets/club_pages/assets/jquery/plugins.js"></script> 
 <script src="<?php echo base_url(); ?>assets/club_pages/assets/jquery/slider.js"></script> 
 <script src="<?php echo base_url(); ?>assets/club_pages/assets/owl-carousel/js/owl.carousel.js"></script> 
-<script src="<?php echo base_url(); ?>assets/club_pages/assets/wow/wow.min.js"></script> 
+<!-- <script src="<?php echo base_url(); ?>assets/club_pages/assets/wow/wow.min.js"></script>  -->
 <script src="<?php echo base_url(); ?>assets/club_pages/assets/jquery/jquery.slicknav.js"></script> 
 <script src="<?php echo base_url(); ?>assets/club_pages/assets/jquery/popup.js"></script> 
 
@@ -162,7 +162,7 @@ $(document).ready(function () {
     <script type="text/javascript" src="<?php echo base_url(); ?>static_assets/js/app.js"></script> -->
  <script>
   // Porfolio isotope and filter
-  $(window).on('load', function() {
+  /*$(window).on('load', function() {
     var portfolioIsotope = $('.portfolio-container').isotope({
       itemSelector: '.portfolio-item'
     });
@@ -181,15 +181,15 @@ $(document).ready(function () {
     $(document).ready(function() {
       $('.venobox').venobox();
     });
-  });
+  });*/
 
   // Portfolio details carousel
-  $(".portfolio-details-carousel").owlCarousel({
+  /*$(".portfolio-details-carousel").owlCarousel({
     autoplay: true,
     dots: true,
     loop: true,
     items: 1
-  });
+  });*/
 
 </script>
 <script src="<?php echo base_url(); ?>assets/club_pages/js/custom.js"></script>

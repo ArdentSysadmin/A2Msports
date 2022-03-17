@@ -123,6 +123,8 @@
 			
 					if($this->input->post('CountryName'))
 					$data['latt'] = $this->get_lang_latt();
+
+					$data['mobileuser'] = 1;
 			
 					$res = $this->reg_model->insert_user($data);
 
@@ -517,7 +519,7 @@
 
 		if($activation_code){
 		$is_activated = $this->reg_model->is_activated($activation_code);
-			
+			//echo $is_activated; exit;
 		if($is_activated){
 			$this->session->set_flashdata('redirect_page', 'Play');
 			redirect('login');

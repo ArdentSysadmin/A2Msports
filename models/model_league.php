@@ -76,10 +76,27 @@
 			if($user_id == '')
 			$user_id = $this->logged_user;
 
-			$data = array('Tournament_ID'=>$tourn_id, 'Users_ID'=>$user_id);
-			$query = $this->db->get_where('RegisterTournament',$data);
+			$data	= array('Tournament_ID' => $tourn_id, 'Users_ID' => $user_id);
+			$query = $this->db->get_where('RegisterTournament', $data);
 //echo $this->db->last_query();
 			return $query->row_array();
+		}
+
+		public function is_user_paid($tourn_id, $user_id = ''){
+			if($user_id == '')
+			$user_id = $this->logged_user;
+
+			$query = $this->db->query("select * from RegisterTournament where Tournament_ID = {$tourn_id} and Users_ID = {$user_id} and Fee > 0");
+			$res = $query->row_array();
+
+			$query2 = $this->db->query("select * from PayTransactions where mtype = 'tournament' and mtype_ref = {$tourn_id} and Users_ID = {$user_id} and Amount > 0");
+			$res2 = $query2->result();
+			
+
+			if($res or $res2)
+				return 1;
+			else
+				return 0;
 		}
 
 		public function get_team_reg_tournment($tourn_id){		
@@ -137,8 +154,7 @@
 		public function get_reg_tourn_player_names($tourn_id){
 			$reg_status='WithDrawn';
 			//$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
-			$qry_check = $this->db->query("SELECT * FROM RegisterTournament rt JOIN Users u ON rt.Users_ID = u.Users_ID 
-where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) ORDER BY u.Firstname ASC");
+			$qry_check = $this->db->query("SELECT * FROM RegisterTournament rt JOIN Users u ON rt.Users_ID = u.Users_ID where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) ORDER BY u.Firstname ASC");
 			return $qry_check->result();
 		}
 
@@ -221,15 +237,24 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 			return $bulk_reg;
 		}
 
+		public function get_reg_team_tourn_participants($tourn_id){
+			$reg_status = "WithDrawn";
+			$qry_check = $this->db->query("SELECT rt.*, tm.Team_ID, tm.Team_name FROM RegisterTournament as rt INNER JOIN Teams as tm ON rt.Team_id = tm.Team_ID WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
+
+			return $qry_check->result();
+		}
+
 		public function get_reg_tourn_participants($tourn_id, $sport = ''){
 			$reg_status = "WithDrawn";
 			if($sport != ''){
-			$qry_check = $this->db->query("select rt.* from RegisterTournament as rt join A2MScore as a on rt.Users_ID = a.Users_ID where rt.Tournament_ID = {$tourn_id} and a.SportsType_ID = {$sport} and (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) order by a.A2MScore DESC");
+				$qry_check = $this->db->query("SELECT rt.*,u.Users_ID, u.Firstname,u.Lastname, u.Gender, u.DOB, u.UserAgegroup, a.* FROM RegisterTournament as rt INNER JOIN A2MScore as a on rt.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN Users as u on rt.Users_ID = u.Users_ID WHERE rt.Tournament_ID = {$tourn_id}  AND (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) order by a.A2MScore DESC");
 			}
 			else{	
-			$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
-			//echo $this->db->last_query();
+				$qry_check = $this->db->query("SELECT rt.*, u.Users_ID, u.Firstname, u.Lastname, u.Gender, u.DOB, u.UserAgegroup FROM RegisterTournament as rt INNER JOIN Users as u ON rt.Users_ID = u.Users_ID WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
 			}
+
+			//if($this->logged_user == 240)
+			//echo $this->db->last_query(); exit;
 			return $qry_check->result();
 		}
 
@@ -2798,6 +2823,9 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 			$num_sets =  5;
 			if($this->input->post('num_of_sets'))
 			$num_sets = $this->input->post('num_of_sets');
+	
+			$esc_per_group =  NULL;
+
 
 			$data = array(
 					'Tourn_ID'			=> $tourn_id,
@@ -2811,7 +2839,8 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 					'Filter_Events'		=> $filter_events,
 					'OCCR_ID'			=> $game_day,
 					'Draw_Format'		=> $draw_format,
-					'Tot_Sets'				=> $num_sets
+					'Tot_Sets'				=> $num_sets,
+					'Esc_Per_Group'	=> $esc_per_group
 				);
 			
 
@@ -3088,7 +3117,9 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 					$se_size		= $this->input->post('plof_size');
 					$json_bids	= json_encode($bracket_id_arr);
 
-					$this->generate_se_draw($json_bids, $draw_title, $se_size);
+					$esc_per_group		= $this->input->post('plof_size_sel');
+
+					$this->generate_se_draw($json_bids, $draw_title, $se_size, $esc_per_group);
 				}
 				else{
 					if($ins_to){
@@ -3100,7 +3131,7 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 				}
 		}
 
-		public function generate_se_draw($json_bids, $draw_title, $count){
+		public function generate_se_draw($json_bids, $draw_title, $count, $esc_per_group){
 //error_reporting(-1);
 			//$json_bids = json_encode($bids);
 			//echo $json_bids."<br>"; echo $draw_title."<br>"; echo $count."<br>"; exit;
@@ -3115,7 +3146,7 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 		</script>
 		</head>
 		<body style="text-align:center;">
-		<p style="text-align:center;">Please wait... Playoff matches are being created.</p>
+		<p style="text-align:center;"><h2>Please wait... Playoff matches are creating.</h2></p>
 		
 		<form method="post" action='<?php echo base_url(); ?>league/bracket_save' name="se_auto_form">
 <?php
@@ -3184,7 +3215,7 @@ value="<?php echo $court_name; ?>" />
 <?php
 
 
-if($round == ($total_rounds)){
+if($round == ($total_rounds) and $num_players > 2){
 	$match_num++;
 $round2 = -1;
 
@@ -3272,12 +3303,13 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 <input type='hidden' name='age_group' value="<?php echo $this->input->post('age_group'); ?>" />
 <input type='hidden' name='ttype' value="<?php echo "Single Elimination"; ?>" />
 <input type='hidden' name='is_publish_draw'	value="<?php echo $this->input->post('is_publish_draw'); ?>" />
-<input type='hidden' name='num_of_sets'			value="<?php echo $this->input->post('num_of_sets'); ?>" />
+<input type='hidden' name='num_of_sets'			value="<?php echo $this->input->post('po_num_of_sets'); ?>" />
 <input type='hidden' name='br_game_day' value="<?php echo $this->input->post('br_game_day'); ?>" />
 <input type="hidden" name="draw_format" id="draw_format" value='<?=$this->input->post('draw_format');?>' />
 <input type="hidden" name="draw_title" id="draw_title"	 value="<?=$draw_title." - Playoff ";?>" />
 
 <input type="hidden" name="ref_brackets" id="ref_brackets" value='<?=$json_bids;?>' />
+<input type="hidden" name="esc_per_group" id="esc_per_group" value='<?=$esc_per_group;?>' />
 
 <!-- <input type='hidden' name='squad' value='<?php echo serialize($seed_team); ?>' /> -->
 <input type='hidden' name='squad' value='<?php //echo serialize($seed_team); ?>' />
@@ -3787,6 +3819,8 @@ exit;*/
 			if($this->input->post('num_of_sets'))
 			$num_sets = $this->input->post('num_of_sets');
 
+			$esc_per_group =  NULL;
+
 			$data = array(
 					'Tourn_ID'			=> $tourn_id,
 					'Bracket_Type'	=> $bracket_type,
@@ -4003,8 +4037,9 @@ exit;*/
 			if($this->input->post('is_plof') and $this->input->post('plof_size')){
 				$se_size		= $this->input->post('plof_size');
 				$json_bids	= json_encode($group_bracket_ids);
+				$esc_per_group = $this->input->post('plof_size_sel');
 
-				$this->generate_se_draw($json_bids, $gr_title, $se_size);
+				$this->generate_se_draw($json_bids, $gr_title, $se_size, $esc_per_group);
 			}
 			else{
 				return true;
@@ -4291,6 +4326,10 @@ exit;*/
 			if($this->input->post('ref_brackets'))
 			$ref_brackets	= $this->input->post('ref_brackets');
 
+			$esc_per_group	= NULL;
+			if($this->input->post('esc_per_group'))
+			$esc_per_group	= $this->input->post('esc_per_group');
+
 
 			$tourn_id   = $this->input->post('tourn_id');
 			$draw_title = $this->input->post('draw_title');
@@ -4330,7 +4369,8 @@ exit;*/
 					'Squad'				=> $squad,
 					'OCCR_ID'		=> $game_day,
 					'Tot_Sets'			=> $num_sets,
-					'Ref_Brackets'	=> $ref_brackets
+					'Ref_Brackets'	=> $ref_brackets,
+					'Esc_Per_Group'	=> $esc_per_group
 					);
 			
 			 $this->db->insert('Brackets', $data);	
@@ -5322,7 +5362,16 @@ exit;*/
 				return 0;
 			}
 		}
-		
+
+		public function update_draw_title($bracket_id, $draw_title) {
+			$data = array('Draw_Title' => $draw_title);
+
+			$this->db->where('BracketID', $bracket_id );
+			$this->db->update('Brackets', $data);
+
+			return true;
+		}
+
 		public function get_tourn_bracket($bid)
 		{
 			$data  = array('BracketID' => $bid);
@@ -5770,7 +5819,7 @@ exit;*/
 			$looser_a2mscore_updated		=  - intval($winner_add_score_points) +  intval($looser_win_points);
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 				$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
 
@@ -5815,7 +5864,7 @@ exit;*/
 			$winner_a2mscore_updated =   intval($winner_add_score_points);
 			$looser_a2mscore_updated = - intval($winner_add_score_points) + intval($looser_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 
 				$winner_a2mscore_updated = $winner_exc_points;
@@ -6033,7 +6082,7 @@ exit;*/
 			$looser_a2mscore_updated			=  - intval($winner_add_score_points) +  intval($looser_win_points);
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 				//$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
 
@@ -6088,7 +6137,7 @@ exit;*/
 			$winner_a2mscore_updated	=   intval($winner_add_score_points);
 			$looser_a2mscore_updated	=  - intval($winner_add_score_points) +  intval($looser_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 
 				$winner_a2mscore_updated = $winner_exc_points;
@@ -7725,7 +7774,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			$looser_a2mscore_updated		=  - intval($winner_add_score_points) +  intval($looser_win_points);
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 				//$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
 
@@ -7771,7 +7820,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			$looser_a2mscore_updated	=  - intval($winner_add_score_points) +  intval($looser_win_points);
 
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 
 				$winner_a2mscore_updated = $winner_exc_points;
@@ -8110,7 +8159,7 @@ echo "<br>".$looser_partner." - (-)".$winner_part_add_score_points." - ".$looser
 
 //exit;
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 				$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
 
@@ -8161,7 +8210,7 @@ echo "<br>".$looser_partner." - (-)".$winner_part_add_score_points." - ".$looser
 			$winner_a2mscore_updated =    intval($winner_add_score_points);
 			$looser_a2mscore_updated =  - intval($winner_add_score_points) + intval($looser_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 
 				$winner_a2mscore_updated = $winner_exc_points;
@@ -8960,7 +9009,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			$looser_a2mscore_updated		=  - intval($winner_add_score_points) +  intval($looser_win_points);
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 				//$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
 
@@ -9006,7 +9055,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			$winner_a2mscore_updated	=  intval($winner_add_score_points);
 			$looser_a2mscore_updated	=  - intval($winner_add_score_points) +  intval($looser_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 
 				$winner_a2mscore_updated = $winner_exc_points;
@@ -10273,7 +10322,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			$looser_a2mscore_updated		=  - intval($winner_add_score_points) +  intval($looser_win_points);
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 				$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
 
@@ -10318,7 +10367,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			//$winner_a2mscore_updated	=   intval($winner_add_score_points) +  intval($winner_win_points);
 			$looser_a2mscore_updated	=  - intval($winner_add_score_points) +  intval($looser_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 
 				$winner_a2mscore_updated = $winner_exc_points;
@@ -11464,12 +11513,34 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			return $query->result();
 		}
 
-		public function sport_top_players($data){
+		public function sport_top_players($data, $keywords = '', $filter = ''){
 			$sport		= $data['sport'];
 			$kids_agegroup_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19');
 
+		if($keywords){
+			if($filter){
+				switch($filter){
+					case 'name':
+						$query = $this->db->query("SELECT u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.Firstname LIKE '%{$keywords}%' OR u.Lastname LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+					case 'city':
+						$query = $this->db->query("SELECT u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.City LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+					case 'state':
+						$query = $this->db->query("SELECT u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.State LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+					case 'age_group':
+						$query = $this->db->query("SELECT u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.UserAgegroup LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+				}
+			}
+			else{
+			$query = $this->db->query("SELECT u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.Firstname LIKE '%{$keywords}%' OR u.Lastname LIKE '%{$keywords}%' OR u.City LIKE '%{$keywords}%' OR u.State LIKE '%{$keywords}%' OR u.State LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+			}
+		}
+		else{
 			$query = $this->db->query("SELECT TOP(50) u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
-
+		}
 			return $query->result();
 		}
 
@@ -13524,9 +13595,28 @@ return $data;
 
 		public function get_tourn_reg_players($tourn_id, $filter_events = ''){
 			if($filter_events){
-				$filter_events = trim($filter_events, '[ ]');
+				//echo $filter_events;
+	
+				//if($this->logged_user == 240){
+					$filter_events = json_decode($filter_events, true);
+					
+					$filter_qry = "(";
+					$i = 1;
+					foreach($filter_events as $ev){
+						$filter_qry .= "rt.Reg_Events LIKE '%{$ev}%'";
+						
+						if(count($filter_events) != $i)
+							$filter_qry .= " OR ";
+
+						$i++;
+					}
+					$filter_qry .= ")";
+				 //}
 				
-				$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} AND rt.Reg_Events LIKE '%{$filter_events}%' ORDER BY u.Firstname Asc");
+				//$filter_events = trim($filter_events, '[ ]');
+
+				//$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} AND rt.Reg_Events LIKE '%{$filter_events}%' ORDER BY u.Firstname Asc");
+				$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} AND {$filter_qry} ORDER BY u.Firstname Asc");
 			}
 			else{
 				$qry  = $this->db->query("SELECT * FROM Users u JOIN RegisterTournament rt ON u.Users_ID = rt.Users_ID  WHERE rt.Tournament_ID = {$tourn_id} ORDER BY u.Firstname Asc");
@@ -13602,6 +13692,12 @@ return $data;
 				$qry = $this->db->query("SELECT * from Tournament_Matches tm WHERE tm.BracketID = {$bid} AND (tm.Winner is null or tm.Winner ='' or tm.Winner = 0)");
 
 				return $qry->num_rows();
+		}
+
+		public function fetch_top_players($ref_draws){
+			//foreach($ref_draws as $draw){
+				
+			//}
 		}
 
 		public function update_match_player_stats(){
@@ -13736,7 +13832,7 @@ return $data;
 
 		public function get_clubs($sport = ''){
 			if($sport){
-			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%{$sport}%') AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations)");
+			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%".'"'.$sport.'"'."%') AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations)");
 			//echo $this->db->last_query(); exit;
 			}
 			else{
@@ -13776,9 +13872,11 @@ return $data;
 			
 			$get_match = $qry_match->row_array();
 			$oth_pl_pos = $oth_arr[$data['pl_pos']];
-			//echo "<pre>"; print_r($get_match); exit;
+
 			$other_player = $get_match[$oth_pl_pos];
 
+			$existing_player = $get_match[$nw_pl_pos];
+//echo 'pos '.$oth_pl_pos." ".$other_player;
 $query1 = $this->db->query("UPDATE Tournament_Matches SET Player1 = 0 WHERE Player1 = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
 
 $query2 = $this->db->query("UPDATE Tournament_Matches SET Player1_Partner = 0 WHERE Player1_Partner = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
@@ -13787,12 +13885,19 @@ $query3 = $this->db->query("UPDATE Tournament_Matches SET Player2 = 0 WHERE Play
 
 $query4 = $this->db->query("UPDATE Tournament_Matches SET Player2_Partner = 0 WHERE Player2_Partner = {$data['new_pl']} and BracketID = {$get_match['BracketID']}");
 
-
+			//echo "<pre>"; print_r($data);print_r($get_match); exit;
 
 	if($nw_pl_pos == 'Player1' or $nw_pl_pos == 'Player2'){
-		$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
+		if($other_player){
+			$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
 
-		$query6 = $this->db->query("UPDATE Tournament_Matches SET Player2 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player2_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
+			$query6 = $this->db->query("UPDATE Tournament_Matches SET Player2 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player2_Partner = {$other_player} and BracketID = {$get_match['BracketID']})");
+		}
+		else{
+			$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1 = {$existing_player} AND BracketID = {$get_match['BracketID']})");
+
+			$query6 = $this->db->query("UPDATE Tournament_Matches SET Player2 = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player2 = {$existing_player} AND  BracketID = {$get_match['BracketID']})");
+		}
 	}
 	else 	if($nw_pl_pos == 'Player1_Partner' or $nw_pl_pos == 'Player2_Partner'){
 		$query5 = $this->db->query("UPDATE Tournament_Matches SET Player1_Partner = {$data['new_pl']} WHERE Tourn_match_id IN (SELECT Tourn_match_id FROM Tournament_Matches WHERE Player1 = {$other_player} and BracketID = {$get_match['BracketID']})");
@@ -13935,4 +14040,169 @@ else if($query6)
 
 			return $upd_partner;
 		}
+
+		public function update_po_autoesc(){
+//echo "Inside model";
+//echo "<pre>"; print_r($_POST); exit;
+
+if($this->logged_user_role != 'Admin'){
+echo "Unauthorised Access!"; exit;
+}
+			 $bracket_id = $this->input->post('bracket_id'); 
+
+			$del_br_matches = $this->db->query("DELETE FROM Tournament_Matches WHERE BracketID = {$bracket_id}");
+
+            $filter_events	 = $this->input->post('filter_events');
+			$rounds	 = $this->input->post('round');
+			$matches = $this->input->post('match_num');
+			$player1 = $this->input->post('player1');
+			$player2 = $this->input->post('player2');
+            
+			$match_type = $this->input->post('match_type');
+			$tourn_id   = $this->input->post('tourn_id');
+
+		
+
+			 //$bracket_id = $this->input->post('bracket_id'); 
+			/*echo "<pre>";
+			echo $bracket_id;
+			exit;*/
+			 //Tournament_Matches
+			$player1_score = "";
+			$player2_score = "";
+			$winner = "";
+			$win_per = "";
+
+			 foreach($rounds as $round)
+			{
+					//echo $round."<br>";
+				foreach($matches[$round] as $match)
+				{
+					$player1_score	= "";
+					$player2_score	= "";
+					$winner			= "";
+					$win_per		= "";
+
+					$date_round  = $this->input->post('round_date'.$round);
+					$date_match = $this->input->post('match_date'.$match);
+					$assg_court  = $this->input->post('assg_court'.$match);
+
+					$match_due_date = "";
+
+					if($date_round != "") {
+						$match_due_date = date("Y-m-d H:i",strtotime($date_round));
+					} 
+					else if($date_match != "") {
+						$match_due_date = date("Y-m-d H:i",strtotime($date_match)); 
+					}
+
+					$assg_match_court = NULL;
+
+					if($assg_court != "") {
+						$assg_match_court = $assg_court;
+					} 
+
+
+					if($player1[$round][$match][0] == "---" or $player1[$round][$match][0] == "----" or $player1[$round][$match][0] == 0)
+					{
+						$player1_val = "";
+						if($round==1){
+							$player1_score = 'Bye Match';
+							$player2_score = 'Bye Match';
+							$winner = intval($player2[$round][$match][0]);
+							$win_per = 0;
+						}
+					}
+					else
+					{
+						$player1_val = intval($player1[$round][$match][0]);
+						$player1_partner = explode("-", $player1[$round][$match][0]);
+					}
+
+
+					if($player2[$round][$match][0] == "---" or $player2[$round][$match][0] == "----" or $player2[$round][$match][0] == 0)
+					{ 
+						$player2_val = "";
+						if($round==1){
+							$player1_score = 'Bye Match';
+							$player2_score = 'Bye Match';
+							$winner = intval($player1[$round][$match][0]);
+							$win_per = 0;
+						}
+					}
+					else
+					{
+						$player2_val	 = intval($player2[$round][$match][0]);
+						$player2_partner = explode("-", $player2[$round][$match][0]);
+					}
+
+					$player1_source = $player1[$round][$match][1];
+					$player2_source = $player2[$round][$match][1];
+
+					if($match_due_date == ""){
+						$data = array(
+							'BracketID' => $bracket_id,
+							'Tourn_ID'	=> $tourn_id,
+							'Round_Num' => $round,
+							'Match_Num' => $match,
+							'Player1'	=> $player1_val,
+							'Player2'	=> $player2_val,
+							'Player1_Score' => $player1_score,
+							'Player2_Score' => $player2_score,
+							'Winner'	=> $winner,   
+							'Win_Per'	=> $win_per,
+							'Player1_source' => $player1_source,
+							'Player2_source' => $player2_source,
+							'Player1_Partner' => intval($player1_partner[1]),
+							'Player2_Partner' => intval($player2_partner[1]),
+							'Draw_Type' => 'Main',
+							'Court_Info' => $assg_match_court
+						);
+					} else {
+						$data = array(
+							'BracketID' => $bracket_id,
+							'Tourn_ID'	=> $tourn_id,
+							'Round_Num' => $round,
+							'Match_Num' => $match,
+							'Player1' => $player1_val,
+							'Player2' => $player2_val,
+							'Player1_Score' => $player1_score,
+							'Player2_Score' => $player2_score,
+							'Winner'	=> $winner,   
+							'Win_Per'	=> $win_per,
+							'Player1_source' => $player1_source,
+							'Player2_source' => $player2_source,
+							'Player1_Partner' => intval($player1_partner[1]),
+							'Player2_Partner' => intval($player2_partner[1]),
+							'Draw_Type' => 'Main',
+							'Match_DueDate' => $match_due_date,
+							'Court_Info' => $assg_match_court
+						);
+					}
+
+					
+					$ins_to = $this->db->insert('Tournament_Matches', $data);
+					$tour_match_id = $this->db->insert_id();
+
+
+					unset($player1_partner);
+					unset($player2_partner);
+				}
+			}
+		
+			if($ins_to){
+				return true;
+			}
+			else{
+				return false;
+			}
+
+		}
+
+	public function is_clubs_having_courts($club_id){
+			$query = $this->db->query("SELECT * FROM Academy_Court_Locations WHERE status = 1 AND org_id = {$club_id}");
+
+			return $query->num_rows();
+	}
+
 }

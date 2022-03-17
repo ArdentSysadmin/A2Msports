@@ -11,7 +11,7 @@
 <form method="post" id="myform" action='<?php echo base_url(); ?>league/bracket_save' class="col-md-12 login-page" style='background-color:#fff'> 
 
 <?php
-//$pick_time = 1;
+$pick_time = 1;
 	$n = 1;
 	//echo date('Y-m-d H:i', '1615744800');
 	//echo "<pre>"; print_r($match_timings);
@@ -25,7 +25,6 @@
 
 foreach($groups as $g => $group){
 	$draw_title = $draw_title_date." - Group{$g}";
-	$pick_time = 1;
 ?>
 <label>Group-<?=$g;?></label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
 <input class="form-control" type="text" name="draw_title[<?=$g;?>]" id="draw_title" placeholder='Draw Title' value="<?=$draw_title;?>" required />
@@ -285,6 +284,7 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 
 <input type='hidden' name='is_plof' value="<?php echo $this->input->post('is_plof'); ?>" />
 <input type='hidden' name='plof_size' value="<?php echo $this->input->post('plof_size'); ?>" />
+<input type='hidden' name='plof_size_sel' value="<?php echo $this->input->post('plof_size_sel'); ?>" />
 
 <?php
 if($tformat == 'Teams'){?>

@@ -291,6 +291,7 @@ I Accept the club <?=$terms_link;?> and <?=$prv_pol_link;?>.
 <div id="login-submit" style="line-height:25px; margin-left:33%; margin-top:40px;">
 <input name="academy"   type="hidden" value="<?=$org_details['Aca_ID'];?>" />
 <input name="shortcode" type="hidden" value="<?=$org_details['Aca_URL_ShortCode'];?>" />
+<input name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url');?>" />
 <input name="aca_page" id="aca_page" type="hidden" value="" />
 
 <input type="submit" name='reg_user' value=" Register " style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00" /> 

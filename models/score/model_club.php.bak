@@ -374,10 +374,15 @@ exit;*/
 
 				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country IN {$this->country_str} ORDER BY Aca_name");
 			}
-			else{
+			else if($det['Country']){
 				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = '{$det['Country']}' ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
 				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = '{$det['Country']}' ORDER BY Aca_name");
+			}
+			else{
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = 'United States of America' ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+
+				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = 'United States of America' ORDER BY Aca_name");
 			}
 		}
 		else{

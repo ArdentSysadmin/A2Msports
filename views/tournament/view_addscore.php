@@ -1,6 +1,104 @@
+<?php
+ $btn_warning = 'warning';
+ $btn_primary = 'primary';
+
+?>
+<div class="col-md-12" style='margin-bottom:20px;'>
+<div class="col-md-8">
+<?php
+///echo "Test ".$btn_val;exit;
+?>
+<button id="all_btn" type="button" style='margin-bottom:10px;' class="filter_btns btn btn-<?php 
+if($btn_val == 'all') 
+	echo $btn_primary;
+else
+	echo $btn_warning;
+
+?>">All </button>&nbsp;&nbsp;
+<button id="playoffs_btn" type="button" style='margin-bottom:10px;' class="filter_btns btn btn-<?php 
+if($btn_val == 'playoffs') 
+	echo $btn_primary;
+else
+	echo $btn_warning;
+
+?>">Playoffs</button>&nbsp;&nbsp;
+<button id="rr_btn" type="button" style='margin-bottom:10px;' class="filter_btns btn btn-<?php 
+if($btn_val == 'rr') 
+	echo $btn_primary;
+else
+	echo $btn_warning;
+?>">Round Robin</button>
+</div>
+<div class="col-md-4" align="right">
+<select class="form-control" id='ad_draw_filter' name='draw_filter' style="width:60%;">
+<option value='All'>Show All</option>
+<?php
+if($this->logged_user and $this->is_logged_user_reg){ ?>
+<option value='MyDraws' <?php if($df == "MyDraws") echo "selected"; ?>>My Draws</option>
+<?php } ?>
+<option value="Men''s Singles" <?php if($df == "Men''s Singles") echo "selected"; ?>>Men's Singles</option>
+<option value="Men''s Doubles" <?php if($df == "Men''s Doubles") echo "selected"; ?>>Men's Doubles</option>
+<option value="Women''s Singles" <?php if($df == "Women''s Singles") echo "selected"; ?>>Women's Singles</option>
+<option value="Women''s Doubles" <?php if($df == "Women''s Doubles") echo "selected"; ?>>Women's Doubles</option>
+<option value="Mixed Doubles" <?php if($df == "Mixed Doubles") echo "selected"; ?>>Mixed Doubles</option>
+</select>
+</div>
+</div>
+
+
+<script> 
+$(document).ready(function(){
+	//alert("Test");
+$('#ad_draw_filter').change(function(){
+	var df = $(this).val();
+	var btn_val = "<?php echo $btn_val; ?>";
+	//alert(df);
+
+	var tourn_id = $('#tourn_id').val();
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/adm_addscore_filter/',
+				data:{club_url:club_baseurl,tourn_id:tourn_id,df:df,btn_val:btn_val},
+				success:function(res){
+					$("#AdmAddScore").html(res);
+				}
+			});
+});
+
+$('.filter_btns').click(function(){
+	var temp	 = $(this).attr('id');
+	var temp2 = temp.split('_');
+
+	var btn_val		= temp2[0];
+	var draw_filter  = $('#ad_draw_filter').val();
+	var tourn_id		= $('#tourn_id').val();
+	
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/adm_addscore_filter/',
+				data:{club_url:club_baseurl, tourn_id:tourn_id, btn_val:btn_val, df:draw_filter},
+				success:function(res){
+					$("#AdmAddScore").html(res);
+				}
+			});
+});
+
+});
+</script>
+
+
+
+
+<!-- ----------------------------Top section are filters in Add Scores-------------------------- -->
+
+
+
 <table class="tab-score">
 <?php
-$brackets = league::get_bracket_list($tour_details->tournament_ID);
+if($df or $btn_val)
+	$brackets = league::get_bracket_list($tour_details->tournament_ID, $df, $btn_val);
+else
+	$brackets = league::get_bracket_list($tour_details->tournament_ID);
 
 if(count(array_filter($brackets)) > 0){  ?>
 <!-- <tr class="top-scrore-table">

@@ -140,7 +140,7 @@ if(count($filter_events) >0 ){
 			}
 	}
 }
-echo "<pre>"; print_r($squad); exit;
+//echo "<pre>"; print_r($squad); exit;
 
 $list_matches	= $get_tourn_matches->result();
 /*
@@ -189,9 +189,19 @@ print_r($tourn_reg_players[1]);*/
 if($tour_details->Usersid == $this->logged_user or $tour_details->Tournament_Director == $this->logged_user or $this->is_super_admin){
 ?>
 <input class="form-control" type="text" name="draw_title" id="draw_title" style="width:25%; display:inline;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
+
+<input type="button" class="<?=$get_bracket['BracketID']; ?>" style="margin-left: 20px; border: 1px solid #e78315;
+    background-color: #f59123;    padding: 5px 10px;    font-size: 13px;    text-transform: uppercase;
+    color: #fff;    margin-bottom: 13px;" name="edit_draw_title" id="edit_draw_title" value="Update Title" />
+
 <input type="submit" class="league-form-submit1" style="margin-left: 100px;" name="update_draw" id="update_draw" 
 value=" Update " />
 <?php
+	if($get_bracket['Esc_Per_Group'] and $this->logged_user == 240){ 
+?>
+<input type="button" class="league-form-submit1" style="margin-left: 100px;" name="fetch_po_players" id="fetch_po_players" value=" Get Draw Players " />
+<?php
+	}
 }
 else{
 ?>
@@ -203,7 +213,9 @@ else{
     </div>
 <div class = "group<?php echo $total_rounds+1; ?>" id="b1">
 <input type='hidden' name='bracket_id' value="<?php echo $get_bracket['BracketID']; ?>" />
-<input type='hidden' name='tour_id'		value="<?php echo $get_bracket['Tourn_ID']; ?>" />
+<input type='hidden' name='ref_brackets' id='ref_brackets' value='<?php echo $get_bracket['Ref_Brackets']; ?>' />
+<input type='hidden' name='esc_players' id='esc_players' value='<?php echo $get_bracket['Esc_Per_Group']; ?>' />
+<input type='hidden' name='tour_id' id='tour_id'	 value="<?php echo $get_bracket['Tourn_ID']; ?>" />
 
 <?php
 $nm					 = 0;
@@ -907,3 +919,59 @@ else {
 </div>	<!-- Mobile DIV -->
 
 </form>
+<script>
+$(document).ready(function (){
+
+	$('#edit_draw_title').click(function() {
+			var dtitle = $('#draw_title').val();
+			var bid = $(this).attr('class');
+
+		if(bid && dtitle){
+			$.ajax({
+						type: 'POST',
+						url: baseurl+'league/update_draw_title',
+						data: {bid:bid,dtitle:dtitle},
+						success: function(res) {
+							alert(res);
+						}
+			});
+		}
+	});
+
+	$('#fetch_po_players').click(function() {
+		if(confirm("Are you sure to update the draw players?")){
+			//alert('Test');
+	//var baseurl	= "<?php echo base_url(); ?>";
+	var bid			= "<?php echo $bracket_id; ?>";
+	var tid			= $('#tour_id').val();
+	var ref			= $('#ref_brackets').val();
+	var esc			= $('#esc_players').val();
+//alert(club_baseurl);
+			$.ajax({
+			type: 'POST',
+			url: club_baseurl +'league/fetch_topGroup_players',
+			data: {tid:tid,bid:bid,ref:ref,esc:esc},
+			success: function(res) {
+
+			if(res == "Source draws are not yet completed!")
+				alert(res);
+			else if(res == "Can't fetch the players as no main draws exists!")
+				alert(res);
+			else
+			$('#showdraw').html(res);
+				//$('#showdraw').hide();
+				//$('#se_new_draw').html(res);   // section exists in view_drawsresults.php 
+				//$('#se_new_draw').show();
+				//alert(res);
+				//var str2 = "Updated";
+				//if(res.indexOf(str2) != -1){
+				//	location.reload();
+				//}
+			}
+			});
+
+		}
+	});
+
+});
+</script>

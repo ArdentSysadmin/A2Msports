@@ -3,6 +3,10 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
+    var is_event_time  = '<?php echo $r->Multi_Event_Time;?>';
+    var is_event_limit   = '<?php echo $r->Event_Reg_Limit;?>';
+	var is_waitlist_event_exists = 0;
+
 function isValidDate(s) {
   var bits = s.split('/');
   var d = new Date(bits[2] + '/' + bits[1] + '/' + bits[0]);
@@ -29,9 +33,7 @@ $('#Doubles_levels_div').find('input[type=checkbox]:checked').removeAttr('checke
 $('#Mixed_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
 
 /* ************************* JQuery Code For Coupon Code Starts Here. *********************************** */
-    var is_event_time  = '<?php echo $r->Multi_Event_Time;?>';
-    var is_event_limit   = '<?php echo $r->Event_Reg_Limit;?>';
-	var is_waitlist_event_exists = 0;
+
 	//var new_usatt_opt = $('#new_usatt_opt').val();
 $(document).ready(function(){
 
@@ -122,12 +124,26 @@ $("#"+id).val(val);
 $(document).ready(function(){
 
 var baseurl = "<?php echo base_url();?>";
-var users = <?php echo $users; ?>;
+//var users = <?php echo $users; ?>;
+
+var users = '';
+
+$.ajax({		
+		type:'POST',		
+		url:baseurl+'league/get_usersJson/',			
+		success:function(res){
+			console.log('res');
+			console.log(res);
+			users = res;
+		}
+});
 //var bpt = <?php echo $being_partner; ?>;
 //arr = $.parseJSON(bpt); //convert to javascript array
 //$.each(arr,function(key,value){
   //  alert(value);
 //});
+			console.log('users');
+			console.log(users);
 
 $(".club_page").click(function () { //use change event
 	if (this.value == "1") { //check value if it is domicilio
@@ -424,8 +440,13 @@ $(".team_ag").click(function(){
 	}); 
 
 });
+
+
 });
+
 function getEventTime(events,classname,ag_grp,format){
+    var is_event_time  = '<?php echo $r->Multi_Event_Time;?>';
+	var is_waitlist_event_exists = 0;
 
 if(is_event_time){
 
@@ -552,6 +573,7 @@ function getfee(events,classname,ag_grp,format){
 
 }
 function getevents(events,classname,ag_grp,format){
+    var is_event_limit   = '<?php echo $r->Event_Reg_Limit;?>';
 
 if(is_event_limit){
 	var eventtext="";
@@ -1433,10 +1455,11 @@ $i = 0;
        $multi_events = league::array_flatten($events);	 
     }
 
-	 $event_format = league::regenerate_events($multi_events);
-if($this->logged_user == 240){
+	 $event_format = league::regenerate_events($multi_events, $r->tournament_ID);
+
+//if($this->logged_user == 240){
 //echo "<pre>"; print_r($event_format); exit;
-}
+//}
 	$eligible_events				= array();
     $not_eligible_events		= array();
     $gender_eligible_events = array();
@@ -1522,7 +1545,7 @@ $rating = $est_usatt_rating;
       
         if($ag_grp == 'Adults'){  
 
-				if($agegroup == 'U9' or $agegroup == 'U10' or $agegroup == 'U11' or $agegroup == 'U12' or $agegroup == 'U13' or $agegroup == 'U14' or $agegroup == 'U15' or $agegroup == 'U16' or $agegroup == 'U17' or $agegroup == 'U18' or $agegroup == 'U19' or $agegroup == 'Junior'){
+				if($agegroup == 'U9' or $agegroup == 'U10' or $agegroup == 'U11' or $agegroup == 'U12' or $agegroup == 'U13' or $agegroup == 'U14' or $agegroup == 'U15' or $agegroup == 'U16' or $agegroup == 'U17' or $agegroup == 'U18' or $agegroup == 'U19' or $agegroup == 'U21' or $agegroup == 'Junior'){
 			          $not_eligible_events['age-'.$event] = $event1;
 			    }
 				else if(strpos($agegroup, '_') !== false){

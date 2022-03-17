@@ -1,6 +1,3 @@
-<?php
-//echo "test"; exit;
-?>
 <script>
 /* ------------------------- Collapse and Expand in Participants ---------------------- */
 $(".header").click(function () {
@@ -22,6 +19,23 @@ $(".header").click(function () {
 /* ------------------------- Collapse and Expand in Participants ---------------------- */
 
 $(document).ready(function(){
+
+$('#draw_filter').change(function(){
+	var df			= $(this).val();
+	var btn_val	= "<?php echo $btn_val; ?>";
+
+	var tourn_id = $('#tourn_id').val();
+			$.ajax({
+				type:'POST',
+				url:club_baseurl+'league/load_participants/',
+				data:{club_url:club_baseurl,tid:tourn_id,df:df},
+				success:function(res){
+					//$("#tourn_participants").html(res);
+					$("#Participants").html(res);
+				}
+			});
+});
+
 	$('.user_change_partner').change(function(){
 		var id  = $(this).attr('id');
 		var x   = id.split('_');
@@ -59,14 +73,30 @@ $(document).ready(function(){
 
 <div class='form-group'>
 <div class='col-md-12 control-label'>
-<?php
-$now	 = time();
-$reg_close  = strtotime(date('Y-m-d H:i:s',strtotime($tour_details->Registrationsclosedon)));
 
-$res  = league::get_reg_tourn_participants_withGender($tour_details->tournament_ID);
+<div class="col-md-8"></div>
+<div class="col-md-4" align="right">
+<select class="form-control" id='ev_draw_filter' name='draw_filter' style="width:60%;">
+<option value=''>Show All</option>
+<option value="Men's Singles" <?php if($df == "Men's Singles") echo "selected"; ?>>Men's Singles</option>
+<option value="Men's Doubles" <?php if($df == "Men's Doubles") echo "selected"; ?>>Men's Doubles</option>
+<option value="Women's Singles" <?php if($df == "Women's Singles") echo "selected"; ?>>Women's Singles</option>
+<option value="Women's Doubles" <?php if($df == "Women's Doubles") echo "selected"; ?>>Women's Doubles</option>
+<option value="Mixed Doubles" <?php if($df == "Mixed Doubles") echo "selected"; ?>>Mixed Doubles</option>
+</select>
+</div>
+
+<?php
+$now			= time();
+$reg_close   = strtotime(date('Y-m-d H:i:s',strtotime($tour_details->Registrationsclosedon)));
+
+//$res  = league::get_reg_tourn_participants_withGender($tour_details->tournament_ID);
+$res = league::get_reg_tourn_participants_withGender($tour_details->tournament_ID, $tour_details->SportsType);
+
 $reg_users		= $res[0];
 $user_tsize		= $res[1];
 $user_partners  = $res[2];
+$user_names	= $res[3];
 ?>
 
 <div class="col-md-12 league-form-bg" style="margin-top:15px; margin-bottom:0px;">
@@ -92,6 +122,20 @@ $event_format = array();
 		}
 	  }
 	}
+
+
+
+if($df){
+	$new_event_format = array();
+	foreach($event_format as $ev => $ef) {
+		$pos = strpos($ef, $df);
+
+		if ($pos > -1) {
+			$new_event_format[$ev] = $ef; 
+		}
+	}
+	$event_format = $new_event_format;
+}
 
 //foreach ($events as $ages => $evnts) {
 
@@ -197,8 +241,10 @@ if(!in_array($pp_comb, $displayed_comb) and !in_array($inverse_pp_comb, $display
     $wtlst_style = "";
   }
     
-$player					= league::get_username($user);
-$user_a2msocre   = league::get_a2mscore($user, $tour_details->SportsType);
+//$player					= league::get_username($user);
+//$user_a2msocre   = league::get_a2mscore($user, $tour_details->SportsType);
+$player					= $user_names[$user];
+$user_a2msocre   = $user_names[$user];
 $user_score			= $user_a2msocre['A2MScore'];
 		$avg_score = $user_score;
 
@@ -218,14 +264,14 @@ echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player
 //echo '$user_partners[$user][$k] '.var_dump($user_partners[$user][$k]).'<br />';
 if($user_partners[$user][$k] and $user_partners[$user][$k] != ""){
 	$player_partner	= league::get_username($user_partners[$user][$k]);
-	$is_pp_reg				= league::user_reg_or_not($user_partners[$user][$k], $tour_details->tournament_ID);
+	$is_pp_reg			= league::user_reg_or_not($user_partners[$user][$k], $tour_details->tournament_ID);
 
 $user_score			= $user_a2msocre['A2MScore_Doubles'];
 		$avg_score = $user_score;
 
 
-		$partner_score = 0;
-		$partner_a2msocre   = league::get_a2mscore($user_partners[$user][$k], $tour_details->SportsType);
+		$partner_score			= 0;
+		$partner_a2msocre  = league::get_a2mscore($user_partners[$user][$k], $tour_details->SportsType);
 		if($partner_a2msocre['A2MScore_Doubles']){
 			$partner_score	= $partner_a2msocre['A2MScore_Doubles'];
 			$avg_score = ($user_score + $partner_score) / 2;
@@ -287,7 +333,7 @@ else{
 
 ?>
 </td>
-<td class="score-position" valign="center" align="center"><?php echo $avg_score; ?></td>
+<td class="score-position" valign="center" align="center"><?php echo number_format($avg_score, 3); ?></td>
 <?php
 if($tour_details->SportsType == '2'){
     $get_user_mem_details  = league::get_user_mem_details($user, $tour_details->SportsType);
@@ -344,8 +390,10 @@ $get_user_usatt_rating = league::get_user_usatt_rating($get_user_mem_details['Me
 			$event_entry_count[$k] = 1;
 }
 else if(!strpos($event_label, 'Doubles') and !strpos($event_label, 'Mixed') and !strpos($event_key, 'Doubles') and !strpos($event_key, 'Mixed') and !in_array($user, $displayed_users)){
-$player					= league::get_username($user);
-$user_a2msocre	= league::get_a2mscore($user, $tour_details->SportsType);
+//$player					= league::get_username($user);
+//$user_a2msocre	= league::get_a2mscore($user, $tour_details->SportsType);
+$player					= $user_names[$user];
+$user_a2msocre	= $user_names[$user];
 $user_score			= $user_a2msocre['A2MScore'];
  ?>
 <tr style='<?php echo $wtlst_style;?>'>
@@ -355,7 +403,7 @@ echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player
 //echo "<a>".$player['Firstname'] . " " .$player['Lastname']."</a>"; 
 ?>
 </td>
-<td class="score-position" valign="center" align="center"><?php echo $user_score; ?></td>
+<td class="score-position" valign="center" align="center"><?php echo number_format($user_score, 3); ?></td>
 <?php
 //if($tour_details->TShirt){
 ?>
@@ -457,28 +505,29 @@ $('#'+eid).html(ecnt);
 <?php
 foreach($empty_reg_men_events as $evnts){
 ?>
-<tr><td style="height: 29px;"><span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<tr><td style="height: 29px;">
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
 <?php
 }
 
 foreach($empty_reg_women_events as $evnts){
 ?>
 <tr><td style="height: 29px;">
-<span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
 <?php
 }
 
 foreach($empty_reg_mixed_events as $evnts){
 ?>
 <tr><td style="height: 29px;">
-<span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
 <?php
 }
 
 foreach($empty_open_events as $evnts){
 ?>
 <tr><td style="height: 29px;">
-<span><?=$evnts." <b>(0)</b>";?></span></td></tr>
+<span style="margin-left: 7px; padding: 0 5px;"><?=$evnts." <b>(0)</b>";?></span></td></tr>
 <?php
 }
 ?>

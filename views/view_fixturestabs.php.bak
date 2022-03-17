@@ -54,9 +54,11 @@ $(document).on("click", ".up, .down", function(){
  		$("input[name='is_plof']").click(function (){
 	 	if($("#p_Yes").is(":checked")) {
   				$('#playoff_size').show();
+  				$('#div_po_numsets').show();
  			}
 			else{
 				$('#playoff_size').hide();
+				$('#div_po_numsets').hide();
 			}
 		});
 
@@ -89,10 +91,25 @@ $(document).on("click", ".up, .down", function(){
 				//var count     = $('#a :selected').length;
 				var count     = $('input[name="users[]"]:checked').length;
 
-				var no_of_groups = count/sel_value;
+				var plrs_per_groups = count/sel_value;
 
-				if(no_of_groups >= 3){
+				if(plrs_per_groups >= 3){
+					var isPfChecked = $('#p_Yes').attr('checked');
+
+					if(isPfChecked){
+						var plof_size = $('#plof_size_sel').val();
+						if(plrs_per_groups < plof_size){
+							alert("Playoff escalation players are exceeds actual group players!");
+							return false;
+						}
+						else{
+							$('#plof_size').val(plof_size * sel_value);
+							return true;
+						}
+					}
+					else{
 					return true;
+					}
 				}
 				else{
 					alert("Insufficient players selected to form into groups. \nMinimum 3 players required per group");
@@ -100,6 +117,11 @@ $(document).on("click", ".up, .down", function(){
 					e.preventDefault();
 				}
 			}
+			else{
+				var plof_size = $('#plof_size_sel').val();
+				$('#plof_size').val(plof_size);
+			}
+
 	 	});
 
 		$('#ttype').change(function(){
@@ -116,12 +138,12 @@ $(document).on("click", ".up, .down", function(){
 			}
 
 
-		if(ttype_val == 'Round Robin'){
+			if(ttype_val == 'Round Robin' ||  ttype_val == 'Switch Doubles'){
 				$('#groups').show(); 	$('#playoffs').show();
-		}
-		else{
+			}
+			else{
 				$('#groups').hide(); 	$('#playoffs').hide();
-		}
+			}
 
 		});
 
@@ -872,23 +894,6 @@ else{
 </div>
 
 <!-- HTML Code For Groups Creation Starts Here. -->
-
-<div class='form-group' id='playoffs' style='display:none'>
-<label class='control-label col-md-5' style='padding-top:0px;'>Do you want to create playoff draw?</label>
-<label for="p_Yes"><input type="radio" id="p_Yes" name="is_plof" value="1" /> Yes</label>&nbsp;&nbsp;
-<label for="p_No"><input type="radio" id="p_No" name="is_plof" value="0" checked="checked" /> No<br /></label>
-</div>
-
-<div class='form-group' id='playoff_size' style='display:none'>
-<label class='control-label col-md-5' style='padding-top:0px;'>Size of playoff draw</label>
-	<select class="form-control" name="plof_size" id="plof_size" style="width:10%">
-		<option value='2'>2</option>
-		<option value='3'>3</option>
-		<option value='4'>4</option>
-		<option value='8'>8</option>
-	</select>
-</div>
-
 <div class='form-group' id='groups' style='display:none'>
 <label class='control-label col-md-5' style='padding-top:0px;'>Do you want to have groups?</label>
 	<label for="t_Yes"><input type="radio" id="t_Yes" name="is_groups" value="1" /> Yes</label>&nbsp;&nbsp;
@@ -917,6 +922,43 @@ else{
 
 <!-- HTML Code For Groups Creation Ends Here.  -->
 
+
+<div class='form-group' id='playoffs' style='display:none'>
+<label class='control-label col-md-5' style='padding-top:0px;'>Do you want to create playoff draw?</label>
+<label for="p_Yes"><input type="radio" id="p_Yes" name="is_plof" value="1" /> Yes</label>&nbsp;&nbsp;
+<label for="p_No"><input type="radio" id="p_No" name="is_plof" value="0" checked="checked" /> No<br /></label>
+</div>
+
+<!-- <div class='form-group' id='playoff_size' style='display:none'>
+<label class='control-label col-md-5' style='padding-top:0px;'>Size of playoff draw</label>
+	<select class="form-control" name="plof_size" id="plof_size" style="width:10%">
+		<option value='2'>2</option>
+		<option value='3'>3</option>
+		<option value='4'>4</option>
+		<option value='8'>8</option>
+	</select>
+</div> -->
+
+<div class='form-group' id='playoff_size' style='display:none'>
+<label class='control-label col-md-5' style='padding-top:0px;'>Number of players to be moved to playoffs from each group?</label>
+	<select class="form-control" name="plof_size_sel" id="plof_size_sel" style="width:10%">
+		<option value='1'>1</option>
+		<option value='2'>2</option>
+		<option value='3'>3</option>
+		<option value='4'>4</option>
+	</select>
+	<input type='hidden' name='plof_size' id='plof_size' value='' />
+</div>
+<div class='form-group' id='div_po_numsets' style='display:none;'>
+<label class='control-label col-md-5' style='padding-top:0px;'>No. of Sets / Games per each match (Playoff)?</label>
+<select class="form-control" name="po_num_of_sets" id="po_num_of_sets" style="width:10%">
+<option value='1'>1</option>
+<option value='3' selected>3</option>
+<option value='5'>5</option>
+<option value='7'>7</option>
+</select>
+</div>
+
 <script>
 $(document).ready(function() {
 	$('input[name=is_sch_courts]').click(function() {
@@ -928,6 +970,17 @@ $(document).ready(function() {
 			}
 	});	
 
+	$(document).on('click', '#apply_to_courts', function() {
+		//var sz = $("#court_sch_times .div_grp").size();
+		var dt = $('#court_sch_times #mdate_0').val();
+		var st = $('#court_sch_times #stime_0').val();
+		var et = $('#court_sch_times #etime_0').val();
+
+		$(".ct_dt").val(dt);
+		$(".ct_st").val(st);
+		$(".ct_et").val(et);
+	});
+
 		$("#num_courts").change(function () {
 
 		var count = $("#court_sch_times .div_grp").size();
@@ -935,11 +988,20 @@ $(document).ready(function() {
 		var requested = parseInt($("#num_courts").val(), 10);
 		//alert(requested);
 
+		var ctrl2 = "<div class='col-md-2'>&nbsp;</div>";
+
 		if (requested > count) {
 			for (i = count; i < requested; i++) {
-				var $ctrl = $("<div class='col-md-12 div_grp' style='padding-bottom:4px;'><div class='col-md-3'><input type='text' class='form-control' name='courts[]' placeholder='Court Name/#"+(i+1)+"' value='Court "+(i+1)+"' /></div><div class='col-md-3'><input type='date' class='form-control' name='match_date[]' placeholder='MM/DD/YYYY' value='' max='' /></div><div class='col-md-2'><input type='time' class='form-control' name='stime[]' id='stime_"+i+"' value='' /></div><div class='col-md-2'><input type='time' class='form-control' name='etime[]' id='etime_"+i+"' value='' /></div>");
+
+				if(i == 0)
+				var ctrl2 = "<div class='col-md-2'><a id='apply_to_courts' style='cursor:pointer; text-decoration: none;'><b>Apply to all ?</b></a></div>";
+
+				var $ctrl = $("<div class='col-md-12 div_grp' style='padding-bottom:4px;'><div class='col-md-3'><input type='text' class='form-control' name='courts[]' placeholder='Court Name/#"+(i+1)+"' value='Court "+(i+1)+"' /></div><div class='col-md-3'><input type='date' class='form-control ct_dt' name='match_date[]'  id='mdate_"+i+"' placeholder='MM/DD/YYYY' value='' max='' /></div><div class='col-md-2'><input type='time' class='form-control ct_st' name='stime[]' id='stime_"+i+"' value='' /></div><div class='col-md-2'><input type='time' class='form-control ct_et' name='etime[]' id='etime_"+i+"' value='' /></div>"+ctrl2);
 
 				$("#court_sch_times").append($ctrl);
+				ctrl2 = "<div class='col-md-2'>&nbsp;</div>";
+
+
 				//$('.addn_fee_all').prop('disabled', true);
 				//	$('#dynamic_startEndDates_Fees').append($ctrl1);
 

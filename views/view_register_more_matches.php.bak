@@ -1000,7 +1000,7 @@ $i = 0;
 			//echo " ".$event." (".$cnt.")";
 			echo " - ".$event."&nbsp;&nbsp;";
 			echo "</td>";
-			echo "<td><select class='user_event_change' name='change_to' id='change-to-{$key}'>";
+			echo "<td><select class='user_event_change' name='change_to' id='change#to#{$key}'>";
 			echo "<option value=''>Change To?</option>"; 
 			if($count_chekboxes > 0){
 			   foreach ($eligible_events as $key2 => $value) {
@@ -1067,7 +1067,7 @@ exit;*/
 			//echo " ".$event." (".$cnt.")";
 			echo " - ".$event."&nbsp;&nbsp;(".$get_partner.")&nbsp;&nbsp;";
 			echo "</td>";
-			echo "<td><select class='user_partner_change' name='partner_change_to' id='partner-change-to-{$key}'>";
+			echo "<td><select class='user_partner_change' name='partner_change_to' id='partner#change#to#{$key}'>";
 
 			if($get_partner == 'No Partner Assigned')
 				echo "<option value=''>Choose Partner</option>"; 
@@ -1184,9 +1184,10 @@ if($now < $reg_close or $this->logged_user == 237){
 
 
 ?>
-<input type="hidden" id="is_flag_age" value="<?php echo $is_flag_age;?>" >
-<input type="hidden" id="user_age_grp" value="<?php echo $user_age_grp;?>">
+<input type="hidden" id="is_flag_age"		value="<?php echo $is_flag_age;?>" >
+<input type="hidden" id="user_age_grp"	value="<?php echo $user_age_grp;?>">
 <input type="hidden" id="user_reg_age_grps" value='<?php echo json_encode($user_reg_ag_grps);?>'>
+<input type="hidden" id="isp" value='<?php echo $is_paid;?>'>
 
 <div class='form-group'  id="doubles_div" style="display : none">
 <label class='control-label col-md-4 padtop' for='id_accomodation'><b>Partner<br />(Doubles):</b></label>
@@ -1360,7 +1361,7 @@ var baseurl = "<?php echo base_url();?>";
 
 	$('.user_event_change').change(function(){
 		var temp = $(this).attr('id');
-		var tempNew = temp.split('-');
+		var tempNew = temp.split('#');
 		var prevEvent = tempNew[2];
 		var changeTo = $(this).val();
 
@@ -1385,7 +1386,7 @@ var baseurl = "<?php echo base_url();?>";
 
 	$('.user_partner_change').change(function(){
 		var temp		= $(this).attr('id');
-		var tempNew = temp.split('-');
+		var tempNew = temp.split('#');
 		var event		= tempNew[3];
 		var partner	= $(this).val();
 

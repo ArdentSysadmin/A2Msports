@@ -303,10 +303,10 @@
 		
 		public function ins_ev_invite($data)
 		{
-			$user_id = $data['user'];
-			$event_id = $data['event_id'];
-			$ev_rep_id = $data['ev_rep_id'];
-			$status    = 'Pending';
+			$user_id		= $data['user'];
+			$event_id		= $data['event_id'];
+			$ev_rep_id	= $data['ev_rep_id'];
+			$status			= 'Pending';
 
 			if($data['ev_status']){
 			$status = $data['ev_status'];

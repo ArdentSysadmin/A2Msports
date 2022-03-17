@@ -86,7 +86,7 @@ e.preventDefault();
 
 <div class="col-md-3 right-column">
 <div class='clear-both'></div>
-<br /><br /><br />
+<br /><br />
 <!-- -------------Player of month start section------------------------------------ -->
 <div class="atp-single-player">
 <label>PLAYER OF THE MONTH</label>

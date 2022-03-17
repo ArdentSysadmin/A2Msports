@@ -627,13 +627,18 @@
 			return $qr_check->result();
 		}
 
-
 		public function get_winper($sport, $user_id){
 			$data	   = array('Sport' => $sport, 'Users_ID' => $user_id);
 			$get_level = $this->db->get_where('Player_Matches_Count', $data);
 			return $get_level->row_array();
 		}
 
-
+		public function get_club($org_id)
+		{
+			$data = array('Aca_ID'=>$org_id);
+			
+			$qry_check = $this->db->get_where('Academy_Info', $data);
+			return $qry_check->row_array();
+		}
 	 /// model functions for search user details end code....
 }

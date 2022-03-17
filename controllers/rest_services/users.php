@@ -191,7 +191,7 @@ class Users extends REST_Controller {
 		if($this->input->get('user_id')){
 			$user_id = $this->input->get('user_id');
 
-			$sp_intrests .= "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)";
+			$sp_intrests .= "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20)";
 
 			$sports = array(
 				'1' => 'Tennis',
@@ -210,7 +210,10 @@ class Users extends REST_Controller {
 '14' => 'Lacrosse',
 '15' => 'Throwball',
 '16' => 'Cricket',
-'17' => 'General Fitness');
+'17' => 'General Fitness',
+'19' => 'Handball',
+'20' => 'Paddleball'
+);
 
 
 			$get_ranks  = $this->muser->get_user_a2m_ranks($user_id);
@@ -278,6 +281,77 @@ class Users extends REST_Controller {
 					}
 				}
 			}
+
+// ------------------
+
+			$get_gen   = $this->muser->get_user_gen_stats($user_id);
+			$get_indv  = $this->muser->get_user_indv_stats($user_id);
+
+			$get_stats2 = array_merge($get_gen, $get_indv);
+//echo "<pre>"; print_r($get_stats2); 			exit;
+			foreach($get_stats2 as $gen_match){
+
+				if($gen_match->Sports){
+				$get_match  = $this->muser->get_user_indvMatch($gen_match->GeneralMatch_id);
+			
+				foreach($get_match as $utm){
+
+
+				if($utm->Winner != 0 and $utm->Winner != NULL){
+
+				if($user_id == $gen_match->users_id or $user_id == $gen_match->Player1_Partner 
+				or $user_id == $utm->Opponent or $user_id == $utm->Player2_Partner){
+				($stats[$gen_match->Sports]['played']) ? 
+					$stats[$gen_match->Sports]['played']++ : $stats[$gen_match->Sports]['played'] = 1;
+					//echo "<br>".$utm->Tourn_ID." ".$utm->Tourn_match_id;
+				}
+				if(
+					$user_id == $utm->Winner or 
+					($user_id == $gen_match->Player1_Partner and $utm->Winner == $gen_match->users_id) or 
+					($user_id == $utm->Player2_Partner and $utm->Winner == $utm->Opponent)
+				  )
+				{
+				($stats[$gen_match->Sports]['won']) ? 
+					$stats[$gen_match->Sports]['won']++ : $stats[$gen_match->Sports]['won'] = 1;
+					//echo "<br>1 ".$utm->Tourn_ID." ".$utm->Tourn_match_id;
+
+				}
+				else if($user_id != $utm->Winner and $utm->Winner != NULL){
+				($stats[$gen_match->Sports]['lost']) ? 
+					$stats[$gen_match->Sports]['lost']++ : $stats[$gen_match->Sports]['lost'] = 1;
+				}
+
+				$for_score	   = ($user_id == $gen_match->users_id or $user_id == $gen_match->Player1_Partner) ?
+								 $utm->Player1_Score : $utm->Opponent_Score;
+
+				$against_score = ($user_id == $gen_match->users_id or $user_id == $gen_match->Player1_Partner) ?
+									 $utm->Opponent_Score : $utm->Player1_Score;
+					
+					if($for_score){
+						$for = json_decode($for_score, true);
+						$tot = 0;
+						foreach($for as $sc)
+							$tot += $sc;
+						($stats[$gen_match->Sports]['points_for']) ? 
+							$stats[$gen_match->Sports]['points_for'] += $tot : $stats[$gen_match->Sports]['points_for'] = $tot;
+					}
+
+					if($against_score){
+						$against = json_decode($against_score, true);
+						$tot = 0;
+						foreach($against as $sc)
+							$tot += $sc;
+						($stats[$gen_match->Sports]['points_against']) ? 
+							$stats[$gen_match->Sports]['points_against'] += $tot : $stats[$gen_match->Sports]['points_against'] = $tot;
+					}
+				}
+				}
+			}
+			}
+
+// ------------------
+
+
 			foreach($stats as $sp=>$res){
 				$ind = $this->searchForId($user_id, $sp, $get_ranks);
 				//$ind = array_search($user_id, $sp, array_column($get_ranks, 'Users_ID'),array_column($get_ranks, 'SportsType_ID'));

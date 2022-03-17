@@ -110,6 +110,14 @@ checkboxes.style.display = "block";
 }
 </script>
 
+<div class="col-md-3" style="text-align: right; font-size:16px;">
+
+	<div>
+	<a id="show_pay_info" style="cursor:pointer;"><span id='pinfo_label'>Show Payment Info.</span></a>
+	</div> 
+
+</div>
+
 <div class="col-md-12 league-form-bg" style="margin-top:15px; margin-bottom:0px;">
 <?php $tourn_reg_names = league::get_reg_tourn_player_names($tour_details->tournament_ID); ?>
 
@@ -304,7 +312,7 @@ echo date('M d, Y H:i', strtotime($pay->pay_date));
 <tr>
 <td colspan='2' style="padding-right:10px" align='right'>Refunds</td>
 <td colspan='5' style="padding-left:10px">
-<div><?echo " - "; echo number_format($total_refund, 2); ?></div>
+<div><?php  echo " - "; echo number_format($total_refund, 2); ?></div>
 </td>
 </tr>
 <tr>

@@ -19,14 +19,14 @@ if(isset($tr_det)) {
 <meta property="og:description" content="<?php if($tr_det->TournamentDescription != "") { echo strip_tags($tr_det->TournamentDescription); } ?>"> 
 <meta property="og:image" content="<?php echo base_url()."tour_pictures/"; ?>
 <?php
-if($tr_det->TournamentImage!=""){echo $tr_det->TournamentImage;}
+/*if($tr_det->TournamentImage!=""){echo $tr_det->TournamentImage;}
 else if($tr_det->SportsType == 1){echo "default_tennis.jpg";}
 else if($tr_det->SportsType == 2){echo "default_table_tennis.jpg";}
 else if($tr_det->SportsType == 3){echo "default_badminton.jpg";}
 else if($tr_det->SportsType == 4){echo "default_golf.jpg";}
 else if($tr_det->SportsType == 5){echo "default_racquet_ball.jpg";}
 else if($tr_det->SportsType == 6){echo "default_squash.jpg";}
-else if($tr_det->SportsType == 7){echo "default_pickleball_new.jpg";}
+else if($tr_det->SportsType == 7){echo "default_pickleball_new.jpg";}*/
 ?>" />
 
 <?php
@@ -39,6 +39,7 @@ else if(isset($ev_det)) {
 <meta property="og:description" content="<?php if($ev_det['Ev_Desc'] != "") { echo strip_tags($ev_det['Ev_Desc']); } ?>"> 
 <meta property="og:image" content="<?php echo base_url()."events_pictures/"; ?>
 <?php
+/*
 if($ev_det['EventImage'] != ""){echo $ev_det['EventImage'];}
 else if($ev_det['Ev_Sport'] == 1){echo "default_tennis.jpg";}
 else if($ev_det['Ev_Sport'] == 2){echo "default_table_tennis.jpg";}
@@ -49,7 +50,7 @@ else if($ev_det['Ev_Sport'] == 6){echo "default_squash.jpg";}
 else if($ev_det['Ev_Sport'] == 7){echo "default_pickleball_new.jpg";}
 else if($ev_det['Ev_Sport'] == 8){echo "default_chess.jpg";}
 else if($ev_det['Ev_Sport'] == 9){echo "default_carroms.jpg";}
-else if($ev_det['Ev_Sport'] == 10){echo "default_volleyball.jpg";}
+else if($ev_det['Ev_Sport'] == 10){echo "default_volleyball.jpg";}*/
 ?>" />
 <?php
 }
@@ -140,8 +141,8 @@ var origin   = window.location.origin;				// Returns base URL (https://example.c
 </style>
 <style>
 .li_disabled {
-    pointer-events:none; /*This makes it not clickable*/
-    opacity:0.6;         /*This grays it out to look disabled*/
+    pointer-events:none;	 /*This makes it not clickable*/
+    opacity:0.6;					/*This grays it out to look disabled*/
 }
 </style>
 <script src="<?php echo base_url();?>js/bootsnav.js"></script>

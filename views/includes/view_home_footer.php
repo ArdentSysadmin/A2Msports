@@ -1,4 +1,4 @@
-     <div class="bg_fotter pt-5 pb-5">
+     <div class="bg_fotter pt-5 pb-5" style="display: none;">
        <div class="container-fluid" id="contact">
          <div class="row">
            <div class="col-lg-6">
@@ -37,13 +37,12 @@
                     <div class="col-12">
                       <input name="contact_submit" type="submit" class="btn btn_orange w-100 pt-2 pb-2" value="Submit" />
                     </div>
-
                   </form>
-
 
                </div>
              </div>
            </div>
+
            <div class="col-lg-6">
              <div class="heading pb-3 text-center">
                <h1>Contact Us</h1>
@@ -71,11 +70,28 @@
          </div>
        </div>
      </div>
-     <div class="copyright pt-4 pb-4">
+     <div class="copyright pt-4 pb-3">
        <div class="container-fluid">
          <div class="row">
-           <div class="col-lg-12">
-             <p class="text-center text-light mb-0">Copyright &copy; 2021 A2M Sports. All Rights Reserved.</p>
+           <div class="col-lg-5 d-flex align-items-center justify-content-center">
+             <p class="text-center text-light mb-0">&copy; <?=date('Y');?> A2M Sports. All Rights Reserved.</p>
+           </div>
+           <div class="col-lg-2 d-flex align-items-center justify-content-left">
+             <p class="text-left text-light mb-0"><a href="<?=base_url().'privacy';?>" target="_blank" style="color:#fff">Privacy Policy</a></p>
+           </div>
+           <div class="col-lg-5 socil">
+             <p class="text-center text-light mb-0">
+			 <a href="tel: 1678654 3778" style="text-decoration: none;"><img src="<?=base_url()."assets_new/";?>images/phone.png" >
+			 <a href="#contact_us">
+			<img src="<?=base_url()."assets_new/";?>images/mail.png"></a>
+			 <a href="https://www.facebook.com/a2msports" target="_blank">
+			<img src="<?=base_url()."assets_new/";?>images/Facebook.png"></a>
+		   <a href="https://twitter.com/a2m_sports" target="_blank">
+			<img src="<?=base_url()."assets_new/";?>images/TwitterLogo.png"></a>
+		   <a href="https://www.instagram.com/a2msports" target="_blank">
+			<img src="<?=base_url()."assets_new/";?>images/InstagramLogo.png"></a>
+		  
+			 </p>
            </div>
          </div>
        </div>
@@ -125,6 +141,48 @@
 </div>
       <!-- popup start end-->
 
+    <!-- popup start -->
+     <div id="contact_us" class="overlay">
+  <div class="popup">
+    <h2>Contact Us</h2>
+    <a class="close" href="#">&times;</a>
+    <div class="content">
+                     <form class="row g-3" method="POST" action="<?=base_url();?>/contact/submit">
+				<?php
+					if($this->session->flashdata('contact_status')){
+				?>
+				<script>
+				var st = "<?php echo $this->session->flashdata('contact_status'); ?>";
+				alert(st);
+				</script>
+				<?php
+					}
+				 ?>
+                    <div class="col-md-12">
+                      <input type="text" name="contact_name" class="form-control" id="inputl4" placeholder="Full Name" required>
+                    </div>
+                    <div class="col-md-12">
+                      <input type="email" name="contact_email"class="form-control" id="inputEmail4" placeholder="Email Address" required>
+                    </div>
+                    <div class="col-12">
+                      <textarea name="contact_message" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="Add Your Message (optional)" required></textarea>
+                    </div>
+                    
+                      <div class="form-group">
+							<div class="g-recaptcha" data-sitekey="6LcmImgdAAAAAB70ZsDd9SBMA5JXNlFGwcttZv76"></div>
+                            <!-- <input name='recaptcha' class="form-control d-none" data-recaptcha="true" required data-error="Please complete the Captcha">
+                            <div class="help-block with-errors"></div> -->
+                        </div>
+                    <div class="col-12">
+                      <input name="contact_submit" type="submit" class="btn btn_orange w-100 pt-2 pb-2" value="Submit" />
+                    </div>
+
+                  </form>
+
+    </div>
+  </div>
+</div>
+      <!-- popup start end-->
 
 
     <!-- Optional JavaScript; choose one of the two! -->
@@ -265,8 +323,8 @@
 </html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
 <script src='https://www.google.com/recaptcha/api.js'></script>
-<script src="<?=base_url(); ?>assets_new/validator.js"></script>
-<script src="<?=base_url(); ?>assets_new/contact.js"></script>
+<!-- <script src="<?=base_url(); ?>assets_new/validator.js"></script>
+<script src="<?=base_url(); ?>assets_new/contact.js"></script> -->
       <script src="<?=base_url(); ?>assets_new/js/slick.min.js"></script>
       <script src="<?=base_url(); ?>assets_new/js/mixitup.min.js"></script>
       <script src="<?=base_url(); ?>assets_new/js/venobox.min.js"></script>

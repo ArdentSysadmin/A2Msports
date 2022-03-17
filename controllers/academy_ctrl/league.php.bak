@@ -752,10 +752,8 @@
 		public function update_trnmt($org_id='')
 			{
 			//echo "test"; exit;
-				echo "<pre>";
-				print_r($_POST);
-				exit;
-			  // $sdate = date('h:i', strtotime($this->input->post('stime')));echo $sdate;exit();
+			//	echo "<pre>"; print_r($_POST); exit;
+			// $sdate = date('h:i', strtotime($this->input->post('stime')));echo $sdate;exit();
 	  
 				$data['tourn_id'] = $this->input->post('tourn_id'); 
 				$tourn_id=$data['tourn_id'];
@@ -1833,6 +1831,242 @@
 		}*/
 
 		public function getusers()
+{
+		 	//print_r($_POST);exit();
+		 	$format     = $this->input->post('format');
+            $types      = $this->input->post('types');
+            $tour_id    = $this->input->post('tour_id');
+            $SportsType = $this->input->post('sport');
+            $is_event	= $this->input->post('is_event');
+            $is_checkin	= $this->input->post('is_checkin');
+
+			$draw_type	= '';
+			if($this->input->post('draw_type'))
+            $draw_type	= $this->input->post('draw_type');
+
+
+			if($is_event){
+            $users = $this->get_reg_tourn_event_players($tour_id, $types, $SportsType, $is_checkin);
+			}
+			else{
+            $users = $this->get_reg_tourn_players($tour_id, $SportsType, $is_checkin);
+			}
+           //echo "<pre>";print_r($users);exit();
+            foreach ($types as $key => $value) {
+                foreach ($users as $user_id => $level) {
+            	    if(in_array($value, $level)){
+                     $users_id[] = $user_id;
+            	    }
+                }   
+            }
+            $users_id=array_unique($users_id);
+           //echo "<pre>";print_r($users_id);exit();
+
+            $usersdropdown  = '';
+			$add_col		= "";
+			if($SportsType == 2){
+			$add_col = "<th class='score-position'>Rating</th>";
+			}
+
+			$output = "<table id='reg_users_table' class='table tab-score'>
+						<thead>
+						<tr class='top-scrore-table' style='background-color:#f68b1c'>
+						<th class='score-position'>Select <input type='checkbox' name='userSelectAll' id='userSelectAll' value='1' /></th>
+						<th class='score-position'>Player/Team</th>
+						<th class='score-position'>City</th>
+						<th class='score-position'>State</th>
+						<th class='score-position'>A2MScore</th>
+						{$add_col}
+						<th class='score-position'>Seed</th>
+						</tr>
+						</thead>";
+			$output .= "<tbody>";
+//echo "<pre>"; print_r($users_id);
+
+			// Keep the Seedings of Draw page when user comeback
+			
+			$temp_arr = array();
+			if($this->session->userdata('draw')['users']){
+				$sess_draws_users = $this->session->userdata('draw')['users'];
+				foreach ($users_id as $k => $value) {
+
+					$xyz = explode('-', $value);
+					if(!$xyz[1])
+						$value = trim($value,'-'); // removing - if the value is no having partner but having - in the string
+
+					$key = array_search ($value, $sess_draws_users);
+					if($key > -1)
+						$temp_arr[$key] = $value;
+					else
+						$temp_arr[$k]		= $value;
+				}
+				$x = ksort($temp_arr);
+				$users_id = $temp_arr;
+			}
+
+			// Keep the Seedings of Draw page when user comeback
+
+            foreach ($users_id as $key => $value) {
+				$avg_a2m = '';
+            	if (strpos($value, '-') !== false) {
+                    $userArr		= explode('-', $value);
+
+                    $user			= $this->model_league->get_user_name($userArr[0]);
+                    $user_a2msocre  = $this->get_a2mscore($userArr[0], $SportsType);
+
+                    $opp			= $this->model_league->get_user_name($userArr[1]);
+                    $opp_a2msocre	= $this->get_a2mscore($userArr[1], $SportsType);
+
+					$users_list[$value]['UID']			=  $user['Users_ID'];
+					$users_list[$value]['Name']		=  $user['Firstname'].' '.$user['Lastname'];
+					$users_list[$value]['City']			=  $user['City'];
+					$users_list[$value]['State']			=  $user['State'];
+	
+					if($draw_type != ''){
+						if($draw_type == 'doubles')
+							$users_list[$value]['A2MScore']		= $user_a2msocre['A2MScore_Doubles'];
+						else if($draw_type == 'mixed')
+							$users_list[$value]['A2MScore']		= $user_a2msocre['A2MScore_Mixed'];
+						else
+							$users_list[$value]['A2MScore']		=  $user_a2msocre['A2MScore'];
+					}
+					else{
+						if($format == 'Doubles')
+						$users_list[$value]['A2MScore']		= $user_a2msocre['A2MScore_Doubles'];
+						else if($format == 'Mixed')
+						$users_list[$value]['A2MScore']		= $user_a2msocre['A2MScore_Mixed'];
+						else
+						$users_list[$value]['A2MScore']		=  $user_a2msocre['A2MScore'];
+					}
+
+					$users_list[$value]['PUID']	  	    =  $opp['Users_ID'];
+					$users_list[$value]['PartnerName']	=  $opp['Firstname'].' '.$opp['Lastname'];
+					$users_list[$value]['PCity']		=  $opp['City'];
+					$users_list[$value]['PState']		=  $opp['State'];
+
+					if($format == 'Doubles')
+					$users_list[$value]['PA2MScore']	  = $opp_a2msocre['A2MScore_Doubles'];
+					else if($format == 'Mixed')
+                    $users_list[$value]['PA2MScore']	  = $opp_a2msocre['A2MScore_Mixed'];
+					else
+					$users_list[$value]['PA2MScore']    = $opp_a2msocre['A2MScore'];
+					
+					if($users_list[$value]['A2MScore'] and $users_list[$value]['PA2MScore'])
+						$avg_a2m = ($users_list[$value]['A2MScore'] + $users_list[$value]['PA2MScore']) / 2;
+					else if($users_list[$value]['A2MScore'])
+						$avg_a2m = $users_list[$value]['A2MScore'];
+					else if($users_list[$value]['PA2MScore'])
+						$avg_a2m = $users_list[$value]['PA2MScore'];
+
+					$users_list[$value]['A2M_AVG'] = $avg_a2m;
+            	 }
+				 else{
+            	 	$user		= $this->model_league->get_user_name($value);
+                    $username	= $user['Firstname'].' '.$user['Lastname'];
+          	        $userid		= $user['Users_ID'];
+          	        $user_a2msocre  = $this->get_a2mscore($value, $SportsType);
+
+					if($draw_type != ''){
+						if($draw_type == 'doubles')
+							$user_score		= $user_a2msocre['A2MScore_Doubles'];
+						else if($draw_type == 'mixed')
+							$user_score		= $user_a2msocre['A2MScore_Mixed'];
+						else
+							$user_score		=  $user_a2msocre['A2MScore'];
+					}
+					else{
+						if($format == 'Doubles')
+						$user_score		= $user_a2msocre['A2MScore_Doubles'];
+						else if($format == 'Mixed')
+						$user_score		= $user_a2msocre['A2MScore_Mixed'];
+						else
+						$user_score		= $user_a2msocre['A2MScore'];
+					}
+					$rating		 = "N/A";
+					if($SportsType == 2){
+						$user_membership = $this->get_user_mem_details($user['Users_ID'], $SportsType);
+						if($user_membership['Membership_ID']){
+						$user_rating = $this->get_user_usatt_rating1($user_membership['Membership_ID']);
+						$rating		 = $user_rating['Rating'];
+						}
+					}
+
+
+					$users_list[$value]['UID']		=  $user['Users_ID'];
+					$users_list[$value]['Name']	=  $user['Firstname'].' '.$user['Lastname'];
+					$users_list[$value]['City']		=  $user['City'];
+					$users_list[$value]['State']		=  $user['State'];
+					$users_list[$value]['A2MScore'] =  $user_score;
+					$users_list[$value]['A2M_AVG'] =  $user_score;
+					
+					if($SportsType == 2)
+					$users_list[$value]['Rating'] = $rating;
+
+            	 }
+          	   // $userslist[]=$this->model_league->get_user_name($value);
+            }
+
+			/////////////usort($users_list, "cmp_a2m");
+			
+			if(!$this->session->userdata('draw')['users']){
+				array_multisort(array_map(function($element){ return $element['A2MScore']; }, $users_list), SORT_DESC, $users_list);
+			}
+			// commented this to make session sort work
+
+            //echo "<pre>";print_r($users_list);exit();
+			$j = 1;
+			foreach($users_list as $user => $details){
+			
+			  /* $seeding = "<select class='form-control' name='sel_groups[$value][]' id='sel_groups' style='width:100%'>";
+						for($i = 1; $i <= count($users_list); $i++){
+							$sel = "";
+							if($j == $i) { $sel = "selected"; }
+						 $seeding .= "<option value='$i' $sel>$i</option>";
+						}
+			   $seeding .= "</select>";*/
+				
+			   $uid = $details['UID'];
+			   if($details['PUID'])
+				 $uid .= "-".$details['PUID'];
+
+			   $seeding = "<input type='checkbox' class='user_select' name='users[]' id='seeded_".$uid."' value='".$uid."' checked />";
+
+			   $player = "";
+			   $player .= $details['Name'];
+			   if($details['PartnerName'] != ""){
+			   $player .= "; ".$details['PartnerName'];
+			   }
+
+				$new_col = "";
+			   if($SportsType == 2){
+				$new_col = "<td>&nbsp;".$details['Rating']."</td>";
+			   }
+
+			   $output .= "<tr>
+						<td align='center'>".$seeding." <input type='hidden' id='seeded_".$uid."' value='".$uid."' ></td>
+						<td>&nbsp;".$player."</td>
+						<td>&nbsp;".$details['City']."</td>
+						<td>&nbsp;".$details['State']."</td>
+						<td>&nbsp;".$details['A2M_AVG']."</td>
+						{$new_col}
+						<td><input type='hidden' id='seeded_".$uid."' value='".$uid."' >
+						<img src='".base_url().'icons/up.png'."' class='up' style='cursor:pointer;width:20px;height:20px;' />
+						<img src='".base_url().'icons/down.png'."' class='down' style='cursor:pointer;width:20px;height:20px;' />
+						</td>
+						</tr>";
+				$j++;
+			}
+
+		    $output .= "</tbody>";
+		    $output .= "</table>";
+
+            echo $output;
+			exit();
+		}
+
+
+
+		public function getusers_02222022()
 		{
 		 	//print_r($_POST);exit();
 		 	$format     = $this->input->post('format');
@@ -2408,6 +2642,77 @@
 		 }
 
 		 public function get_reg_tourn_event_players($tourn_id, $types, $sport='', $is_checkin=''){
+
+			$res = $this->model_league->get_reg_tourn_event_players($tourn_id, $types, $sport, $is_checkin);
+			$reg_users = array();
+			$single_user_array    = array();
+			$double_partner_array = array();
+			$comb_partner_array = array();
+			$mixed_partner_array  = array();
+
+			   foreach($res as $r){
+					$usersid = $r->Users_ID;
+					$user_reg_events   = json_decode($r->Reg_Events, true);
+					$user_sel_partners = json_decode($r->Partners, true);
+
+
+					if(!empty($user_reg_events)){
+						foreach($user_reg_events as $event){
+
+							if (stripos(strtolower($event), 'Singles') !== false) {
+								if($r->Users_ID){ //and !in_array($r->Users_ID, $single_user_array)){
+								$user_id = $r->Users_ID;
+								$reg_users[$user_id][] = $event;
+								$single_user_array[] = $r->Users_ID;
+								}
+							}
+
+							if (stripos(strtolower($event), 'Doubles') !== false and stripos(strtolower($event), 'Adults') === true) {
+								if(!in_array($r->Users_ID, $double_partner_array[$event]) and (!in_array($user_sel_partners[$event], $double_partner_array[$event]) or $user_sel_partners[$event] == "")){
+									//if($user_sel_partners[$event]){
+										$dbl_partner = $r->Users_ID.'-'.$user_sel_partners[$event];
+										$reg_users[$dbl_partner][] = $event;
+
+										$double_partner_array[$event][] = $r->Users_ID;
+										$double_partner_array[$event][] = $user_sel_partners[$event];
+									//}
+								}
+							}
+
+							if (stripos(strtolower($event), 'Doubles') !== false and stripos(strtolower($event), 'Adults') !== true) {
+								if(!in_array($r->Users_ID, $comb_partner_array[$event]) and (!in_array($user_sel_partners[$event], $comb_partner_array[$event]) or $user_sel_partners[$event] == "")){
+									//if($user_sel_partners[$event]){
+										$dbl_partner = $r->Users_ID.'-'.$user_sel_partners[$event];
+										$reg_users[$dbl_partner][] = $event;
+
+										$comb_partner_array[$event][] = $r->Users_ID;
+										$comb_partner_array[$event][] = $user_sel_partners[$event];
+									//}
+								}
+							}
+
+							if (stripos(strtolower($event), 'Mixed') !== false) {
+								if(!in_array($r->Users_ID, $mixed_partner_array[$event]) and (!in_array($user_sel_partners[$event], $mixed_partner_array[$event]) or $user_sel_partners[$event] == "")){
+									//if($user_sel_partners[$event]){
+								$mx_partner = $r->Users_ID.'-'.$user_sel_partners[$event];
+								$reg_users[$mx_partner][] = $event;
+
+								$mixed_partner_array[$event][] = $r->Users_ID;
+								$mixed_partner_array[$event][] = $user_sel_partners[$event];
+									//}
+								}
+							}
+							//echo "<pre>";print_r($double_partner_array);
+						}
+					}
+				}
+			//echo "<pre>"; print_r($reg_users);
+			return $reg_users;
+		 }
+
+
+
+		 public function get_reg_tourn_event_players_02222022($tourn_id, $types, $sport='', $is_checkin=''){
 
 			$res = $this->model_league->get_reg_tourn_event_players($tourn_id, $types, $sport, $is_checkin);
 			$reg_users = array();
@@ -3259,6 +3564,7 @@ print_r($bridge);*/
 				// echo "Testing";
 			 //echo "<pre>"; print_r($this->session->userdata); //exit;
 			 }
+			$upd_type = $this->input->post('upd_type');
 			$tourn_id = $this->input->post('tourn_id');
 //echo "<pre>"; echo $this->club_form_url; exit;
 			if($this->input->post('rr_bracket_confirm')){
@@ -3286,6 +3592,9 @@ print_r($bridge);*/
 			}
 			else if($this->input->post('sd_bracket_confirm')){
 				$res = $this->model_league->insert_sd_brackets(); // draw_format done
+			}
+			else if($this->input->post('po_auto_esc_upd') and $this->input->post('upd_type') == 'AUTO_ESC'){
+				$res = $this->model_league->update_po_autoesc();
 			}
 			
 			if($res){
@@ -9062,6 +9371,16 @@ $this->short_code = $org_code;
 			//exit;
 		}
 
+		public function load_tourn_players($tid){
+			$tid	= $this->input->post('tid');
+			$tr_det = $this->get_logged_user_role($tid);
+			$this->is_team_league = ($tr_det->tournament_format  == 'Teams' || $tr_det->tournament_format  == 'TeamSport') ? 1 : 0;
+
+			$data['tour_details'] = $tr_det;
+
+			echo $this->load->view('tournament/view_players', $data);
+		}
+
 		public function load_participants($tid){
 			$tid	= $this->input->post('tid');
 			$tr_det = $this->get_logged_user_role($tid);
@@ -10760,5 +11079,701 @@ $sno++;
 				echo "Invalid Access!";
 		}
 	}
+
+	public function fetch_topGroup_players(){
+		$tourn_id		= $data['tid'] = $this->input->post('tid');
+		$bracket_id  = $data['bid'] = $this->input->post('bid');
+		$ref_draws  = $this->input->post('ref');
+		$esc_count  = $this->input->post('esc');
+
+		if(!$ref_draws){
+			echo "Can't fetch the players as no main draws exists!";
+			exit;
+		}
+
+		if($tourn_id and $bracket_id) {
+
+			$ref_draws = json_decode($ref_draws, TRUE);
+			foreach($ref_draws as $rf) {
+				 $is_complete = $this->model_league->is_draw_complete($rf);
+				
+				if($is_complete) {
+					echo "Source draws are not yet completed!";
+					exit;
+				}
+			}
+$esc_players = array();
+			foreach($ref_draws as $rf) {
+						$esc_players	= $this->evaluate_top_winners($rf, $esc_count, $esc_players);
+						//$esc_players[$rf]		= $fetch_top_players;
+						//$esc_players[$rf]		= $fetch_top_players;
+			}
+
+			//echo "<pre>"; print_r($esc_players); 
+array_multisort(array_map(function($element) { 
+					return $element['wp']; }, $esc_players), SORT_DESC, $esc_players);
+
+			//echo "<pre>"; print_r($data); exit;
+			$data['esc_players'] = $esc_players;
+			$this->load->view('academy_views/view_esc_fixturestabs', $data);
+		}
+		else {
+			echo "Invalid Access!";
+			exit;
+		}
+	}
+
+
+	public function evaluate_top_winners($bracket_id, $esc_count, $esc_players) {
+
+				  /*$num_rounds = intval($bk->No_of_rounds-1);*/
+				  $rr_tourn_matches = $this->get_tourn_rr_matches($bracket_id);
+				  $players = array();
+
+				$grid_array = array();
+
+				  //echo "<pre>"; print_r($rr_tourn_matches);
+				  foreach($rr_tourn_matches as $i => $rtm){
+					$p1_sum = 0;
+					$p2_sum = 0;
+					$p1			= array();
+					$p2			= array();
+
+					$p1p2_tot_score = 0;
+
+					  $cur_player1 = $rtm->Player1;
+					  
+					  if($rtm->Player1_Partner != NULL and $rtm->Player1_Partner != 0){
+						$cur_player1 = $rtm->Player1 . "-" . $rtm->Player1_Partner;
+					  }
+
+				$p1		= json_decode($rtm->Player1_Score);  
+				$cnt1	= count(array_filter($p1));
+
+				if($cnt1 > 0){
+					for($i=0; $i<count(array_filter($p1)); $i++){
+						$p1_sum = intval($p1_sum) + intval($p1[$i]);
+					}
+				}
+
+				$p2		= json_decode($rtm->Player2_Score);  
+				$cnt2	= count(array_filter($p2));
+
+				if($cnt2 > 0){
+					for($i=0; $i<count(array_filter($p2)); $i++){
+						$p2_sum = intval($p2_sum) + intval($p2[$i]);
+					}
+				}
+
+					  if(!array_key_exists($cur_player1, $players)){			//	Player1 
+						$players[$cur_player1]['points']  = ($rtm->Player1_points != NULL) ? $rtm->Player1_points : 0;
+						$players[$cur_player1]['win_per'] = $p1_sum;
+						$players[$cur_player1]['winper1'] = $p1_sum + $p2_sum;
+					  }
+					  else{
+						$prev_points = $players[$cur_player1]['points'];
+						$players[$cur_player1]['points']  = ($rtm->Player1_points != NULL) ? ($prev_points + $rtm->Player1_points) : $prev_points;
+						$players[$cur_player1]['win_per'] += $p1_sum;
+						$players[$cur_player1]['winper1'] += $p1_sum+$p2_sum;
+
+						$players[$cur_player1]['winper2']  = number_format(($players[$cur_player1]['win_per'] / $players[$cur_player1]['winper1']) * 100, 2);
+					  }
+
+
+					  $cur_player2 = $rtm->Player2;
+					  if($rtm->Player2_Partner != NULL and $rtm->Player2_Partner != 0){
+						$cur_player2 = $rtm->Player2."-".$rtm->Player2_Partner;
+					  }
+
+					  if(!array_key_exists($cur_player2, $players)){			//	Player2 
+						$players[$cur_player2]['points'] = ($rtm->Player2_points != NULL) ? $rtm->Player2_points : 0;
+						$players[$cur_player2]['win_per']   = $p2_sum;
+						$players[$cur_player2]['winper1']	  = $p1_sum + $p2_sum;
+					  }
+					  else{
+						$prev_points = $players[$cur_player2]['points'];
+						$players[$cur_player2]['points'] = ($rtm->Player2_points != NULL) ? ($prev_points + $rtm->Player2_points) : $prev_points;
+						$players[$cur_player2]['win_per']  += $p2_sum;
+						$players[$cur_player2]['winper1']  += $p1_sum+$p2_sum;
+
+						$players[$cur_player2]['winper2']  = number_format(($players[$cur_player2]['win_per'] / $players[$cur_player2]['winper1']) * 100, 2);
+					  }
+
+	if($rtm->Winner == $rtm->Player1) {
+		$p1_result = 'W';
+		$p2_result = 'L';
+	}
+
+	if($rtm->Winner == $rtm->Player2) {
+		$p1_result = 'L';
+		$p2_result = 'W';
+	}
+
+$grid_array[$rtm->Player1]['opponents'][$rtm->Player2]['result'] = $p1_result;
+
+
+if($rtm->Player1_Partner){
+$grid_array[$rtm->Player1]['partner']	  = $rtm->Player1_Partner;
+}
+
+
+$grid_array[$rtm->Player2]['opponents'][$rtm->Player1]['result'] = $p2_result;
+
+if($rtm->Player2_Partner){
+$grid_array[$rtm->Player2]['partner']	  = $rtm->Player2_Partner;
+}
+
+				  }
+
+			
+			foreach($players as $pl => $x){
+				$cnt = 0;
+				$temp = '';
+				if(!in_array($pl, $temp))
+					$temp[] = $pl;
+
+				foreach($players as $pl2 => $x2){
+					if($x['points'] == $x2['points']){
+						$cnt++;
+							if(!in_array($pl2, $temp))
+							$temp[] = $pl2;
+					}
+				}
+				$points_count_arr[$x['points']]['count'] = $cnt;
+				//$points_count_arr[$x['points']][] = $temp;
+			}
+
+			if($this->logged_user == 240){
+				//echo "<pre>"; print_r($points_count_arr);
+			}
+			
+						//arsort($players);
+				//$sort_func = uasort($players, array('league','compareOrder'));
+				$sort_func = uasort($players, array('league','compareOrder4'));
+$keys_arr  = array_keys($players); 
+
+				//if($this->logged_user == 240 and  ($bk->BracketID == 1201 or $bk->BracketID == 1195)){
+				//echo "<pre> "; print_r($keys_arr);  echo "______";
+				//}
+			if($this->logged_user == 240){
+				// echo "<pre>"; print_r($players);
+			}
+
+foreach($players as $player => $tot_score){
+
+	if($players[$temp]['points'] == $tot_score['points'] and $points_count_arr[$tot_score['points']]['count'] == 2){
+		//$last_player	 = str_replace('-', '', $temp);
+		//$cur_player	 = str_replace('-', '', $player);
+		$last_player	 = explode('-', $temp);
+		$cur_player	 = explode('-', $player);
+//echo "Res ".$grid_array[$cur_player[0]]['opponents'][$last_player[0]]['result']."<br>";
+		if($grid_array[$cur_player[0]]['opponents'][$last_player[0]]['result'] == 'W'){
+			$key_temp   = array_search($temp, $keys_arr);
+			$key_player = array_search($player, $keys_arr);
+			$keys_arr[$key_temp]   = $player;
+			$keys_arr[$key_player] = $temp;
+			$temp = $temp;
+		}
+		else{
+		$temp = $player;
+		}
+	}
+	else{
+		$temp = $player;
+	}
+
+}
+
+$temp_players_sort = '';
+				//if($this->logged_user == 240 and ($bk->BracketID == 1201 or $bk->BracketID == 1195)){
+				//	echo "Keys";
+				//echo "<pre> "; print_r($grid_array); print_r($keys_arr);  echo "______";
+				//}
+
+foreach($keys_arr as $player){
+	$temp_players_sort[$player] = $players[$player];
+	//$get_players = explode("-", $player);
+	//$temp_grid_array[$get_players[0]] = $grid_array[$get_players[0]];
+}
+
+$players = $temp_players_sort;
+			//echo "<pre>"; print_r($players); exit;
+
+				$i = 1;
+				foreach($players as $pl => $x){
+					$ply = explode('-', $pl);
+					if($i == 1 and $x['points'] > 0){
+						$place1 = $ply[0];
+						$place1_partner = $ply[1];
+						$place1_wp = $x['winper2'];
+					}
+					if($i == 2 and $x['points'] > 0){
+						$place2 = $ply[0];
+						$place2_partner = $ply[1];
+						$place2_wp = $x['winper2'];
+					}
+					if($i == 3 and $x['points'] > 0){
+						$place3 = $ply[0];
+						$place3_partner = $ply[1];
+						$place3_wp = $x['winper2'];
+					}
+					if($i == 4 and $x['points'] > 0){
+						$place4 = $ply[0];
+						$place4_partner = $ply[1];
+						$place4_wp = $x['winper2'];
+					}
+					if($i == 5 and $x['points'] > 0){
+						$place5 = $ply[0];
+						$place5_partner = $ply[1];
+						$place5_wp = $x['winper2'];
+					}
+
+					$i++;
+				}
+	//$temp = array();
+		//echo $place1.$place2.$place3.$place4; exit;
+		for($k = 1; $k <= $esc_count; $k++) {
+			if(${"place".$k."_partner"})
+				$pl = ${"place".$k}."-".${"place".$k."_partner"};
+			else
+				$pl = ${"place".$k};
+
+			$esc_players[] = array('pl' => $pl, 'wp' => ${"place".$k."_wp"});
+			//$temp[] = ${"place".$k};
+		}
+		//echo "<pre>"; print_r($temp); exit;
+		return $esc_players;
+	}
+
+	public function po_update(){
+
+//echo "<pre>"; print_r($_POST); exit;
+		?>
+		<html>
+		<head><title>Processing Draws...</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script>
+			window.onload = function(){
+			document.getElementById('po_auto_esc_upd').click();
+			}
+		</script>
+		</head>
+		<body style="text-align:center;">
+		<p style="text-align:center;">Please wait... Playoff matches are being updated.</p>
+		<?php
+					//$data['types']		  = $this->input->post('types');
+					//$data['type_format']  = $this->input->post('type_gen');
+					$tourn_id	  = $this->input->post('tourn_id');
+					$teams		  = $this->input->post('users');
+					$bid		  = $this->input->post('bid');
+					$upd_type		  = $this->input->post('upd_type');
+					$num_of_teams = count($teams);
+
+		$num_teams = $num_of_teams;
+$pow_vals	   = array(2,4,8,16,32,64,128,256,512);
+$seed_team = $teams;
+//echo "<pre>"; print_r($courts_new);print_r($match_timings); //exit;
+$log_val   = ceil(log($num_teams, 2));
+((in_array($log_val, $pow_vals)) or (in_array($num_teams, $pow_vals))) ? $total_rounds = $log_val : $total_rounds =  floor(log($num_teams, 2)) + 1;
+
+$match_num = 1;
+$pick_time	   = 1;
+$new_match_timings = array();
+
+?>
+		<form method="post" id="myform" action='<?php echo $this->club_form_url; ?>league/bracket_save' class="login-form" style="width:100%; display:none;">
+
+<!-- <div class='col-md-8'>
+<label>Draw Title*</label>&nbsp;&nbsp;<span id="title_error" style="color:red"></span>
+<input class="form-control" type="text" name="draw_title" id="draw_title" style="width:40%;" required />
+</div> -->
+
+<div class='col-md-4' style="margin-top: 25px;">
+<input type="submit" class="league-form-submit1" name="po_auto_esc_upd" id="po_auto_esc_upd" value="Confirm & Save" />
+</div>
+
+<br />
+<div class="brackets" id="brackets">
+<div class="group<?php echo $total_rounds+1; ?>" id="b1">
+<?php
+for($round = 1, $source=1 ; $round <= $total_rounds; $round++) {
+?>
+<div class="r<?php echo $round; ?>" style="text-align:center">
+
+<script>/*
+$(function() {
+ var rid = "<?php echo $round; ?>";
+ $('#sdate_round'+rid).datepick();
+});*/
+</script>
+
+<input type='hidden' name='round[]' value="<?php echo $round; ?>" />
+<br>
+<span style="text-align: center"><b>
+<?php
+$process_res = league::cal_c($pow_vals, $num_teams, $teams, $round);
+$teams = array();
+
+$rt = $process_res[1] + $process_res[2];
+//--------------------------
+
+if($rt >= pow(2,3)){
+	$rrt = $rt*2;
+	echo "Round of $rrt";
+	}
+else {
+		switch($rt)
+		{
+			case 1:
+				echo "Final";
+				break;
+			case 2:
+				echo "Semi-Final";
+				break;
+			case 4:
+				echo "Quarter-Final";
+				break;
+			default:
+				echo "";
+				break;
+		}
+	}
+?>
+</b></span>
+<br>
+<!-- 
+<input  type="text" class='form-control' placeholder="Date" id="sdate_round<?php echo $round; ?>"  name="round_date<?php echo $round; ?>" />
+ -->
+<?php
+if(!$match_timings){
+?>
+<input type="text" placeholder="Date" name="round_date<?php echo $round; ?>" id="sdate_round<?php echo $round; ?>" value="" />
+
+<script>
+var rid = "<?php echo $round; ?>";
+
+  $('#sdate_round'+rid).fdatepicker({
+		format: 'mm/dd/yyyy hh:ii',
+		disableDblClickSelection: true,
+		language: 'en',
+		pickTime: true
+	});
+</script>
+<?php
+}
+//--------------------------
+$x=0;
+foreach($process_res[6] as $ab => $game_pl){
+$is_bye = 0;
+if($this->input->post('tformat') == 'Teams' or $this->input->post('tformat') == 'TeamSport'){
+	$team1 = league::get_team(intval($process_res[6][$ab][0]));
+	$team2 = league::get_team(intval($process_res[6][$ab][1]));
+	
+$output =  "<span class='teama'>";
+	if($team1['Team_name']){ $output .= $team1['Team_name']; }  else { ($round==1)? $output .= "Bye" : $output .= "---"; $is_bye = 1; 
+
+	($round==1)? $is_bye = 1 : $is_bye = 0;
+	}
+$output .= "</span>";
+$output .=  "<span class='teamb'>";
+	if($team2['Team_name']){ $output .= $team2['Team_name']; }
+	else { ($round==1)? $mn = "Bye" : $mn = "---";
+	$output .= $mn;
+
+	($round==1)? $is_bye = 1 : $is_bye = 0;
+	}
+$output .= "</span>";
+}
+else if($this->input->post('tformat') == 'Individual'){
+
+$y = 1;
+$player1 = explode(";", $process_res[6][$ab][0]);
+$player2 = explode(";", $process_res[6][$ab][1]);
+
+	$double_bye_pl		= explode("-", $process_res[6][$ab][0]);
+	$get_username		= league::get_username(intval($process_res[6][$ab][0]));
+	$get_partner			= league::get_username(intval($double_bye_pl[1]));
+
+	$double_game_pl_2	= explode("-", $process_res[6][$ab][1]);
+	$get_username2		= league::get_username(intval($process_res[6][$ab][1]));
+	$get_partner2				= league::get_username(intval($double_game_pl_2[1]));
+
+	$player1 = league::get_username(intval($rr_p1[0]));		
+	$player2 = league::get_username(intval($rr_p2[0]));
+	
+	$p1_part = "";		
+	$p2_part = "";		
+	if($rr_p1[1]){		
+	$player1_partner = league::get_username(intval($rr_p1[1]));		
+	$p1_part = "; $player1_partner[Firstname] $player1_partner[Lastname]";		
+	}		
+	if($rr_p2[1]){		
+	$player2_partner = league::get_username(intval($rr_p2[1]));		
+	$p2_part = "; $player2_partner[Firstname] $player2_partner[Lastname]";		
+	}		
+$output =  "<span class='teama'>";		
+	if($get_username){ $output .= $get_username['Firstname']." ".$get_username['Lastname']; } 
+	else { ($round==1)? $output .= "Bye" : $output .= "---"; 
+	($round==1)? $is_bye++ : $is_bye = 0;
+	}		
+	if($get_partner){ $output .= " - ".$get_partner['Firstname']." ".$get_partner['Lastname']; }
+	if($round == 1 and $process_res[6][$ab][0] != '---') {
+		$seed	 = array_search($process_res[6][$ab][0], $seed_team);
+		$output .= " #".($seed+1);
+	}
+$output .= "</span>";		
+$output .=  "<span class='teamb'>";		
+	if($get_username2){ $output .= $get_username2['Firstname']." ".$get_username2['Lastname']; } 		
+	else { ($round==1)? $mn = "Bye" : $mn = "---"; 		
+	$output .= $mn;
+	($round==1)? $is_bye++ : $is_bye = 0;
+	}		
+	if($get_partner2 && $get_partner){ $output .= " - ".$get_partner2['Firstname']." ".$get_partner2['Lastname']; }
+
+$seed = '';
+if($round == 1 and $process_res[6][$ab][1] != '---') {
+$seed	 = array_search($process_res[6][$ab][1], $seed_team);
+$output .= " #".($seed+1);
+}
+
+$output .= "</span>";		
+}
+	$prv_match1 = '';
+	$prv_match2 = '';
+
+?>
+<input type='hidden' name="match_num[<?php echo $round; ?>][]" value="<?php echo $match_num; ?>" />
+<input type='hidden' name="player1[<?php echo $round; ?>][<?php echo $match_num; ?>][0]" value="<?php echo $process_res[6][$ab][0]; ?>" />
+<input type='hidden' name="player1[<?php echo $round; ?>][<?php echo $match_num; ?>][1]" value="<?php 
+	if($round > 1) { $s = $match_num - ($match_num - $source); echo $s; $source++; } else { echo "0"; } ?>" />
+<?php
+if($round > 1){ $prv_match1 = $s; }
+?>
+<input type='hidden' name="player2[<?php echo $round; ?>][<?php echo $match_num; ?>][0]" value="<?php echo $process_res[6][$ab][1]; ?>" />
+<input type='hidden' name="player2[<?php echo $round; ?>][<?php echo $match_num; ?>][1]" value="<?php 
+	if($round > 1) { $s = $match_num - ($match_num - $source); echo $s; $source++; } else { echo "0"; } ?>" />
+<?php
+if($round > 1){ $prv_match2 = $s; }
+?>
+<div class="bracketbox">
+<span class="info" style="color:#0937dc; font-weight:bold;"><?php 
+echo $match_num;
+$match_dt_time = '';
+$court_name = '';
+if($match_timings[$match_num] and $is_bye == 0){
+//echo "<br>".$match_timings[$match_num][0] . " - " .date('m/d/Y H:i', (trim($match_timings[$match_num][2])));
+	$i = 1;
+	while($i <= 10 and ($new_match_timings[$prv_match1][2] == $match_timings[$pick_time][2] or $new_match_timings[$prv_match2][2] == $match_timings[$pick_time][2])) {
+		$pick_time++;
+	$i++;
+	}
+
+$court_name = $match_timings[$pick_time][0];
+echo "&nbsp;&nbsp;&nbsp;".$court_name;
+$match_dt_time = date('m/d/Y H:i', (trim($match_timings[$pick_time][2])));
+$new_match_timings[$match_num] = array('1' => $court_name, '2' => $match_timings[$pick_time][2]);
+
+$pick_time++;
+}
+?>
+<!-- <input  type="text" class='form-control' placeholder="Date" id="sdate<?php echo $match_num; ?>"  name="match_date<?php echo $match_num; ?>" />  -->
+<input type="hidden" id="court_<?php echo $match_num; ?>" name="assg_court<?php echo $match_num; ?>" 
+value="<?php echo $court_name; ?>" />
+<input type="text" placeholder="Date" id="sdate<?php echo $match_num; ?>" name="match_date<?php echo $match_num; ?>" value="<?php echo $match_dt_time; ?>" style="width: 62%;" />
+
+<script>
+var rid = "<?php echo $match_num; ?>";
+
+  $('#sdate'+rid).fdatepicker({
+		format: 'mm/dd/yyyy hh:ii',
+		disableDblClickSelection: true,
+		language: 'en',
+		pickTime: true
+	});
+</script>
+
+</span>
+<?php
+echo $output;
+?>
+</div>
+
+
+<?php
+if($round == ($total_rounds)){
+	$match_num++;
+$round2 = -1;
+?>
+<div class="third_place bracketbox">
+<span class="info" style="color:#0937dc; font-weight:bold;"><?php 
+echo $match_num;
+$match_dt_time = '';
+$court_name = '';
+if($match_timings[$match_num] and $is_bye == 0){
+//echo "<br>".$match_timings[$match_num][0] . " - " .date('m/d/Y H:i', (trim($match_timings[$match_num][2])));
+	$i = 1;
+	while($i <= 10 and ($new_match_timings[$prv_match1][2] == $match_timings[$pick_time][2] or $new_match_timings[$prv_match2][2] == $match_timings[$pick_time][2])) {
+		$pick_time++;
+	$i++;
+	}
+
+$court_name = $match_timings[$pick_time][0];
+echo "&nbsp;&nbsp;&nbsp;".$court_name;
+$match_dt_time = date('m/d/Y H:i', (trim($match_timings[$pick_time][2])));
+$new_match_timings[$match_num] = array('1' => $court_name, '2' => $match_timings[$pick_time][2]);
+
+$pick_time++;
+}
+?>
+<!-- <input  type="text" class='form-control' placeholder="Date" id="sdate<?php echo $match_num; ?>"  name="match_date<?php echo $match_num; ?>" />  -->
+<input type="hidden" id="court_<?php echo $match_num; ?>" name="assg_court<?php echo $round2; ?>" 
+value="<?php echo $court_name; ?>" />
+<input type="text" placeholder="Date" id="sdate<?php echo $match_num; ?>" name="match_date<?php echo $round2; ?>" value="<?php echo $match_dt_time; ?>" style="width: 62%;" />
+
+<script>
+var rid = "<?php echo $match_num; ?>";
+
+  $('#sdate'+rid).fdatepicker({
+		format: 'mm/dd/yyyy hh:ii',
+		disableDblClickSelection: true,
+		language: 'en',
+		pickTime: true
+	});
+</script>
+
+</span>
+<?php
+echo $output;
+?>
+</div>
+<input type='hidden' name='round[]' value="<?php echo $round2; ?>" />
+
+<input type='hidden' name="match_num[<?php echo $round2; ?>][]" value="<?php echo '-1'; ?>" />
+<input type='hidden' name="player1[<?php echo $round2; ?>][<?php echo '-1'; ?>][0]" value="<?php echo $process_res[6][$ab][0]; ?>" />
+<input type='hidden' name="player1[<?php echo $round2; ?>][<?php echo '-1'; ?>][1]" value="<?php 
+	if($round > 1) { $s = ($match_num-2) - (($match_num-2) - ($source-2)); echo $s; /*$source++; */} else { echo "0"; } ?>" />
+<?php
+if($round > 1){ $prv_match1 = $s; }
+?>
+<input type='hidden' name="player2[<?php echo $round2; ?>][<?php echo '-1'; ?>][0]" value="<?php echo $process_res[6][$ab][1]; ?>" />
+<input type='hidden' name="player2[<?php echo $round2; ?>][<?php echo '-1'; ?>][1]" value="<?php 
+	if($round > 1) { $s = ($match_num-1) - (($match_num-1) - ($source-1)); echo $s; /*$source++; */} else { echo "0"; } ?>" />
+<?php
+}
+?>
+
+<?php
+//$match_num++;
+
+$y++;
+
+	if($process_res[6][$ab][1] == '---') {
+
+		if($round < 2){
+		$teams[$x] = $process_res[6][$ab][0];
+		}
+		else{
+		$teams[$x] = "---";
+		}
+		$x++;
+	}
+	else if($process_res[6][$ab][0] == '---') {
+		if($round < 2){
+		$teams[$x] = $process_res[6][$ab][1];
+		}
+		else{
+		$teams[$x] = "---";
+		}
+		$x++;
+	}
+	else {
+		$teams[$x] = '---';
+		$x++;
+	}
+
+$match_num++;
+}
+
+unset($process_res[6]);
+//print_r($teams);
+//exit;
+
+?>
+</div>
+<?php if($num_teams == 2){ ?>
+  <div class="r<?php echo $total_rounds+1; ?>">
+   		<div class="final">
+        	<div class="bracketbox">
+            	<span class="teamc"></span>
+            </div>
+        </div>
+   </div>
+<?php } ?>
+<?php
+$num_teams = $process_res[3];
+$prev_round_games = $process_res[1];
+($prev_round_games > 1) ? $process_res[1] = $process_res[1]/2: $process_res[1];
+}
+?>
+</div>
+
+<input type="hidden" id="tourn_id"  name="tourn_id" value="<?php echo $this->input->post('tourn_id'); ?>" />
+<input type='hidden' name='match_type'	  value="<?php echo $this->input->post('types'); ?>" />
+<input type='hidden' name='filter_events' value='<?php if($filter_events != '' and $filter_events != 'null') { echo $filter_events; }
+else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>' />
+<input type='hidden' name='age_group' value="<?php echo $this->input->post('type_gen'); ?>" />
+<input type='hidden' name='ttype' value="<?php echo $ttype; ?>" />
+<input type='hidden' name='is_publish_draw'	value="<?php echo $is_publish_draw; ?>" />
+<input type='hidden' name='num_of_sets'			value="<?php echo $num_of_sets; ?>" />
+<input type='hidden' name='br_game_day' value="<?php echo $br_game_day; ?>" />
+<input type="hidden" name="draw_format"  id="draw_format"  value='<?=$draw_format;?>' />
+<input type="hidden" name="upd_type"  id="upd_type"  value='<?=$upd_type;?>' />
+<input type="hidden" name="bracket_id"  id="bracket_id"  value='<?=$bid;?>' />
+
+<input type='hidden' name='squad' value='<?php echo serialize($seed_team); ?>' />
+<div style='clear:both;'></div>
+<!-- <div>
+<input type="submit" class="league-form-submit1" name="bracket_confirm" id="bracket_confirm" value="Confirm & Save" />
+</div> -->
+</div>
+</form>
+</html>
+<?php
+		}
+
+
+	public function get_tourn_comments($tourn_id){
+
+	$host = base_url()."rest_services/messages";
+
+    $ch = curl_init();
+  
+    $dataArray = array('type' => 'tournament', 'type_id' => $tourn_id, 'is_web'	=> 1);
+  
+    $data = http_build_query($dataArray);
+  
+    $getUrl = $host."?".$data;
+  
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_URL, $getUrl);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 80);
+       
+    $response = curl_exec($ch);
+        
+    if(curl_error($ch)){
+        echo 'Request Error:' . curl_error($ch);
+    }
+	//else{
+    //    echo $response;
+    //}
+       
+    curl_close($ch);
+//echo "<pre>"; print_r(json_decode($response, true)); exit;
+
+return  json_decode($response, true);
+	}
+
 
 }

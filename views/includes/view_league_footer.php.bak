@@ -1,4 +1,51 @@
-     <div class="bg_fotter pt-5 pb-5">
+             <!-- section 04 start here -->
+        <section class="contact_section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12 m-auto">
+                        <div class="row">
+                            <div class="col-lg-6 col-12">
+                                <div class="part_1">
+                                    <p class="title">Comments/Feedback</p>
+                                    <input type="text" placeholder="Full Name">
+                                    <input type="email" placeholder="Email address">
+                                    <input type="text" placeholder="Add your message (optional)">
+                                    <div class="recaptcha">
+                                        <img class="w-100 img-fluid" src="images/Group (4).png" alt="">
+                                    </div>
+                                    <button type="submit">Request a Demo</button>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-12">
+                                <div class="part_2">
+                                    <p class="title">Contact Us</p>
+
+                                    <div class=" cont_info location ">
+                                        <img class="" src="images/Frame 30543.png" alt="">
+                                        <span>3975 Lakefield Ct, Cumming, Georgia - 30024</span>
+                                    </div>
+                                    <div class="cont_info number">
+                                        <img class="" src="images/Frame 30543 (1).png" alt="">
+                                        <span><a href="tel:+1 470 533 8707">+1 470 533 8707</a></span>
+                                    </div>
+                                    <div class="social_info">
+                                        <a href="#"> <img src="images/Vector.png" alt=""></a>
+                                        <a href="#"> <img src="images/Vector (1).png" alt=""></a>
+                                        <a href="#"> <img src="images/Vector (2).png" alt=""></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- section 04 end here -->
+
+	 
+	 
+	 
+	 <div class="bg_fotter pt-5 pb-5">
        <div class="container-fluid" id="contact">
          <div class="row">
            <div class="col-lg-6">

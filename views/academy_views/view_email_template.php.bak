@@ -1155,7 +1155,7 @@ Hi <?php echo $name; ?>,<br />
 <?php echo "Transaction ID: ".$tx_id; ?><br />
 <?php } ?>
 <br />
-<?php echo "If you have any questions, please contact club director."; ?><br />
+<?php echo "If you have any questions, please contact us by reply to this email."; ?><br />
 </div>
 
 <div style="Margin-top:0;color:#565656;font-family:Georgia,serif;font-size:16px;line-height:25px;Margin-bottom:25px">

@@ -49,6 +49,30 @@ if($check_user){
 
 <td>&nbsp;<b><?php echo $bk->Draw_Title; ?></b></td>
 <td>&nbsp;<b><?php echo $bk->Bracket_Type; ?></b></td>
+<td>&nbsp;<b><?php echo $bk->Bracket_Type; ?></b></td>
+
+<td><?php
+if($bk->OCCR_ID) {
+	$ocr_info		= league :: get_occr_info($bk->OCCR_ID);
+	$dis_date		= date('M d, h:i A', strtotime($ocr_info['Game_Date'])); 
+	//$sort_date	= date('YmdHis', strtotime($ocr_info['Game_Date'])); 
+	$sort_date	= strtotime($ocr_info['Game_Date']); 
+}
+else {
+	$get_first_match = league::get_bracket_firstmatch($bk->BracketID);
+	//echo ""; print_r($get_first_match); exit;
+	if($get_first_match['Match_DueDate']) {
+		$dis_date		= date('M d, h:i A', strtotime($get_first_match['Match_DueDate'])); 
+		//$sort_date	= date('YmdHis', strtotime($get_first_match['Match_DueDate'])); 
+		$sort_date 	= strtotime($get_first_match['Match_DueDate']); 
+	}
+	else {
+		$dis_date		= date('M d, h:i A', strtotime($tour_details->StartDate)); 
+		//$sort_date	= date('YmdHis', strtotime($tour_details->StartDate)); 
+		$sort_date 	= strtotime($tour_details->StartDate); 
+	}
+}
+?><span style='display:none;'><?=$sort_date;?></span><b><?=$dis_date;?></b></td>
 <td>
 <input type="button" class="show_matches league-form-submit1" name="list_draw_matches<?php echo $bk->BracketID;?>" 
 id='<?php echo $bk->BracketID;?>' value="Show Matches" />

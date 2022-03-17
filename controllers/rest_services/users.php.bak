@@ -191,7 +191,7 @@ class Users extends REST_Controller {
 		if($this->input->get('user_id')){
 			$user_id = $this->input->get('user_id');
 
-			$sp_intrests .= "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)";
+			$sp_intrests .= "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20)";
 
 			$sports = array(
 				'1' => 'Tennis',
@@ -210,7 +210,10 @@ class Users extends REST_Controller {
 '14' => 'Lacrosse',
 '15' => 'Throwball',
 '16' => 'Cricket',
-'17' => 'General Fitness');
+'17' => 'General Fitness',
+'19' => 'Handball',
+'20' => 'Paddleball'
+);
 
 
 			$get_ranks  = $this->muser->get_user_a2m_ranks($user_id);
@@ -647,7 +650,7 @@ class Users extends REST_Controller {
 
 								$temp_arr2[] = $from."-".$to;
 								$temp_plist[$from."-".$to] = $pList;
-								$bookings2[] = array('type' =>'COACH_BOOKING', 'coach_id' => $booking->coach_id, 'coach_name' => $get_coach['Firstname']." ".$get_coach['Lastname'], 'coach_img' => $prof_pic, 'coach_sport' => $get_coach['coach_sport'], 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
+								$bookings2[] = array('type' =>'COACH_BOOKING', 'coach_id' => $booking->coach_id, 'coach_name' => $get_coach['Firstname']." ".$get_coach['Lastname'], 'coach_img' => $prof_pic, 'coach_sport' => trim($get_coach['coach_sport']), 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
 							}
 							/*else{
 								$pList  = json_decode($booking->players, true);
@@ -716,7 +719,7 @@ $coach_past_bookings = NULL;
 
 								$temp_past_arr3[] = $from."-".$to;
 								$temp_plist[$from."-".$to] = $pList;
-								$coach_past_bookings[] = array('type' =>'COACH_BOOKING', 'coach_id' => $booking->coach_id, 'coach_name' => $get_coach['Firstname']." ".$get_coach['Lastname'], 'coach_img' => $prof_pic, 'coach_sport' => $get_coach['coach_sport'], 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
+								$coach_past_bookings[] = array('type' =>'COACH_BOOKING', 'coach_id' => $booking->coach_id, 'coach_name' => $get_coach['Firstname']." ".$get_coach['Lastname'], 'coach_img' => $prof_pic, 'coach_sport' => trim($get_coach['coach_sport']), 'from' => $from, 'to' => $to, 'reserved_by' => $reserved_by, 'numPlayers' => $numP, 'playersList' => $pList, 'total_bookings' => $tot_bookings, 'actual_booking_from' => $actual_from, 'actual_booking_to' => $actual_to);
 							}
 							/*else{
 								$pList  = json_decode($booking->players, true);

@@ -53,84 +53,6 @@ if(count($club_leagues) == 0 and count($club_events) == 0) {
 <?php
 }
 else {
-foreach($club_leagues as $row) { 
-?>
-	<div class="col-md-3 col-sm-6">
-		 <div class="course-item">
-			<div class="course-img">
-			<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>">
-			<img title="<?=$row->tournament_title;?>" src="<?php echo base_url(); ?>tour_pictures/<?php if($row->TournamentImage!=""){echo $row->TournamentImage; }
-			else {
-			switch($row->SportsType) {
-			case 1:
-			echo "default_tennis.jpg";
-			break;
-			case 2:
-			echo "default_table_tennis.jpg";
-			break;
-			case 3:
-			echo "default_badminton.jpg";
-			break;
-			case 4:
-			echo "default_golf.jpg";
-			break;
-			case 5:
-			echo "default_racquet_ball.jpg";
-			break;
-			case 6:
-			echo "default_squash.jpg";
-			break;
-			case 7:
-			echo "default_pickleball.jpg";
-			break;
-			case 8:
-			echo "default_chess.jpg";
-			break;
-			case 9:
-			echo "default_carroms.jpg";
-			break;
-			case 10:
-			echo "default_volleyball.jpg";
-			break;
-			case 11:
-			echo "default_fencing.jpg";
-			break;
-			case 12:
-			echo "default_bowling.jpg";
-			break;
-			case 18:
-			echo "default_basketball1.jpg";
-			break;
-			default:
-			echo "";
-			}
-			}
-			?>" alt="" style="width:261px; height:157px;" />
-			</a>
-			</div>
-			<div class="course-body">
-				<div class="course-desc">
-					<h4 class="course-title" style='font-size:15px;'><a title="<?=$row->tournament_title;?>" href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>"><?php echo substr($row->tournament_title, 0, 27); if(strlen($row->tournament_title) > 27) echo "..."; ?></a></h4>
-					  <p><b>Sport:</b> <?php 
-						$get_sport = events::get_sport($row->SportsType);
-						echo $get_sport['Sportname'];
-						?><br>
-						<b>Reg. closed on:</b> <?php echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br>
-						<b>Location:</b> <?php echo $row->TournamentCity. ',' . $row->TournamentState; ?></p>
-						<?php 
-						$now		  = strtotime("now");
-						$end_date = strtotime($row->EndDate);
-
-						if($end_date < $now){ ?>
-						<b style="background-color:#2de033; padding:4px;">COMPLETED</b>
-						<?php } ?>
-				</div>
-			</div>
-		</div><!-- Tournaments-item -->
-	</div><!-- col-md-4 -->
-
-<?php
-}
 
 if(count($club_events) > 0){
 
@@ -187,7 +109,7 @@ foreach($club_events as $row) {
 			echo "";
 			}
 			}
-			?>" alt="" style="width:261px; height:157px;" />
+			?>" alt="" style="/*width:261px; height:157px;*/  object-fit: contain; height:157px; margin-top: 5px;" />
 			</a>
 			</div>
 			<div class="course-body">
@@ -212,11 +134,95 @@ foreach($club_events as $row) {
 						<?php } ?>
 				</div>
 			</div>
-		</div><!-- Tournaments-item -->
+		</div><!-- Events-item -->
 	</div><!-- col-md-4 -->
 
 <?php
 }
+}
+
+
+
+
+foreach($club_leagues as $row) { 
+?>
+	<div class="col-md-3 col-sm-6">
+		 <div class="course-item">
+			<div class="course-img">
+			<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>">
+			<img title="<?=$row->tournament_title;?>" src="<?php echo base_url(); ?>tour_pictures/<?php if($row->TournamentImage!=""){echo $row->TournamentImage; }
+			else {
+			switch($row->SportsType) {
+			case 1:
+			echo "default_tennis.jpg";
+			break;
+			case 2:
+			echo "default_table_tennis.jpg";
+			break;
+			case 3:
+			echo "default_badminton.jpg";
+			break;
+			case 4:
+			echo "default_golf.jpg";
+			break;
+			case 5:
+			echo "default_racquet_ball.jpg";
+			break;
+			case 6:
+			echo "default_squash.jpg";
+			break;
+			case 7:
+			echo "default_pickleball.jpg";
+			break;
+			case 8:
+			echo "default_chess.jpg";
+			break;
+			case 9:
+			echo "default_carroms.jpg";
+			break;
+			case 10:
+			echo "default_volleyball.jpg";
+			break;
+			case 11:
+			echo "default_fencing.jpg";
+			break;
+			case 12:
+			echo "default_bowling.jpg";
+			break;
+			case 18:
+			echo "default_basketball1.jpg";
+			break;
+			default:
+			echo "";
+			}
+			}
+			?>" alt="" style="/*width:261px; height:157px;*/  object-fit: contain; height:157px; margin-top: 5px;" />
+			</a>
+			</div>
+			<div class="course-body">
+				<div class="course-desc">
+					<h4 class="course-title" style='font-size:15px;'><a title="<?=$row->tournament_title;?>" href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>"><?php echo substr($row->tournament_title, 0, 24); if(strlen($row->tournament_title) > 24) echo "..."; ?></a></h4>
+					  <p><b>Sport:</b> <?php 
+						$get_sport = events::get_sport($row->SportsType);
+						echo $get_sport['Sportname'];
+						?><br>
+						<b>Reg. closed on:</b> <?php echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br>
+						<b>Location:</b> <?php echo $row->TournamentCity. ',' . $row->TournamentState; ?></p>
+						<?php 
+						$now		  = strtotime("now");
+						$end_date = strtotime($row->EndDate);
+
+						if($end_date < $now){ ?>
+						<b style="background-color:#2de033; padding:4px;">COMPLETED</b>
+						<?php } else ?>
+						<b style="padding:4px;">&nbsp;</b>
+						<?php } ?>
+				</div>
+			</div>
+		</div><!-- Tournaments-item -->
+	</div><!-- col-md-4 -->
+
+<?php
 }
 
 }

@@ -398,6 +398,7 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 <input type="hidden" name="draw_format"  id="draw_format"  value='<?=$draw_format;?>' />
 <input type='hidden' name='is_plof' value="<?php echo $this->input->post('is_plof'); ?>" />
 <input type='hidden' name='plof_size' value="<?php echo $this->input->post('plof_size'); ?>" />
+<input type='hidden' name='plof_size_sel' value="<?php echo $this->input->post('plof_size_sel'); ?>" />
 
 
 <?php

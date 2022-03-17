@@ -39,8 +39,18 @@ class Profile extends REST_Controller {
 			$data['Firstname'] = trim($post_data['Firstname'], '"');
 		if($post_data['Lastname'])
 			$data['Lastname'] = trim($post_data['Lastname'], '"');
+		
+		$data['Mobilephone']		= NULL;
+		if($post_data['mphone']){
+			$mphone = trim($post_data['mphone'], '"');
+			$mphone = str_replace('(', '', $mphone);
+			$mphone = str_replace(')', '', $mphone);
+			$mphone = str_replace('-', '', $mphone);
 
-		$data['Mobilephone']		= trim($post_data['mphone'], '"');
+			$data['Mobilephone']	 = $mphone;
+		}
+
+
 		$data['HomePhone']		= trim($post_data['hphone'], '"');
 		$data['UserAddressline1']	= trim($post_data['addr1'], '"');
 		$data['UserAddressline2']	= trim($post_data['addr2'], '"');

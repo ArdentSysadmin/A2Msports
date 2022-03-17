@@ -1115,8 +1115,74 @@ if($search['city'] or $search['state']){
 			}
 	}
 
-	public function get_userToken($user_id)
-	{
+	public function get_userToken_team($team_id){
+		$qry_team = $this->db->query("SELECT * FROM Teams WHERE Team_ID = {$team_id}");
+		$get_team = $qry_team->row_array();
+		$team_players = json_decode($get_team['Players'], TRUE);
+		if($team_players){
+			foreach($team_players as $player){
+				if($player){
+				$data	= array('user_id' => $player, 'status' => 1, 'club_id' => NULL);
+				$query = $this->db->get_where('userPushTokens', $data);
+				$user_tokens = $query->result();			
+
+				if($user_tokens){
+					foreach($user_tokens as $i => $ut){
+						$tokens_arr[] = $ut->token;
+					}
+				}
+				}
+			}
+			
+		}
+	
+		return $tokens_arr;
+	}
+
+	public function get_userToken_tournament($tourn_id){
+		$qry_reg_tourn = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = {$tourn_id}");
+		$get_reg_users = $qry_reg_tourn->result();
+//echo "<pre>"; print_r($get_reg_users);
+		if($get_reg_users){
+			foreach($get_reg_users as $player){
+				$data	= array('user_id' => $player->Users_ID, 'status' => 1, 'club_id' => NULL);
+				$query = $this->db->get_where('userPushTokens', $data);
+				$user_tokens = $query->result();			
+
+				if($user_tokens){
+					foreach($user_tokens as $i => $ut){
+						$tokens_arr[] = $ut->token;
+					}
+				}
+			}
+		}
+
+		$qry_reg_tourn2 = $this->db->query("SELECT * FROM tournament WHERE tournament_ID = {$tourn_id}");
+		$get_reg_users2 = $qry_reg_tourn2->row_array();
+//echo "<pre>"; print_r($get_reg_users);
+		if($get_reg_users2){
+				$data	= array('user_id' => $get_reg_users2['Usersid'], 'status' => 1, 'club_id' => NULL);
+				$query = $this->db->get_where('userPushTokens', $data);
+				$user_tokens2 = $query->result();			
+
+				if($user_tokens2){
+					foreach($user_tokens2 as $i => $ut){
+						$tokens_arr[] = $ut->token;
+					}
+				}
+		}
+	
+
+		return $tokens_arr;
+	}
+
+	public function get_userToken_a2m($user_id){
+		$data	= array('user_id' => $user_id, 'status' => 1, 'club_id' => NULL);
+		$query = $this->db->get_where('userPushTokens', $data);
+		return $query->result();
+	}
+
+	public function get_userToken($user_id){
 		$data  = array('user_id' => $user_id, 'status' => 1);
 		$query = $this->db->get_where('userPushTokens', $data);
 		return $query->result();
@@ -1276,6 +1342,22 @@ if($search['city'] or $search['state']){
 
 		return $users;
 	}
+
+		public function get_user_gen_stats($user_id){
+				$qr_check = $this->db->query("SELECT * FROM GeneralMatch WHERE users_id = {$user_id}");
+			return $qr_check->result();
+		}
+
+		public function get_user_indv_stats($user_id){
+				$qr_check = $this->db->query("SELECT * FROM GeneralMatch WHERE GeneralMatch_id IN 
+				(SELECT GeneralMatch_ID FROM IndividualPlay WHERE Opponent = {$user_id})");
+			return $qr_check->result();
+		}
+
+		public function get_user_indvMatch($match_id){
+				$qr_check = $this->db->query("SELECT * FROM IndividualPlay WHERE GeneralMatch_ID = {$match_id}");
+			return $qr_check->result();
+		}
 
 		public function get_user_single_stats($user_id, $sp_intrests){
 			if($sp_intrests != '()'){

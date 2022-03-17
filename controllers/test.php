@@ -1,5 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+error_reporting(0);
 
 	//League controller ..
 	class Test extends CI_Controller {
@@ -1120,5 +1121,34 @@ echo "Count: ".count($res)."<br>";
 echo "Total: ".$count."<br>";
 
 
+	}
+
+	public function update_user_json(){
+		$result = $this->general->get_all_users();
+
+					if(!empty($result)) {
+							$returnStr = '[';
+						foreach($result as $row){
+							$returnStr .= '{';
+							$fname = str_replace("'",'',$row->Firstname);
+							$fname = str_replace('"','',$fname);
+
+							$lname = str_replace("'",'',$row->Lastname);
+							$lname = str_replace('"','',$lname);
+
+							$returnStr .= 'label:'.'"'.trim($fname).' '.trim($lname).'",';
+							$returnStr .= 'value:'.'"'.trim($fname).' '.trim($lname).'",';
+							$returnStr .= 'value2:'.'"'.$row->Users_ID.'"';
+							$returnStr .= '},';
+						}
+							$returnStr .= ']';
+					}
+
+		$result = $this->general->ins_users_json($returnStr);
+
+		if($result) 
+			echo "Updation Done.";
+		else 
+			echo "Updation Failed!";
 	}
 }

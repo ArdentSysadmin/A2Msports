@@ -212,6 +212,8 @@ checkboxes.style.display = "block";
 //$tourn_reg_names = league::get_reg_tourn_player_names($tour_details->tournament_ID);
 $parent_class = $this->router->class;
 $tourn_reg_names = $parent_class::get_reg_players($tour_details->tournament_ID, $tour_details->SportsType); 
+
+//$get_x = $parent_class::get_tourn_events_arr($tour_details->tournament_ID); 
 ?>
 
 <div class="tab-content table-responsive">
@@ -219,7 +221,7 @@ $tourn_reg_names = $parent_class::get_reg_players($tour_details->tournament_ID, 
 <thead>
 <tr class="top-scrore-table" style='background-color:#f68b1c'>
 <?php
-echo "test".$this->logged_user_role." - ".$this->is_super_admin." - "; exit;
+//echo "test".$this->logged_user_role." - ".$this->is_super_admin." - "; exit;
 if($this->logged_user_role == 'Admin' or $this->logged_user_role == 'RegPlayer' or $this->is_super_admin){
 ?>
 <th class="score-position" valign="center" align="center">Check In</th>
@@ -317,6 +319,11 @@ echo "<a href='".base_url()."player/".$name->Users_ID."' target='_blank'>" . ucf
 <?php
 $reg_events_array = league::regenerate_events($reg_events);
 
+if($this->logged_user == 240){
+	echo "<pre>"; print_r($this->tourn_events_arr); 
+	echo "<pre>"; print_r($reg_events); 
+	echo "<pre>"; print_r($reg_events_array); exit;
+}
 if(count($reg_events_array) > 0){
 	foreach($reg_events_array as $i => $group){
 	echo $group;
@@ -468,3 +475,48 @@ else if(($this->logged_user_role == 'Admin' or $this->is_super_admin) and $tour_
 <div id='div_new_usatt' style='display:none;'>
 New USATT signup users
 </div>
+
+
+
+<?php
+if(($this->logged_user_role == 'Admin' or $this->is_super_admin) and $tour_details->TShirt) {
+?>
+<script>
+$(document).ready(function() {
+$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+});
+</script>
+<?php
+}
+else if($this->logged_user_role == 'Admin' or $this->is_super_admin) {
+?>
+<script>
+$(document).ready(function() {
+$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+});
+</script>
+<?php
+}
+else if($this->logged_user_role == 'RegPlayer') {
+?>
+<script>
+$(document).ready(function() {
+$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+});
+</script>
+<?php
+}
+else {
+?>
+<script>
+$(document).ready(function() {
+$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+});
+</script>
+<?php
+}
+?>

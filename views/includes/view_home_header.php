@@ -23,8 +23,8 @@
     <!-- Owl Stylesheets -->
     <link rel="stylesheet" href="<?=base_url(); ?>assets_new/css/owl.carousel.min.css">
     <link rel="stylesheet" href="<?=base_url(); ?>assets_new/css/owl.theme.default.min.css">
-    <title>A2M</title>
-    <script src="<?=base_url(); ?>assets_new/js/jquery.min.js"></script>
+    <title>A2MSports</title>
+    <!-- <script src="<?=base_url(); ?>assets_new/js/jquery.min.js"></script> -->
     <script src="<?=base_url(); ?>assets_new/js/owl.carousel.js"></script>
     <style type="text/css">
 

@@ -28,7 +28,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 			$this->short_code			= $this->uri->segment(1);
 			$this->academy_admin	= $this->general->get_org_admin($this->short_code);
-			//echo "U ".$this->logged_user."  - ".$this->academy_admin; exit;
 			$this->academy_id			= $this->general->get_orgid($this->short_code);
 			$this->logged_user			= $this->session->userdata('users_id');
 			//echo "L ".$this->logged_user;
@@ -175,6 +174,7 @@ exit;*/
 
 		public function details($org_id)
 		{
+			//echo $_GET['st']; exit;
 			if($_GET['st'] == '1' or $_GET['st'] == '2' or $_GET['st'] == '3' or $_GET['st'] == '4'){
 					$org_details			= $this->model_academy->get_academy_details($org_id);
 					$data['org_details']	= $org_details;
@@ -186,8 +186,8 @@ exit;*/
 
 			//error_reporting(-1);
 			$data['search_fname']	= "";
-			$data['coach_name']		= "";
-			$org_details			= $this->model_academy->get_academy_details($org_id);
+			$data['coach_name']	= "";
+			$org_details					= $this->model_academy->get_academy_details($org_id);
 			//echo "<pre>"; print_r($org_details); exit;
 			$data['org_details']	= $org_details; 
 
@@ -222,7 +222,7 @@ exit;*/
 			$facility_details				= $this->model_academy->get_club_facility($org_id); 
 			$data['facility_details']	= $facility_details;
 			$data['org_id']				= $org_id;
-//echo "Test"; exit;
+
 			$this->load->view('academy_views/includes/academy_header', $data);
 			if($org_id == 1176){
 			$data['gpa_members'] = $this->model_academy->get_top_members_list($org_id);

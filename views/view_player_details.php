@@ -321,19 +321,7 @@ $('#reset_stats').click(function(){
 
 <section id="single_player" class="container secondary-page">
 <div class="top-score-title right-score col-md-9">
-<!-- Google AdSense -->
-<div id='google' align='left'>
-<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-<ins class="adsbygoogle"
-style="display:block"
-data-ad-client="ca-pub-9772177305981687"
-data-ad-slot="1273487212"
-data-ad-format="auto"></ins>
-<script>
-(adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-</div>
-<!-- Google AdSense -->
+
 <h3> <?php echo $user_details['Firstname'] . " " . $user_details['Lastname'];?> </h3>
 
 <div class="col-md-12 atp-single-player">
@@ -1364,5 +1352,22 @@ echo $get_sport['Sportname'];?>
  <!-- close div -->
 
 <!-- -----------------contact player section end ------------------------------------------------- -->          
+
+
+<!-- Google AdSense -->
+<div id='google' align='left'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+style="display:block"
+data-ad-client="ca-pub-9772177305981687"
+data-ad-slot="1273487212"
+data-ad-format="auto"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+<!-- Google AdSense -->
+
+
 
 </div>

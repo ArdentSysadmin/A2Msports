@@ -39,7 +39,7 @@ class events extends CI_Controller {
 
 	public function add()
 	{
-		$data['intrests']	 = $this->model_event->get_intrests();
+		$data['intrests']	 = $this->model_event->get_intrests(); exit;
 		$data['event_types'] = $this->model_event->get_event_types();
 		$data['results'] = $this->model_news->get_news();
 
@@ -851,7 +851,7 @@ class events extends CI_Controller {
 			   }
 			   $user_stat = $this->model_event->update_non_reg_user_status($event_id,$act_code);
 
-			redirect("events/view/$event_id/6");
+			redirect("events/view/$event_id/6#comments");
 			}
 		}
 		else{

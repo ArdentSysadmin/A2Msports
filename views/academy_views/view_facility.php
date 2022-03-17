@@ -334,7 +334,9 @@ if($org_details['Aca_ID'] != 1166){
 			<!-- edit icon end -->
     </div>
     <div class="team-row justify-content-center our-gallery-wrapper" id='lt-team' style="background:transparent; padding:0px;">
-	<div id="home-gallery" class="owl-carousel">
+	<div id="home-gallery" <?php if($facility_details['Facility_Leadership']){ ?>
+	class="owl-carousel" 
+	<?php } ?>>
 		<?php
 			if($facility_details['Facility_Leadership']){
 				$lt_team = json_decode($facility_details['Facility_Leadership'], true); 

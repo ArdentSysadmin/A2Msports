@@ -95,6 +95,9 @@ class Profile extends REST_Controller {
                 case $age == 19:
                    $age_group = "U19";
                    break;
+				case $age == 21:
+                   $age_group = "U21";
+                   break;
                 default:
                    $age_group = "Adults";
                    break;

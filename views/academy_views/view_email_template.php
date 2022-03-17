@@ -71,6 +71,8 @@ Thank you for registering with us. <br /> Please access the below link to activa
 <?php 
 if($aca_proxy_url)
 	$string =  $aca_proxy_url."/register/activate/".$Code;
+else if($aca_shortcode)
+	$string =  base_url().$aca_shortcode."/register/activate/".$Code;
 else
 	$string =  base_url()."register/activate/".$Code;
 	

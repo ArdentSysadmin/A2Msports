@@ -202,7 +202,7 @@ select 1 as Registered, st.Sportname , t.* from tournament t inner join dbo.Spor
 		$tid = $data['Tournament_ID'];
 		$uid = $data['Users_ID'];
 		$upd_events = $data['upd_events'];
-
+echo json_encode($upd_events); exit;
 		$query = $this->db->query("UPDATE RegisterTournament SET Reg_Events = '".json_encode($upd_events)."' WHERE 
 		Tournament_ID = '".$tid."' AND Users_ID = '".$uid."'");
 

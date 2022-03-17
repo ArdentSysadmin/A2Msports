@@ -179,6 +179,35 @@ var id_val = $(this).attr('id');
 	  e.preventDefault();
 
 	});
+
+
+	$('#fetch_po_players').click(function() {
+		if(confirm("Are you sure to update the draw players?")){
+
+	var bid			= "<?php echo $bracket_id; ?>";
+	var tid			= $('#tour_id').val();
+	var ref			= $('#ref_brackets').val();
+	var esc			= $('#esc_players').val();
+//alert(club_baseurl);
+			$.ajax({
+				type: 'POST',
+				url: club_baseurl +'league/fetch_topGroup_players',
+				data: {tid:tid,bid:bid,ref:ref,esc:esc},
+				success: function(res) {
+
+					if(res == "Source draws are not yet completed!")
+						alert(res);
+					else if(res == "Can't fetch the players as no main draws exists!")
+						alert(res);
+					else
+						$('#add_score_main_div').html(res);
+				}
+			});
+
+		}
+	});
+
+
 });
 </script>
 
@@ -189,13 +218,22 @@ var id_val = $(this).attr('id');
 $round_matches	=	$bracket_matches->result();
 //echo "<pre>"; print_r($round_matches); exit;
 $total_rounds	=	$get_bracket_details['No_of_rounds'];
-$tourn_id		=	$get_bracket_details['Tourn_ID'];
+$tourn_id			=	$get_bracket_details['Tourn_ID'];
 //$sess_id		=	$this->session->userdata('users_id');
-$sess_id		=	$this->logged_user;
+$sess_id			=	$this->logged_user;
 ?>
 
-<div>
-<h4 style="color:#f59123"><b><?php echo $get_bracket_details['Draw_Title']; ?></b></h4>
+<div id="add_score_main_div">
+<h4 style="color:#f59123"><b><?php echo $get_bracket_details['Draw_Title']; ?></b>
+<?php
+	if($get_bracket_details['Esc_Per_Group']){ 
+?>
+<input type="button" class="league-form-submit1" style="margin-left: 100px;" name="fetch_po_players" id="fetch_po_players" value=" Get Draw Players " />
+<?php
+	}
+?>
+
+</h4>
 </div>
 
 <div class="tab-content">
@@ -472,11 +510,11 @@ echo $round_matches[$m]->Player2_Partner." {$round_matches[$m]->Match_Num}<br>";
 			</script>
 
 				<div class='form-group'>
+<input type='checkbox' name="<?php echo $round_matches[$m]->Tourn_match_id; ?>" id='wff_add' class='wff_score' />&nbsp;Declare winner by Win by Forfeit
+
 				<div class='col-md-8 form-group internal scoretable-web'>
 
-					<input type='checkbox' name="<?php echo $round_matches[$m]->Tourn_match_id; ?>" id='wff_add' class='wff_score' />&nbsp;Declare winner by Win by Forfeit
-
-		
+					
 					<?php
 					$get_name = league::get_username($round_matches[$m]->Player1); 
 					$player1_name = $get_name['Firstname'] . "  " . $get_name['Lastname'];
@@ -724,7 +762,21 @@ $(function() {
 </table>
 <?php
 }
-} 
+?>
+<input type='hidden' name='bracket_id' 
+value="<?php echo $get_bracket_details['BracketID']; ?>" />
+
+<input type='hidden' name='ref_brackets' id='ref_brackets' 
+value='<?php echo $get_bracket_details['Ref_Brackets']; ?>' />
+
+<input type='hidden' name='esc_players' id='esc_players' 
+value='<?php echo $get_bracket_details['Esc_Per_Group']; ?>' />
+
+<input type='hidden' name='tour_id' id='tour_id'	 
+value="<?php echo $get_bracket_details['Tourn_ID']; ?>" />
+
+<?php
+}
 else{
 ?>
 <div>Draws are not generated for this tournament yet!</div>

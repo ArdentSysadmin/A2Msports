@@ -174,6 +174,7 @@ exit;*/
 
 		public function details($org_id)
 		{
+			//echo $_GET['st']; exit;
 			if($_GET['st'] == '1' or $_GET['st'] == '2' or $_GET['st'] == '3' or $_GET['st'] == '4'){
 					$org_details			= $this->model_academy->get_academy_details($org_id);
 					$data['org_details']	= $org_details;
@@ -185,13 +186,14 @@ exit;*/
 
 			//error_reporting(-1);
 			$data['search_fname']	= "";
-			$data['coach_name']		= "";
-			$org_details			= $this->model_academy->get_academy_details($org_id);
-			//echo "<pre>"; print_r($org_details); exit;
-			$data['org_details']	= $org_details; 
+			$data['coach_name']	= "";
+			$org_details					= $this->model_academy->get_academy_details($org_id);
 
-			$data['creator']		= $org_details['Aca_User_id'];
-			$data['pom_user'] 		= "";
+			//echo "<pre>"; print_r($org_details); exit;
+
+			$data['org_details']	= $org_details;
+			$data['creator']			= $org_details['Aca_User_id'];
+			$data['pom_user'] 	= "";
 			
 			if($org_details['POM'])
 			$data['pom_user'] 		= $this->model_academy->get_user($org_details['POM']);

@@ -169,7 +169,8 @@ checkboxes.style.display = "block";
 </script>
 
 <div class='col-md-12'>
-<?php $tourn_reg_names = league::get_reg_tourn_player_names($tour_details->tournament_ID); 
+<?php $tourn_reg_names = league::get_reg_tourn_player_names($tour_details->tournament_ID);
+//echo $this->db->last_query(); exit;
 //echo "<pre>";print_r($tourn_reg_names);?>
 
 <!-- <h4>Registered Players (<?php echo count($tourn_reg_names); ?>) [WithDraw Players]</h4> -->

@@ -446,6 +446,7 @@
 				$data['aca_logo']	= $aca_info['Aca_logo'];
 				$data['aca_name']	= $aca_name = $aca_info['Aca_name'];
 				$data['aca_proxy_url']	= $aca_info['A2M_Proxy_URL'];
+				$data['aca_shortcode']	= $aca_info['Aca_URL_ShortCode'];
 
 			$first_name = $this->input->post('Firstname');
 			$last_name	= $this->input->post('Lastname');
@@ -611,6 +612,7 @@
 			
 		if($is_activated){
 			//$this->session->set_flashdata('redirect_page', 'Play');
+			//echo $this->config->item('club_pr_url'); exit;
 			redirect($this->config->item('club_pr_url')."?st=2");
 		}
 		else{

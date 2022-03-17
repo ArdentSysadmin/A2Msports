@@ -1,8 +1,9 @@
 <?php
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-error_reporting(-1);
+error_reporting(0);
 ini_set("memory_limit","200M");
+echo "Site under maintenance. Please try again after sometime"; exit;
 //date_default_timezone_set('America/New_York');
 /*
 |--------------------------------------------------------------------------

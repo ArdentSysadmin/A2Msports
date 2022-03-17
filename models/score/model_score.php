@@ -5402,6 +5402,18 @@ echo "Winner AddScore -". $add_score_points."<br>";
 			$looser_a2mscore_updated		=  - intval($winner_add_score_points) +  intval($looser_win_points);
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
+
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
+				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
+				$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
+
+				$winner_a2mscore_updated	  = $winner_exc_points;
+				$winner_part_a2mscore_updated = $winner_exc_points;
+
+				$looser_a2mscore_updated	  = -$winner_exc_points;
+				$looser_part_a2mscore_updated = -$winner_exc_points;
+			}
+
 			// A2MScore Table Update
 			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport);
 			$this->a2mscore_update($winner_partner, $winner_part_a2mscore_updated, $match_sport);
@@ -5431,6 +5443,13 @@ echo "Winner AddScore -". $add_score_points."<br>";
 
 			$winner_a2mscore_updated =    intval($winner_add_score_points) + intval($winner_win_points);
 			$looser_a2mscore_updated =  - intval($winner_add_score_points) + intval($looser_win_points);
+
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
+				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
+
+				$winner_a2mscore_updated	  = $winner_exc_points;
+				$looser_a2mscore_updated	      = -$winner_exc_points;
+			}
 
 			// A2MScore Table Update 
 			$this->a2mscore_update($winner, $winner_a2mscore_updated, $match_sport);
@@ -5635,7 +5654,7 @@ exit;*/
 			$looser_part_a2mscore_updated	=  - intval($winner_part_add_score_points) +  intval($looser_part_win_points);
 
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 				$winner_partner_exc_points = $this->calc_picball_addscore_points($winner_part_a2m_diff, $winner_partner, $max_a2m_partner); 
 
@@ -5682,7 +5701,7 @@ exit;*/
 			$winner_a2mscore_updated =    intval($winner_add_score_points) + intval($winner_win_points);
 			$looser_a2mscore_updated =  - intval($winner_add_score_points) + intval($looser_win_points);
 
-			if($match_sport == 7){
+			if($match_sport == 7 or $match_sport == 19 or $match_sport == 20){
 				$winner_exc_points		 = $this->calc_picball_addscore_points($winner_a2m_diff, $winner, $max_a2m_player);
 
 				$winner_a2mscore_updated = $winner_exc_points;

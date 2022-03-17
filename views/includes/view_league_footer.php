@@ -122,7 +122,7 @@
        <div class="container-fluid">
          <div class="row">
            <div class="col-lg-12">
-             <p class="text-center text-light mb-0">Copyright &copy; 2021 A2M Sports. All Rights Reserved.</p>
+             <p class="text-center text-light mb-0">&copy; <?=date('Y');?> A2M Sports. All Rights Reserved.</p>
            </div>
          </div>
        </div>

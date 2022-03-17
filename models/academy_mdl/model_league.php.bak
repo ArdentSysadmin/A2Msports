@@ -1498,7 +1498,7 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 							$def_score = 100;
 						if($tour_sport == '2')
 							$def_score = 800;
-						if($tour_sport == '7')
+						if($tour_sport == '7' or $tour_sport == '19' or $tour_sport == '20')
 							$def_score = 3.0;
 
 
@@ -1751,7 +1751,7 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 				$def_score = 100;
 				if($tour_sport == '2') 
 				$def_score = 800;
-				if($tour_sport == '7') 
+				if($tour_sport == '7' or $tour_sport == '19' or $tour_sport == '20') 
 				$def_score = 3.0;
 
 					$a2m_ins_data = array(

@@ -8,17 +8,33 @@ var baseurl = "<?php echo base_url();?>";
 
 
 $('#update_draw').click(function (e) {
-if(confirm("Are you sure to update the Draw?")){
-	  $.ajax({
-		type: 'POST',
-		url: baseurl+'league/view_matches',
-		data: $('#frm_upd_dates').serialize(),
-		success: function() {
-		  location.reload();
+		if(confirm("Are you sure to update the Draw?")){
+			  $.ajax({
+				type: 'POST',
+				url: baseurl+'league/view_matches',
+				data: $('#frm_upd_dates').serialize(),
+				success: function() {
+				  location.reload();
+				}
+			  });
+			  e.preventDefault();
 		}
-	  });
-	  e.preventDefault();
-}
+});
+
+	$('#edit_draw_title').click(function() {
+			var dtitle = $('#draw_title').val();
+			var bid = $(this).attr('class');
+
+		if(bid && dtitle){
+			$.ajax({
+						type: 'POST',
+						url: baseurl+'league/update_draw_title',
+						data: {bid:bid,dtitle:dtitle},
+						success: function(res) {
+							alert(res);
+						}
+			});
+		}
 	});
 
 });
@@ -102,12 +118,8 @@ var baseurl = "<?php echo base_url();?>";
 $rr_matches = $get_rr_tourn_matches->result();
 //$tourn_id = $get_bracket_details['Tourn_ID'];
 
-/*echo "<pre>";
-print_r($rr_matches);
-exit;*/
-
 $players = array();
-foreach($rr_matches as $m => $match){
+/*foreach($rr_matches as $m => $match){
 
 	if(!in_array($rr_matches[$m]->Player1, $players)){
 		$players[] = $rr_matches[$m]->Player1;
@@ -118,7 +130,13 @@ foreach($rr_matches as $m => $match){
 		$players[] = $rr_matches[$m]->Player2;
 		$players_partners[$rr_matches[$m]->Player2] = $rr_matches[$m]->Player2_Partner;
 	}
+// Commented on 02/12/2022 on Raj request to show all registered players
+}*/
 
+$get_reg_players = league :: get_reg_players($get_bracket['Tourn_ID']);
+
+foreach($get_reg_players as $m => $player){
+		$players[] = $player->Users_ID;
 }
 
 $grid_array = array();
@@ -129,6 +147,10 @@ $grid_array = array();
 if($this->logged_user_role == 'Admin' or $this->is_super_admin){
 ?>
 <input class="form-control" type="text" name="draw_title" id="draw_title" style="width:25%;" value="<?php echo $get_bracket['Draw_Title']; ?>" required />
+
+<input type="button" class="<?=$get_bracket['BracketID']; ?>" style="margin-left: 20px; border: 1px solid #e78315;
+    background-color: #f59123;    padding: 5px 10px;    font-size: 13px;    text-transform: uppercase;
+    color: #fff;    margin-bottom: 13px;" name="edit_draw_title" id="edit_draw_title" value="Update Title" />
 <?php
 }
 else{

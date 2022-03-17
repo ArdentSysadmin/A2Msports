@@ -1327,7 +1327,8 @@ print_r($mult_events);*/
 
 		 public function testEmail(){
 
-					$cm_email	 = 'rajkamal.kosaraju@gmail.com';
+					//$cm_email	 = 'rajkamal.kosaraju@gmail.com';
+					$cm_email	 = 'pradeepkumar.namala@gmail.com';
 
 					$cm_subject = "User Membership Subscription Payment - TestClub9";
 					$data3 = array(

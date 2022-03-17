@@ -37,111 +37,113 @@
 | in the URL cannot be matched to a valid route.
 |
 */
-
+echo "Site under maintenance. Please try again after sometime"; exit;
 $segment = explode('/', $_SERVER['REQUEST_URI']);
 
 if($segment[1] != 'rest_services') {
 // -----------------------------------------------Dynamic Routing Begin------------------------------------------
 	require_once( BASEPATH .'database/DB'. EXT );
 	$db =& DB();
-	$query = $db->where('Aca_URL_ShortCode', $segment[1]);
+	$temp = explode('?', $segment[1]);
+	$cl_short_code = $temp[0];
+	$query = $db->where('Aca_URL_ShortCode', $cl_short_code);
 	$query = $db->get('Academy_Info');
 
 	$row = $query->row_array();
 
 	if($row){
 		//echo "<pre>"; print_r($row); exit;
-$route["$segment[1]"] = "academy_ctrl/academy/details/{$row['Aca_ID']}";
-$route["$segment[1]/admin"]	 = "academy_ctrl/admin/{$row['Aca_ID']}";
-$route["$segment[1]/settings"]	 = "academy_ctrl/admin/menu_settings/{$row['Aca_ID']}";
-$route["$segment[1]/memberships"] = "academy_ctrl/admin/memberships/{$row['Aca_ID']}";
-$route["$segment[1]/add_memberships"] = "academy_ctrl/admin/add_memberships/{$row['Aca_ID']}";
-$route["$segment[1]/upd_memberships"] = "academy_ctrl/admin/upd_memberships/{$row['Aca_ID']}";
-$route["$segment[1]/update_menu"]	 = "academy_ctrl/admin/update_menu/{$row['Aca_ID']}";
-$route["$segment[1]/player/(:num)"]	 = "academy_ctrl/player/player_details/$1/{$row['Aca_ID']}";
-$route["$segment[1]/membership/paynow/(:num)"]	 = "academy_ctrl/membership/paynow/$1";
-$route["$segment[1]/membership/ot_success/(:num)"]	 = "academy_ctrl/membership/ot_success/{$row['Aca_ID']}/$1";
-$route["$segment[1]/courts/reserve"] = "academy_ctrl/courts/reserve/{$row['Aca_ID']}";
-$route["$segment[1]/courts/reserve/(:any)"] = "academy_ctrl/courts/reserve/{$row['Aca_ID']}";
-$route["$segment[1]/courts/list"] = "academy_ctrl/courts/courts_list/{$row['Aca_ID']}";
-$route["$segment[1]/courts/add"] = "academy_ctrl/courts/add_court/{$row['Aca_ID']}";
-$route["$segment[1]/courts/update"] = "academy_ctrl/courts/update_court/{$row['Aca_ID']}";
-$route["$segment[1]/courts/get_loc_courts"] = "academy_ctrl/courts/get_loc_courts";
-$route["$segment[1]/courts/get_loc_info"]	  = "academy_ctrl/courts/get_loc_info";
-$route["$segment[1]/courts/get_court_reservations"]   = "academy_ctrl/courts/get_court_reservations";
-$route["$segment[1]/courts/get_reserve_popup"]   = "academy_ctrl/courts/get_reserve_popup";
-$route["$segment[1]/courts/get_court_durations"]   = "academy_ctrl/courts/get_court_durations";
-$route["$segment[1]/courts/check_court_availability"]	= "academy_ctrl/courts/check_court_availability";
-$route["$segment[1]/courts/block_court"]	  = "academy_ctrl/courts/block_court";
-$route["$segment[1]/courts/paypal_success"]	  = "academy_ctrl/courts/paypal_success";
-$route["$segment[1]/courts/paypal_cancel"]	  = "academy_ctrl/courts/paypal_cancel";
-$route["$segment[1]/league"]				  = "league/index";
-$route["$segment[1]/league/create_trnmt"]	  = "academy_ctrl/league/create_trnmt/{$row['Aca_ID']}";
-$route["$segment[1]/league/register_match/(:num)"] = "academy_ctrl/league/register_match/$1/{$row['Aca_ID']}";
-$route["$segment[1]/league/(:num)"]				= "academy_ctrl/league/viewtournament/$1/{$row['Aca_ID']}";
-$route["$segment[1]/league/(:num)/(:num)"] = "academy_ctrl/league/viewtournament/$1/{$row['Aca_ID']}/$1";
-$route["$segment[1]/league/edit/(:num)"]	= "academy_ctrl/league/edit/$1/{$row['Aca_ID']}";
-$route["$segment[1]/league/reg_players/(:num)"] = "academy_ctrl/league/reg_players/$1/{$row['Aca_ID']}";
-$route["$segment[1]/league/update_trnmt"]			= "academy_ctrl/league/update_trnmt/$1/{$row['Aca_ID']}";
-$route["$segment[1]/league/view_matches"]	  = "academy_ctrl/league/view_matches/{$row['Aca_ID']}";
-$route["$segment[1]/league/fixtures/(:num)"] = "academy_ctrl/league/fixtures/$1/{$row['Aca_ID']}";
-$route["$segment[1]/league/bracket/(:num)"]  = "academy_ctrl/league/bracket/$1";
-$route["$segment[1]/league/bracket_save"]	  = "academy_ctrl/league/bracket_save/{$row['Aca_ID']}";
-$route["$segment[1]/league/send_email_reg_players"] = "academy_ctrl/league/send_email_reg_players";
-$route["$segment[1]/league/upload_pics"]	  = "academy_ctrl/league/upload_pics";
-$route["$segment[1]/league/get_gallery"]	  = "academy_ctrl/league/get_gallery";
-$route["$segment[1]/league/buy/(:num)"]	  = "academy_ctrl/league/buy/$1/{$row['Aca_ID']}";
-$route["$segment[1]/league/uprofile"]		  = "academy_ctrl/league/uprofile/{$row['Aca_ID']}";
-$route["$segment[1]/league/get_tour_fee/"]	  = "academy_ctrl/league/get_tour_fee/{$row['Aca_ID']}";
-$route["$segment[1]/events/create"]					 = "academy_ctrl/events/create/{$row['Aca_ID']}";
-$route["$segment[1]/facility"]		  					 = "academy_ctrl/facility/index/{$row['Aca_ID']}";
-$route["$segment[1]/facility/add_banner"]  = "academy_ctrl/facility/add_banner/{$row['Aca_ID']}";
-$route["$segment[1]/facility/update_facility"]		 = "academy_ctrl/facility/update_facility/{$row['Aca_ID']}";
-$route["$segment[1]/facility/update_lt_team"]	 = "academy_ctrl/facility/update_lt_team/{$row['Aca_ID']}";
-$route["$segment[1]/facility/update_ps_team"]	 = "academy_ctrl/facility/update_ps_team/{$row['Aca_ID']}";
-$route["$segment[1]/facility/add_glry_images"]	 = "academy_ctrl/facility/add_glry_images/{$row['Aca_ID']}";
-$route["$segment[1]/facility/delete_glry"]			 = "academy_ctrl/facility/delete_glry/{$row['Aca_ID']}";
-$route["$segment[1]/pricing"]							 = "academy_ctrl/pricing/index/{$row['Aca_ID']}";
-$route["$segment[1]/pricing/update"]				 = "academy_ctrl/pricing/update_pricing/{$row['Aca_ID']}";
-$route["$segment[1]/logout"]							 = "academy_ctrl/logout/index/{$row['Aca_ID']}";
-$route["$segment[1]/proshop"]		  				 = "academy_ctrl/proshop/index/{$row['Aca_ID']}";
-$route["$segment[1]/proshop/add_proshop_items"]	 = "academy_ctrl/proshop/add_proshop_items/{$row['Aca_ID']}";
-$route["$segment[1]/proshop/delete_product"]	 = "academy_ctrl/proshop/delete_product/{$row['Aca_ID']}";
-$route["$segment[1]/teams/addnew"]					= "academy_ctrl/teams/addnew/{$row['Aca_ID']}";
-$route["$segment[1]/teams/get_tour_reg_team"]	= "academy_ctrl/teams/get_tour_reg_team/{$row['Aca_ID']}";
-$route["$segment[1]/paypal/success"]  = "academy_ctrl/paypal/success";
-$route["$segment[1]/paypal/cancel"]   = "academy_ctrl/paypal/cancel";
-$route["$segment[1]/viewbracket"]	   = "academy_ctrl/league/viewbracket/{$row['Aca_ID']}";
-$route["$segment[1]/get_membership"]	   = "academy_ctrl/academy/get_membership/{$row['Aca_ID']}";
-$route["$segment[1]/upd_membership"]	   = "academy_ctrl/academy/upd_membership/{$row['Aca_ID']}";
-$route["$segment[1]/coaches"]				 = "academy_ctrl/academy/coaches_list/{$row['Aca_ID']}";
-$route["$segment[1]/search_coaches"]		 = "academy_ctrl/academy/search_coaches";
-$route["$segment[1]/members"]				 = "academy_ctrl/academy/member_list/{$row['Aca_ID']}";
-$route["$segment[1]/search_member"]		 = "academy_ctrl/academy/players";
-$route["$segment[1]/search_members"]		 = "academy_ctrl/academy/search_members";
-$route["$segment[1]/search/autocomplete"]	 = "academy_ctrl/search/autocomplete";
-$route["$segment[1]/show_res/(:any)"]	 = "academy_ctrl/academy/show_res/{$row['Aca_ID']}/$1";
-$route["$segment[1]/calendar"]					 = "academy_ctrl/calendar/index/{$row['Aca_ID']}";
-$route["$segment[1]/calendar/process/(:num)"]	 = "academy_ctrl/calendar/process/$1";
-$route["$segment[1]/opponent"]			 = "academy_ctrl/opponent/index/{$row['Aca_ID']}";
-$route["$segment[1]/opponent/create"]	 = "academy_ctrl/opponent/create/{$row['Aca_ID']}";
-$route["$segment[1]/play/reg_players/(:num)"]	= "academy_ctrl/play/reg_players/$1/{$row['Aca_ID']}";
-$route["$segment[1]/play/invite/(:num)"]		= "academy_ctrl/play/invite/$1/{$row['Aca_ID']}";
-$route["$segment[1]/play/invite_email"]		= "academy_ctrl/play/invite_email/{$row['Aca_ID']}";
-$route["$segment[1]/events/add"]			 = "academy_ctrl/events/add/{$row['Aca_ID']}";
-$route["$segment[1]/events/view/(:num)/(:num)"] = "academy_ctrl/events/view/$1/$1/{$row['Aca_ID']}";
-$route["$segment[1]/events/view/(:num)"]	 = "academy_ctrl/events/view/$1/{$row['Aca_ID']}";
-$route["$segment[1]/events"]			  = "academy_ctrl/events/index/{$row['Aca_ID']}";
-$route["$segment[1]/events/autocomplete"]	 = "academy_ctrl/events/autocomplete/{$row['Aca_ID']}";
-$route["$segment[1]/events/add_fields"]		 = "academy_ctrl/events/add_fields/{$row['Aca_ID']}";
-$route["$segment[1]/events/add_fields_weekly"]	 = "academy_ctrl/events/add_fields_weekly/{$row['Aca_ID']}";
-$route["$segment[1]/news"]							 = "academy_ctrl/news/index";
-$route["$segment[1]/news/add"]					 = "academy_ctrl/news/add";
-$route["$segment[1]/news/add_news"]		 = "academy_ctrl/news/add_news";
-$route["$segment[1]/news/edit/(:num)"]			= "academy_ctrl/news/edit/$1";
-$route["$segment[1]/news/view/(:num)"]		= "academy_ctrl/news/get_news_detail/$1";
-$route["$segment[1]/news/update/(:num)"]	= "academy_ctrl/news/update_news/$1";
-$route["$segment[1]/send_notifications"]		= "academy_ctrl/academy/send_mob_notifications/{$row['Aca_ID']}";
+$route["$cl_short_code"] = "academy_ctrl/academy/details/{$row['Aca_ID']}";
+$route["$cl_short_code/admin"]	 = "academy_ctrl/admin/{$row['Aca_ID']}";
+$route["$cl_short_code/settings"]	 = "academy_ctrl/admin/menu_settings/{$row['Aca_ID']}";
+$route["$cl_short_code/memberships"] = "academy_ctrl/admin/memberships/{$row['Aca_ID']}";
+$route["$cl_short_code/add_memberships"] = "academy_ctrl/admin/add_memberships/{$row['Aca_ID']}";
+$route["$cl_short_code/upd_memberships"] = "academy_ctrl/admin/upd_memberships/{$row['Aca_ID']}";
+$route["$cl_short_code/update_menu"]	 = "academy_ctrl/admin/update_menu/{$row['Aca_ID']}";
+$route["$cl_short_code/player/(:num)"]	 = "academy_ctrl/player/player_details/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/membership/paynow/(:num)"]	 = "academy_ctrl/membership/paynow/$1";
+$route["$cl_short_code/membership/ot_success/(:num)"]	 = "academy_ctrl/membership/ot_success/{$row['Aca_ID']}/$1";
+$route["$cl_short_code/courts/reserve"] = "academy_ctrl/courts/reserve/{$row['Aca_ID']}";
+$route["$cl_short_code/courts/reserve/(:any)"] = "academy_ctrl/courts/reserve/{$row['Aca_ID']}";
+$route["$cl_short_code/courts/list"] = "academy_ctrl/courts/courts_list/{$row['Aca_ID']}";
+$route["$cl_short_code/courts/add"] = "academy_ctrl/courts/add_court/{$row['Aca_ID']}";
+$route["$cl_short_code/courts/update"] = "academy_ctrl/courts/update_court/{$row['Aca_ID']}";
+$route["$cl_short_code/courts/get_loc_courts"] = "academy_ctrl/courts/get_loc_courts";
+$route["$cl_short_code/courts/get_loc_info"]	  = "academy_ctrl/courts/get_loc_info";
+$route["$cl_short_code/courts/get_court_reservations"]   = "academy_ctrl/courts/get_court_reservations";
+$route["$cl_short_code/courts/get_reserve_popup"]   = "academy_ctrl/courts/get_reserve_popup";
+$route["$cl_short_code/courts/get_court_durations"]   = "academy_ctrl/courts/get_court_durations";
+$route["$cl_short_code/courts/check_court_availability"]	= "academy_ctrl/courts/check_court_availability";
+$route["$cl_short_code/courts/block_court"]	  = "academy_ctrl/courts/block_court";
+$route["$cl_short_code/courts/paypal_success"]	  = "academy_ctrl/courts/paypal_success";
+$route["$cl_short_code/courts/paypal_cancel"]	  = "academy_ctrl/courts/paypal_cancel";
+$route["$cl_short_code/league"]				  = "league/index";
+$route["$cl_short_code/league/create_trnmt"]	  = "academy_ctrl/league/create_trnmt/{$row['Aca_ID']}";
+$route["$cl_short_code/league/register_match/(:num)"] = "academy_ctrl/league/register_match/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/(:num)"]				= "academy_ctrl/league/viewtournament/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/(:num)/(:num)"] = "academy_ctrl/league/viewtournament/$1/{$row['Aca_ID']}/$1";
+$route["$cl_short_code/league/edit/(:num)"]	= "academy_ctrl/league/edit/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/reg_players/(:num)"] = "academy_ctrl/league/reg_players/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/update_trnmt"]			= "academy_ctrl/league/update_trnmt/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/view_matches"]	  = "academy_ctrl/league/view_matches/{$row['Aca_ID']}";
+$route["$cl_short_code/league/fixtures/(:num)"] = "academy_ctrl/league/fixtures/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/bracket/(:num)"]  = "academy_ctrl/league/bracket/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/bracket_save"]	  = "academy_ctrl/league/bracket_save/{$row['Aca_ID']}";
+$route["$cl_short_code/league/send_email_reg_players"] = "academy_ctrl/league/send_email_reg_players";
+$route["$cl_short_code/league/upload_pics"]	  = "academy_ctrl/league/upload_pics";
+$route["$cl_short_code/league/get_gallery"]	  = "academy_ctrl/league/get_gallery";
+$route["$cl_short_code/league/buy/(:num)"]	  = "academy_ctrl/league/buy/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/league/uprofile"]		  = "academy_ctrl/league/uprofile/{$row['Aca_ID']}";
+$route["$cl_short_code/league/get_tour_fee/"]	  = "academy_ctrl/league/get_tour_fee/{$row['Aca_ID']}";
+$route["$cl_short_code/events/create"]					 = "academy_ctrl/events/create/{$row['Aca_ID']}";
+$route["$cl_short_code/facility"]		  					 = "academy_ctrl/facility/index/{$row['Aca_ID']}";
+$route["$cl_short_code/facility/add_banner"]  = "academy_ctrl/facility/add_banner/{$row['Aca_ID']}";
+$route["$cl_short_code/facility/update_facility"]		 = "academy_ctrl/facility/update_facility/{$row['Aca_ID']}";
+$route["$cl_short_code/facility/update_lt_team"]	 = "academy_ctrl/facility/update_lt_team/{$row['Aca_ID']}";
+$route["$cl_short_code/facility/update_ps_team"]	 = "academy_ctrl/facility/update_ps_team/{$row['Aca_ID']}";
+$route["$cl_short_code/facility/add_glry_images"]	 = "academy_ctrl/facility/add_glry_images/{$row['Aca_ID']}";
+$route["$cl_short_code/facility/delete_glry"]			 = "academy_ctrl/facility/delete_glry/{$row['Aca_ID']}";
+$route["$cl_short_code/pricing"]							 = "academy_ctrl/pricing/index/{$row['Aca_ID']}";
+$route["$cl_short_code/pricing/update"]				 = "academy_ctrl/pricing/update_pricing/{$row['Aca_ID']}";
+$route["$cl_short_code/logout"]							 = "academy_ctrl/logout/index/{$row['Aca_ID']}";
+$route["$cl_short_code/proshop"]		  				 = "academy_ctrl/proshop/index/{$row['Aca_ID']}";
+$route["$cl_short_code/proshop/add_proshop_items"]	 = "academy_ctrl/proshop/add_proshop_items/{$row['Aca_ID']}";
+$route["$cl_short_code/proshop/delete_product"]	 = "academy_ctrl/proshop/delete_product/{$row['Aca_ID']}";
+$route["$cl_short_code/teams/addnew"]					= "academy_ctrl/teams/addnew/{$row['Aca_ID']}";
+$route["$cl_short_code/teams/get_tour_reg_team"]	= "academy_ctrl/teams/get_tour_reg_team/{$row['Aca_ID']}";
+$route["$cl_short_code/paypal/success"]  = "academy_ctrl/paypal/success";
+$route["$cl_short_code/paypal/cancel"]   = "academy_ctrl/paypal/cancel";
+$route["$cl_short_code/viewbracket"]	   = "academy_ctrl/league/viewbracket/{$row['Aca_ID']}";
+$route["$cl_short_code/get_membership"]	   = "academy_ctrl/academy/get_membership/{$row['Aca_ID']}";
+$route["$cl_short_code/upd_membership"]	   = "academy_ctrl/academy/upd_membership/{$row['Aca_ID']}";
+$route["$cl_short_code/coaches"]				 = "academy_ctrl/academy/coaches_list/{$row['Aca_ID']}";
+$route["$cl_short_code/search_coaches"]		 = "academy_ctrl/academy/search_coaches";
+$route["$cl_short_code/members"]				 = "academy_ctrl/academy/member_list/{$row['Aca_ID']}";
+$route["$cl_short_code/search_member"]		 = "academy_ctrl/academy/players";
+$route["$cl_short_code/search_members"]		 = "academy_ctrl/academy/search_members";
+$route["$cl_short_code/search/autocomplete"]	 = "academy_ctrl/search/autocomplete";
+$route["$cl_short_code/show_res/(:any)"]	 = "academy_ctrl/academy/show_res/{$row['Aca_ID']}/$1";
+$route["$cl_short_code/calendar"]					 = "academy_ctrl/calendar/index/{$row['Aca_ID']}";
+$route["$cl_short_code/calendar/process/(:num)"]	 = "academy_ctrl/calendar/process/$1";
+$route["$cl_short_code/opponent"]			 = "academy_ctrl/opponent/index/{$row['Aca_ID']}";
+$route["$cl_short_code/opponent/create"]	 = "academy_ctrl/opponent/create/{$row['Aca_ID']}";
+$route["$cl_short_code/play/reg_players/(:num)"]	= "academy_ctrl/play/reg_players/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/play/invite/(:num)"]		= "academy_ctrl/play/invite/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/play/invite_email"]		= "academy_ctrl/play/invite_email/{$row['Aca_ID']}";
+$route["$cl_short_code/events/add"]			 = "academy_ctrl/events/add/{$row['Aca_ID']}";
+$route["$cl_short_code/events/view/(:num)/(:num)"] = "academy_ctrl/events/view/$1/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/events/view/(:num)"]	 = "academy_ctrl/events/view/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/events"]			  = "academy_ctrl/events/index/{$row['Aca_ID']}";
+$route["$cl_short_code/events/autocomplete"]	 = "academy_ctrl/events/autocomplete/{$row['Aca_ID']}";
+$route["$cl_short_code/events/add_fields"]		 = "academy_ctrl/events/add_fields/{$row['Aca_ID']}";
+$route["$cl_short_code/events/add_fields_weekly"]	 = "academy_ctrl/events/add_fields_weekly/{$row['Aca_ID']}";
+$route["$cl_short_code/news"]							 = "academy_ctrl/news/index";
+$route["$cl_short_code/news/add"]					 = "academy_ctrl/news/add";
+$route["$cl_short_code/news/add_news"]		 = "academy_ctrl/news/add_news";
+$route["$cl_short_code/news/edit/(:num)"]			= "academy_ctrl/news/edit/$1";
+$route["$cl_short_code/news/view/(:num)"]		= "academy_ctrl/news/get_news_detail/$1";
+$route["$cl_short_code/news/update/(:num)"]	= "academy_ctrl/news/update_news/$1";
+$route["$cl_short_code/send_notifications"]		= "academy_ctrl/academy/send_mob_notifications/{$row['Aca_ID']}";
 	}
 
 // ----------------------------------------------End of Dynamic Routing-------------------------------------------
@@ -224,12 +226,16 @@ $route["sports"]			= "league/view_more_sports";
 
 
 $route["badminton1"]			= "league/sport_page/3";
+$route["badminton1/(:any)"]	= "league/sport_page_tab/3/$1";
 
-$route["pickleball1"]			= "league/sport_page/7";
-$route["pickleball1/(:any)"]			= "league/sport_page_tab/7/$1";
+$route["pickleball1"]				= "league/sport_page/7";
+$route["pickleball1/(:any)"]	= "league/sport_page_tab/7/$1";
 
 $route["tt1"]							= "league/sport_page/2";
+$route["tt1/(:any)"]				= "league/sport_page_tab/2/$1";
+
 $route["tennis1"]					= "league/sport_page/1";
+$route["tennis1/(:any)"]			= "league/sport_page_tab/1/$1";
 
 $route["badminton2"]			= "league/sport_page2/3";
 
@@ -252,6 +258,14 @@ $route["pickleball/(:num)"]	= "league/viewtournament/$1";
 $route["basketball"]			= "league/league_list/18";
 $route["basketball#(:any)"] = "league/league_list/$1";
 $route["basketball/(:num)"] = "league/viewtournament/$1";
+
+$route["handball"]			= "league/league_list/19";
+$route["handball#(:any)"] = "league/league_list/$1";
+$route["handball/(:num)"] = "league/viewtournament/$1";
+
+$route["paddleball"]			= "league/league_list/20";
+$route["paddleball#(:any)"] = "league/league_list/$1";
+$route["paddleball/(:num)"] = "league/viewtournament/$1";
 
 $route["bracket/(:num)"]		= "league/shareBracket/$1";
 
@@ -368,6 +382,9 @@ $route["(:any)/league/publish_draws"]					= "academy_ctrl/league/publish_draws/$
 $route["(:any)/league/unpublish_draws"]				= "academy_ctrl/league/unpublish_draws/$1";
 $route["(:any)/league/load_adm_edit_withdraw"]  = "academy_ctrl/league/load_adm_edit_withdraw/$1";
 $route["(:any)/league/load_adm_participants"]		= "academy_ctrl/league/load_adm_participants/$1";
+$route["(:any)/league/load_tourn_players"]		= "academy_ctrl/league/load_tourn_players/$1";
+$route["(:any)/league/fetch_topGroup_players"]	= "academy_ctrl/league/fetch_topGroup_players/$1";
+$route["(:any)/league/po_update"]					= "academy_ctrl/league/po_update/$1";
 $route["(:any)/league/swap_group_players"]		= "academy_ctrl/league/swap_group_players/$1";
 $route["(:any)/register/instant_clubmember"]		= "academy_ctrl/register/instant_clubmember/$1";
 $route["(:any)/league/check_in"]							= "academy_ctrl/league/check_in/$1";

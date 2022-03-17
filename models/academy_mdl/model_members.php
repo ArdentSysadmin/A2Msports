@@ -600,6 +600,24 @@
 			return $qr_check->result();
 		}
 
+
+		public function get_user_gen_stats($user_id){
+				$qr_check = $this->db->query("SELECT * FROM GeneralMatch WHERE users_id = {$user_id}");
+			return $qr_check->result();
+		}
+
+		public function get_user_indv_stats($user_id){
+				$qr_check = $this->db->query("SELECT * FROM GeneralMatch WHERE GeneralMatch_id IN 
+				(SELECT GeneralMatch_ID FROM IndividualPlay WHERE Opponent = {$user_id})");
+			return $qr_check->result();
+		}
+
+		public function get_user_indvMatch($match_id){
+				$qr_check = $this->db->query("SELECT * FROM IndividualPlay WHERE GeneralMatch_ID = {$match_id}");
+			return $qr_check->result();
+		}
+
+
 		public function get_user_single_stats($user_id, $sp_intrests){
 			if($sp_intrests != '()'){
 				$qr_check = $this->db->query("SELECT t.SportsType,* FROM Tournament_Matches AS tm JOIN tournament AS t ON t.tournament_ID = tm.Tourn_ID WHERE t.SportsType IN {$sp_intrests} AND (tm.Player1 = {$user_id} OR tm.Player1_Partner = {$user_id} OR tm.Player2 = {$user_id} OR tm.Player2_Partner = {$user_id}) ORDER BY t.SportsType");

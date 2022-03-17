@@ -232,7 +232,7 @@ $('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'
 </script>
 <?php
 }
-else {
+else if($this->logged_user_role == 'RegPlayer') {
 ?>
 <script>
 $(document).ready(function() {
@@ -241,9 +241,18 @@ $('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'
 });
 </script>
 <?php
-}?>
-
+}
+else {
+?>
+<script>
+$(document).ready(function() {
+$('#tourn_players').dataTable({dom: "<'row'<'col-sm-3'l><'col-sm-5'p><'col-sm-4'f>>" +
+"<'row'<'col-sm-12'tr>>", searching: true, paging: false, lengthMenu: false, aoColumns: [ null,null,null,null,null,null ], language: {"search":"", "searchPlaceholder":"Search"} });
+});
+</script>
 <?php
+}
+
 }
 ?>
 <script>

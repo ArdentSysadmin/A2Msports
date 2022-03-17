@@ -21,17 +21,20 @@
 <input type="hidden" name="brc_type"   id="brc_type"   value='<?=$brc_type;?>' />
 <input type="hidden" name="sport"			id="sport"     value='<?=$sport;?>' />
 <input type="hidden" name="tour_type" id="tour_type" value='<?=$tour_type;?>' />
-<input type="hidden" name="num_of_sets"	id="num_of_sets"			value='<?=$num_of_sets;?>' />
+<input type="hidden" name="num_of_sets"	id="num_of_sets"	  value='<?=$num_of_sets;?>' />
+<input type="hidden" name="po_num_of_sets"	id="po_num_of_sets"	value='<?=$po_num_of_sets;?>' />
 <input type="hidden" name="is_publish_draw"	id="is_publish_draw" value='<?=$is_publish_draw;?>' />
 <input type="hidden" name="rr_multi_rounds"	id="rr_multi_rounds" value='<?=$rr_multi_rounds;?>' />
 <input type="hidden" name="courts_new"			id="courts_new"		value='<?=serialize($courts_new);?>'	/>
 <input type="hidden" name="match_timings"		id="match_timings"	value='<?=serialize($match_timings);?>' />
+<input type="hidden" name="num_crts_grp"		id="num_crts_grp"	value='<?=serialize($num_crts_grp);?>' />
 
 <input type='hidden' name='filter_events' value='<?php if($filter_events != '' and $filter_events != 'null') { echo $filter_events; } 
 else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>' />
 
 <input type="hidden" name="is_plof"		id="is_plof"		value='<?=$is_plof;?>' />
 <input type="hidden" name="plof_size" id="plof_size"	value='<?=$plof_size;?>' />
+<input type="hidden" name="plof_size_sel" id="plof_size_sel"	value='<?=$plof_size_sel;?>' />
 
 <?php
 foreach($groups as $i => $group){

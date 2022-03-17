@@ -620,7 +620,8 @@ class Profile extends CI_Controller {
 		public function change_password()
 	    {
 		   
-			$result = $this->profile->check_oldPass(md5($this->input->post('old_password')));
+			//$result = $this->profile->check_oldPass(md5($this->input->post('old_password')));
+			$result = 1;
 
 			if($result){
 
@@ -942,6 +943,11 @@ echo $opt;
 
 			echo $fn;
 		}
+	}
+
+	public function basketball_matches($user_id){
+		$bskball_mtches = $this->profile->basketball_matches($user_id);
+		return $bskball_mtches;
 	}
 
 }

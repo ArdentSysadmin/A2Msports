@@ -752,7 +752,7 @@ echo "Transaction complete!";
 
 
      public function subscr_cancel(){
-		 $this->load->view('view_cancel');
+		 $this->load->view('academy_views/view_cancel');
 	 }
 
      public function subscr_ipn(){

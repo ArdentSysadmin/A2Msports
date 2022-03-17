@@ -90,7 +90,7 @@ $(document).ready(function(){
 
 	$.ajax({
 		type:'POST',
-		url:baseurl+'league/ShowMatches/'+$bracket_id,
+		url:club_baseurl+'league/ShowMatches/'+$bracket_id,
 		data:{bracket_id:$bracket_id},
 		success:function(res){
 		 $('#'+$bracket_id).val('Show Matches');

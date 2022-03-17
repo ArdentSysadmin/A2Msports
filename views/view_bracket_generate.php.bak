@@ -14,7 +14,7 @@ $new_match_timings = array();
 ?>
 
 <link rel="stylesheet" href="<?php echo base_url();?>css/grids/grid_<?=$total_rounds;?>.css">
-<link href = "<?php echo base_url();?>css/foundation-datepicker.css" rel="stylesheet">
+<link rel="stylesheet" href = "<?php echo base_url();?>css/foundation-datepicker.css">
 <script src = "<?php echo base_url();?>js/foundation-datepicker.js"></script>
 
 <script>
@@ -274,6 +274,8 @@ echo $output;
 
 
 <?php
+//if($round == ($total_rounds) and $num_teams > 2){
+	echo $num_of_teams;
 if($round == ($total_rounds)){
 	$match_num++;
 $round2 = -1;
@@ -397,7 +399,8 @@ $prev_round_games = $process_res[1];
 else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>' />
 <input type='hidden' name='age_group' value="<?php echo $this->input->post('type_gen'); ?>" />
 <input type='hidden' name='ttype' value="<?php echo $ttype; ?>" />
-<input type='hidden' name='is_publish_draw' value="<?php echo $is_publish_draw; ?>" />
+<input type='hidden' name='is_publish_draw'	value="<?php echo $is_publish_draw; ?>" />
+<input type='hidden' name='num_of_sets'			value="<?php echo $num_of_sets; ?>" />
 <input type='hidden' name='br_game_day' value="<?php echo $br_game_day; ?>" />
 <input type="hidden" name="draw_format"  id="draw_format"  value='<?=$draw_format;?>' />
 

@@ -1,7 +1,11 @@
 <?php
 $source = base_url().'assets_new/';
 ?>
-
+<style>
+.owl-nav{
+	margin-bottom: 10px !important;
+}
+</style>
 <!-- banner start -->
 
 <section class="banner mx-3">
@@ -15,8 +19,21 @@ $source = base_url().'assets_new/';
 </div> -->
 <h1 class="font-45">Connecting Players, <br>Coaches and Clubs!</h1>
 <p class="font-15">Our world class Sports Club Platform comes with Membership Management, Tournament and League Organization, Pay and Play (Court Reservations), Coach Booking, Event Management and more! We power your website and offer branded mobile app for the clubs with all these features built-in!</p>
-<a  class="btn_banner " href="#popup1" type="button">Request a demo</a>
+<a  class="btn_banner" href="#popup1" type="button" style="margin-bottom: 60px;">Request a Demo <br></a>
+
+<div class="app_imges">
+<a href="https://apps.apple.com/in/app/a2m-sports/id1450412731" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Apple - App Store.png" />
+</a>
+<a href="https://play.google.com/store/apps/details?id=com.a2msports.a2msports3" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Google - Play Store.png" />
+</a>
 </div>
+</div>
+
+
+
+
 
 </div>
 <div class="col-lg-6">
@@ -25,6 +42,7 @@ $source = base_url().'assets_new/';
 
 <a onclick="lightbox_open();" style="cursor: pointer;"><img src="<?=$source;?>images/play.png" style="cursor: pointer;"></a>
 <p class="mb-0 mt-3 mx-3">Watch how A2M connects the sports enthusiasts</p>
+
 
 </div> 
 <div id="slider d_show">  
@@ -40,7 +58,6 @@ $source = base_url().'assets_new/';
 <div class="slides">  
 <img src="<?=$source;?>images/pickleball-home.png" width="100%" height="70%" class="slidrimg"/>
 </div> 
-
 
 <div id="dot"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
 </div>
@@ -66,7 +83,7 @@ $source = base_url().'assets_new/';
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-12">
-<div class="heading text-center pt-5 pb-5" id='clubFeatures'>
+<div class="heading text-center pt-5 pb-3" id='clubFeatures'>
 <h1>A2M Premium Club Features</h1>
 </div>
 </div>
@@ -192,20 +209,20 @@ transition: opacity .6s ease;
 </div>
 <div class="carousel-inner">
 <div class="carousel-item active">
-<div class="mx-3 pt-5 mb-5 ">
+<div class="mx-3 pt-2 mb-5 ">
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-6">
-<div class="pt-5 px-5 banner_three_one text-center text-light">
-               <h2>Pay and Play</h2>
-               <p class="">Completely Configurable Courts or Shared Space Reservations<br /></p>
+<div class="pt-3 px-5 banner_three_one text-center text-light">
+   <h2>Pay and Play</h2>
+   <p class="">Completely Configurable Courts or Shared Space Reservations<br /></p>
 <img src="<?=$source;?>images/mob_2.png" class="w-60">
 </div>
 </div>
 <div class="col-lg-6">
-<div class="pt-5 px-5 banner_three_two text-center">
-               <h2>Membership Management</h2>
-               <p class="mb-5">Create unlimited number of Memberships and collect fees automatically</p>
+<div class="pt-3 px-5 banner_three_two text-center">
+   <h2>Membership Management</h2>
+   <p class="mb-5">Create unlimited number of Memberships and collect fees automatically</p>
 <img src="<?=$source;?>images/desktop.png" class="w-60">
 </div>
 </div>
@@ -242,7 +259,7 @@ transition: opacity .6s ease;
 </div>
 <!--third banner end -->
 <!--fourth banner start -->
-<div class="banner_two  mx-3 pt-5 mb-5 ">
+<div class="banner_two  mx-3 pt-2 mb-0 ">
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-6">
@@ -254,7 +271,7 @@ transition: opacity .6s ease;
 </div>
 <div class="col-lg-6">
 <div class="banner_img text-center">
-<img src="<?=$source;?>images/CoachBooking.png" class="wc-40">
+<img src="<?=$source;?>images/CoachBooking1.png" class="wc-40">
 </div>
 </div>
 </div>
@@ -266,11 +283,11 @@ transition: opacity .6s ease;
 <div class="bg-white">
 <div class="container-fluid">
 <div class="row">
-<div class="heading text-center pt-3 pb-3">
+<div style='padding-bottom:0px !important; padding-top:3rem !important;' class="heading text-center pt-5 pb-5">
 <h1>Featured Tournaments / Leagues / Events</h1>
 </div>
 </div>
-<div class="row">
+<div class="row" style="margin-top: -45px;">
 <div id="feature" class="owl-carousel  owl-theme Testimonials">
 
 <?php if(!empty($games)) { 
@@ -282,7 +299,7 @@ if(!empty($row)) {
 
 <div class="item  "><!-- d-flex justify-content-between -->
 <div class="d-flex feature_box">
-<div class="feature_left /*bg-white*/ p-3" style="border-top-right-radius:0px !important; border-bottom-right-radius:0px !important; background-color:#fcc9bc !important; height:280px; border:2px solid #f88264">
+<div class="feature_left /*bg-white*/ p-3" style="border-top-right-radius:0px !important; border-bottom-right-radius:0px !important; background-color:#fcc9bc !important; height:250px; border:2px solid #f88264">
 <div class="d-flex justify-content-start">
 <img src="<?=base_url()."assets_new/";?>images/icons/<?php switch($row[0]->SportsType){
 					case 1: echo "tennis-ico.png";				break;
@@ -334,7 +351,7 @@ if(!empty($row)) {
                   <div class="d-flex justify-content-start mb-1"><img src="<?=base_url()."assets_new/";?>images/league.svg" class="w-10" ><p class="uppercase mb-0 mx-1"><?php echo $row[0]->tournament_format; ?></p></div>
 <!-- <div class="d-flex justify-content-start mb-1"><img src="<?=$source;?>images/team.svg" class="w-10" ><p class="uppercase mb-0 mx-1"> 20 Teams</p></div> -->
 </div>
-<div class="feature_right" style="border:2px solid #8050ef; background-color:#d7ccfa; height:280px; border-top-right-radius:16px !important; border-bottom-right-radius:16px !important; ">
+<div class="feature_right" style="border:2px solid #8050ef; background-color:#d7ccfa; height:250px; border-top-right-radius:16px !important; border-bottom-right-radius:16px !important; ">
 <div class="feature_img">
 
 <img src="<?php echo base_url(); ?>tour_pictures/
@@ -389,7 +406,7 @@ switch($row[0]->SportsType) {
 		break;
 }
 }
-?>"  style="object-fit: contain; padding:5px; /*border:1px solid #d2d2d2;*/ top: 0px; position: absolute; width: 45%; height:280px; " class="/*w-242*/">
+?>"  style="object-fit: cover; padding:1px; /*border:1px solid #d2d2d2; top: 0px; position: absolute; width: 45%; */  height:277px; " class="/*w-242*/">
 </div>
 </div>
 </div>
@@ -414,13 +431,13 @@ switch($row[0]->SportsType) {
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-12">
-<div class="heading text-center pt-2 pb-2">
+<div class="heading text-center pt-4 pb-2">
 <h1>Premium Clubs</h1>
 </div>
 </div>
 </div>
 </div>  
-<div class="mx-3 mb-5">
+<div class="mx-3 mb-0" style="margin-top:-25px;">
 <div class="container-fluid">
 <div class="row">
 <div id="company" class="owl-carousel owl-theme Testimonials">
@@ -470,11 +487,11 @@ switch($row[0]->SportsType) {
 <div class="bg-white">
 <div class="container-fluid">
 <div class="row">
-<div class="heading text-center pt-3 pb-2">
+<div class="heading text-center pt-4 pb-0">
 <h1>Testimonials</h1>
 </div>
 </div>
-<div class="row">
+<div class="row" style="margin-top: -45px">
 <div id="Testimonials1" class="owl-carousel owl-theme Testimonials">
 <div class="item  ">
 <div class="testimonials_box">
@@ -524,7 +541,7 @@ switch($row[0]->SportsType) {
 <!--seven banner end -->
 
 <!--Nine banner start -->
-<div class="bg_nine mt-5 mb-5">
+<!-- <div class="bg_nine mt-5 mb-5">
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-10 offset-lg-1">
@@ -532,7 +549,7 @@ switch($row[0]->SportsType) {
 <h1 class="mb-5">Find A2M Sports<br>app on your mobile</h1>
 <div class="app_imges">
 <a href="https://apps.apple.com/in/app/a2m-sports/id1450412731" target="_blank">
-<img src="<?=base_url()."assets_new/";?>images/Apple - App Store.png" />
+<img src="<?=base_url()."assets_new/";?>images/Apple - App Store.png"/>
 </a>
 <a href="https://play.google.com/store/apps/details?id=com.a2msports.a2msports3" target="_blank">
 <img src="<?=base_url()."assets_new/";?>images/Google - Play Store.png" />
@@ -542,7 +559,7 @@ switch($row[0]->SportsType) {
 </div>
 </div>
 </div>
-</div>
+</div> -->
 <!--Nine banner end -->
 
 <!--seven banner start -->

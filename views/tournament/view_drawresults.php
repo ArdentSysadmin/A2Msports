@@ -213,6 +213,9 @@ if($df or $btn_val)
 	$brackets = league::get_bracket_list($tour_details->tournament_ID, $df, $btn_val);
 else
 	$brackets = league::get_bracket_list($tour_details->tournament_ID);
+//$key = array_search('3', array_column($brackets, 'Esc_Per_Group'));
+
+//echo "<pre>"; print($key); exit;
 
 if(count(array_filter($brackets)) > 0){
 
@@ -638,7 +641,7 @@ if($this->logged_user_role == 'Admin'){   /// tournament admin access links
 	echo '<td><input type="checkbox" name="tour_draws_delete" id="delete_draws_'.$bk->BracketID.'" class="delete_draws" value="'.$bk->BracketID.'" /></td>';
 }
 ?>
-<td style="cursor: pointer;" class="show_draws" id="<?php echo $bk->BracketID;?>"><font style="font-size:13px;" color="#03508c"><b><?php echo $bk->Draw_Title; ?></font></b>&nbsp;&nbsp;
+<td style="cursor: pointer;" class="show_draws" id="<?php echo $bk->BracketID;?>"><font style="font-size:13px;" color="#03508c">&nbsp;<b><?php echo $bk->Draw_Title; ?></font></b>&nbsp;&nbsp;
 <?php 
 if($this->logged_user_role == 'Admin'){
 echo ($bk->is_Publish == 1) ? "Published" : "Unpublished";
@@ -793,6 +796,7 @@ if(count(array_filter($brackets)) > 0){
 <?php //echo '<input type="button" name="vdrawres" id="vdrawres" class="league-form-submit1 close_div" value="Close">'; ?>
 </div> -->
 <div id="showdraw"></div>
+<!-- <div id='se_new_draw' style="margin-top: 20px;"></div> -->
 <div id="showstandings"></div>
 
 <script>
@@ -1066,9 +1070,9 @@ else{
 }
 if($this->logged_user and $this->is_logged_user_reg and !$df and $df != "MyDraws"){ ?>
 <script>
-$(document).ready(function (){
-$('#draw_filter').val('MyDraws').trigger('change');
-});
+//$(document).ready(function (){
+//$('#draw_filter').val('MyDraws').trigger('change');
+//});
 </script>
 <?php } ?>
 

@@ -47,10 +47,10 @@ class Clubs extends REST_Controller {
 				$get_court_bookings = $this->mclub->get_user_court_bookings($court->court_id, $user_id);
 				if($get_court_bookings){
 					foreach($get_court_bookings as $booking) {
-						$from  = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->from_time));
-						$to	   = date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->to_time));
-						$numP  = $booking->num_players;
-						$pList = $booking->players;
+						$from		= date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->from_time));
+						$to			= date('D Y-m-d H:i:s', strtotime($booking->res_date.' '.$booking->to_time));
+						$numP	= $booking->num_players;
+						$pList		= $booking->players;
 						$bookings[] = array('booking_id' => $booking->res_id, 
 											'court_id'	 => $court->court_id, 
 											'loc_id'	 => $club_loc->loc_id, 

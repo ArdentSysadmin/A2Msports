@@ -58,6 +58,12 @@ define('PAYPAL_ID', 'admin@a2msports.com');
 
 define('RESERVE_BLOCKED_CLUBS', serialize (array(1182, 1187)));
 
+define('TOURN_DEF_IMGS', serialize (array(1 => 'default_tennis.jpg', 2 => 'default_table_tennis.jpg', 3 => 'default_badminton.jpg', 4 => 'default_golf.jpg', 5 => 'default_racquet_ball.jpg', 6 => 'default_squash.jpg', 7 => 'default_pickleball_new.jpg', 8 => 'default_chess.jpg', 9 => 'default_carroms.jpg', 10 => 'default_volleyball.jpg', 11 => 'default_fencing.jpg', 12 => 'default_bowling.jpg', 16 => 'default_cricket.jpg', 18 => 'default_basketball1.jpg' )));
+
+define('TOURN_DEF_ICONS', serialize (array(1 => 'tennis-ico.png', 2 => 'tt-ico.png', 3 => 'badminton-ico.png', 4 => 'golf-ico.png', 5 => 'racquet-icon.png', 6 => 'squash-icon.png', 7 => 'pickleball-icon.png', 8 => 'chess-icon.png', 9 => 'carrom-icon.png', 10 => 'volleyball-icon.png', 11 => 'fencing1-icon.png', 12 => 'bowling-icon.png', 16 => 'cricket-icon.png', 18 => 'basketball-icon.png' )));
+
+
+
 //define('PAYPAL_URL', 'https://www.sandbox.paypal.com/cgi-bin/webscr');
 //define('PAYPAL_ID', 'admin-facilitator@a2msports.com');
 

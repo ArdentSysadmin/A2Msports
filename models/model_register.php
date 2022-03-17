@@ -113,6 +113,9 @@
 
 			$issocial = 0 ;
 			$is_user_activation = 0 ;
+			if($data['mobileuser']){
+			$is_user_activation = 1 ;
+			}
 			$is_profile_updated = 1 ;
 
 			$org_admin		= $this->input->post('organizer');
@@ -369,8 +372,9 @@
 
 						if($i == 2)
 						$def_score = 800;
-						if($i == 7)
-							$def_score = 3.0;
+
+						if($i == 7 or $i == 19 or $i == 20)
+						$def_score = 3.0;
 
 						$data = array('Users_ID'=>$this->session->userdata('users_id'),'SportsType_ID'=>$i,'A2MScore'=>$def_score);
 						$qry = $this->db->insert('A2MScore', $data);
@@ -911,6 +915,7 @@ return 0;
 
 				foreach($sports as $type){
 					if($type->SportsType_ID != '10'){
+
 						$def_score = 100;
 						if($type->SportsType_ID == '2')
 							$def_score = 800;

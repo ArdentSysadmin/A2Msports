@@ -3,6 +3,10 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script>
+    var is_event_time  = '<?php echo $r->Multi_Event_Time;?>';
+    var is_event_limit   = '<?php echo $r->Event_Reg_Limit;?>';
+	var is_waitlist_event_exists = 0;
+
 function isValidDate(s) {
   var bits = s.split('/');
   var d = new Date(bits[2] + '/' + bits[1] + '/' + bits[0]);
@@ -29,9 +33,7 @@ $('#Doubles_levels_div').find('input[type=checkbox]:checked').removeAttr('checke
 $('#Mixed_levels_div').find('input[type=checkbox]:checked').removeAttr('checked');
 
 /* ************************* JQuery Code For Coupon Code Starts Here. *********************************** */
-    var is_event_time  = '<?php echo $r->Multi_Event_Time;?>';
-    var is_event_limit   = '<?php echo $r->Event_Reg_Limit;?>';
-	var is_waitlist_event_exists = 0;
+
 	//var new_usatt_opt = $('#new_usatt_opt').val();
 $(document).ready(function(){
 
@@ -123,11 +125,14 @@ $(document).ready(function(){
 
 var baseurl = "<?php echo base_url();?>";
 var users = <?php echo $users; ?>;
+
 //var bpt = <?php echo $being_partner; ?>;
 //arr = $.parseJSON(bpt); //convert to javascript array
 //$.each(arr,function(key,value){
   //  alert(value);
 //});
+//			console.log('users');
+//			console.log(users);
 
 $(".club_page").click(function () { //use change event
 	if (this.value == "1") { //check value if it is domicilio
@@ -424,8 +429,13 @@ $(".team_ag").click(function(){
 	}); 
 
 });
+
+
 });
+
 function getEventTime(events,classname,ag_grp,format){
+    var is_event_time  = '<?php echo $r->Multi_Event_Time;?>';
+	var is_waitlist_event_exists = 0;
 
 if(is_event_time){
 
@@ -552,6 +562,7 @@ function getfee(events,classname,ag_grp,format){
 
 }
 function getevents(events,classname,ag_grp,format){
+    var is_event_limit   = '<?php echo $r->Event_Reg_Limit;?>';
 
 if(is_event_limit){
 	var eventtext="";
@@ -1433,10 +1444,11 @@ $i = 0;
        $multi_events = league::array_flatten($events);	 
     }
 
-	 $event_format = league::regenerate_events($multi_events);
-if($this->logged_user == 240){
+	 $event_format = league::regenerate_events($multi_events, $r->tournament_ID);
+
+//if($this->logged_user == 240){
 //echo "<pre>"; print_r($event_format); exit;
-}
+//}
 	$eligible_events				= array();
     $not_eligible_events		= array();
     $gender_eligible_events = array();
@@ -1549,6 +1561,63 @@ $rating = $est_usatt_rating;
 					}
 		            }
 					else if($age==50 && $user_age>=50){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+							if(is_numeric($level_name) or $rating == 0){
+								if($level_name < $rating){
+									$not_eligible_events['rating-'.$event]=$event1;
+								}
+								else{
+									$eligible_events[$event]=$event1;
+								}
+							}
+							else{
+								$eligible_events[$event]=$event1;
+							}
+		  				}
+						else{
+						   $eligible_events[$event]=$event1;
+						}
+		            }
+					else if($age==60 && $user_age>=60){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+							if(is_numeric($level_name) or $rating == 0){
+								if($level_name < $rating){
+									$not_eligible_events['rating-'.$event]=$event1;
+								}
+								else{
+									$eligible_events[$event]=$event1;
+								}
+							}
+							else{
+								$eligible_events[$event]=$event1;
+							}
+		  				}
+						else{
+						   $eligible_events[$event]=$event1;
+						}
+		            }
+					else if($age==70 && $user_age>=70){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+							if(is_numeric($level_name) or $rating == 0){
+								if($level_name < $rating){
+									$not_eligible_events['rating-'.$event]=$event1;
+								}
+								else{
+									$eligible_events[$event]=$event1;
+								}
+							}
+							else{
+								$eligible_events[$event]=$event1;
+							}
+		  				}
+						else{
+						   $eligible_events[$event]=$event1;
+						}
+		            }
+					else if($age==80 && $user_age>=80){
                         if($r->SportsType == '2'){
 		  		        $level_name = substr($LevelName,1);		  		
 							if(is_numeric($level_name) or $rating == 0){
@@ -2112,7 +2181,7 @@ if(!isset($reg_status)) {
 	else if($r->SportsType == 12){echo "default_bownling.jpg";}
 	else if($r->SportsType == 16){echo "default_cricket.jpg";}
 	else if($r->SportsType == 18){echo "default_basketball1.jpg";}
-	?>" alt="" width="250px" height="210px" />
+	?>" alt="" width="250px" />
 </div>
 </form>
 
@@ -2120,7 +2189,7 @@ if(!isset($reg_status)) {
 	}
 } ?>
 </div>
-<div style='clear:both;'></div>
+<!-- <div style='clear:both;'></div> -->
 </div>
 
 <!-- end main body -->

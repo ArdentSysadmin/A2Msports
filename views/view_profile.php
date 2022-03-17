@@ -598,15 +598,15 @@ if(!empty($user_details['Club_Name'])){
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<p class="txt-torn"><button class="league-form-submit1" id="password">Change Password</button></p>
+<p class="txt-torn"><button class="league-form-submit1" id="password">Set / Change Password</button></p>
 
 <form  method="post"  action="<?php echo base_url(); ?>profile/change_password" role='form'>
 <div id="change_pass" style="Display:none">
-<label>Change Password</label>
-<input class='form-control' id='opass' type='password' name="old_password" placeholder='Current Password' required> <br />
+<label>Set / Change Password</label>
+<!-- <input class='form-control' id='opass' type='password' name="old_password" placeholder='Current Password' required> <br /> -->
 <input class='form-control' id='npass' type='password' name="new_password" placeholder='New Password' required> <br />
-<input class='form-control' id='id="confirm_password"' type='password' name="conf_password" placeholder='Confirm New Password' required> <br />
-<div class="err" style="display: none; color:red">Password mismatch</div>
+<input class='form-control' id='id="confirm_password"' type='password' name="conf_password" placeholder='Retype Password' required> <br />
+<div class="err" style="display: none; color:red">Passwords are mismatch</div>
 <input type="submit" value="Update" style="margin-top:10px" class="league-form-submit1" />
 <input type="button" value="Cancel" id="cancel_pass" style="margin-top:10px" class="league-form-submit1" />
 </div>

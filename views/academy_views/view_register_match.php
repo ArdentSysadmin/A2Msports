@@ -1461,6 +1461,63 @@ $i = 0;
 						   $eligible_events[$event]=$event1;
 						}
 		            }
+					else if($age==60 && $user_age>=60){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+							if(is_numeric($level_name) or $rating == 0){
+								if($level_name < $rating){
+									$not_eligible_events['rating-'.$event]=$event1;
+								}
+								else{
+									$eligible_events[$event]=$event1;
+								}
+							}
+							else{
+								$eligible_events[$event]=$event1;
+							}
+		  				}
+						else{
+						   $eligible_events[$event]=$event1;
+						}
+		            }
+					else if($age==70 && $user_age>=70){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+							if(is_numeric($level_name) or $rating == 0){
+								if($level_name < $rating){
+									$not_eligible_events['rating-'.$event]=$event1;
+								}
+								else{
+									$eligible_events[$event]=$event1;
+								}
+							}
+							else{
+								$eligible_events[$event]=$event1;
+							}
+		  				}
+						else{
+						   $eligible_events[$event]=$event1;
+						}
+		            }
+					else if($age==80 && $user_age>=80){
+                        if($r->SportsType == '2'){
+		  		        $level_name = substr($LevelName,1);		  		
+							if(is_numeric($level_name) or $rating == 0){
+								if($level_name < $rating){
+									$not_eligible_events['rating-'.$event]=$event1;
+								}
+								else{
+									$eligible_events[$event]=$event1;
+								}
+							}
+							else{
+								$eligible_events[$event]=$event1;
+							}
+		  				}
+						else{
+						   $eligible_events[$event]=$event1;
+						}
+		            }
 					else{
 				          $not_eligible_events['age-'.$event] = $event1;
 				    }

@@ -14,7 +14,7 @@ $new_match_timings = array();
 ?>
 
 <link rel="stylesheet" href="<?php echo base_url();?>css/grids/grid_<?=$total_rounds;?>.css">
-<link href = "<?php echo base_url();?>css/foundation-datepicker.css" rel="stylesheet">
+<link rel="stylesheet" href = "<?php echo base_url();?>css/foundation-datepicker.css">
 <script src = "<?php echo base_url();?>js/foundation-datepicker.js"></script>
 
 <script>
@@ -274,7 +274,8 @@ echo $output;
 
 
 <?php
-if($round == ($total_rounds)){
+if($round == ($total_rounds) and $num_of_teams > 2){
+
 	$match_num++;
 $round2 = -1;
 ?>

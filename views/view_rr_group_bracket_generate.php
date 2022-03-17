@@ -279,11 +279,13 @@ else if($sport_level != '' and $sport_level != 'null'){ echo $sport_level; } ?>'
 <input type="hidden" name="rr_multi_rounds" id="tformat" value='<?=$rr_multi_rounds;?>' />
 <input type="hidden" name="is_publish_draw" id="is_publish_draw" value='<?=$is_publish_draw;?>' />
 <input type="hidden" name="num_of_sets" id="num_of_sets" value='<?=$num_of_sets;?>' />
+<input type="hidden" name="po_num_of_sets" id="po_num_of_sets" value='<?=$po_num_of_sets;?>' />
 <input type='hidden' name='br_game_day'	value="<?php echo $this->input->post('br_game_day'); ?>" />
 <input type='hidden' name='draw_format'	value="<?php echo $this->input->post('draw_format'); ?>" />
 
 <input type='hidden' name='is_plof' value="<?php echo $this->input->post('is_plof'); ?>" />
 <input type='hidden' name='plof_size' value="<?php echo $this->input->post('plof_size'); ?>" />
+<input type='hidden' name='plof_size_sel' value="<?php echo $this->input->post('plof_size_sel'); ?>" />
 
 <?php
 if($tformat == 'Teams'){?>

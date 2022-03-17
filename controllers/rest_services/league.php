@@ -953,7 +953,8 @@ document.f1.submit();</script></form></body></html>";
 		$tid		= $this->input->get('tourn_id');
 		$user_id	= $this->input->get('user_id');
 		$txn_amount = $this->input->get('amount');
-
+		$reg_events = $this->input->get('reg_events');
+//echo "<pre>"; print_r($reg_events); exit;
 		$tour_det   = $this->mleague->get_league_details($tid);
 		
 		if(!$tid or !$user_id or !$txn_amount){
@@ -995,6 +996,7 @@ document.f1.submit();</script></form></body></html>";
 				$this->paypal_lib->add_field('tourn_id', $tid);
 				//$this->paypal_lib->add_field('player', $this->logged_user);
 				$this->paypal_lib->add_field('on0', $user_id);
+				$this->paypal_lib->add_field('on1', json_encode($reg_events));
 				$this->paypal_lib->add_field('item_number',  $tid);
 				$this->paypal_lib->add_field('item_name',  $tour_det['tournament_title']);
 				$this->paypal_lib->add_field('amount', $txn_amount);        
@@ -1058,6 +1060,7 @@ public function testpaypalChecksum_get(){
 		$tid		= $this->input->get('tourn_id');
 		$user_id	= $this->input->get('user_id');
 		$txn_amount = $this->input->get('amount');
+		$reg_events = $this->input->get('reg_events');
 
 		$tour_det   = $this->mleague->get_league_details($tid);
 		
@@ -1094,6 +1097,7 @@ public function testpaypalChecksum_get(){
 				$this->paypal_lib->add_field('tourn_id', $tid);
 				//$this->paypal_lib->add_field('player', $this->logged_user);
 				$this->paypal_lib->add_field('on0', $user_id);
+				$this->paypal_lib->add_field('on1', json_encode($reg_events));
 				$this->paypal_lib->add_field('item_number',  $tid);
 				$this->paypal_lib->add_field('item_name',  $tour_det['tournament_title']);
 				$this->paypal_lib->add_field('amount', $txn_amount);        
@@ -3170,6 +3174,11 @@ $data['couponCodes'] = $coupons;
 						}
 					}
 					else{
+
+						foreach($reg_events as $event){
+							$sp_events[] = $event;
+						}
+
 						$data['Reg_Events']	=  json_encode($reg_events);
 					}
 
@@ -3217,13 +3226,11 @@ $data['couponCodes'] = $coupons;
 
 					$res				= array('Success: ' . "User / Team successfully registered.");
 
-					$dev_email	 = "pradeepkumar.namala@gmail.com";
-					$dev_subject = "A2M Mobile Post variables - Production";
-					$data2		 = array('firstname'	=> "Developer",
-												'post_vals'	=> print_r($data, true),
-												'page'		=> 'A2M Mobile Post');
+					//$dev_email	 = "pradeepkumar.namala@gmail.com";
+					//$dev_subject = "A2M Mobile Post variables - Production";
+					//$data2		 = array('firstname'	=> "Developer",'post_vals'	=> print_r($data, true),												'page'		=> 'A2M Mobile Post');
 
-					$this->email_to_player($dev_email, $dev_subject, $data2);
+					//$this->email_to_player($dev_email, $dev_subject, $data2);
 
 			//$res = array($data);
 			}
@@ -3236,29 +3243,30 @@ $data['couponCodes'] = $coupons;
 					if($get_reg_events['Reg_Events']){
 
 						$prev_reg_events  = json_decode($get_reg_events['Reg_Events'], true);
-
+//echo "<pre>"; print_r($sp_events);
 						foreach($sp_events as $new_ev){
+							//echo $new_ev." ";
 							if(!in_array($new_ev, $prev_reg_events)){
 								array_push($prev_reg_events, $new_ev);
 							}
 						}
 					}
 
-					$data3['upd_events']			= $prev_reg_events;
+					$data3['upd_events']		= $prev_reg_events;
 					$data3['Tournament_ID']	= $data['Tournament_ID'];
-					$data3['Users_ID']				= $data['Users_ID'];
+					$data3['Users_ID']			= $data['Users_ID'];
 
-					$data2['Tournament_ID'] = $data['Tournament_ID'];
-					$data2['pay_date']  = date('Y-m-d H:i:s');
-					$data2['Users_ID']  = $data['Users_ID'];
-					$data2['mtype']	    = 'tournament';
-					$data2['mtype_ref'] = $data['Tournament_ID'];
-					$data2['Amount']	= number_format($fee_amount, 2);
+					$data2['Tournament_ID']	= $data['Tournament_ID'];
+					$data2['pay_date']	= date('Y-m-d H:i:s');
+					$data2['Users_ID']	= $data['Users_ID'];
+					$data2['mtype']			= 'tournament';
+					$data2['mtype_ref']	= $data['Tournament_ID'];
+					$data2['Amount']		= number_format($fee_amount, 2);
 					$data2['Transaction_id'] = $transaction_id;
-					$data2['Status']	= $status;
+					$data2['Status']		= $status;
 //echo "<pre>"; print_r($data2);print_r($data3); exit;
-					$upd	 = $this->mleague->update_reg_tourn($data3);
-					$ins_pay = $this->mleague->insert_pay_transaction($data2);
+					$upd			= $this->mleague->update_reg_tourn($data3);
+					$ins_pay  = $this->mleague->insert_pay_transaction($data2);
 
 					$res = array('Success: ' . "User / Team successfully registered.");
 			}

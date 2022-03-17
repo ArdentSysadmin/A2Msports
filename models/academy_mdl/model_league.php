@@ -12723,5 +12723,162 @@ else if($query6)
 			return $query;*/
 		}
 
+		public function update_po_autoesc(){
+//echo "Inside model";
+//echo "<pre>"; print_r($_POST); exit;
+
+if($this->logged_user_role != 'Admin'){
+echo "Unauthorised Access!"; exit;
+}
+			 $bracket_id = $this->input->post('bracket_id'); 
+
+			$del_br_matches = $this->db->query("DELETE FROM Tournament_Matches WHERE BracketID = {$bracket_id}");
+
+            $filter_events	 = $this->input->post('filter_events');
+			$rounds	 = $this->input->post('round');
+			$matches = $this->input->post('match_num');
+			$player1 = $this->input->post('player1');
+			$player2 = $this->input->post('player2');
+            
+			$match_type = $this->input->post('match_type');
+			$tourn_id   = $this->input->post('tourn_id');
+
+		
+
+			 //$bracket_id = $this->input->post('bracket_id'); 
+			/*echo "<pre>";
+			echo $bracket_id;
+			exit;*/
+			 //Tournament_Matches
+			$player1_score = "";
+			$player2_score = "";
+			$winner = "";
+			$win_per = "";
+
+			 foreach($rounds as $round)
+			{
+					//echo $round."<br>";
+				foreach($matches[$round] as $match)
+				{
+					$player1_score	= "";
+					$player2_score	= "";
+					$winner			= "";
+					$win_per		= "";
+
+					$date_round  = $this->input->post('round_date'.$round);
+					$date_match = $this->input->post('match_date'.$match);
+					$assg_court  = $this->input->post('assg_court'.$match);
+
+					$match_due_date = "";
+
+					if($date_round != "") {
+						$match_due_date = date("Y-m-d H:i",strtotime($date_round));
+					} 
+					else if($date_match != "") {
+						$match_due_date = date("Y-m-d H:i",strtotime($date_match)); 
+					}
+
+					$assg_match_court = NULL;
+
+					if($assg_court != "") {
+						$assg_match_court = $assg_court;
+					} 
+
+
+					if($player1[$round][$match][0] == "---" or $player1[$round][$match][0] == "----" or $player1[$round][$match][0] == 0)
+					{
+						$player1_val = "";
+						if($round==1){
+							$player1_score = 'Bye Match';
+							$player2_score = 'Bye Match';
+							$winner = intval($player2[$round][$match][0]);
+							$win_per = 0;
+						}
+					}
+					else
+					{
+						$player1_val = intval($player1[$round][$match][0]);
+						$player1_partner = explode("-", $player1[$round][$match][0]);
+					}
+
+
+					if($player2[$round][$match][0] == "---" or $player2[$round][$match][0] == "----" or $player2[$round][$match][0] == 0)
+					{ 
+						$player2_val = "";
+						if($round==1){
+							$player1_score = 'Bye Match';
+							$player2_score = 'Bye Match';
+							$winner = intval($player1[$round][$match][0]);
+							$win_per = 0;
+						}
+					}
+					else
+					{
+						$player2_val	 = intval($player2[$round][$match][0]);
+						$player2_partner = explode("-", $player2[$round][$match][0]);
+					}
+
+					$player1_source = $player1[$round][$match][1];
+					$player2_source = $player2[$round][$match][1];
+
+					if($match_due_date == ""){
+						$data = array(
+							'BracketID' => $bracket_id,
+							'Tourn_ID'	=> $tourn_id,
+							'Round_Num' => $round,
+							'Match_Num' => $match,
+							'Player1'	=> $player1_val,
+							'Player2'	=> $player2_val,
+							'Player1_Score' => $player1_score,
+							'Player2_Score' => $player2_score,
+							'Winner'	=> $winner,   
+							'Win_Per'	=> $win_per,
+							'Player1_source' => $player1_source,
+							'Player2_source' => $player2_source,
+							'Player1_Partner' => intval($player1_partner[1]),
+							'Player2_Partner' => intval($player2_partner[1]),
+							'Draw_Type' => 'Main',
+							'Court_Info' => $assg_match_court
+						);
+					} else {
+						$data = array(
+							'BracketID' => $bracket_id,
+							'Tourn_ID'	=> $tourn_id,
+							'Round_Num' => $round,
+							'Match_Num' => $match,
+							'Player1' => $player1_val,
+							'Player2' => $player2_val,
+							'Player1_Score' => $player1_score,
+							'Player2_Score' => $player2_score,
+							'Winner'	=> $winner,   
+							'Win_Per'	=> $win_per,
+							'Player1_source' => $player1_source,
+							'Player2_source' => $player2_source,
+							'Player1_Partner' => intval($player1_partner[1]),
+							'Player2_Partner' => intval($player2_partner[1]),
+							'Draw_Type' => 'Main',
+							'Match_DueDate' => $match_due_date,
+							'Court_Info' => $assg_match_court
+						);
+					}
+
+					
+					$ins_to = $this->db->insert('Tournament_Matches', $data);
+					$tour_match_id = $this->db->insert_id();
+
+
+					unset($player1_partner);
+					unset($player2_partner);
+				}
+			}
+		
+			if($ins_to){
+				return true;
+			}
+			else{
+				return false;
+			}
+
+		}
 
 }

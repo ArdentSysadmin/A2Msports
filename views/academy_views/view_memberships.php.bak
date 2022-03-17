@@ -289,6 +289,8 @@ $(document).ready(function() {
 	<option value="6">Squash</option>
 	<option value="7">Pickleball</option>
 	<option value="18">Basketball</option>
+	<option value="19">Handball</option>
+	<option value="20">Paddleball</option>
 	</select>
 </div>
 
@@ -360,7 +362,7 @@ $(document).ready(function() {
 			$('#membership_acc_fee').val('0');
 			$('#div_activationfee').hide();
 			$('#div_expdate').show();
-			$("#expire_date").attr('required');
+			$("#expire_date").attr('required', 'required');
 		}
 		else{
 			$('#div_activationfee').show();
@@ -399,6 +401,8 @@ $(document).ready(function() {
 	<option value="6" <?php if($sport=="6"){ echo "selected=selected"; } ?>>Squash</option>
 	<option value="7" <?php if($sport=="7"){ echo "selected=selected"; } ?>>Pickleball</option>
 	<option value="18" <?php if($sport=="18"){ echo "selected=selected"; } ?>>Basketball</option>
+	<option value="19" <?php if($sport=="19"){ echo "selected=selected"; } ?>>Handball</option>
+	<option value="20" <?php if($sport=="18"){ echo "selected=selected"; } ?>>Paddleball</option>
 	</select>
 </div>
 

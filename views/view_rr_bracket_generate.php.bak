@@ -36,7 +36,7 @@ var baseurl = "<?php echo base_url();?>";
 							});
 
 							if($count > 0){
-								alert('To create Events, we requre dates for all rounds!');
+								alert('To create Events, we require dates for all rounds!');
 							e.preventDefault();
 							return false;
 							}

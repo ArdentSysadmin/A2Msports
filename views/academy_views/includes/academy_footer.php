@@ -162,7 +162,7 @@ $(document).ready(function () {
     <script type="text/javascript" src="<?php echo base_url(); ?>static_assets/js/app.js"></script> -->
  <script>
   // Porfolio isotope and filter
-  $(window).on('load', function() {
+  /*$(window).on('load', function() {
     var portfolioIsotope = $('.portfolio-container').isotope({
       itemSelector: '.portfolio-item'
     });
@@ -181,15 +181,15 @@ $(document).ready(function () {
     $(document).ready(function() {
       $('.venobox').venobox();
     });
-  });
+  });*/
 
   // Portfolio details carousel
-  $(".portfolio-details-carousel").owlCarousel({
+  /*$(".portfolio-details-carousel").owlCarousel({
     autoplay: true,
     dots: true,
     loop: true,
     items: 1
-  });
+  });*/
 
 </script>
 <script src="<?php echo base_url(); ?>assets/club_pages/js/custom.js"></script>

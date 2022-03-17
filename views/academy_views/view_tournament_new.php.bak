@@ -1,4 +1,7 @@
-<link href="<?=base_url();?>/css/tour_detail.css" rel="stylesheet" type="text/css" />
+
+<?php
+exit;
+?><link href="<?=base_url();?>/css/tour_detail.css" rel="stylesheet" type="text/css" />
 <style>
 /*a.register  {
    background-image: url('https://a2msports.com/icons/register_green.png');
@@ -203,7 +206,7 @@ if($this->logged_user_role == 'Admin') {
 <b>Status: </b>
 <?php
 if($tour_details->Is_Publish) { echo "<span style='color:green;font-weight:bold;font-size: 20px !important;'>Published</span>"; }
-else{ echo "<span style='color:red;font-weight:bold;font-size: 20px !important;'>UnPublished</span>"; }
+else { echo "<span style='color:red;font-weight:bold;font-size: 20px !important;'>UnPublished</span>"; }
 }
 ?>
 </div>

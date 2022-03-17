@@ -10,7 +10,7 @@
 			<?php
 			if($org_details['Aca_ID'] == 1166){
 			?>
-              <h3 style="margin-top:0px;">Inquiries</h3>
+              <h3 style="margin-top:0px;">General Inquiries</h3>
 			<?php
 			}
 			else{

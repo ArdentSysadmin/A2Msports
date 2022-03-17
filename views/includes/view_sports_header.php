@@ -25,7 +25,7 @@
     <!-- Owl Stylesheets -->
     <link rel="stylesheet" href="<?=base_url(); ?>assets_new/css/owl.carousel.min.css">
     <link rel="stylesheet" href="<?=base_url(); ?>assets_new/css/owl.theme.default.min.css">
-    <title>A2M</title>
+    <title>A2MSports - <?=ucfirst($this->uri->segment(1));?></title>
     <script src="<?=base_url(); ?>assets_new/js/jquery.min.js"></script>
     <script src="<?=base_url(); ?>assets_new/js/owl.carousel.js"></script>
     <style type="text/css">
@@ -46,7 +46,7 @@
           <ul class="navbar-nav mx-4">
 		   <li class="nav-item"><a  id="vtournaments_mn" class="nav-link show_all <?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/tournaments";?>">Tournaments</a></li>
 
-<li class="nav-item"><a  id="vplayers_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/rankings";?>">Players</a></li>
+<li class="nav-item"><a  id="vplayers_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/players";?>">Players</a></li>
 
 <li class="nav-item"><a  id="vteams_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/teams";?>">Teams</a></li>
 

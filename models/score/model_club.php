@@ -342,19 +342,19 @@ exit;*/
 			}
 
 			if(in_array($det['Country'], $this->country_arr)){
-				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country IN {$this->country_str} AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations) ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country IN {$this->country_str} AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1) ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
-				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country IN {$this->country_str} AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations) ORDER BY Aca_name");
+				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country IN {$this->country_str} AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1) ORDER BY Aca_name");
 			}
 			else if($det['Country']){
-				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = '{$det['Country']}' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations) ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = '{$det['Country']}' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1) ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
-				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = '{$det['Country']}' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations) ORDER BY Aca_name");
+				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = '{$det['Country']}' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1) ORDER BY Aca_name");
 			}
 			else{
-				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = 'United States of America' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations) ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = 'United States of America' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1) ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
-				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = 'United States of America' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations) ORDER BY Aca_name");
+				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = 'United States of America' AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1) ORDER BY Aca_name");
 			}
 		}
 		/*else if($user_id and $search_cond != ''){
@@ -370,19 +370,19 @@ exit;*/
 
 			if(in_array($det['Country'], $this->country_arr)){
 				//$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country IN {$this->country_str}");
-				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country IN {$this->country_str} ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1){$search_cond} AND Aca_country IN {$this->country_str} ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
-				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country IN {$this->country_str} ORDER BY Aca_name");
+				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1){$search_cond} AND Aca_country IN {$this->country_str} ORDER BY Aca_name");
 			}
 			else if($det['Country']){
-				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = '{$det['Country']}' ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1){$search_cond} AND Aca_country = '{$det['Country']}' ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
-				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = '{$det['Country']}' ORDER BY Aca_name");
+				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1){$search_cond} AND Aca_country = '{$det['Country']}' ORDER BY Aca_name");
 			}
 			else{
-				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = 'United States of America' ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1){$search_cond} AND Aca_country = 'United States of America' ORDER BY Aca_name OFFSET {$offset} ROWS FETCH NEXT {$limit} ROWS ONLY");
 
-				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations){$search_cond} AND Aca_country = 'United States of America' ORDER BY Aca_name");
+				$qry_total = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID IN (SELECT org_id FROM Academy_Court_Locations WHERE status = 1){$search_cond} AND Aca_country = 'United States of America' ORDER BY Aca_name");
 			}
 		}
 		else{

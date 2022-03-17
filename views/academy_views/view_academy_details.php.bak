@@ -206,14 +206,15 @@ else{
 	<div class="row" id='show-banner-section'>
   <div class="banner-wrapper">
     <div id="first-slider" class="">
-      <div id="carousel-example-generic" class="carousel slide carousel-fade"> 
+      <!-- <div id="carousel-example-generic" class="carousel slide carousel-fade"> --> 
+      <div id="carousel-example-generic33" class="carousel33 slide carousel-fade33"> 
         <!-- Indicators 
         <ol class="carousel-indicators">
           <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
           <li data-target="#carousel-example-generic" data-slide-to="1"></li>
         </ol> -->
         <!-- Wrapper for slides -->
-		<div class="carousel-inner" role="listbox">
+		<div class="carousel-inner33" role="listbox">
 		<!-- edit icon -->
 	<?php if($this->is_club_admin){ ?>
 		<div class="facility-edit-icon">
@@ -322,7 +323,7 @@ switch($sport){
 					if($i == 0) 
 						$act = 'active';
 				?>
-			<div class="item slide1 <?=$act;?>"><img  src="<?php echo base_url()."assets/club_facility/".$org_details['Aca_ID']."/banner/".$bnrImage; ?>" alt=""  style="object-fit: cover; padding:5px; height: 465px; width:100%; background-color:#d7d4d4; " /></div>
+			<div class="item slide1 <?=$act;?>"><img  src="<?php echo base_url()."assets/club_facility/".$org_details['Aca_ID']."/banner/".$bnrImage; ?>" alt=""  style="object-fit: contain; padding:5px; height: 465px; width:100%; background-color:#d7d4d4; " /></div>
 				<?php
 				$i++;
 				}
@@ -445,6 +446,107 @@ if(trim($aca_pages['Alert_Message']) != ''){
     <div class="row">
 		<div class="caltext"><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events"><!-- <i class="fa fa-calendar" aria-hidden="true"></i> --> More Events</a></div>
  
+<?php 
+if(count($club_events) > 0){
+
+foreach($club_events as $row) { 
+?>
+	<div class="col-md-3 col-sm-6">
+	<!-- <div class="text-center col-md-3 col-md-offset-3"> -->
+		 <div class="course-item">
+			<div class="course-img">
+			<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>">
+			<img src="<?php echo base_url(); ?>events_pictures/<?php if($row->EventImage!=""){echo $row->EventImage; }
+			else {
+			switch($row->Ev_Sport) {
+			case 1:
+			echo "default_tennis.jpg";
+			break;
+			case 2:
+			echo "default_table_tennis.jpg";
+			break;
+			case 3:
+			echo "default_badminton.jpg";
+			break;
+			case 4:
+			echo "default_golf.jpg";
+			break;
+			case 5:
+			echo "default_racquet_ball.jpg";
+			break;
+			case 6:
+			echo "default_squash.jpg";
+			break;
+			case 7:
+			echo "default_pickleball.jpg";
+			break;
+			case 8:
+			echo "default_chess.jpg";
+			break;
+			case 9:
+			echo "default_carroms.jpg";
+			break;
+			case 10:
+			echo "default_volleyball.jpg";
+			break;
+			case 11:
+			echo "default_fencing.jpg";
+			break;
+			case 12:
+			echo "default_bowling.jpg";
+			break;
+			case 18:
+			echo "default_basketball1.jpg";
+			break;
+			default:
+			echo "";
+			}
+			}
+			?>" alt="" style="/*width:261px;*/ object-fit: contain; height:157px; margin-top: 5px;" />
+			</a>
+			</div>
+			<div class="course-body">
+				<div class="course-desc" style="min-height: 115px;">
+					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>" title="<?php echo $row->Ev_Title;?>">
+					<?php if(strlen($row->Ev_Title) > 24) { echo substr($row->Ev_Title, 0, 24).".."; } else { echo $row->Ev_Title; }?></a></h4>
+					  <p><b>Sport:</b> <?php 
+						$get_sport = academy::get_sport($row->Ev_Sport);
+						echo $get_sport['Sportname'];
+						?><br>
+						<!-- <b>Registration closed on:</b> <?php //echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br> -->
+						<b>Starts on:</b> <?php echo date('m/d/Y',strtotime(substr($row->Ev_Start_Date,0,10))); ?><br>
+						<?php 
+						$get_loc = academy::get_location($row->Ev_Location);
+						if($get_loc['loc_city'] or $get_loc['loc_state']){
+						?>
+						<b>Location:</b> <?php echo $get_loc['loc_city']. ', ' .$get_loc['loc_state']; ?><br>
+						<?php
+						}
+						else{
+						?>
+						<b>Location:</b> N/A<br>
+						<?php
+						}
+						$now		  = strtotime("now");
+						$end_date = strtotime($row->Ev_End_Date);
+
+						if($end_date < $now){ ?>
+						<b style="background-color:#2de033; padding:0px;">COMPLETED</b>
+						<?php } else { ?>
+						<b style="padding:0px;">&nbsp;</b>
+						<?php } ?>
+						</p>
+				</div>
+			</div>
+		</div><!-- Tournaments-item -->
+	</div><!-- col-md-4 -->
+
+<?php
+}
+}
+?>
+
+
  <?php 
 if(count($club_leagues) == 0 and count($club_events) == 0)
 {
@@ -514,7 +616,8 @@ foreach($club_leagues as $row) {
 			</div>
 			<div class="course-body">
 				<div class="course-desc">
-					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>"><?php echo $row->tournament_title;?></a></h4>
+					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/league/'.$row->tournament_ID; ?>" title="<?php echo $row->tournament_title;?>">
+					<?php if(strlen($row->tournament_title) > 23){ echo substr($row->tournament_title, 0, 23).".."; } else { echo $row->tournament_title; }?></a></h4>
 					  <p><b>Sport:</b> <?php 
 						$get_sport = academy::get_sport($row->SportsType);
 						echo $get_sport['Sportname'];
@@ -522,102 +625,13 @@ foreach($club_leagues as $row) {
 						<!-- <b>Registration closed on:</b> <?php //echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br> -->
 						<b>Starts on:</b> <?php echo date('m/d/Y',strtotime(substr($row->StartDate,0,10))); ?><br>
 						<b>Location:</b> <?php echo $row->TournamentCity. ',' . $row->TournamentState; ?></p>
-				</div>
-			</div>
-		</div><!-- Tournaments-item -->
-	</div><!-- col-md-4 -->
-
-<?php
-}
-}
-?>
-   <?php 
-if(count($club_events) > 0){
-
-foreach($club_events as $row) { 
-?>
-	<div class="col-md-3 col-sm-6">
-	<!-- <div class="text-center col-md-3 col-md-offset-3"> -->
-		 <div class="course-item">
-			<div class="course-img">
-			<a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>">
-			<img src="<?php echo base_url(); ?>events_pictures/<?php if($row->EventImage!=""){echo $row->EventImage; }
-			else {
-			switch($row->Ev_Sport) {
-			case 1:
-			echo "default_tennis.jpg";
-			break;
-			case 2:
-			echo "default_table_tennis.jpg";
-			break;
-			case 3:
-			echo "default_badminton.jpg";
-			break;
-			case 4:
-			echo "default_golf.jpg";
-			break;
-			case 5:
-			echo "default_racquet_ball.jpg";
-			break;
-			case 6:
-			echo "default_squash.jpg";
-			break;
-			case 7:
-			echo "default_pickleball.jpg";
-			break;
-			case 8:
-			echo "default_chess.jpg";
-			break;
-			case 9:
-			echo "default_carroms.jpg";
-			break;
-			case 10:
-			echo "default_volleyball.jpg";
-			break;
-			case 11:
-			echo "default_fencing.jpg";
-			break;
-			case 12:
-			echo "default_bowling.jpg";
-			break;
-			case 18:
-			echo "default_basketball1.jpg";
-			break;
-			default:
-			echo "";
-			}
-			}
-			?>" alt="" style="/*width:261px;*/ object-fit: contain; height:157px; margin-top: 5px;" />
-			</a>
-			</div>
-			<div class="course-body">
-				<div class="course-desc" style="min-height: 115px;">
-					<h4 class="course-title" style='font-size:15px;'><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode'].'/events/'.$row->Ev_ID; ?>"><?php echo $row->Ev_Title;?></a></h4>
-					  <p style="line-height: 23px;"><b>Sport:</b> <?php 
-						$get_sport = academy::get_sport($row->Ev_Sport);
-						echo $get_sport['Sportname'];
-						?><br>
-						<!-- <b>Registration closed on:</b> <?php //echo date('m/d/Y',strtotime(substr($row->Registrationsclosedon,0,10))); ?><br> -->
-						<b>Starts on:</b> <?php echo date('m/d/Y',strtotime(substr($row->Ev_Start_Date,0,10))); ?><br>
-						<?php 
-						$get_loc = academy::get_location($row->Ev_Location);
-						if($get_loc['loc_city'] or $get_loc['loc_state']){
-						?>
-						<b>Location:</b> <?php echo $get_loc['loc_city']. ', ' .$get_loc['loc_state']; ?><br>
-						<?php
-						}
-						else{
-						?>
-						<b>Location:</b> N/A<br>
-						<?php
-						}
+												<?php 
 						$now		  = strtotime("now");
-						$end_date = strtotime($row->Ev_End_Date);
+						$end_date = strtotime($row->EndDate);
 
 						if($end_date < $now){ ?>
-						<b style="background-color:#2de033; padding:0px;">COMPLETED</b>
+						<b style="background-color:#2de033; padding:4px;">COMPLETED</b>
 						<?php } ?>
-						</p>
 				</div>
 			</div>
 		</div><!-- Tournaments-item -->
@@ -627,7 +641,6 @@ foreach($club_events as $row) {
 }
 }
 ?>
-
       
     </div><!-- row -->
   </div>
@@ -646,19 +659,22 @@ foreach($club_events as $row) {
 			<div class="ps-edit-icon">
 			<a style="color:#000; cursor:pointer;" id='change_ps'>
 			<i class="fa fa-pencil" aria-hidden="true"></i></a>
-		&nbsp;&nbsp;&nbsp;
-		<a style="color:#000; cursor:pointer; font-size:20px;" id='add_ps'>
-		<i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+			&nbsp;&nbsp;&nbsp;
+			<a style="color:#000; cursor:pointer; font-size:20px;" id='add_ps'>
+			<i class="fa fa-plus-circle" aria-hidden="true"></i></a>
 			</div>
-		<div class="col-md-12 col-sm-12 ps_select_chck_imgs" style='display:none;'>
-		<input type='button' name='del-ps-imgs' id='del-ps-imgs' value=' Delete ' />
-		<input type='button' name='del-ps-cancel' id='del-ps-cancel' value=' Cancel ' />
-		</div>
+			<div class="col-md-12 col-sm-12 ps_select_chck_imgs" style='display:none;'>
+			<input type='button' name='del-ps-imgs' id='del-ps-imgs' value=' Delete ' />
+			<input type='button' name='del-ps-cancel' id='del-ps-cancel' value=' Cancel ' />
+			</div>
 			<?php } ?>
 			<!-- edit icon end -->
     </div>
     <div class="team-row justify-content-center our-gallery-wrapper" id='ps-team' style="background:transparent; padding:0px;">
-	<div id="home-gallery" class="owl-carousel">
+	<div id="home-gallery" 
+	<?php if($facility_details['Facility_Partner_Sponsors']){ ?>
+	class="owl-carousel" 
+	<?php } ?>>
 		<?php
 			if($facility_details['Facility_Partner_Sponsors']){
 				$ps_team = json_decode($facility_details['Facility_Partner_Sponsors'], true); 
@@ -823,7 +839,9 @@ if(count($club_testimonials) > 0){
       <h2 style="color:#000">Testimonials</h2>
       <div><span></span></div>
     </div>
-    <div id="testimonials" class="owl-carousel">
+    <div id="testimonials" <?php if($club_testimonials){ ?>
+	class="owl-carousel" 
+	<?php } ?>>
 	<?php
 	foreach($club_testimonials as $testim) {
 	$img_path = base_url()."assets/club_pages/images/pm.png";

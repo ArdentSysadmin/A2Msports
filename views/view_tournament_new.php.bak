@@ -340,7 +340,7 @@ if($tour_details->TournamentDescription != NULL and $tour_details->TournamentDes
 }
 if(!$this->is_team_league){?>
 <li role="presentation"><a href="#AdmParticipants" id="ShowAdmParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
-<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<li role="presentation"><a href="#ShowPlayers" id="ShowPlayersTab" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
 <?php
 }
 else if($this->is_team_league){?>
@@ -386,7 +386,7 @@ else if($logged_user_role == 'RegPlayer'){
 if(!$this->is_team_league){
 ?>
 <li role="presentation"><a href="#Participants" id="ShowParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
-<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<li role="presentation"><a href="#ShowPlayers"  id="ShowPlayersTab" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
 <?php
 }
 else if($this->is_team_league){
@@ -438,7 +438,7 @@ else if($logged_user_role == 'Visiter'){
 if(!$this->is_team_league){
 ?>
 <li role="presentation"><a href="#Participants" id="ShowParticipants" aria-controls="messages" role="tab" data-toggle="tab">Events</a></li>
-<li role="presentation"><a href="#ShowPlayers" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
+<li role="presentation"><a href="#ShowPlayers" id="ShowPlayersTab" aria-controls="messages" role="tab" data-toggle="tab">Players (<?php echo "<span style='color:#ff8a00;font-weight:bold;'>$participants_count</span>"; ?>)</a></li>
 <?php
 }
 else if($this->is_team_league){?>
@@ -483,14 +483,13 @@ $data['tour_details'] = $tour_details;
 
 <div role="tabpanel" class="tab-pane fade" id="AdmParticipants">
 	<?php
-	/*if(!$this->is_team_league and ($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){*/
-	if(($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){
+	//if(($this->logged_user == 239 or $this->is_super_admin or $this->logged_user == $tour_details->Usersid)){
 	?>
-	<div style="text-align:right;">
+	<!-- <div style="text-align:right;">
 	<a id="show_pay_info" style="cursor:pointer;"><span id='pinfo_label'>Show Payment Info.</span></a>
-	</div>
+	</div> -->
 	<?php
-	}
+	//}
 	?>
 	<div id='tourn_participants'></div>
 
@@ -524,7 +523,7 @@ else{
 <div role="tabpanel" class="tab-pane fade" id="ShowPlayers">
 <?php
 if(!$this->is_team_league){
-$this->load->view('tournament/view_players');  // Load Tournament Players
+//$this->load->view('tournament/view_players');  // Load Tournament Players
 }
 ?>
 </div>
@@ -614,7 +613,7 @@ $(this).next().toggle();
 return false;
 }).next().hide();
 });*/
-	$('#show_pay_info').click(function(){
+	/*$('#show_pay_info').click(function(){
 		$('#tourn_participants').toggle();
 		$('#tourn_participants_payment').toggle();
 		
@@ -624,7 +623,7 @@ return false;
 		else{
 				$('#pinfo_label').html('Show Payment Info.');
 		}
-	});
+	});*/
 });
 </script>
 <script src="<?php echo base_url();?>js/jquery-1.10.2.js" type="text/javascript"></script>
@@ -646,13 +645,13 @@ var club_baseurl = "<?php if($this->config->item('club_form_url') != '') { echo 
 </script>
 <script src="<?php echo base_url();?>js/custom/league.js" type="text/javascript"></script>
 <script src="<?php echo base_url();?>js/custom/tour_detail.js" type="text/javascript"></script>
-<script>(function(d, s, id) {
+<script>/*(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
   js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
   fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+}(document, 'script', 'facebook-jssdk'));*/
 </script>
 <script src="<?=base_url();?>/assets/tinymce/tinymce.min.js"></script>
 <!--  -->
