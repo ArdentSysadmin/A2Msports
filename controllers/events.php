@@ -144,8 +144,7 @@ class events extends CI_Controller {
 		return $this->model_event->get_event_name($ev_id);
 	}
 
-	public function create()
-	{
+	public function create() {
 		//echo "<pre>"; print_r($_POST); exit;
 
 		 $filename = 'EventImage';  
@@ -163,15 +162,12 @@ class events extends CI_Controller {
 		$data = $this->upload->data();
 		$this->upload->initialize($config);
 
-		if($this->upload->do_upload($filename)) 
-		{
-
+		if($this->upload->do_upload($filename)) {
 		    $data = $this->upload->data();
 		    $ins_match = $this->model_event->create_event($data);
 		    redirect("events/view/$ins_match/1");
 		}
-		else
-		{
+		else {
 			 $ins_match = $this->model_event->create_event();
 		     redirect("events/view/$ins_match/1");
 		}

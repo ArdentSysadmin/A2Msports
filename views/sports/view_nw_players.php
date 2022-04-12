@@ -1,5 +1,28 @@
-<!--seven banner start -->
+<!--fourth banner start -->
 <div class="bg-blue pb-2" style="margin-top: 125px">
+<div class="banner_pagetwo_  mx-3 pt-3 mb-5 ">
+<div class="container">
+<div class="row banner_pagetwo_two">
+	<div class="col-lg-8 pb-0">
+		<div class="banner_two_content pl-30 pt-4 mx-3">
+		<h1 class="mb-2" style="text-align: var(--txt_align_left);">Keep all your matches Live</h1>
+		<p class="mb-3 mt-3" style="text-align: var(--txt_align_left);">Played an awesome match with your friends? Make the match count! <br> Add the Score here and we will keep it alive. Each match will help you rate yourself better!</p>
+		<p style="text-align: var(--txt_align_left);"><a href="<?=base_url()."/addscore";?>" class="btn_orange" style="padding: 10px 25px;">Add Score</a></p>
+		</div>
+	</div>
+	<div class="col-lg-4 p-0">
+		<div class="banner_img text-center">
+		<img src="<?=base_url()."assets_new/";?>images/image 30.png" class="w-100 brb_r">
+		</div>
+	</div>
+</div>
+</div>
+</div>
+<!--fourth banner end -->
+
+
+<!--seven banner start -->
+<div class="bg-blue pb-2" style="margin-top: 25px">
 <div class="container-fluid">
 <div class="row">
 <div class="heading text-center pt-4 pb-2">
@@ -40,7 +63,7 @@ if(file_exists($filename)){ ?>
 <div class="palyer_names d-flex justify-content-between">
 <div class="name">
 <!-- <p class="mb-0 gry">Name</p> -->
-<h6 class="" style="font-size: 1.3rem !important;"><a href="<?php echo base_url()."player/".$row->Users_ID; ?>">
+<h6 class="" style="font-size: 1.1rem !important;"><a href="<?php echo base_url()."player/".$row->Users_ID; ?>">
 <?php echo ucfirst($row->FirstName)." ".ucfirst($row->LastName);?>
 </a>
 </h6>
@@ -125,9 +148,9 @@ if($row->State) echo ucfirst($row->State);
 <thead>
 <tr>
 <!-- <th scope="col">Rank</th> -->
-<th scope="col" style="font-weight: bold !important;">Player Name</th>
-<th scope="col" style="font-weight: bold !important;">City</th>
-<th scope="col" style="font-weight: bold !important;">State</th>
+<th scope="col" style="font-weight: bold !important;">Player Name</th>		
+<th scope="col" style="font-weight: bold !important;">City</th>				
+<!-- <th scope="col" style="font-weight: bold !important;">Win-Loss</th> -->
 <th scope="col" style="font-weight: bold !important;">A2M Rating <br>(Singles)</th>
 <th scope="col" style="font-weight: bold !important;">A2M Rating <br>(Doubles)</th>
 <th scope="col" style="font-weight: bold !important;">A2M Rating <br>(Mixed)</th>
@@ -136,6 +159,8 @@ if($row->State) echo ucfirst($row->State);
 <tbody>
 <?php
 $k=1;
+//echo "<pre>"; print_r($loc_query); exit;
+
 foreach($loc_query as $key => $row) {
 $Sports_Interests = league::get_user_sport_intrests($row->Users_ID,$sport);
 $membership_det = league::get_membership_details($row->Users_ID);
@@ -146,8 +171,8 @@ $membership_det = league::get_membership_details($row->Users_ID);
 player/<?php echo $row->Users_ID;?>">
 <?php echo ucfirst($row->FirstName)." ".ucfirst($row->LastName);?>
 </a></p></td>
-<td><p class="mt-3 mb-0"><?php echo $row->City;?></p></td>
-<td><p class="mt-3 mb-0"><?php echo $row->State;?></p></td>
+<td><p class="mt-3 mb-0"><?php echo $row->City.", ".$row->State;?></p></td>
+<!-- <td><p class="mt-3 mb-0"><?php echo $row->Won." - ".$row->Lost;?></p></td> -->
 <td><p class="mt-3 mb-0"><?php echo number_format($row->A2M_Singles, 3);?></p></td>
 <td><p class="mt-3 mb-0"><?php echo number_format($row->A2M_Doubles, 3);?></p></td>
 <td><p class="mt-3 mb-0"><?php echo number_format($row->A2M_Mixed, 3);?></p></td>
@@ -178,13 +203,14 @@ $k++;
 <script>
 $('document').ready(function(){
 var baseurl = "<?php echo base_url();?>";
+var segment = "<?php echo $this->uri->segment(1);?>";
 
 //$("#search_keywords").on('keyup', function() {
 $("#btn_player_search").on('click', function() {
-search_val(baseurl);
+search_val(baseurl, segment);
 });
 $("#search_filter").change(function() {
-search_val(baseurl);
+search_val(baseurl, segment);
 });
 
 $('#search_keywords').keypress(function (e) {
@@ -198,12 +224,12 @@ $("#btn_player_search").trigger('click'); /*add this, if you want to submit form
 
 });
 
-function search_val(baseurl){
+function search_val(baseurl, segment){
 //$('#search_results').html("Please wait.....");
 
 $.ajax({
 type: 'POST',
-url: baseurl+'pickleball1/players',
+url: baseurl+segment+'/players',
 data: {keywords:$('#search_keywords').val(), filter:$('#search_filter').val(), is_search:1},
 success: function(res) {
 //location.reload();
@@ -234,3 +260,4 @@ items: 4
 });
 });
 </script>
+<?php $this->load->view('includes/login_popup'); ?>

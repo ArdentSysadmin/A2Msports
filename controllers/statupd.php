@@ -401,6 +401,8 @@
 
 			}		// End of the Players table for loop
 			//echo "</table>";
+
+			echo "Updation Done!";
 		}
 	
 	public function add_new_sport_a2m(){

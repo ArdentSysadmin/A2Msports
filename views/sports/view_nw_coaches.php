@@ -1,170 +1,33 @@
-<!-- Rated  banner start -->
+<!-- New code from clubs -->
+<?php
+$source = base_url().'assets_new/';
+?>
+<!--fourth banner start -->
 <div class="bg-blue1 pb-2" style="margin-top:100px;">
+<div class="banner_two  mx-3 pt-2 mb-0 ">
 <div class="container-fluid">
 <div class="row">
-<div class="heading text-center pt-5 pb-3">
-<h1>Top Rated Coaches</h1>
+<div class="col-lg-6">
+<div class="banner_two_content pl-30 pt-5 mx-3">
+<h1>Coach Scheduler <br>(Coach Booking System)</h1>
+<p>A free Calendar for Coaches for Group and Private Lessons!</p>
+<a href="<?=base_url()."login";?>" class="btn_orange">Sign up</a>
 </div>
 </div>
-<div class="row">
-<div id="owl-one4" class="owl-carousel owl-theme Testimonials" style="margin-top:-35px;">
-<?php
-if($coach_results){
-//echo "<pre>"; print_r($coach_results);
-foreach($coach_results as $i => $coach){
-?>
-<div class="item ">
-<div class="players_box bg-white px-4 pt-4 pb-4">
-<div class="img mt-3  mb-4 d-flex align-items-center justify-content-between">
-<a href="<?php echo base_url()."coach/".$coach->Users_ID; ?>">
-<?php 
-$filename   =  "C:\inetpub\wwwroot\a2msportssite\profile_pictures\thumbs\'".$coach->Profilepic;
-$filename1 = "C:\inetpub\wwwroot\a2msportssite\profile_pictures\'".$coach->Profilepic;
-
-if(file_exists($filename)){ ?>
-<img  src="<?php echo base_url(); ?>profile_pictures/thumbs/<?php if($coach->Profilepic != ""){echo $coach->Profilepic; } else { echo "&nbsp;";}?>" class="player_img" style="border-radius: 15px !important;" />
-<?php } else { ?>
-<img  src="<?php echo base_url(); ?>profile_pictures/<?php if($coach->Profilepic != ""){echo $coach->Profilepic; } else { echo "default-profile-square.jpg";}?>" class="player_img" style="border-radius: 15px !important;" />
-<?php }  ?></a>
-<!-- <img src="<?=base_url()."assets_new/";?>images/player_1.png" class="player_img"> -->
-<div class="">
-<div class="text-end mb-2 d-flex justify-content-end align-items-end rating ">
-<?php 
-$get_coachratings = league::getCoachRatings($coach->Users_ID);
-//echo "<pre>";
-//print_r($get_coachratings);
-
-if($get_coachratings){?>
-<a href="<?php echo base_url();?>coach/<?php echo $row->Users_ID;?>" target="_blank">
-<?php 
-
-$s5=0;
-$s4=0;
-$s3=0;
-$s2=0;
-$s1=0;
-$s0=0;
-
-foreach ($get_coachratings as $key => $value) {
-if($value->Ratings==5){
-$s5+=1;
-} 
-if($value->Ratings==4){
-$s4+=1;
-} 
-if($value->Ratings==3){
-$s3+=1;
-} 
-if($value->Ratings==2){
-$s2+=1;
-}
-if($value->Ratings==1){
-$s1+=1;
-}
-if($value->Ratings==0){
-$s0+=0;
-}
-}
-
-$avg_star_rating = ($s5*5 + $s4*4 + $s3*3 + $s2*2 + $s1*1 + $s0*1) / ($s5 + $s4 + $s3 + $s2 + $s1);
-//echo $avg_star_rating;
-//exit;
-
-if( is_float( $avg_star_rating ) ) { // Check to see if whole number or decimal
-$rounded_ranking = round($avg_star_rating); // If decimal round it down to a whole number
-
-for ($counter=2; $counter <= $rounded_ranking; $counter++){ 
-echo '<i class="fa fa-star checked"></i>';
-}
-echo '<i class="fa fa-star-half-o checked"></i>'; // Static half star used as the ranking value is a decimal and the is_float condition is met.
-for(;$rounded_ranking<5;$rounded_ranking++){
-echo '<i class="fa fa-star-o checked"></i>';
-}
-}
-else if($avg_star_rating > -1){
-// For Loop so we can run the stars as many times as is set, no offset need, as no half star required for whole number rankings
-for ($counter=1; $counter <= $avg_star_rating; $counter++){
-echo '<i class="fa fa-star checked"></i>';
-}
-for(;$avg_star_rating<5;$avg_star_rating++){
-echo '<i class="fa fa-star-o checked"></i>';
-}
-}
-
-
-/*for($j=0;$j<5;$j++){
-if($j<$avg_star_rating){?>
-<i class="fa fa-star checked"></i>
-<?php }else{?>
-<i class="fa fa-star-half-o checked"></i>
-<?php } ?>
-
-<?php }*/
-?>
-
-<?php 
-//echo "( ".count($get_clubratings)." )";
-?>
-</a>
-<?php
-}else{
-for($j=0;$j<5;$j++){
-
-echo '<i class="fa fa-star-o checked"></i>';
-
-
-}
-}
-?>
-
-</div>
-<!-- <p class="gry">4.8 (62 reviews)</p> -->
-</div>
-</div>
-<div class="palyer_names d-flex justify-content-between">
-<div class="name">
-<p class="mb-0 gry">Name</p>
-<h6 class="">
-<a href="<?php echo base_url()."coach/".$coach->Users_ID; ?>">
-<?=$coach->Firstname." ".$coach->Lastname;?></a>
-</h6>
-</div>
-<!-- <div class="name text-end">
-<p class="mb-0 gry">Batches</p>
-<h6 class="">Individual <br> & Group</h6>
-</div> -->
-</div>
-<div class="club_name mt-3">
-<p class="club_info d-flex justify-content-start align-items-center mb-2"><img src="<?=base_url()."assets_new/";?>images/location.png"> <?=$coach->City;?>
-<?php
-if($coach->City and $coach->State) echo ", "; ?>
-<?=$coach->State;?></p>
-<!-- <p class="club_info d-flex justify-content-start align-items-center mb-0 pb-2"><img src="<?=base_url()."assets_new/";?>images/label.png"> Starting at $10.00/hr</p> -->
+<div class="col-lg-6">
+<div class="banner_img text-center">
+<img src="<?=$source;?>images/CoachBooking1.png" class="wc-40" style="width:35%;">
 </div>
 </div>
 </div>
-
-<?php
-}
-}
-?>
-</div>
-<!-- <div class="col-lg-12 mt-3">
-<div class="btn_blue text-center">
-<a href="#viewAll" class="orange_btn show_all" id="vcoaches">View All Coaches</a>
-</div>
-</div> -->
 </div>
 </div>
-</div>
-<!-- Rated  banner end -->
+<!--fourth banner end -->
 
 
-
-
-<!-- New code from clubs -->
 <!-- Rated  banner start -->
-<div class="bg-white bg-fig pb-2" style="margin-top:100px;">
+<!-- <div class="bg-white bg-fig pb-2" style="margin-top:100px;"> -->
+<div class="bg-blue1 pb-2" style="margin-top:25px;">
 <div class="container-fluid">
 <div class="row">
 <div class="heading text-center pt-5 pb-1">
@@ -179,6 +42,7 @@ if($coach->City and $coach->State) echo ", "; ?>
 <?php
 if($coach_results){
 foreach($coach_results as $i => $coach){
+	//echo "<pre>"; print_r($coach); exit;
 ?>
 <div class="item activ_box ">
 <div class="Active_box bg-white px-4 pt-4">
@@ -189,13 +53,13 @@ $filename   =  "C:\inetpub\wwwroot\a2msportssite\profile_pictures\thumbs\'".$coa
 $filename1 = "C:\inetpub\wwwroot\a2msportssite\profile_pictures\'".$coach->Profilepic;
 
 if(file_exists($filename)){ ?>
-<img  src="<?php echo base_url(); ?>profile_pictures/thumbs/<?php if($coach->Profilepic != ""){echo $coach->Profilepic; } else { echo "&nbsp;";}?>" class="player_img" style="border-radius: 15px !important;" />
+<img  src="<?php echo base_url(); ?>profile_pictures/thumbs/<?php if($coach->Profilepic != ""){echo $coach->Profilepic; } else { echo "&nbsp;";}?>" class="" style="width: 117px !important; height: auto !important;" />
 <?php } else { ?>
-<img  src="<?php echo base_url(); ?>profile_pictures/<?php if($coach->Profilepic != ""){echo $coach->Profilepic; } else { echo "default-profile-square.jpg";}?>" class="player_img" style="border-radius: 15px !important;" />
+<img  src="<?php echo base_url(); ?>profile_pictures/<?php if($coach->Profilepic != ""){echo $coach->Profilepic; } else { echo "default-profile-square.jpg";}?>" class="" style="border-radius: 15px; width: 117px !important; height: auto !important;" />
 <?php }  ?></a>
 </center>
 <h4 class="mt-2">
-<a href="<?php echo base_url()."coach/".$coach->Users_ID; ?>"><?=$coach->Firstname." ".$coach->Lastname;?></a></h4>
+<a href="<?php echo base_url()."coach/".$coach->Users_ID; ?>" style="color: #000;"><?=$coach->Firstname." ".$coach->Lastname;?></a></h4>
 </div>
 <div class="club_content text-start">
 <div class="text-start mb-2 d-flex justify-content-start align-items-start rating ">
@@ -295,7 +159,7 @@ else{
 </div>
 
 <!-- <p class="gry">4.8 (62 reviews)</p> -->
-<p class="club_info d-flex justify-content-start align-items-center mb-2"><img src="<?=base_url()."assets_new/";?>images/location.png"> <?=$coach->City;?>
+<p class="club_info d-flex justify-content-start align-items-center mb-0"><img src="<?=base_url()."assets_new/";?>images/location.png"> <?=$coach->City;?>
 <?php
 if($coach->City and $coach->State) echo ", "; ?>
 <?=$coach->State;?></p>
@@ -409,7 +273,7 @@ if($coach->City and $coach->State) echo ", "; ?>
 </ul>
 </div> -->
 </div>
-<div class="table_content relative">
+<div class="table_content relative" id="search_results">
 <table class="table table-striped">
 <thead>
 <tr>
@@ -428,7 +292,7 @@ foreach($coach_results as $key => $row) {
 ?>
 <tr>
 <td>
-<p class="mt-3 mb-0"><a style='color:#000' target="_blank" href="<?php echo base_url();?>coach/<?php echo $row->Users_ID;?>">
+<p class="mt-3 mb-0"><a style='font-weight: 600;' target="_blank" href="<?php echo base_url();?>coach/<?php echo $row->Users_ID;?>">
 <!-- <img class="scale_image" src="<?php echo base_url(); ?>profile_pictures/<?php if($row->Profilepic!=''){ echo $row->Profilepic; } else { echo "default-profile.png"; } ?>" alt="img" width="100px" height="100px" /> -->
 <?php echo $row->Firstname.' '.$row->Lastname; ?></a></p>
 </td>
@@ -555,8 +419,6 @@ echo '<i class="fa fa-star-o checked"></i>';
 $k++;
 } ?>                           
 
-
-
 </tbody>
 </table>
 <?php if(!$this->session->userdata('user')) {?>
@@ -575,7 +437,7 @@ $k++;
 </div>
 <script>
 $(document).ready(function() {
-var owl_ = $('#owl-one4');
+var owl_ = $('#owl-one3');
 owl_.owlCarousel({
 margin: 20,
 nav: true,
@@ -599,3 +461,41 @@ navbar_height = document.querySelector('.navbar').offsetHeight;
 document.body.style.paddingTop = navbar_height + 'px';
 });
 </script>
+<script>
+$('document').ready(function(){
+	var baseurl = "<?php echo base_url();?>";
+	var segment_1 = "<?php echo $this->uri->segment(1);?>";
+	var segment_2 = "<?php echo $this->uri->segment(2);?>";
+
+	//$("#search_keywords").on('keyup', function() {
+	$("#btn_player_search").on('click', function() {
+	search_val(baseurl, segment_1, segment_2);
+	});
+	$("#search_filter").change(function() {
+	search_val(baseurl, segment_1, segment_2);
+	});
+
+	$('#search_keywords').keypress(function (e) {
+	var code = e.keyCode || e.which;
+	if (code === 13){
+	e.preventDefault();
+	$("#btn_player_search").trigger('click'); /*add this, if you want to submit form by pressing `Enter`*/
+	}
+	});
+});
+
+function search_val(baseurl, segment_1, segment_2){
+	//$('#search_results').html("Please wait.....");
+
+	$.ajax({
+	type: 'POST',
+	url: baseurl+segment_1+'/'+segment_2,
+	data: {keywords:$('#search_keywords').val(), filter:$('#search_filter').val(), is_search:1},
+	success: function(res) {
+	//location.reload();
+	$('#search_results').html(res);
+	}
+	});
+}
+</script>
+<?php $this->load->view('includes/login_popup'); ?>

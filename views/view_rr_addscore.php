@@ -342,7 +342,12 @@ $tm_id = $rr_matches[$m]->Tourn_match_id;
 	if($sess_id == $rr_matches[$m]->Player1 or $sess_id == $rr_matches[$m]->Player1_Partner or $sess_id == $rr_matches[$m]->Player2 or $sess_id == $rr_matches[$m]->Player2_Partner or $tour_details->Usersid == $sess_id or $tour_details->Tournament_Director == $sess_id or $this->is_super_admin){ ?>
 
 	<tr id='tr_<?=$tm_id;?>'>
-	<td align='center'><?=$rr_matches[$m]->Match_Num;?></td>
+	<td align='center'><?php 
+	echo $rr_matches[$m]->Match_Num;
+	if($rr_matches[$m]->Court_Info){
+		echo "&nbsp;&nbsp;( ".$rr_matches[$m]->Court_Info." )";
+	}
+	?></td>
 
 	<td style="padding-left:15px;"><a href="tel:<?php echo $player1['Mobilephone'];?> " title="<?php echo $player1['Mobilephone'];?>"><?php echo ucfirst($player1['Firstname'])." ".ucfirst($player1['Lastname'])."</a>" . $p1_part; 
 	if($rr_matches[$m]->Winner == $rr_matches[$m]->Player1) {

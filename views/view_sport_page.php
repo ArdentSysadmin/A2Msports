@@ -6,128 +6,177 @@ $tourn_def_icons = unserialize(TOURN_DEF_ICONS);
 ?>
 <style>
 
+
+* { box-sizing: border-box; }
+/*body { font: 16px Arial; } */
+.autocomplete {
+/*the container must be positioned relative:*/
+position: relative;
+display: inline-block;
+}
+input {
+border: 1px solid transparent;
+background-color: #f1f1f1;
+padding: 10px;
+font-size: 16px;
+}
+input[type=text] {
+background-color: #f1f1f1;
+width: 100%;
+}
+input[type=submit] {
+background-color: DodgerBlue;
+color: #fff;
+}
+.autocomplete-items {
+position: absolute;
+border: 1px solid #d4d4d4;
+border-bottom: none;
+border-top: none;
+z-index: 99;
+/*position the autocomplete items to be the same width as the container:*/
+top: 100%;
+left: 0;
+right: 0;
+}
+.autocomplete-items div {
+padding: 10px;
+cursor: pointer;
+background-color: #fff;
+border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+/*when hovering an item:*/
+background-color: #e9e9e9;
+}
+.autocomplete-active {
+/*when navigating through the items using the arrow keys:*/
+background-color: DodgerBlue !important;
+color: #ffffff;
+}
+/* -----------------------------*/
 /*body {font-family: Arial, Helvetica, sans-serif;}*/
 
 #myImg {
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s;
+border-radius: 5px;
+cursor: pointer;
+transition: 0.3s;
 }
 
 #myImg:hover {opacity: 0.7;}
 
- /* The Modal (background) */
+/* The Modal (background) */
 
 .modal {
-  display: none; /* Hidden by default */
-  position: relative; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 0px; /* Location of the box */
-  left: 0;
-  /*top: 0;*/
-  top: 320pz;
-  width: 100%; /* Full width */
-  /*height: 100%;*/ /* Full height */
-  height: 400px; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.05); /* Black w/ opacity */
+display: none; /* Hidden by default */
+position: relative; /* Stay in place */
+z-index: 1; /* Sit on top */
+padding-top: 0px; /* Location of the box */
+left: 0;
+/*top: 0;*/
+top: 320pz;
+width: 100%; /* Full width */
+/*height: 100%;*/ /* Full height */
+height: 400px; /* Full height */
+overflow: auto; /* Enable scroll if needed */
+background-color: rgb(0,0,0); /* Fallback color */
+background-color: rgba(0,0,0,0.05); /* Black w/ opacity */
 }
 
 /* Modal Content (image) */
 
 .modal-content {
 
-  margin: auto;
-  display: block;
-  height:400px;
-  /*width: 80%;*/
+margin: auto;
+display: block;
+height:400px;
+/*width: 80%;*/
 
-  /*max-width: 700px;*/
+/*max-width: 700px;*/
 }
 
- 
+
 
 /* Caption of Modal Image */
 
 #caption {
-  margin: auto;
-  display: block;
-  width: 80%;
-  max-width: 700px;
-  text-align: center;
-  color: #ccc;
-  padding: 10px 0;
-  height: 150px;
+margin: auto;
+display: block;
+width: 80%;
+max-width: 700px;
+text-align: center;
+color: #ccc;
+padding: 10px 0;
+height: 150px;
 }
 
- 
+
 
 /* Add Animation */
 
 .modal-content, #caption { 
-  -webkit-animation-name: zoom;
-  -webkit-animation-duration: 0.6s;
-  animation-name: zoom;
-  animation-duration: 0.6s;
+-webkit-animation-name: zoom;
+-webkit-animation-duration: 0.6s;
+animation-name: zoom;
+animation-duration: 0.6s;
 }
 
- 
+
 
 @-webkit-keyframes zoom {
-  from {-webkit-transform:scale(0)}
-  to {-webkit-transform:scale(1)}
+from {-webkit-transform:scale(0)}
+to {-webkit-transform:scale(1)}
 }
 
- 
+
 
 @keyframes zoom {
-  from {transform:scale(0)}
-  to {transform:scale(1)}
+from {transform:scale(0)}
+to {transform:scale(1)}
 }
 
 
 /* The Close Button */
 
 .close {
-  position: absolute;
-  top: 15px;
-  right: 20%;
-  color: #724d93;
-  font-size: 60px;
-  font-weight: bold;
-  transition: 0.3s;
-  z-index: 20;
+position: absolute;
+top: 15px;
+right: 20%;
+color: #724d93;
+font-size: 60px;
+font-weight: bold;
+transition: 0.3s;
+z-index: 20;
 }
 
- 
+
 
 .close:hover,
 
 .close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
+color: #bbb;
+text-decoration: none;
+cursor: pointer;
 }
 
 
 /* 100% Image Width on Smaller Screens */
 
 @media only screen and (max-width: 700px){
-  .modal-content {
-    width: 100%;
-  }
+.modal-content {
+width: 100%;
+}
 
 }
- 
+
 
 .clearfix:after {
-  content: "";
-  display: table;
-  clear: both;
+content: "";
+display: table;
+clear: both;
 }
 
- 
+
 
 /* Next & previous buttons */
 
@@ -135,28 +184,28 @@ $tourn_def_icons = unserialize(TOURN_DEF_ICONS);
 
 .next {
 
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  width: auto;
-  padding: 16px;
-  margin-top: -50px;
-  color: #c08bda;
-  font-weight: bold;
-  font-size: 30px;
-  transition: 0.6s ease;
-  border-radius: 0 3px 3px 0;
-  user-select: none;
-  -webkit-user-select: none;
+cursor: pointer;
+position: absolute;
+top: 50%;
+width: auto;
+padding: 16px;
+margin-top: -50px;
+color: #c08bda;
+font-weight: bold;
+font-size: 30px;
+transition: 0.6s ease;
+border-radius: 0 3px 3px 0;
+user-select: none;
+-webkit-user-select: none;
 }
 
- 
+
 /* Position the "next button" to the right */
 
 .next {
-  /*right: 0;*/
-  right:20%;
-  border-radius: 3px 0 0 3px;
+/*right: 0;*/
+right:20%;
+border-radius: 3px 0 0 3px;
 }
 
 .prev { left:20%; }
@@ -165,7 +214,7 @@ $tourn_def_icons = unserialize(TOURN_DEF_ICONS);
 
 .prev:hover,
 .next:hover {
-  background-color: rgba(0, 0, 0, 0.8);
+background-color: rgba(0, 0, 0, 0.8);
 }
 
 </style>
@@ -199,7 +248,7 @@ $tourn_def_icons = unserialize(TOURN_DEF_ICONS);
 <img src="<?=base_url()."assets_new/";?>images/g_logo.png" class="mb-3">
 <?php
 if($this->logged_user == 240)
-	echo "<button name='edit_pom' id='edit_pom'>Edit</button>";
+echo "<button name='edit_pom' id='edit_pom'>Edit</button>";
 ?>
 <h4>Player of the Week</h4>
 <?php if($org_pom) {?> 
@@ -219,14 +268,27 @@ if($this->logged_user == 240)
 if($this->logged_user == 240){
 ?>
 <div id='edit_pom_div' style='display: none;'>
-<form name='frm_pom' method='post' action='<?=base_url()."league/update_pom"; ?>'>
+<!-- <form name='frm_pom' method='post' action='<?=base_url()."league/update_pom"; ?>'>
 <label>Choose player of the week</label>
 <input class='ui-autocomplete-input form-control inwidth' id='created_by' name='created_by' type='text' placeholder="Type player name.." value="" />
 <input id='pom_user_id' name='pom_user_id' type='hidden' value='' />
 <input type='submit' name='upd_pom' id='upd_pom' value='Update' />
 &nbsp;&nbsp;&nbsp;
 <input type='button' name='cancel_pom' id='cancel_pom' value='Cancel' />
+</form> -->
+
+<!--Make sure the form has the autocomplete function switched off:-->
+<form autocomplete="off" method='post' action='<?=base_url()."league/update_pom"; ?>'>
+<div class="autocomplete" style="width:300px;">
+<input id="myInput" type="text" name="myCountry" placeholder="Type in user name" style="margin-bottom: 20px;margin-top: 18px;border-radius: 0.5em;">
+<input id='pom_user_id' name='pom_user_id' type='hidden' value='' />
+<input id='pom_sport' name='pom_sport' type='hidden' value='<?=$sport;?>' />
+<input type='submit' name='upd_pom' id='upd_pom' value='Update' />
+&nbsp;&nbsp;&nbsp;
+<input type='button' name='cancel_pom' id='cancel_pom' value='Cancel' />
+</div>
 </form>
+
 </div>
 <?php
 }
@@ -239,7 +301,7 @@ if($this->logged_user == 240){
 </div>
 
 
-	</div>
+</div>
 </div>
 </div>
 </section>
@@ -249,7 +311,7 @@ if($this->logged_user == 240){
 <div class="bg-white">
 <div class="container-fluid">
 <div class="row">
-<div style='padding-bottom:15px !important; padding-top:4rem !important;' class="heading text-center pt-5 pb-5">
+<div style='padding-bottom:15px !important; padding-top:3rem !important;' class="heading text-center pt-5 pb-5">
 <h1>Featured Tournaments / Leagues </h1>
 </div>
 </div>
@@ -258,9 +320,9 @@ if($this->logged_user == 240){
 
 <?php
 //echo "<pre>"; print_r($leagues); exit;
-if(!empty($leagues)) { 
+if(!empty($top_leagues)) { 
 $i=1;
-foreach($leagues as $j => $row) {
+foreach($top_leagues as $j => $row) {
 
 if(!empty($row)) {
 ?>
@@ -274,13 +336,13 @@ if(!empty($row)) {
 <h1 class="mb-0"><?php echo date('d', strtotime($row->StartDate)); ?></h1>
 <h6 class="mx-3 mb-0"><?php echo strtoupper(date('M', strtotime($row->StartDate))); ?> <br><?php echo date('h:i A', strtotime($row->StartDate)); ?></h6>
 </div>
-<h6 style="font-size: 1.3rem !important;"> <a href="<?php
+<h6 style="font-size: 1.3rem !important; <?php echo strlen($row->tournament_title) > 15 ? "margin-botton:1px;" : "margin-bottom: 20px;"; ?>"> <a href="<?php
 if($row->Short_Code != '' and $row->Short_Code != NULL){
 echo base_url().$row->Short_Code; } 
 else{ 
 echo base_url().'league/'.$row->tournament_ID; } ?>" 
 title="<?php echo $row->tournament_title; ?>">
-<?php $tour_title = $row->tournament_title; $out = strlen($tour_title) > 29 ? substr($tour_title,0,29)."..." : $tour_title; echo $out; ?></a></h6>
+<?php $tour_title = $row->tournament_title; $out = strlen($tour_title) > 22 ? substr($tour_title,0,22)."..." : $tour_title; echo $out; ?></a></h6>
 <div class="d-flex justify-content-start mb-1"><img src="<?=base_url()."assets_new/";?>images/location.svg" class="w-10" >
 <p class="uppercase mb-0 mx-1" style='font-size: 13px !important;'><?php echo trim($row->TournamentCity).", ".trim($row->TournamentState); ?></p>
 </div>
@@ -289,11 +351,33 @@ title="<?php echo $row->tournament_title; ?>">
 <img src="<?=base_url()."assets_new/";?>images/league.svg" class="w-10" >
 <p class="uppercase mb-0 mx-1" style='font-size: 13px !important;'><?php echo $row->tournament_format; ?></p>
 </div>
+
+<!-- <div class="d-flex justify-content-start mb-1"> -->
+
+<?php if(strtotime($row->Registrationsclosedon) < strtotime(date('Y-m-d H:i:s')) and strtotime($row->StartDate) > strtotime(date('Y-m-d H:i:s'))) {
+?>
+<div class="state" style="background-color: #333333 !important;color: #ffffff !important; padding: 5px; border-radius: 7px; font-size: 14px; margin-top:10px;">Registrations Closed</div>
+<?php
+}
+else if(strtotime($row->StartDate) < strtotime(date('Y-m-d H:i:s'))){ 
+?>
+<div class="state" style="background-color: #333333 !important;color: #ffffff !important; padding: 5px; border-radius: 7px; font-size: 14px; margin-top:10px;">Completed</div>
+<?php
+} 
+else if(strtotime($row->StartDate) > strtotime(date('Y-m-d H:i:s')) and strtotime($row->Registrations_Open_on) < strtotime(date('Y-m-d H:i:s'))){ 
+?>
+<div class="state" style="background-color: #14b641 !important;color: #ffffff !important; padding: 5px; border-radius: 7px; font-size: 14px; margin-top:10px;">Registrations Open</div>
+<?php
+} 
+?>
+<!-- </div> -->
+
+
 <!-- <div class="d-flex justify-content-start mb-1"><img src="<?=base_url()."assets_new/";?>images/team.svg" class="w-10" ><p class="uppercase mb-0 mx-1"> 20 Teams</p></div> -->
 </div>
 <div class="feature_right" style="border:2px solid #8050ef; background-color:#d7ccfa; height:250px; border-top-right-radius:16px !important; border-bottom-right-radius:16px !important; ">
 <div class="feature_img">
- <a href="<?php if($row->Short_Code != '' and $row->Short_Code != NULL){ echo base_url().$row->Short_Code; } 
+<a href="<?php if($row->Short_Code != '' and $row->Short_Code != NULL){ echo base_url().$row->Short_Code; } 
 else{ echo base_url().'league/'.$row->tournament_ID; } ?>" title="<?php echo $row->tournament_title; ?>">
 <img src="<?php echo base_url(); ?>tour_pictures/
 <?php if($row->TournamentImage!=""){ echo $row->TournamentImage; }
@@ -381,18 +465,18 @@ break;
 <div class="banner_pagetwo_  mx-3 pt-3 mb-5 ">
 <div class="container">
 <div class="row banner_pagetwo_two">
-	<div class="col-lg-8 pb-0">
-		<div class="banner_two_content pl-30 pt-4 mx-3">
-		<h1 class="mb-2" style="text-align: var(--txt_align_left);">Challenge Players</h1>
-		<p class="mb-3 mt-3" style="text-align: var(--txt_align_left);">Can't wait till the next tournament? You can find and "Challenge" <br> other players to play with you. We will reward you everytime <br> you challenge someone with more points towards your A2M <br>Score.</p>
-		<p style="text-align: var(--txt_align_left);"><a href="<?=base_url().$this->uri->segment(1)."/players";?>" class="btn_orange" style="padding: 10px 25px;">Find a Player</a></p>
-		</div>
-	</div>
-	<div class="col-lg-4 p-0">
-		<div class="banner_img text-center">
-		<img src="<?=base_url()."assets_new/";?>images/image 30.png" class="w-100 brb_r">
-		</div>
-	</div>
+<div class="col-lg-8 pb-0">
+<div class="banner_two_content pl-30 pt-4 mx-3">
+<h1 class="mb-2" style="text-align: var(--txt_align_left);">Challenge Players</h1>
+<p class="mb-3 mt-3" style="text-align: var(--txt_align_left);">Can't wait till the next tournament? You can find and "Challenge" <br> other players to play with you. We will reward you everytime <br> you challenge someone with more points towards your A2M <br>Score.</p>
+<p style="text-align: var(--txt_align_left);"><a href="<?=base_url().$this->uri->segment(1)."/players";?>" class="btn_orange" style="padding: 10px 25px;">Find a Player</a></p>
+</div>
+</div>
+<div class="col-lg-4 p-0">
+<div class="banner_img text-center">
+<img src="<?=base_url()."assets_new/";?>images/image 30.png" class="w-100 brb_r">
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -403,19 +487,19 @@ break;
 <div class="container">
 <div class="row banner_pagetwo_two" style="background: url(../images/blue_pic.png), #d7ccfa !important;">
 
-	<div class="col-lg-4 p-0">
-		<div class="banner_img_l text-center">
-	<img src="<?=base_url()."assets_new/";?>images/Socre.png" class="w-100 brb_l">
-		</div>
-	</div>
+<div class="col-lg-4 p-0">
+<div class="banner_img_l text-center">
+<img src="<?=base_url()."assets_new/";?>images/Score.png" class="w-100 brb_l">
+</div>
+</div>
 
-	<div class="col-lg-8 pb-0">
-		<div class="banner_two_content pl-30 pt-3 mx-3">
-		<h1 class="mb-2" style="text-align: var(--txt_align_right);">Add Live Score</h1>
-		<p class="mb-2 mt-3" style="text-align: var(--txt_align_right);">You simply want to keep track of all your matches you play everyday. Just click</p>
-		<p class="mb-0 mt-2" style="text-align: var(--txt_align_right);"><a href="<?=base_url()."addscore";?>" class="btn_orange text-center">Add score</a></p>
-		</div>
-	</div>
+<div class="col-lg-8 pb-0">
+<div class="banner_two_content pl-30 pt-3 mx-3">
+<h1 class="mb-2" style="text-align: var(--txt_align_right);">Add Live Score</h1>
+<p class="mb-2 mt-3" style="text-align: var(--txt_align_right);">You simply want to keep track of all your matches you play everyday. Just click</p>
+<p class="mb-0 mt-2" style="text-align: var(--txt_align_right);"><a href="<?=base_url()."addscore";?>" class="btn_orange text-center">Add score</a></p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -432,25 +516,25 @@ break;
 <div class="row ">
 
 <div class="col-lg-6">
-	<div class="banner_two_content orange_pic p-3 sreach_orange_bg" style="1.5rem !important">
-	<h1 class="mb-2">Search Easily</h1>
-	<p class="mb-3 mt-3">Search for Players, Matches and  Tournaments<br />&nbsp;</p>
-	<a href="<?=base_url().$this->uri->segment(1)."/players";?>" class="btn_orange text-center">Search now</a>
-	</div>
-	<div class="sreach_img text-center">
-	<img src="<?=base_url()."assets_new/";?>images/sreach.png" class="w-100">
-	</div>
+<div class="banner_two_content orange_pic p-3 sreach_orange_bg" style="1.5rem !important">
+<h1 class="mb-2">Search Easily</h1>
+<p class="mb-3 mt-3">Search for Players, Matches and  Tournaments<br />&nbsp;</p>
+<a href="<?=base_url().$this->uri->segment(1)."/players";?>" class="btn_orange text-center">Search now</a>
+</div>
+<div class="sreach_img text-center">
+<img src="<?=base_url()."assets_new/";?>images/sreach.png" class="w-100">
+</div>
 </div>
 
 <div class="col-lg-6">
-	<div class="banner_two_content blue_pic p-3 sreach_blue_bg" style="1.5rem !important">
-	<h1 class="mb-2">Add Live Score</h1>
-	<p class="mb-3 mt-3">You simply want to keep track of all your matches you play everyday. Just click</p>
-	<a href="<?=base_url()."addscore";?>" class="btn_orange text-center">Add score</a>
-	</div>
-	<div class="sreach_img text-center">
-	<img src="<?=base_url()."assets_new/";?>images/Socre.png" class="w-100">
-	</div>
+<div class="banner_two_content blue_pic p-3 sreach_blue_bg" style="1.5rem !important">
+<h1 class="mb-2">Add Live Score</h1>
+<p class="mb-3 mt-3">You simply want to keep track of all your matches you play everyday. Just click</p>
+<a href="<?=base_url()."addscore";?>" class="btn_orange text-center">Add score</a>
+</div>
+<div class="sreach_img text-center">
+<img src="<?=base_url()."assets_new/";?>images/Socre.png" class="w-100">
+</div>
 </div>
 
 </div>
@@ -758,61 +842,96 @@ echo strip_tags($s) . "...";
 <div class="heading text-center pt-4 pb-2">
 <h1>Global News</h1>
 </div>
-<!-- <iframe src=https://it4gov.net/dev/rss/index.php onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight + 200 + "px";}(this));' style="height:1600px;width:100%;border:none;overflow:hidden;"></iframe> -->
+<iframe src='https://it4gov.net/dev/rss/a2msports.php' onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight + 200 + "px";}(this));' style="height:1000px;width:100%;border:none;overflow:hidden;"></iframe>
+
+<?php
+/*$left_container = "";
+$right_container = "";
+//header( "content-type: application/xml; charset=ISO-8859-15" );
+$rss = new DOMDocument();
+$feed = array();
+$urlarray = array(
+array('name' => 'Google Feed',       'url' => 'https://www.google.com/search?q=pickleball&sxsrf=APq-WBsva2alsagYWFA6pGrXVH5nz4Hakw:1648564879495&source=lnms&tbm=nws&sa=X&ved=2ahUKEwjN3p_gxuv2AhWVKM0KHTR3CLMQ_AUoBHoECAEQBg&biw=1536&bih=746&dpr=1.25'),
+);
+
+foreach ( $urlarray as $url ) {
+$rss->load( $url['url'] );
+
+foreach ( $rss->getElementsByTagName( 'item' ) as $node ) {
+$item = array(
+'site'  => $url['name'],
+'title' => $node->getElementsByTagName( 'title' )->item( 0 )->nodeValue,
+'description'  => $node->getElementsByTagName( 'description' )->item( 0 )->nodeValue,
+'link'  => $node->getElementsByTagName( 'link' )->item( 0 )->nodeValue,
+'date'  => $node->getElementsByTagName( 'pubDate' )->item( 0 )->nodeValue,
+'content' => $node->getElementsByTagName('encoded')->item(0)->nodeValue,
+
+);
+
+array_push( $feed, $item );
+}
+}
+
+usort( $feed, function( $a, $b ) {
+return strtotime( $b['date'] ) - strtotime( $a['date'] );
+});
+
+$limit = 4;
+//echo '<ul>';
+for ( $x = 0; $x < $limit; $x++ ) {
+$site = $feed[$x]['site'];
+$title = str_replace( ' & ', ' & ', $feed[$x]['title'] );
+$link = $feed[$x]['link'];
+$description = $feed[$x]['description']; //desc
+$content = $feed[$x]['content'];
+$content_grab = filter_var($content, FILTER_SANITIZE_STRING);
+$content_light = substr($content_grab,0,340);
+
+$html = $content; //$description;
+$docrss = new DOMDocument();
+@$docrss->loadHTML($html);
+$imgtags = $docrss->getElementsByTagName('img');
+$this_image = $imgtags[0]->getAttribute('src');
+//$image = $feed[$x]['image'];
+
+if (strlen($content)<2) { $date = ""; }
+
+$date = date( 'F d, Y', strtotime( $feed[ $x ]['date'] ) );
+$actual_time = date( 'H:i:s', strtotime( $feed[ $x ]['date'] ) );
+
+$printthis=1;
+if (strlen($content)<2) { $date = ""; $printthis=0;}
+
+
+if ($x % 2 == 0) { $rss_bgcolor = '#fffff'; } else { $rss_bgcolor = '#ffffff'; }
+
+if ($printthis==1) 
+{
+
+$left_container.="
+
+<div style='width:100%; background-color:$rss_bgcolor; padding:0px; max-height:240px; min-height:240px;border:20px solid #F9E2C7; border-radius:20px; margin-bottom:20px;'>
+<div style='width:50%; vertical-align:top; display:inline-block; text-align:center;padding:10px;'><a style='color:#141414; text-decoration: underline; font-weight:700;' href='$link' title='$title' target='_blank'>$title</a><BR><BR><div style='display:inline-block; text-align:left; width:100%; font-size:12px; overflow:hidden; max-height:100px;'>" . $content_light . "</div></div><div style='width:50%; background-color:#141414;display:inline-block; text-align:center;'><img src='$this_image' style='width:100%;height:auto;object-fit:contain;max-height:200px;'></div>
+</div>";
+
+
+//</div><div style='width:50%;display:inline-block;padding:8px 20px;'>
+
+$right_container.="                            
+<div style='width:100%; background-color:$rss_bgcolor; padding:0px; max-height:240px;  min-height:240px;border:20px solid #d7ccfa; border-radius:20px; margin-bottom:20px;'>
+<div style='width:50%; vertical-align:top; display:inline-block; text-align:center;padding:10px;'><a style='color:#141414; text-decoration: underline; font-weight:700;' href='$link' title='$title' target='_blank'>$title</a><BR><BR><div style='display:inline-block; text-align:left; width:100%; font-size:16px; overflow:hidden; max-height:100px;'>" . $content_light . "</div></div><div style='width:50%; background-color:#141414;display:inline-block; text-align:center;'><img src='$this_image' style='width:100%;height:auto;object-fit:contain;max-height:200px;'></div>
+</div>";
+
+
+}
+}
+//echo '</ul>';
+$total_rss = $x + 1;
+
+*/
+?>
+
 <!--START-->
-<div style='/*background-color:#d7ccfa;*/ padding:0px; width:100%; min-height:240px;border:20px solid #d7ccfa; border-radius:20px; margin-bottom:20px;'> 
-
-<div class='shell' style='/*width:50%;*/ vertical-align:middle; display:inline-block; text-align:right; float:right; /*min-height:200px;*/ '><img src='https://i0.wp.com/blog.pickleballcentral.com/wp-content/uploads/2022/02/Blog-Cover-2.png?resize=585%2C305&ssl=1' style='width:100%; height:auto; object-fit:contain; /*padding-left:20px;*/ max-height:200px; background-color:#d7ccfa;'></div> 
-
-<div class='shell2' style='/*width:49%;*/ vertical-align:top; display:inline-block; text-align:left; padding:10px; background-color:#FFF;'><a style='color:#141414; text-decoration: underline; font-size:14px; font-weight:700;' href='https://blog.pickleballcentral.com/2022/02/17/baddle-pickleball-is-coming-to-pickleball-central-with-a-great-new-range-of-paddles/' title='BADDLE Pickleball is coming to Pickleball Central with a great new range of Paddles!' target='_blank'>BADDLE Pickleball is coming to Pickleball Central with a great new range of Paddles!</a><br /> 
-<br /> 
-<div style='display:inline-block; text-align:left; font-size:13px; overflow-wrap:break-word; width:98%; /*min-height:160px; max-height:100px;*/'>Baddle Pickleball Paddles launched during the COVID-19 pandemic and has made a mark with their colo ...</div>
-
-</div> 
-
-
-
-</div> 
-<div style='/*background-color:#d7ccfa;*/ padding:0px; width:100%; min-height:240px;border:20px solid #d7ccfa; border-radius:20px; margin-bottom:20px;'> 
-
-<div class='shell' style='/*width:50%;*/ vertical-align:middle; display:inline-block; text-align:right; float:right; /*min-height:200px;*/ '><img src='https://i0.wp.com/blog.pickleballcentral.com/wp-content/uploads/2022/01/Blog-Cover-1.png?resize=571%2C298&ssl=1' style='width:100%; height:auto; object-fit:contain; /*padding-left:20px;*/ max-height:200px; background-color:#d7ccfa;'></div> 
-
-<div class='shell2' style='/*width:49%;*/ vertical-align:top; display:inline-block; text-align:left; padding:10px; background-color:#FFF;'><a style='color:#141414; text-decoration: underline; font-size:14px; font-weight:700;' href='https://blog.pickleballcentral.com/2022/02/07/2021-final-pro-rankings-from-world-pickleball-rankings/' title='2021 Final Pro Rankings from World Pickleball Rankings' target='_blank'>2021 Final Pro Rankings from World Pickleball Rankings</a><br /> 
-<br /> 
-<div style='display:inline-block; text-align:left; font-size:13px; overflow-wrap:break-word; width:98%; /*min-height:160px; max-height:100px;*/'>
-Pickleball World Rankings 2021
-
-
-
-Powered by PickleballTournaments.com and launched in 2021, the Wo ...</div></div> 
-
-
-
-</div> 
-<div style='/*background-color:#d7ccfa;*/ padding:0px; width:100%; min-height:240px;border:20px solid #d7ccfa; border-radius:20px; margin-bottom:20px;'> 
-
-<div class='shell' style='/*width:50%;*/ vertical-align:middle; display:inline-block; text-align:right; float:right; /*min-height:200px;*/ '><img src='https://i0.wp.com/blog.pickleballcentral.com/wp-content/uploads/2022/01/pbs-court-small.jpg?resize=640%2C432&ssl=1' style='width:100%; height:auto; object-fit:contain; /*padding-left:20px;*/ max-height:200px; background-color:#d7ccfa;'></div> 
-
-<div class='shell2' style='/*width:49%;*/ vertical-align:top; display:inline-block; text-align:left; padding:10px; background-color:#FFF;'><a style='color:#141414; text-decoration: underline; font-size:14px; font-weight:700;' href='https://blog.pickleballcentral.com/2022/01/18/how-to-select-a-portable-pickleball-net/' title='How To Select A Portable Pickleball Net' target='_blank'>How To Select A Portable Pickleball Net</a><br /> 
-<br /> 
-<div style='display:inline-block; text-align:left; font-size:13px; overflow-wrap:break-word; width:98%; /*min-height:160px; max-height:100px;*/'>
-Portable pickleball nets (often referred to as “portable pickleball net systems”) are the perfe ...</div></div> 
-
-
-
-</div> 
-<div style='/*background-color:#d7ccfa;*/ padding:0px; width:100%; min-height:240px;border:20px solid #d7ccfa; border-radius:20px; margin-bottom:20px;'> 
-
-<div class='shell' style='/*width:50%;*/ vertical-align:middle; display:inline-block; text-align:right; float:right; /*min-height:200px;*/ '><img src='https://i0.wp.com/blog.pickleballcentral.com/wp-content/uploads/2022/01/nationals-2021_7146.jpg?resize=278%2C417&ssl=1' style='width:100%; height:auto; object-fit:contain; /*padding-left:20px;*/ max-height:200px; background-color:#d7ccfa;'></div> 
-
-<div class='shell2' style='/*width:49%;*/ vertical-align:top; display:inline-block; text-align:left; padding:10px; background-color:#FFF;'><a style='color:#141414; text-decoration: underline; font-size:14px; font-weight:700;' href='https://blog.pickleballcentral.com/2022/01/13/meet-the-pros-riley-and-lindsey-newman-aka-newman-squared/' title='Meet the Pros: Riley and Lindsey Newman (aka Newman Squared)' target='_blank'>Meet the Pros: Riley and Lindsey Newman (aka Newman Squared)</a><br /> 
-<br /> 
-<div style='display:inline-block; text-align:left; font-size:13px; overflow-wrap:break-word; width:98%; /*min-height:160px; max-height:100px;*/'>
-Riley and Lindsey Newman are a rockstar brother and sister duo (still working on their team name bu ...</div></div> 
-
-
-
-</div>
 
 <!--END-->
 
@@ -849,10 +968,66 @@ Riley and Lindsey Newman are a rockstar brother and sister duo (still working on
 </div>
 <!--Nine banner end -->
 
+<!--Partners and Sponsors banner start -->
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-12">
+<div class="heading text-center pt-4 pb-2">
+<h1>Partners and Sponsors</h1>
+</div>
+</div>
+</div>
+</div>  
+<div class="mx-3 mb-0" style="margin-top:-25px;">
+<div class="container-fluid">
+<div class="row">
+<div id="company" class="owl-carousel owl-theme Testimonials">
+<div class="item  ">
+<div class="company">
+<img src="<?=base_url()."assets_new/";?>images/premium_clubs/ARC.png">
+</div>
+</div>
+<div class="item  ">
+<div class="company">
+<img src="<?=base_url()."assets_new/";?>images/premium_clubs/AUSSINICK.png">
+</div>
+</div>
+<div class="item  ">
+<div class="company">
+<img src="<?=base_url()."assets_new/";?>images/premium_clubs/SATTA.png">
+</div>
+</div>
+<div class="item  ">
+<div class="company">
+<img src="<?=base_url()."assets_new/";?>images/premium_clubs/SBA.png">
+</div>
+</div>
+<div class="item  ">
+<div class="company">
+<img src="<?=base_url()."assets_new/";?>images/premium_clubs/WDCTT.png">
+</div>
+</div>
+</div>
+<div class="col-lg-12">
+<!-- <section class="customer-logos slider">
+<div class="slide"></div>
+<div class="slide"><img src="<?=$source;?>images/c_logo (2).png"></div>
+<div class="slide"><img src="<?=$source;?>images/c_logo (3).png"></div>
+<div class="slide"><img src="<?=$source;?>images/c_logo (4).png"></div>
+<div class="slide"><img src="<?=$source;?>images/c_logo (5).png"></div>
+<div class="slide"><img src="<?=$source;?>images/c_logo (1).png"></div>
+<div class="slide"><img src="<?=$source;?>images/c_logo (2).png"></div>
+<div class="slide"><img src="<?=$source;?>images/c_logo (3).png"></div>
+</section> -->
+</div>
+</div>
+</div>
+</div>
+<!--Partners and Sponsors banner end -->
 
 
 <!--gallery banner start -->
-<div class="gallery pt-5 pb-5 ">
+<div class="gallery pt-5 pb-0 ">
 <div class="container-fluid">
 <div class="row">
 <div class="col-lg-12">
@@ -866,6 +1041,7 @@ Riley and Lindsey Newman are a rockstar brother and sister duo (still working on
 
 <?php
 $c = 1;
+$jquery_const = array("");
 foreach($get_tour_images as $i => $get_info) {
 $tour_id		 = $get_info->Tournament_id;
 $image_pic = base_url()."tour_pictures/".$tour_id."/thumbs/".$get_info->Image_file;
@@ -873,38 +1049,36 @@ $image_pic = base_url()."tour_pictures/".$tour_id."/thumbs/".$get_info->Image_fi
 <img id='<?=$c;?>' style="height:250px;" src="<?=$image_pic;?>" onClick="openmodal(this.src, this.id)">
 <?php
 $c++;
+$jquery_const[] = $image_pic;
 }
+$json_const = json_encode($jquery_const);
+$jquery_const_count = count($jquery_const);
 ?>
 </div>
-
-
+<?php
+//print_r($jquery_const);
+//echo "JSON ". $json_const; exit;
+?>
 <!-- The Modal -->
-
 <div id="myModal" class="modal">
 
 <span class="close">&times;</span>
-
 <img class="modal-content" style="object-fit:contain; border:none; background-color: #fff0f0"; id="img01">
 
 <!--<div id="caption"></div>-->
-
 <input id="ok" name="ok" type="text" value="0" style="display:none;">
 
 <!-- Next/previous controls -->
 
 <a class="prev" onclick="previousSlide()">&#10094;</a>
-
 <a class="next" onclick="nextSlide()">&#10095;</a>
 
-<!--<input type='button' value='next' onclick='ic1.next("container")' />
-
-<input type='button' value='prev' onclick='ic1.prev("container")' />-->
+<!-- <input type='button' value='next' onclick='ic1.next("container")' />
+<input type='button' value='prev' onclick='ic1.prev("container")' /> -->
 </div>
-
 
 <script>
 function openmodal(_src, image_full_id) {
-
 //alert("SRC " + _src + " IMAGE ID " + image_full_id);
 
 modal.style.display = "block";
@@ -913,7 +1087,6 @@ document.getElementById("ok").value = image_full_id;
 }
 
 // Get the modal
-
 var modal = document.getElementById("myModal");
 var img = document.getElementById("myImg");
 var modalImg = document.getElementById("img01");
@@ -924,34 +1097,30 @@ modal.style.display = "none";
 }
 </script>
 
-
 <script>
-const pictures = ["", "images/16.jpg", "images/18.jpg", "images/20.jpg", "images/4.jpg", "images/6.jpg", "images/8.jpg"];
+//const pictures = ["", "images/16.jpg", "images/18.jpg", "images/20.jpg", "images/4.jpg", "images/6.jpg", "images/8.jpg"];
+//const pics_count = 7;
 
+const pictures = <?php echo $json_const; ?>;
+const pics_count = <?php echo $jquery_const_count; ?>;
 
 function nextSlide(imageid) {
-
 var thisimageid = document.getElementById("ok").value;
-
 var gotoid = parseInt(thisimageid) + 1;
 
-if (gotoid == 7) { gotoid=1; }
+if (gotoid == pics_count) { gotoid=1; }
 
 var modalImg = document.getElementById("img01");
-
 openmodal(pictures[gotoid], gotoid);
 }
-
-
 
 function previousSlide(imageid) {
 var thisimageid = document.getElementById("ok").value;
 var gotoid = parseInt(thisimageid) - 1;
 
-if (gotoid == 0) { gotoid=6; }
+if (gotoid == 0){ gotoid=pics_count; }
 
 var modalImg = document.getElementById("img01");
-
 openmodal(pictures[gotoid], gotoid);
 }
 
@@ -1046,56 +1215,160 @@ items: 3
 });
 
 $('#edit_pom').click(function(){
-	$('#pom_div').hide();
-	$('#edit_pom_div').show();
+$('#pom_div').hide();
+$('#edit_pom_div').show();
 });
 
 $('#cancel_pom').click(function(){
-	$('#pom_div').show();
-	$('#pom_user_id').val('');
-	$('#edit_pom_div').hide();
+$('#pom_div').show();
+$('#pom_user_id').val('');
+$('#edit_pom_div').hide();
 });
 
 
 //var sp_type = "<?php echo $r->SportsType;?>";
 var baseurl = "<?php echo base_url();?>";
 
-$('#created_by').autocomplete({
+/*$('#created_by').autocomplete({
 
-	source: function( request, response ) {
-  		$.ajax({
-			url: baseurl+'search/autocomplete',
-  			dataType: "json",
-			method: 'post',
-			data: {
-			   name_startsWith: request.term,
-			   type: 'users',
-			   row_num : 1
-			},
-			 success: function( data ) {
-				 response( $.map( data, function( item ) {
-				 	var code = item.split("|");
-					return {
-						label: code[0],
-						value: code[0],
-						data : item
-					}
-				}));
-			}
-  		});
-  	},
-  	autoFocus: true,	      	
-  	minLength: 1,
-  	select: function( event, ui ) {
-		//alert(ui.item.data);
-		var names = ui.item.data.split("|");						
-		$('#pom_user_id').val(names[1]);
-
-		//$('#created_by').val('');
-		$('#created_by').focus();
-	}
+source: function( request, response ) {
+$.ajax({
+url: baseurl+'search/autocomplete',
+dataType: "json",
+method: 'post',
+data: {
+name_startsWith: request.term,
+type: 'users',
+row_num : 1
+},
+success: function( data ) {
+response( $.map( data, function( item ) {
+var code = item.split("|");
+return {
+label: code[0],
+value: code[0],
+data : item
+}
+}));
+}
 });
+},
+autoFocus: true,	      	
+minLength: 1,
+select: function( event, ui ) {
+//alert(ui.item.data);
+var names = ui.item.data.split("|");						
+$('#pom_user_id').val(names[1]);
 
+//$('#created_by').val('');
+$('#created_by').focus();
+}
+});*/
+
+function autocomplete(inp, arr) {
+/*the autocomplete function takes two arguments,
+the text field element and an array of possible autocompleted values:*/
+var currentFocus;
+/*execute a function when someone writes in the text field:*/
+inp.addEventListener("input", function(e) {
+var a, b, i, val = this.value;
+/*close any already open lists of autocompleted values*/
+closeAllLists();
+if (!val) { return false;}
+currentFocus = -1;
+/*create a DIV element that will contain the items (values):*/
+a = document.createElement("DIV");
+a.setAttribute("id", this.id + "autocomplete-list");
+a.setAttribute("class", "autocomplete-items");
+/*append the DIV element as a child of the autocomplete container:*/
+this.parentNode.appendChild(a);
+/*for each item in the array...*/
+// alert(arr.length);
+for (i = 0; i < arr.length; i++) {
+/*check if the item starts with the same letters as the text field value:*/
+if (arr[i]['value'].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+/*create a DIV element for each matching element:*/
+b = document.createElement("DIV");
+/*make the matching letters bold:*/
+b.innerHTML = "<strong>" + arr[i]['value'].substr(0, val.length) + "</strong>";
+b.innerHTML += arr[i]['value'].substr(val.length);
+/*insert a input field that will hold the current array item's value:*/
+b.innerHTML += "<input type='hidden' value='" + arr[i]['value'] + "'>";
+b.innerHTML += "<input type='hidden' value='" + arr[i]['value2'] + "'>";
+/*execute a function when someone clicks on the item value (DIV element):*/
+b.addEventListener("click", function(e) {
+/*insert the value for the autocomplete text field:*/
+//alert(this.getElementsByTagName("input")[0].value);
+inp.value = this.getElementsByTagName("input")[0].value;
+document.getElementById('pom_user_id').value = this.getElementsByTagName("input")[1].value;
+/*close the list of autocompleted values,
+(or any other open lists of autocompleted values:*/
+closeAllLists();
+});
+a.appendChild(b);
+}
+}
+});
+/*execute a function presses a key on the keyboard:*/
+inp.addEventListener("keydown", function(e) {
+var x = document.getElementById(this.id + "autocomplete-list");
+if (x) x = x.getElementsByTagName("div");
+if (e.keyCode == 40) {
+/*If the arrow DOWN key is pressed,
+increase the currentFocus variable:*/
+currentFocus++;
+/*and and make the current item more visible:*/
+addActive(x);
+} else if (e.keyCode == 38) { //up
+/*If the arrow UP key is pressed,
+decrease the currentFocus variable:*/
+currentFocus--;
+/*and and make the current item more visible:*/
+addActive(x);
+} else if (e.keyCode == 13) {
+/*If the ENTER key is pressed, prevent the form from being submitted,*/
+e.preventDefault();
+if (currentFocus > -1) {
+/*and simulate a click on the "active" item:*/
+if (x) x[currentFocus].click();
+}
+}
+});
+function addActive(x) {
+/*a function to classify an item as "active":*/
+if (!x) return false;
+/*start by removing the "active" class on all items:*/
+removeActive(x);
+if (currentFocus >= x.length) currentFocus = 0;
+if (currentFocus < 0) currentFocus = (x.length - 1);
+/*add class "autocomplete-active":*/
+x[currentFocus].classList.add("autocomplete-active");
+}
+function removeActive(x) {
+/*a function to remove the "active" class from all autocomplete items:*/
+for (var i = 0; i < x.length; i++) {
+x[i].classList.remove("autocomplete-active");
+}
+}
+function closeAllLists(elmnt) {
+/*close all autocomplete lists in the document,
+except the one passed as an argument:*/
+var x = document.getElementsByClassName("autocomplete-items");
+for (var i = 0; i < x.length; i++) {
+if (elmnt != x[i] && elmnt != inp) {
+x[i].parentNode.removeChild(x[i]);
+}
+}
+}
+/*execute a function when someone clicks in the document:*/
+document.addEventListener("click", function (e) {
+closeAllLists(e.target);
+});
+}
+
+var users = <?php echo $users; ?>;
+
+autocomplete(document.getElementById("myInput"), users);
 
 });
 </script>
@@ -1132,3 +1405,14 @@ $('button[data-filter=".category-e"]').trigger( "click" );
 });
 </script>
 <script src="https://a2msports.com/js/jquery.autocomplete.js" type="text/javascript"></script>
+
+<script>
+var baseURL = "<?php echo base_url(); ?>";
+$('#news_btn').click(function(){
+window.location.replace(baseURL+"news");
+});
+</script>
+
+
+
+<?php $this->load->view('includes/login_popup'); ?>

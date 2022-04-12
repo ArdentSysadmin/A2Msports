@@ -19,6 +19,7 @@ $('#mf_filter').on('change',function(){
 	url:baseurl+'league/get_reg_tourn_partner_names/',
 	data:{tourn_id:Tourn_id, event:event},    //{pt:'7',rngstrt:range1, rngfin:range2},
 	success:function(html){
+		console.log('mf-filter');
 		$('#dbl-load-users').html(html);
 	}
 	});	
@@ -30,6 +31,8 @@ function get_partners_jq(Tourn_id, event){
 			url:baseurl+'league/get_reg_tourn_partner_names/',
 			data:{tourn_id:Tourn_id, event:event},    //{pt:'7',rngstrt:range1, rngfin:range2},
 			success:function(html){
+				console.log('get_partners_jq');
+
 				$('#dbl-load-users').html(html);
 			}
 		});
@@ -65,7 +68,8 @@ if(Partner != "" && Partner > 0){
 			data:{ tourn_id:Tourn_id, ttype:Tourn_type, partner:Partner, player:Player, event:Event },    //{pt:'7',rngstrt:range1, rngfin:range2},
 			success:function(html){
 				$('#dbl-load-users').html(html);
-				var cur_sel = $('.event_change').val();
+				//var cur_sel = $('.event_change').val();
+				var cur_sel = Event;
 				get_partners_jq(Tourn_id, cur_sel);
 				alert("Partner updated successfully.");
 			}
@@ -85,7 +89,7 @@ else if(Partner == "-1"){
 			data:{ tourn_id:Tourn_id, ttype:Tourn_type, partner:Partner, player:Player, event:Event },    //{pt:'7',rngstrt:range1, rngfin:range2},
 			success:function(html){
 				$('#dbl-load-users').html(html);
-				var cur_sel = $('.event_change').val();
+				var cur_sel = Event;
 				get_partners_jq(Tourn_id, cur_sel);
 				alert("Partner updated successfully.");
 			}

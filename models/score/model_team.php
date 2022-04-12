@@ -276,6 +276,7 @@ class model_team extends CI_Model {
 			$result = $this->db->insert('Home_Court_Locations', $data);
 		    return  $this->db->insert_id(); 	
 	    }
+
 		public function create_team($data)
 		{
 			//echo "<pre>";print_r($data);exit();

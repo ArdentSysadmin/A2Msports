@@ -1,6 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 require(APPPATH.'/libraries/REST_Controller.php');
 
+//error_reporting(-1);
 
 // This can be removed if you use __autoload() in config.php OR use Modular Extensions
 /** @noinspection PhpIncludeInspection */
@@ -828,5 +829,20 @@ $coach_past_bookings = NULL;
 				$data['past']			= $res_past;
 
 			$this->response($data, 200);
+			}
+
+			public function is_user_exists_get(){
+				$type		= $this->input->get('type');
+				$value		= strval($this->input->get('val'));
+
+				if($type and $value){
+					$check = $this->muser->check_is_user_exists($type, $value);
+					$res = array($check);
+				}
+				else{
+					$res = array("Error: Missing input values!", 400);
+				}
+
+				$this->response($res);
 			}
 }

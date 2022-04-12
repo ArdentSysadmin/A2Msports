@@ -19,9 +19,9 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
       integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
-    </script>
+    </script> -->
     <!-- Owl Stylesheets -->
     <link rel="stylesheet" href="<?=base_url(); ?>assets_new/css/owl.carousel.min.css">
     <link rel="stylesheet" href="<?=base_url(); ?>assets_new/css/owl.theme.default.min.css">
@@ -42,7 +42,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-		<div class="collapse navbar-collapse" id="main_nav">
+		<div class="collapse navbar-collapse" id="main_nav" style="font-size: 1.1rem !important;">
           <ul class="navbar-nav mx-4">
 		   <li class="nav-item"><a  id="vtournaments_mn" class="nav-link show_all <?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/tournaments";?>">Tournaments</a></li>
 
@@ -54,7 +54,8 @@
 
 <li class="nav-item"><a  id="vcoaches_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/coaches";?>">Coaches</a></li>
 
-<?php if($this->session->userdata('user') != "") {?>
+<?php //echo "<pre>"; print_r($_SESSION); 
+if($this->session->userdata('user') != "") {?>
 <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink_two" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <?php 
@@ -80,7 +81,7 @@ if(!$child) { ?>
 { ?>
 <li><a class="dropdown-item" href="<?php echo $logout;?>"><span align='center'>Logout</span></a></li>
 <?php } else {?>
-<li><a class="dropdown-item" href="<?php echo base_url();?>logout"><span align='center'>Logout</span></a></li>
+<li><a class="dropdown-item" href="<?=$this->config->item('club_pr_url');?>/logout"><span align='center'>Logout</span></a></li>
 <?php } ?>
 </ul>
 
@@ -91,9 +92,10 @@ if(!$child) { ?>
 			  <?php } else { ?>
               <li class="nav-item">
                 <!-- Button trigger modal -->
-                <button type="button" id="log_btn" class="btn log_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <!-- <button type="button" id="log_btn" class="btn log_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
                  Login
-                </button>
+                </button> -->
+				<a href="#login" class="btn log_btn">Login</a>
               </li>
 			  <?php } ?>
             </ul>

@@ -359,7 +359,7 @@ case 'default':
 ?>
 <section class="drawer">
 <div class="col-md-12 hidden-xs size-img <?=$bck_img_class;?>">
-	<div class="effect-cover" style='background:#986dc3'>
+	<div class="effect-cover" style='background:#744af4'>
 	<h3 class="txt-advert animated">Amateurs 2 Masters</h3>
 	<p class="txt-advert-sub"><?=BANNER_TEXT;?></p>
 	</div>

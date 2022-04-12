@@ -77,7 +77,113 @@ class League extends CI_Controller {
 			}
 				$this->sports_dets = $this->session->userdata('menu_items');
 						//echo $this->logged_user_role; exit;
+
+parse_str($_SERVER['QUERY_STRING'] , $_REQUEST);
+$this->load->library('facebook' ,  array("appId" => FB_APPID, "secret" => FB_KEY, "redirect_url" => FB_REDIRECT));
+
 		}
+
+public function get_fb_login(){
+
+$login  = $this->facebook->getLoginUrl();
+return $login;
+}
+
+public function get_google_login(){
+
+
+/* *************************************************************************** */
+
+// Store values in variables from project created in Google Developer Console
+$client_id = '170374605326-p02hhgiia6fqncck0982i401madv6n72.apps.googleusercontent.com';
+$client_secret = 'XyOwkQkScXXca0wG4paTUx6A';
+$redirect_uri = 'https://a2msports.com/login/auth_check';
+$simple_api_key = 'AIzaSyC0JNMWyyW6t1fSNyrprBJC2bWKG4btytc';
+
+include_once APPPATH."libraries/google_login_api_HRWNdR/src/Google_Client.php";
+include_once APPPATH."libraries/google_login_api_HRWNdR/src/contrib/Google_Oauth2Service.php";
+
+// Google Project API Credentials
+$clientId	  = $client_id;
+$clientSecret = $client_secret;
+$redirectUrl  = $redirect_uri;
+
+// Google Client Configuration
+$gClient = new Google_Client();
+$gClient->setApplicationName('A2MSports');
+$gClient->setClientId($clientId);
+$gClient->setClientSecret($clientSecret);
+$gClient->setRedirectUri($redirectUrl);
+//$gclient->setDefaultOption('verify', false); // Can be removed
+$google_oauthV2 = new Google_Oauth2Service($gClient);
+
+if (isset($_REQUEST['code'])) {
+
+$gClient->authenticate();
+$this->session->unset_userdata('menu_items');
+$this->session->set_userdata('token', $gClient->getAccessToken());
+/*echo "Test 123 ".$this->session->userdata('token');
+echo "fdfsd ".$gClient->getAccessToken();
+exit;*/
+redirect($redirectUrl);
+}
+
+$token = $this->session->userdata('token');
+
+// if (!empty($token)) {
+if ($token != "") {
+$gClient->setAccessToken($token);
+}
+
+if ($gClient->getAccessToken() and $token != "") {
+$userProfile = $google_oauthV2->userinfo->get();
+// Preparing data for database insertion
+
+$userData['oauth_provider'] = 'google';
+$userData['oauth_uid']		= $userProfile['id'];
+$userData['first_name']		= $userProfile['given_name'];
+$userData['last_name']		= $userProfile['family_name'];
+$userData['email']			= $userProfile['email'];
+$userData['gender']			= $userProfile['gender'];
+$userData['locale']			= $userProfile['locale'];
+$userData['profile_url']	= $userProfile['link'];
+$userData['picture_url']	= $userProfile['picture'];
+
+/*echo "<pre>";
+print_r($userData);
+exit;*/
+// Insert or update user data
+$user_info = $this->login->checkGoogleUser($userData['email']);
+
+if($user_info){
+if($user_info['IsGoogleLogin'] != 1){
+$this->login->updateGoogleUser($userData, $user_info['Users_ID']);
+}
+}
+else{
+$user_info = $this->login->createGoogleUser($userData);
+}
+$this->prepare_user_login($user_info);
+
+/*echo "<pre>";
+print_r($userData);
+exit;*/
+
+/*if(!empty($userID)){
+$data['userData'] = $userData;
+$this->session->set_userdata('userData',$userData);
+} else {
+$data['userData'] = array();
+}*/
+}
+else {
+$data['authUrl'] = $gClient->createAuthUrl();
+}
+/* *************************************************************************** */
+
+return $data['authUrl'];
+}
+
 
 		// viewing league page ...
 		public function new_league()
@@ -3673,7 +3779,7 @@ foreach($groups as $g => $group){
 
 		 public function bracket_save()
 		 {	
-			 				//echo "<pre>"; print_r($_POST); exit;
+			 //echo "<pre>"; print_r($_POST); exit;
 
 			$upd_type = $this->input->post('upd_type');
 
@@ -7331,37 +7437,67 @@ exit;*/
 			$this->load->view('includes/view_sports_header');
 			}
 
+			$keyword	 = "";
+			$filter			 = "";
+
+			if($this->input->post('keywords') or $this->input->post('is_search')) {
+				$keyword = $this->input->post('keywords');
+				$filter		  = $this->input->post('filter');
+			}
 
 			 if($tab == 'players'){
 					$data['top_players'] = $this->model_league->sport_top_players($data);
 
-				if($this->input->post('keywords') or $this->input->post('is_search')) {
-					$keywords = $this->input->post('keywords');
-					$filter		  = $this->input->post('filter');
-					$data['loc_query'] = $this->model_league->sport_top_players($data, $keywords, $filter);
-					echo $this->load->view('sports/view_nw_players_search', $data);
-				}
-				else {
-					$data['loc_query'] = $this->model_league->sport_top_players($data);
-					echo $this->load->view('sports/view_nw_players', $data);
-				}
+					if($keyword or $filter) {
+						$data['loc_query'] = $this->model_league->sport_top_players($data, $keyword, $filter);
+						echo $this->load->view('sports/view_nw_players_search', $data);
+					}
+					else {
+						$data['loc_query'] = $this->model_league->sport_top_players($data);
+						echo $this->load->view('sports/view_nw_players', $data);
+					}
 			}
 			else if($tab == 'tournaments'){
-				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
-				echo $this->load->view('sports/view_nw_tournaments', $data);
+					if($keyword or $filter) {
+						$data['leagues'] = $this->model_league->get_sport_leagues2($data, $keyword, $filter);
+						echo $this->load->view('sports/view_nw_tournaments_search', $data);
+					}
+					else{
+						$data['leagues']       = $this->model_league->get_sport_leagues2($data);
+						echo $this->load->view('sports/view_nw_tournaments', $data);
+					}
 			}
 			else if($tab == 'teams'){
-			$country = 'United States of America';
-			$data['teams_result'] = $this->model_league->get_TeamsByCountry2($country, $sport);
-				echo $this->load->view('sports/view_nw_teams', $data);
+			$data['country'] = 'United States of America';
+				if($keyword or $filter) {
+					$data['teams_result'] = $this->model_league->get_TeamsByCountry2($data, $keyword, $filter);
+					echo $this->load->view('sports/view_nw_teams_search', $data);
+				}
+				else{
+					$data['teams_result'] = $this->model_league->get_TeamsByCountry2($data);
+					echo $this->load->view('sports/view_nw_teams', $data);
+				}
 			}
 			else if($tab == 'clubs'){
-			$data['club_results']	 = $this->model_league->get_clubs($sport);
-				echo $this->load->view('sports/view_nw_clubs', $data);
+				if($keyword or $filter) {
+					$data['club_results'] = $this->model_league->get_sport_clubs2($data, $keyword, $filter);
+					echo $this->load->view('sports/view_nw_clubs_search', $data);
+				}
+				else{
+					$data['club_results'] = $this->model_league->get_sport_clubs2($data);
+					echo $this->load->view('sports/view_nw_clubs', $data);
+				}
 			}
 			else if($tab == 'coaches'){
-            $data['coach_results'] = $this->model_league->search_coaches($data);
-				echo $this->load->view('sports/view_nw_coaches', $data);
+				if($keyword or $filter) {
+					$data['coach_results'] = $this->model_league->search_coaches2($data, $keyword, $filter);
+					echo $this->load->view('sports/view_nw_coaches_search', $data);
+				}
+				else{
+					$data['coach_results'] = $this->model_league->search_coaches2($data);
+					//echo "<pre>"; print_r($data); exit;
+					echo $this->load->view('sports/view_nw_coaches', $data);
+				}
 			}
 
 				if(!$this->input->post('is_search')){
@@ -7382,8 +7518,8 @@ exit;*/
             $data['loc_query']		 = $this->model_league->sport_top_players($data);
             $data['coach_results'] = $this->model_league->search_coaches($data);
            // $data['club_results']  = $this->model_league->search_clubs($data);
-			$country = 'United States of America';
-			$data['teams_result'] = $this->model_league->get_TeamsByCountry2($country, $sport);
+			$country = $data['country']	 = 'United States of America';
+			$data['teams_result'] = $this->model_league->get_TeamsByCountry2($data);
 
 			if($this->input->post('search_mem_loc')) {
 				$data['search_uname'] = $this->input->post('name');
@@ -7479,11 +7615,13 @@ exit;*/
 			    $data['results']         = $this->model_news->getNews_By_SportsType($sport, 4);
 			}
 			else {
-				$sport                 = $data['sport'];
+				$sport							= $data['sport'];
 				$data['leagues']       = $this->model_league->get_sport_leagues2($sport);
 				$data['results']       = $this->model_news->getNews_By_SportsType($sport, 4);
 				$data['events']        = $this->model_league->get_event_row($sport);
 			}
+
+			$data['top_leagues']       = $this->model_league->get_sport_leagues5($data);
 
 			$data['sports'] = $this->model_league->GetSports();
              //echo "<pre>";print_r($data);exit();
@@ -7521,8 +7659,12 @@ exit;*/
                 //echo "<pre>"; print_r($data); exit;
                 $data['countries']				= $this->model_league->get_user_countries();
 				$data['get_tour_images']	= $this->general->get_tournImages_bySportsType($sport, 20);
+					
+					$returnStr = $this->general->get_users_json();
+					$data['users'] = $returnStr;
 
-				$get_pom  = $this->general->get_pom();
+				//$get_pom  = $this->general->get_pom();
+				$get_pom  = $this->general->get_sport_pom($sport);
 				$data['org_pom']  = $org_pom = $get_pom['POM'];
 				$data['get_user'] = $this->general->get_user($org_pom);
 
@@ -7543,7 +7685,7 @@ exit;*/
 			}
 
             $data['sport']				 = $sport;	
-			$data['club_results']	 = $this->model_league->get_clubs($data);
+			$data['club_results']	 = $this->model_league->get_sport_clubs($data);
             $data['loc_query']		 = $this->model_league->sport_top_players($data);
             $data['coach_results'] = $this->model_league->search_coaches($data);
            // $data['club_results']  = $this->model_league->search_clubs($data);
@@ -10179,8 +10321,7 @@ exit;*/
 					//$index	= array_search($ag, $db_ag_grp);
 					$fee		= 0.00;
 					$extra_fee  = 0.00;
-
-					if(!in_array($ag, $user_reg_age_grps) and !in_array($ag, $exis_ag)){
+					if((!in_array($ag, $user_reg_age_grps) and !in_array($ag, $exis_ag)) and count($user_reg_age_grps) == 0){
 					    $fee		= number_format($db_fee[$index], 2);
 						/*if($fee == 0.00){
 	                      $fee		= number_format($db_fee[array_search($ag_grp[0], $db_ag_grp)], 2);  
@@ -12862,8 +13003,9 @@ $esc_players = array();
 array_multisort(array_map(function($element) { 
 					return $element['wp']; }, $esc_players), SORT_DESC, $esc_players);
 
-			//echo "<pre>"; print_r($data); exit;
 			$data['esc_players'] = $esc_players;
+			//	echo "<pre>"; print_r($data); exit;
+
 			$this->load->view('view_esc_fixturestabs', $data);
 		}
 		else {
@@ -13559,8 +13701,16 @@ return  json_decode($response, true);
 	}
 
 	public function update_pom(){
-		$user = $this->input->post('txt_pom');
-		
+		$user	 = $this->input->post('pom_user_id');
+		$sport  = $this->input->post('pom_sport');
+	
+		if($this->logged_user == 240 and $user){
+			$this->model_league->update_pom($user, $sport);
+			redirect($_SERVER['HTTP_REFERER']);
+		}
+		else{
+			echo "Invalid Access!"; exit;
+		}
 	}
 
 	public function is_club_haveCourts($club_id){

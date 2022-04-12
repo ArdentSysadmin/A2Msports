@@ -322,7 +322,7 @@ switch($sport){
 					if($i == 0) 
 						$act = 'active';
 				?>
-			<div class="item slide1 <?=$act;?>"><img  src="<?php echo base_url()."assets/club_facility/".$org_details['Aca_ID']."/banner/".$bnrImage; ?>" alt=""  style="object-fit: contain; padding:5px; height: 465px; width:100%; background-color:#d7d4d4; " /></div>
+			<div class="item slide1 <?=$act;?>"><img  src="<?php echo base_url()."assets/club_facility/".$org_details['Aca_ID']."/banner/".$bnrImage; ?>" alt=""  style="object-fit: contain; padding:5px; height: 465px; width:100%; background-color:#8b55e4; " /></div>
 				<?php
 				$i++;
 				}
@@ -669,9 +669,10 @@ foreach($club_leagues as $row) {
 			<?php } ?>
 			<!-- edit icon end -->
     </div>
-    <div class="team-row justify-content-center our-gallery-wrapper" id='ps-team' style="background:transparent; padding:0px;">
-	<div id="home-gallery" 
+    <div class="team-row justify-content-center <?php if($facility_details['Facility_Partner_Sponsors']){ echo "our-gallery-wrapper"; }?>" id='ps-team' style="background:transparent; padding:0px;">
+	<div 
 	<?php if($facility_details['Facility_Partner_Sponsors']){ ?>
+	 id="home-gallery"
 	class="owl-carousel" 
 	<?php } ?>>
 		<?php
@@ -826,9 +827,8 @@ style="background: url(<?php echo base_url();?>assets/club_pages/images/<?=$bann
 <!-- Our Club Members End -->
  
 <?php
-//if($org_details['Aca_ID'] == 1123 and count($club_testimonials) > 0){
+
 if(count($club_testimonials) > 0){
-	//echo "<pre>"; print_r($club_testimonials);
 ?>
 <!-- Testimonials Wrapper Start -->
 <!-- <h2 style="color:#000; text-align:center">Testimonials</h2> -->

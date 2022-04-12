@@ -328,8 +328,9 @@ alert("Last Name & Email should not be empty!");
 			}
 
 			$get_sport = teams::get_sport($uc->Sport);
+			echo $img_team_logo."&nbsp;";
 
-			echo "<div class='header' id='dis_tm_".$uc->Team_ID."'>$img_team_logo&nbsp;
+			echo "<div class='header' id='dis_tm_".$uc->Team_ID."'>
 			<span style='color:#03508c;font-size:13px;font-weight:400;'>"
 			.$uc->Team_name."&nbsp;&nbsp;&nbsp;(".$get_sport['Sportname'].")
 			</span>
@@ -428,8 +429,9 @@ alert("Last Name & Email should not be empty!");
 			}
 			
 			$get_sport = teams::get_sport($up->Sport);
+			echo "<div>".$img_team_logo."&nbsp;</div><div style='clear:both;'></div>";
 
-			echo "<div class='header'>$img_team_logo&nbsp;<span style='color:#03508c;font-size:13px;font-weight:400;'>".$up->Team_name."&nbsp;&nbsp;&nbsp;(".$get_sport['Sportname'].")</span></div><div class='content'><ul>";
+			echo "<div class='header'><span style='color:#03508c;font-size:13px;font-weight:400;'>". $up->Team_name."&nbsp;&nbsp;&nbsp;(".$get_sport['Sportname'].")</span></div><div class='content'><ul>";
 
 			$team_players = json_decode($up->Players);
 

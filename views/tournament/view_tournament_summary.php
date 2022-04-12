@@ -33,8 +33,9 @@ echo $get_director['Firstname']." ".$get_director['Lastname']; echo " (<i class=
 
 <?php
 if($tour_details->Usersid != $tour_details->Tournament_Director){ ?>
-<div><label>Organizer:</label> <?php echo $tour_details->OrganizerName; 
-echo " (<i class='fa fa-mobile' aria-hidden='true'></i> ".$tour_details->ContactNumber.")";
+<div><label>Organizer:</label> <?php echo $tour_details->OrganizerName;
+$mobile = preg_replace("/([0-9]{3})([0-9]{3})([0-9]{4})/", "($1) $2-$3",  $tour_details->ContactNumber);
+echo " (<i class='fa fa-mobile' aria-hidden='true'></i> " . $mobile.")";
 ?></div>
 <?php
 }

@@ -10,10 +10,13 @@
 		$this->load->library('facebook');
 		}
 		
-		public function index($data = '')
-		{
+		public function index($data = ''){
 			$this->session->sess_destroy();
-			redirect('login');
+//echo 'test '.$this->config->item('club_pr_url'); exit;
+			if($this->config->item('club_pr_url') != 'https://a2msports.com/logout')
+				redirect($this->config->item('club_pr_url'));
+			else
+				redirect('login');
 	    }
 
 		public function fb_logout($data = '')

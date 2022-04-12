@@ -29,10 +29,40 @@
 			return $query->result();
 		}
 
-		public function get_sport_leagues2($sport)
+		public function get_sport_leagues2($data, $keyword='', $filter='')
 		{
-			$query = $this->db->query("SELECT TOP 30 * FROM tournament WHERE SportsType=$sport AND Is_Publish = '1' ORDER BY StartDate DESC"); 
+			$sport = $data['sport'];
 
+			if($keyword){
+				if($filter){
+					switch($filter){
+						case 'name':
+						$query = $this->db->query("SELECT * FROM tournament WHERE (tournament_title LIKE '%$keyword%' OR tournament_title LIKE '$keyword%' OR tournament_title LIKE '%$keyword') AND SportsType={$sport} AND Is_Publish = '1' ORDER BY StartDate DESC");
+						break;
+						case 'city':
+						$query = $this->db->query("SELECT * FROM tournament WHERE (TournamentCity LIKE '%$keyword%' OR TournamentCity LIKE '$keyword%' OR TournamentCity LIKE '%$keyword') AND SportsType={$sport} AND Is_Publish = '1' ORDER BY StartDate DESC");
+						break;
+						case 'state':
+						$query = $this->db->query("SELECT * FROM tournament WHERE (TournamentState LIKE '%$keyword%' OR TournamentState LIKE '$keyword%' OR TournamentState LIKE '%$keyword') AND SportsType={$sport} AND Is_Publish = '1' ORDER BY StartDate DESC");
+						break;
+					}
+				}
+				else{
+				$query = $this->db->query("SELECT * FROM tournament WHERE (tournament_title LIKE '%$keyword%' OR tournament_title LIKE '$keyword%' OR tournament_title LIKE '%$keyword' OR TournamentCity LIKE '%$keyword%' OR TournamentCity LIKE '$keyword%' OR TournamentCity LIKE '%$keyword' OR TournamentState LIKE '%$keyword%' OR TournamentState LIKE '$keyword%' OR TournamentState LIKE '%$keyword') AND SportsType={$sport} AND Is_Publish = '1' ORDER BY StartDate DESC");
+				}
+			}
+			else{
+			$query = $this->db->query("SELECT TOP 30 * FROM tournament WHERE SportsType=$sport AND Is_Publish = '1' ORDER BY StartDate DESC"); 
+			}
+
+			return $query->result();
+		}
+
+		public function get_sport_leagues5($data)
+		{
+			$sport = $data['sport'];
+			$query = $this->db->query("SELECT TOP 5 * FROM tournament WHERE SportsType=$sport AND Is_Publish = '1' ORDER BY StartDate DESC"); 
+			
 			return $query->result();
 		}
 
@@ -11539,10 +11569,45 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			}
 		}
 		else{
-			$query = $this->db->query("SELECT TOP(50) u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
+			$query = $this->db->query("SELECT TOP(50) pmc.Num_Matches,pmc.Won,pmc.Lost, u.Users_ID, u.FirstName, u.LastName, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} INNER JOIN Player_Matches_Count as pmc ON pmc.Users_ID = u.Users_ID ORDER BY A2MScore DESC");
 		}
+		//echo $this->db->last_query(); exit;
 			return $query->result();
 		}
+
+public function search_coaches2($data, $keywords = '', $filter = ''){
+			$sport		= $data['sport'];
+			$kids_agegroup_arry  = array('U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','U19');
+
+		if($keywords){
+			if($filter){
+				switch($filter){
+					case 'name':
+						$query = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND (coach_sport = $sport AND is_coach = 1) AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.Firstname LIKE '%{$keywords}%' OR u.Lastname LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+					case 'city':
+						$query = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND (coach_sport = $sport AND is_coach = 1) AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.City LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+					case 'state':
+						$query = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND (coach_sport = $sport AND is_coach = 1) AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.State LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+					case 'age_group':
+						$query = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND (coach_sport = $sport AND is_coach = 1) AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.UserAgegroup LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+					break;
+				}
+			}
+			else{
+			$query = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND (coach_sport = $sport AND is_coach = 1) AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} AND (u.Firstname LIKE '%{$keywords}%' OR u.Lastname LIKE '%{$keywords}%' OR u.City LIKE '%{$keywords}%' OR u.State LIKE '%{$keywords}%' OR u.State LIKE '%{$keywords}%') ORDER BY A2MScore DESC");
+			}
+		}
+		else{
+			$query = $this->db->query("SELECT TOP(50) u.Users_ID, u.Firstname, u.Lastname, u.City, u.State, u.UserAgegroup, (SELECT MAX(MaxValue) FROM (VALUES (a.A2MScore),(a.A2MScore_Doubles),(a.A2MScore_Mixed)) AS Value(MaxValue)) AS A2MScore, a.A2MScore AS A2M_Singles, a.A2MScore_Doubles AS A2M_Doubles, a.A2MScore_Mixed AS A2M_Mixed FROM Users AS u JOIN A2MScore AS a ON u.Users_ID = a.Users_ID AND (coach_sport = $sport AND is_coach = 1) AND a.SportsType_ID = {$sport} INNER JOIN sports_interests AS si ON si.users_id = u.Users_ID AND si.Sport_id={$sport} ORDER BY A2MScore DESC");
+		}
+
+		//echo $this->db->last_query(); exit;
+			return $query->result();
+		}
+
 
 		public function get_user_sport_intrests($user_id,$sport){
 			$data = array('users_id'=>$user_id,'Sport_id' => $sport);
@@ -11744,8 +11809,8 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 				  $query = $this->db->query(" SELECT * FROM Academy_Info ");
 				}
 
-			/*print_r($this->db->last_query());
-			exit;*/
+			//print_r($this->db->last_query());
+			//exit;
         
 			return $query->result();
 		}
@@ -12045,7 +12110,9 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 			return $qry_check->result();
 		}
 
-		public function get_TeamsByCountry2($country, $sport){
+		public function get_TeamsByCountry2($data, $keyword='', $filter=''){
+			$sport			= $data['sport'];
+			$country		= $data['country'];
 
 			if($country == 'United States of America'){
 				$qry_str = "(h.hcl_country = '$country' OR h.hcl_country = 'United States' OR h.hcl_country = 'US' OR h.hcl_country = 'U.S.A' OR h.hcl_country = 'USA')";
@@ -12054,9 +12121,29 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 				$qry_str = "h.hcl_country = '$country'";
 			}
 
-			$qry_check = $this->db->query("SELECT TOP(50) u.Users_ID, u.Firstname,u.Lastname,t.Team_name,t.Captain,t.Created_by,t.Players,t.Team_ID,t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID 
-			JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND {$qry_str} ORDER BY a.A2MTeamScore DESC");
+			if($keyword){
+				if($filter){
+					switch($filter){
+						case 'name':
+						$qry_check = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, t.Team_name, t.Captain, t.Created_by, t.Players, t.Team_ID, t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND (t.Team_name LIKE '%{$keyword}%' OR t.Team_name LIKE '%{$keyword}' OR t.Team_name LIKE '{$keyword}%') ORDER BY a.A2MTeamScore DESC");
+						break;
+						case 'city':
+						$qry_check = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, t.Team_name, t.Captain, t.Created_by, t.Players, t.Team_ID, t.Team_Logo, h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND h.hcl_city LIKE '{$keyword}%' ORDER BY a.A2MTeamScore DESC");
+						break;
+						case 'state':
+						$qry_check = $this->db->query("SELECT u.Users_ID, u.Firstname, u.Lastname, t.Team_name, t.Captain, t.Created_by, t.Players, t.Team_ID, t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND h.hcl_state LIKE '{$keyword}%' ORDER BY a.A2MTeamScore DESC");
+						break;
+					}
+				}
+				else{
+				$qry_check = $this->db->query("SELECT u.Users_ID, u.Firstname,u.Lastname,t.Team_name,t.Captain,t.Created_by,t.Players,t.Team_ID,t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND (t.Team_name LIKE '%{$keyword}%' OR t.Team_name LIKE '%{$keyword}' OR t.Team_name LIKE '{$keyword}%' OR h.hcl_state LIKE '{$keyword}%' OR h.hcl_city LIKE '{$keyword}%') ORDER BY a.A2MTeamScore DESC");
+				}
+			}
+			else{
+			$qry_check = $this->db->query("SELECT TOP(50) u.Users_ID, u.Firstname,u.Lastname,t.Team_name,t.Captain,t.Created_by,t.Players,t.Team_ID,t.Team_Logo,h.hcl_city,h.hcl_state,a.A2MTeamScore FROM Users u JOIN Teams t ON u.Users_ID = t.Created_by AND t.Sport = '".$sport."' JOIN A2MTeamScore a ON a.Team_ID = t.Team_ID JOIN Home_Court_Locations h ON t.Home_loc_id = h.hcl_id AND {$qry_str} ORDER BY a.A2MTeamScore DESC");
+			}
 
+//echo $this->db->last_query();
 			return $qry_check->result();
 		}
 
@@ -13842,14 +13929,53 @@ return $data;
 			return $query->result();
 		}
 
+		public function get_sport_clubs($sport = ''){
+			if($sport){
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%".'"'.$sport.'"'."%') ORDER BY Aca_name ASC");
+			}
+			else{
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations) ORDER BY Aca_name ASC");
+			}
+
+			return $query->result();
+		}
+
+		public function get_sport_clubs2($data, $keyword='', $filter=''){
+			$sport = $data['sport'];
+
+			if($keyword){
+				if($filter){
+					switch($filter){
+						case 'name':
+							$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Aca_name LIKE '%{$keyword}%' OR Aca_name LIKE '%{$keyword}' OR Aca_name LIKE '{$keyword}%') AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%".'"'.$sport.'"'."%') ORDER BY Aca_name ASC");
+						break;
+						case 'city':
+							$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Aca_city LIKE '%{$keyword}%' OR Aca_city LIKE '%{$keyword}' OR Aca_city LIKE '{$keyword}%') AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%".'"'.$sport.'"'."%') ORDER BY Aca_name ASC");
+						break;
+						case 'state':
+							$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Aca_state LIKE '%{$keyword}%' OR Aca_state LIKE '%{$keyword}' OR Aca_state LIKE '{$keyword}%') AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%".'"'.$sport.'"'."%') ORDER BY Aca_name ASC");
+						break;
+					}
+				}
+				else{
+					$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Aca_name LIKE '%{$keyword}%' OR Aca_name LIKE '%{$keyword}' OR Aca_name LIKE '{$keyword}%' OR Aca_city LIKE '%{$keyword}%' OR Aca_city LIKE '%{$keyword}' OR Aca_city LIKE '{$keyword}%' OR Aca_state LIKE '%{$keyword}%' OR Aca_state LIKE '%{$keyword}' OR Aca_state LIKE '{$keyword}%') AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%".'"'.$sport.'"'."%') ORDER BY Aca_name ASC");
+				}
+			}
+			else{
+				$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND (Primary_Sport = {$sport} OR Aca_Sport LIKE '%".'"'.$sport.'"'."%') ORDER BY Aca_name ASC");
+			}
+
+			return $query->result();
+		}
+
 		public function get_team_stats($team_id){
-			$query = $this->db->query("SELECT * FROM Tournament_Matches WHERE Winner = {$team_id}");
-			$wins = $query->num_rows();
+			$qry_wins = $this->db->query("SELECT COUNT(*) as wins FROM Tournament_Matches WHERE (Player1 = {$team_id} OR Player2 = {$team_id}) AND Winner = {$team_id}  AND Tourn_ID IN (SELECT tournament_ID FROM tournament WHERE tournament_format = 'Teams')");
+			$x = $qry_wins->row_array();
 
-			$query2 = $this->db->query("SELECT * FROM Tournament_Matches WHERE Winner != {$team_id} AND (Player1 = {$team_id} OR Player2 = {$team_id})");
-			$loss = $query2->num_rows();
-
-			return array('wins' => $wins, 'loss' => $loss);
+			$qry_loss = $this->db->query("SELECT COUNT(*) as loss FROM Tournament_Matches WHERE (Player1 = {$team_id} OR Player2 = {$team_id}) AND Winner != {$team_id} AND Winner > 0  AND Tourn_ID IN (SELECT tournament_ID FROM tournament WHERE tournament_format = 'Teams')");
+			$y = $qry_loss->row_array();
+		
+			return array('wins' => $x['wins'], 'loss' => $y['loss']);
 		}
 
 		public function get_logged_user_brackets($tourn_id, $user){
@@ -14203,6 +14329,12 @@ echo "Unauthorised Access!"; exit;
 			$query = $this->db->query("SELECT * FROM Academy_Court_Locations WHERE status = 1 AND org_id = {$club_id}");
 
 			return $query->num_rows();
+	}
+
+	public function update_pom($user, $sport){
+			$query = $this->db->query("UPDATE SportsType SET POM = {$user} WHERE SportsType_ID = {$sport}");
+
+			return $query;
 	}
 
 }

@@ -268,51 +268,54 @@
 			return $qry_check->num_rows();
 		}
 
-		public function get_team_info($tid)
-		{
+		public function get_team_info($tid) {
 			$data = array('Team_ID' => $tid);
 			$query = $this->db->get_where('Teams', $data);
 			return $query->row_array();
 		}
 
-		public function is_player_reg_tourn($player, $tourn_id, $team)
-		{
+		public function is_player_reg_tourn($player, $tourn_id, $team) {
 			$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = {$tourn_id} AND Team_Players LIKE '%\"{$player}\"%'");
 			return $qry_check->num_rows();
 		}
 
-		public function check_is_player_locked($player, $tourn_id, $team)
-		{
+		public function get_team_stats($team_id) {
+			$qry_wins = $this->db->query("SELECT COUNT(*) as wins FROM Tournament_Matches WHERE (Player1 = {$team_id} OR Player2 = {$team_id}) AND Winner = {$team_id}  AND Tourn_ID IN (SELECT tournament_ID FROM tournament WHERE tournament_format = 'Teams')");
+			$x = $qry_wins->row_array();
+
+			$qry_loss = $this->db->query("SELECT COUNT(*) as loss FROM Tournament_Matches WHERE (Player1 = {$team_id} OR Player2 = {$team_id}) AND Winner != {$team_id} AND Winner > 0  AND Tourn_ID IN (SELECT tournament_ID FROM tournament WHERE tournament_format = 'Teams')");
+			$y = $qry_loss->row_array();
+		
+			return array('wins' => $x['wins'], 'loss' => $y['loss']);
+
+		}
+
+		public function check_is_player_locked($player, $tourn_id, $team)	{
 			$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = {$tourn_id} AND Team_id != {$team} AND Team_Players LIKE '%\"{$player}\"%'");
 			return $qry_check->num_rows();
 		}
 
-		public function get_tour_team_info($tourn_id, $team)
-		{
+		public function get_tour_team_info($tourn_id, $team) {
 			$qry_check = $this->db->query("SELECT * FROM RegisterTournament WHERE Tournament_ID = {$tourn_id} AND Team_id = {$team}");
 			return $qry_check->row_array();
 		}
 
-		public function get_joinreq_info($sec_code)
-		{
+		public function get_joinreq_info($sec_code) {
 			$qry_check = $this->db->query("SELECT * FROM Team_Join_Reqs WHERE Req_code = '{$sec_code}'");
 			return $qry_check->row_array();
 		}
 
-		public function get_user_created()
-		{
+		public function get_user_created()	{
 			$qry_check = $this->db->query("SELECT * FROM Teams WHERE Created_by = '{$this->logged_user}'");
 			return $qry_check->result();
 		}
 
-		public function get_user_part()
-		{
+		public function get_user_part() {
 			$qry_check = $this->db->query("SELECT * FROM Teams WHERE Created_by != '{$this->logged_user}' AND Players LIKE '%\"{$this->logged_user}\"%'");
 			return $qry_check->result();
 		}
 
-		public function get_user_non_part()
-		{
+		public function get_user_non_part() {
 			$user = $this->logged_user;
 			//$qry_check = $this->db->query("SELECT * FROM Teams WHERE Players NOT LIKE '%\"{$this->logged_user}\"%'");
 			$lat	= number_format($this->session->userdata('lat'), 2);

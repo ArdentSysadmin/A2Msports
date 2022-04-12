@@ -1,166 +1,29 @@
-<link href="<?php echo base_url(); ?>assets/club_pages/assets/css/popup.css" rel="stylesheet">
-<style>
-
-.mobile-modal-dialog{
-width:50%;
-}
-
-@media only screen and (max-width: 780px) 
-{
-	.mobile-modal-dialog{
-	width:100% !important;
-	}
-}
-</style>
-<script>
-var baseurl = "<?php echo base_url(); ?>";
-
-$(document).ready(function(){
-$('#txt_login').focus();
-}); 
-</script>
-<section id="login" class="container secondary-page">  
-<div class="general general-results players">
-
-<!-- LOGIN BOX -->
-<div class=" col-md-4 hidden-xs">&nbsp;</div>
-<div class="top-score-title right-score col-md-4">
-<h3>Login to A2M<!--<span> Now</span><span class="point-int"> !</span>--></h3>
-<div class="">
-<?php 
-//if(isset($this->session->flashdata('err_msg'))) { ?>
-<div class="name" align='left'>
-<label for="name_login" style="color:red"><?php echo $this->session->flashdata('err_msg'); ?></label>
-</div>
-<?php //} ?>
-<?php if(isset($act_stat)) { ?>
-<div class="name" align='left'>
-<label for="name_login" style="color:blue"><?php echo $act_stat; ?></label>
-</div>
-<?php } ?>
-
-<?php if(isset($update)) { ?>
-<div class="name" align='left'>
-<label for="name_login" style="color:green"><?php echo $update; ?></label>
-</div>
-<?php } ?>
-
-<form id="form-login" method="post" action='<?php echo base_url(); ?>login/verify_user'>            
-<div class="name">
-<label for="name_login">Username or Email:</label><div class="clear"></div>
-<input class='form-control' id="txt_login" name="name_login" type="text" style="margin-bottom:10px;" required/>
-</div>
-<div class="pwd">
-<label for="password_login">Password:</label><div class="clear"></div>
-<input class='form-control' id="password_login" name="password_login" type="password" required/>
-</div>
-<div class="hdn">
-<?php //echo "<pre>"; print_r($GLOBALS );?>
-<input class='form-control' id="red_uri" name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url');?>" />
-</div>
-<a href="<?php echo base_url();?>Forgot-password">Forgot Password?</a>
-<br />
-<div id="login-submit" style="line-height:25px;">
-<input type="submit" name='submit_web_login' value="Login" style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00" />
-&nbsp;&nbsp;
-<!--<a href="<?php echo base_url();?>Forgot-password">Forgot Password?</a>-->
-| 
-<a href="#" class="member_login">Sign up</a>
-</div>
-
-<div class="ctn-img1">
-<?php
-//echo "<pre>"; print_r($GLOBALS); exit;
-$req_uri =  $this->uri->segment(1);
-
-if($req_uri != 'register'){
-	$login		 = login::get_fb_login();
-	$authUrl = login::get_google_login();
-}
-//print_r($login); 
-if($login){
-?>
-<br /> <h4 style="padding-bottom:10px; padding-top:10px">Or...<br /><br />
-<div id="phone-login" style="line-height:25px;"> 
-<a href="#" id="phone_login" class="btn btn-info" role="button" style="margin-bottom: 20px;background-color: #81a32b;border-color: #81a32b;">
-Login with Mobile Number</a>
-</div>
-
-<a href="<?php echo $login; ?>"><img src="<?php echo base_url(); ?>icons/facebook.jpg" height="40px" width="245px"  /></a><br /><br />
-<a href="<?php echo $authUrl; ?>"><img src="<?php echo base_url(); ?>icons/google.jpg" 
-height="40px" width="245px" /></a><br /><br />
-<?php
-}
-?>
-</div>
-<!--Close Images-->
-</div>
-</form>
-
-
-
 <form id="form-phone" class="form-signin" accept="#" style="display:none;">
-	<h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
-	
+	<!-- <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1> -->
+	<?php
+	//exit;
+	?>
 	<div id='phone-input' style="text-align: center;">
-
+	<!-- <input type="text" id="inputPhone" class="form-control" placeholder="+919999999999 (Enter number with country code)" required="" autofocus="" style="width: 65%;margin-left: 92px;"> -->
+	
 		<div style="display:flex;">
-		<select class="form-control" name='ph_country_code' id='ph_country_code' style="width:23%;margin-bottom:10px; margin-right:10px;">
-		<option value='+1'>U.S.A</option>
-		<option value='+91'>India</option>
+		<select class="form-control" name='ph_country_code' id='ph_country_code' style="width:23%; margin-bottom:10px; margin-right:10px;">
+			<option value='+1'>U.S.A</option><option value='+91'>India</option>
 		</select>
 		<input type="text" id="inputPhone" class="form-control" placeholder="Enter your 10 digits Mobile Number" required="" autofocus="" style="width:75%;" />
 		</div>
 
 	<div id="recaptcha-container"></div>
-		<div>
-		<button class="ph_otp" type="button" id="phoneloginbtn" style="background-color: #ff8a00; margin:15px;"><i class="fas fa-sign-in-alt"></i> SEND OTP</button>
-		</div>
+	<button class="ph_otp" type="button" id="phoneloginbtn" style="padding: 5px 30px;color: #fff;font-weight: bold; margin-top:10px; border:#ff8a00; background-color:#ff8a00"><i class="fas fa-sign-in-alt"></i> SEND OTP</button>
+	<button type="button" id="phone_login_cancel" style="margin-left:20px; padding: 5px 30px;color: #fff;font-weight: bold;margin-top:10px;border:#ff8a00;background-color: #8a8580;">Cancel</button>
 	</div>
 	<div id='otp-input' style="display:none; text-align: center;">
-	<input type="otp" id="inputOtp" style="font-size: 18px !important;" class="form-control" placeholder="Enter One Time Password" required>
+	<input type="otp" id="inputOtp" class="form-control" placeholder="Enter One Time Password" required>
 	<button class="ph_otp" type="button" id="verifyotp" style="background-color: #ff8a00; margin:15px;"><i class="fas fa-sign-in-alt"></i> VERIFY OTP</button>
 	</div>
 </form>
-</div>
-</div>
-<div class=" col-md-4 hidden-xs">&nbsp;</div>
-<!--Close Login-->
-</div> 
 
 
-<div class="modal fade" id="login_modal" role="dialog">
-<div class="modal-dialog modal-lg mobile-modal-dialog">
-	<div class="modal-content">
-	<div class="modal-header" style='border:0px;'>
-<!-- Login window content -->
-<form>          
-<div style='margin-bottom:25px;'><h4><b>Register as</b></h4></div>
-<div class="name" style='margin-left:60px;margin-bottom: 25px;'>
-<label for="txt_asclubowner"><input name='regas' id="txt_asclubowner" type="radio" value='club-owner' /> Club Owner </label>
-<br /><span style='margin-left: 18px;'><i>Tournaments, Court Reservations, Membership Engagement and more! </i><span>
-<div class="clear"></div>
-</div>
-<div class="name" style='margin-left:60px;margin-bottom: 25px;'>
-<label for="txt_ascoach"><input name='regas' id="txt_ascoach" type="radio" value='coach'  /> Coach </label>
-<br /><span style='margin-left: 18px;'><i>Reach more players, Schedule your classes and communicate with players </i><span>
-<div class="clear"></div>
-</div>
-<div class="name" style='margin-left:60px;margin-bottom: 40px;'>
-<label for="txt_asplayer"><input name='regas' id="txt_asplayer" type="radio" value='player'  /> Player </label>
-<br /><span style='margin-left: 18px;'><i>Register for tournaments, Reserve courts, Find clubs ad coaches. </i><span>
-<div class="clear"></div>
-</div>
-
-<div id="login-submit" style="line-height:25px; margin-left:60px; margin-top:10px;">
-<input type="button" id='register-as' name='register-as' value="  Continue  "/><br>
-</div>
-</form>
-<!-- Login window content -->
-	</div>
-	</div>
-</div>
-</div>
 
 <div class="modal fade" id="phone_users_modal" role="dialog">
 <div class="modal-dialog modal-lg mobile-modal-dialog">
@@ -169,12 +32,16 @@ height="40px" width="245px" /></a><br /><br />
 <!-- Multi Users (Phone Login) window content -->
 <div style='margin-bottom:25px;'>
 <h4><b>We found that below users are linked with the given mobile number. Please select a profile to continue...</b></h4></div>
-<form method="post" id="myform2" action="<?php echo base_url(); ?>login/phone_login" onsubmit="return checkChecked('myform');" class="register-form"> 
+<form method="post" id="myform2" action="<?=$this->config->item('club_pr_url');?>/login/phone_login" onsubmit="return checkChecked('myform');" class="register-form"> 
 <input name="Mobilephone" id="ph_new_reg_mobile" type="hidden" value=''  />
 <input name="token" id="ph_new_reg_token" type="hidden" value=''  />
 <div id='exist_users_list'></div>
 
 <div class="col-md-12" align="center">
+<input name="ph_redirect_to"  type="hidden" value="<?=$this->config->item('club_pr_url');?>" />
+<input name="academy"  type="hidden" value="<?=$org_details['Aca_ID'];?>" />
+<input name="shortcode" type="hidden" value="<?=$org_details['Aca_URL_ShortCode'];?>" />
+<input name="aca_page" id="aca_page" type="hidden" value="" />
 <input name="cont_login" id="cont_login" type="submit" value="Continue" 
 style="padding: 10px 30px; font-weight: bold; margin-top:20px; border:#81a32b; background-color:#81a32b" />
 </div>
@@ -187,6 +54,8 @@ style="padding: 10px 30px; font-weight: bold; margin-top:20px; border:#81a32b; b
 </div>
 
 
+
+
 <div class="modal fade" id="signup_phone_modal" role="dialog">
 <div class="modal-dialog modal-lg mobile-modal-dialog">
 	<div class="modal-content">
@@ -195,8 +64,8 @@ style="padding: 10px 30px; font-weight: bold; margin-top:20px; border:#81a32b; b
 <div style='margin-bottom:25px;'><h4><b>Please provide the below details to complete the registration</b></h4></div>
 <form method="post" id="myform" enctype="multipart/form-data" action="<?php echo base_url(); ?>register/save_mobileuser" onsubmit="return checkChecked('myform');" class="register-form"> 
 
-<input name="Mobilephone" id="new_reg_mobile" type="hidden" value=''  />
-<input name="token" id="new_reg_token" type="hidden" value=''  />
+<input name="Mobilephone" id="new_reg_mobile" type="hidden" value='' />
+<input name="token" id="new_reg_token" type="hidden" value='' />
 
 <div class="col-md-12">
 <label for="Firstname">* First Name:</label><div class="clear"></div>
@@ -494,178 +363,3 @@ I accept the <a style='cursor:pointer;' onclick='terms_conditions()'><b>Terms & 
 	</div>
 </div>
 </div>
-
-</section>
-
-<script>
-$(document).ready(function(){
-	$(document).on('click','.member_login',function(){
-		$("#login_modal").modal();
-	});
-//$("#signup_phone_modal").modal();
-	$('#register-as').click(function(){
-		var ras = $("input[name='regas']:checked"). val();
-		
-		window.location.replace(baseurl+'register?r='+ras);
-	});
-});
-</script>
-
-<!-- ----------------------------------------------------------------------------------------------------------------------------- -->
- <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-app.js"></script>
-
-<!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-<!-- <script src="https://www.gstatic.com/firebasejs/7.19.0/firebase-analytics.js"></script> -->
-<script defer src="https://www.gstatic.com/firebasejs/7.19.0/firebase-auth.js"></script>
-<script>
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-  apiKey: "AIzaSyCmVrLhO1Wo69C-GjfNEGAL-taGq__TrDU",
-  authDomain: "a2msports-1536907453916.firebaseapp.com",
-  databaseURL: "https://a2msports-1536907453916.firebaseio.com",
-  projectId: "a2msports-1536907453916",
-  storageBucket: "a2msports-1536907453916.appspot.com",
-  messagingSenderId: "1070980649409",
-  appId: "1:1070980649409:web:ebd5383a8d975c16335f40"
-};
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-  //firebase.analytics();
-   //===================Saving Login Details in My Server Using AJAX================
-   function sendDatatoServerPhp(email,provider,token,username){
-		 $.ajax({
-				type:'POST',
-				url:baseurl+'logintest/check_phone/',
-				data:'provider='+provider+'&username='+username+'&token='+token,
-				success:function(res){
-					console.log(res);
-					var json = $.parseJSON(res);
-					if(json.status == 'Phone Number Not Registered!'){
-							$("#signup_phone_modal").modal();
-							$('#new_reg_token').val(token);
-							$('#new_reg_mobile').val(json.mobile);
-					}
-					else if(json.status == 'Login Successfull'){
-
-							$('#ph_new_reg_token').val(token);
-							$('#ph_new_reg_mobile').val(json.mobile);
-							var $ctrl = '';
-							console.log(json.res);
-							$(json.res).each(function(i,val){
-								console.log("tot "+json.res.length);
-																	//alert('te1');
-								if(json.res.length > 1){
-
-								$ctrl = $("<div class='name' style='margin-left:60px;margin-bottom: 25px;'><label for='txt_"+val.user_id+"'><input name='regas' id='txt_"+val.user_id+"' type='radio' value='"+val.user_id+"' /> "+val.firstname+" "+val.lastname+"</label><div class='clear'></div></div>");
-
-								$("#exist_users_list").append($ctrl);
-								$("#phone_users_modal").modal();
-								}
-								else if(json.res.length == 1){
-									//alert('te');
-								$ctrl = $("<div class='name' style='margin-left:60px;margin-bottom: 25px;'><label for='txt_"+val.user_id+"'><input name='regas' id='txt_"+val.user_id+"' type='radio' value='"+val.user_id+"' checked /> "+val.firstname+" "+val.lastname+"</label><div class='clear'></div></div>");
-
-								$("#exist_users_list").append($ctrl);
-								$('#cont_login').trigger('click');
-								//location.reload();
-
-								}
-							});
-					}
-					console.log(json.status);
-					console.log(json);
-		  		}
-		});
-   }
-
-   //========================= End Saving Details in My Server ===============
-   //========================= Login With Phone ==========================
-   var loginphone	=document.getElementById("phoneloginbtn");
-   var country_code	=document.getElementById("ph_country_code");
-   var phoneinput	=document.getElementById("inputPhone");
-   var otpinput		=document.getElementById("inputOtp");
-   var verifyotp		=document.getElementById("verifyotp");
-
-   loginphone.onclick=function(){
-
-		var xyz = phoneinput.value;
-		var abc = country_code.value;
-
-		var mob = abc+xyz;
-		//alert(typeof(xyz));
-		/*console.log(xyz.length);
-		if(xyz.length == 10){
-			 $.ajax({
-					type:'POST',
-					url:baseurl+'logintest/get_country_code/',
-					data:'mob_num='+xyz,
-					success:function(res){
-						console.log(res);
-						phoneinput.value = res+xyz;
-						document.getElementById("inputPhone").value = res+xyz;
-						console.log(phoneinput.value);
-			//alert(typeof(phoneinput.value));
-
-					}
-			});
-		}*/
-
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-        'size': 'normal',
-        'callback': function(response) {
-            // reCAPTCHA solved, allow signInWithPhoneNumber.
-
-            // ...
-        },
-        'expired-callback': function() {
-            // Response expired. Ask user to solve reCAPTCHA again.
-            // ...
-        }
-        });
-
-
-   
-        var cverify=window.recaptchaVerifier;
-		//console.log(xyz);
-
-        firebase.auth().signInWithPhoneNumber(mob, cverify).then(function(response){
-			//alert("test");
-			var x = document.getElementById("phone-input");
-			var y = document.getElementById("otp-input");
-  if (x.style.display === "none") {    x.style.display = "block";  } else {   x.style.display = "none";  }
-  if (y.style.display === "none") {    y.style.display = "block";  } else {   y.style.display = "none";  }
-            console.log(response);
-            window.confirmationResult=response;
-        }).catch(function(error){
-            console.log(error);
-        })
-   }
-
-   verifyotp.onclick=function(){
-       confirmationResult.confirm(otpinput.value).then(function(response){
-           console.log(response);
-            var userobj=response.user;
-            var token=userobj.xa;
-            var provider="phone";
-            var email=phoneinput.value;
-            if(token!=null && token!=undefined && token!=""){
-            sendDatatoServerPhp(email,provider,token,email);
-            }
-       })
-       .catch(function(error){
-           console.log(error);
-       })
-   }
-   //=================End Login With Phone=========================
-
-
-$(document).ready(function(){
-	$('#phone_login').click(function(){
-		$('#form-login').toggle();
-		$('#form-phone').toggle();
-	});
-});
-</script>
-<!-- ----------------------------------------------------------------------------------------------------------------------------------------- -->

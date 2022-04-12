@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
+error_reporting(0);
 	//League controller ..
 	class Teams extends CI_Controller {
 
@@ -19,9 +19,14 @@
 		}
 		
 		// viewing league page ...
-		public function index($tid='')
-		{
-			echo "Teams";
+		public function index($team_id=''){
+			$data = '';
+			$data['team_info']   = $this->teams->get_team_info($team_id);
+			$data['team_stats'] = $this->teams->get_team_stats($team_id);
+
+				$this->load->view('includes/view_sports_header');
+				$this->load->view('view_team_page', $data);
+				$this->load->view('includes/view_home_footer');
 	    }
 
 		public function view()

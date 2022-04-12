@@ -217,4 +217,213 @@ class Events extends REST_Controller {
 		$participants= $this->mevents->get_participants($ev_id);
 		$this->response($participants);
 	}
+
+		 public function addEventLocation_post()
+		 {
+			$post_data = json_decode(trim(file_get_contents('php://input')), true);
+
+			$title		= $data['title'] 	= trim($post_data['title'], '"');
+			$address	= $data['add'] 		= trim($post_data['address'], '"');
+			$city		= $data['city'] 		= trim($post_data['city'], '"');
+			$state		= $data['state'] 	= trim($post_data['state'], '"');
+			$country	= $data['country'] 	= trim($post_data['country'], '"');
+			$zipcode	= $data['zip'] 		= trim($post_data['zipcode'], '"');
+			
+			$user_id	= $data['user_id'] 	= trim($post_data['user_id'], '"');
+			
+			//$event_location = $add . " " .$city . " " . $state . " " . $country;
+			if($zipcode)
+			$data['latt'] = $this->get_geo_loc($zipcode);
+			$ins_loc 	  = $this->mevents->create_event_location($data);
+			$location[$ins_loc] = $title;			 
+			
+			$this->response($location);
+			 
+		 }
+	
+		 public function get_geo_loc($zipcode){
+
+			$geocodeFromAddr = file_get_contents("https://maps.googleapis.com/maps/api/geocode/json?address=".$zipcode."&key=".GEO_LOC_KEY);
+
+			$output1 = json_decode($geocodeFromAddr);
+	
+			//Get latitude and longitute from json data
+			$result = array('latitude'  => $output1->results[0]->geometry->location->lat,
+							'longitude' => $output1->results[0]->geometry->location->lng);
+
+
+			return $result;
+		}
+		
+		 public function autocomplete_get() {
+
+			 	$q				  = $this->input->get('q');
+				$type		  = $this->input->get('type');
+				$club_id	  = $this->input->get('club_id');
+				$data_new = array('');
+
+				switch($type) {
+				case 'users':
+					$data['key']	  = trim($q);
+					$data['club_id']	  = trim($club_id);
+					$result = $this->mevents->search_autocomplete_users($data);
+
+					if($result) {
+						$data_new = array();
+						foreach($result as $row) {
+							$name = array();
+							//$name = $row->Users_ID.'|'.$row->Firstname.' '.$row->Lastname;
+							$name[$row->Users_ID] = $row->Firstname.' '.$row->Lastname;
+							array_push($data_new, $name);	
+						}
+					}
+				break;
+				
+				case 'event_locations':
+					$data['key']	  = trim($q);
+					$result = $this->mevents->search_autocomplete_event_locations($data);
+
+					if($result) {
+						$data_new = array();
+						foreach($result as $row) {
+							$name = array();
+							//$name = $row->Users_ID.'|'.$row->Firstname.' '.$row->Lastname;
+							$name[$row->loc_id] = $row->loc_title;
+							array_push($data_new, $name);	
+						}
+					}
+				break;
+				}
+
+			 $this->response($data_new);
+			 //return $data_new;
+		 }
+
+
+	public function event_types_get(){
+			$get_event_types = $this->mevents->get_event_types();
+			 $this->response($get_event_types);
+	}
+
+	public function create_post(){
+
+		$post_data = json_decode(trim(file_get_contents('php://input')), true);
+		/*
+		{
+			"title": "Raj’s Birthday Bash",
+			"type": "Birthday",
+			"startTime": 1649489400,
+			"endTime": 1649493000,
+			"noOfSessions": 1,
+			"cron": null,
+			"occurenceType": "ONE_TIME",
+			"invitees": {
+				"users": [237, 2440, 240]
+			},
+			"location": "Atlanta Badminton Club, Suwanee, Georgia",
+			"description": "Some Description about the event",
+			"private": false,
+			"fees": {
+				"oneTimeFee": 25
+			},
+			"notes": "Get your own cakes",
+			"organizedBy": {
+				"id": 240,
+				"name": "Raj Kosaraju",
+				"contact": "+16786543778",
+			}
+		}
+		*/
+//echo "<pre>"; print_r($post_data); exit;
+		$ev_title				= $data['ev_title']	 = $post_data['title'];
+		$ev_type			= $data['ev_type'] = $post_data['type'];
+
+		$ev_st_time		= $data['ev_st_time']	 = $post_data['startTime'];
+		$ev_ed_time		= $data['ev_ed_time']	 = $post_data['endTime'];
+
+		$ev_reps[] = $data['ev_reps'][] =  array('startTime' => $ev_st_time, 'endTime' => $ev_ed_time);
+
+		if($post_data['sessionDates']){
+			foreach($post_data['sessionDates'] as $i => $sesdt){
+				$ev_reps[] = $data['ev_reps'][] = $sesdt;
+			}
+		}
+
+		if($post_data['occurenceType'] == 'ONE_TIME')
+			$ev_schedule			 = $data['ev_schedule']	 = 'singleday';
+		else
+			$ev_schedule			 = $data['ev_schedule']	 = 'multiple';
+
+
+		$ev_invitees_users		 = $data['ev_invitees_users']		= NULL;
+		$ev_invitees_clubs		 = $data['ev_invitees_clubs']		= NULL;
+		$ev_invitees_teams		 = $data['ev_invitees_teams']		= NULL;
+		$ev_invitees_leagues	 = $data['ev_invitees_leagues']	= NULL;
+
+		if($post_data['invitees']['users'])
+		$ev_invitees_users	 = $data['ev_invitees_users']		= $post_data['invitees']['users'];
+
+		if($post_data['invitees']['clubs'])
+		$ev_invitees_clubs	 = $data['ev_invitees_clubs']	= json_encode($post_data['invitees']['clubs']);
+
+		if($post_data['invitees']['teams'])
+		$ev_invitees_teams	 = $data['ev_invitees_teams']	= json_encode($post_data['invitees']['teams']);
+
+		if($post_data['invitees']['leagues'])
+		$ev_invitees_leagues	 = $data['ev_invitees_leagues']	= json_encode($post_data['invitees']['leagues']);
+
+
+		$ev_loc				 = $data['ev_loc']				= $post_data['location'];
+		$ev_desc			= $data['ev_desc']				= $post_data['description'];
+
+		if($post_data['private'])
+			$is_private			= $data['is_private']	 = 1;
+		else
+			$is_private			= $data['is_private']	 = 0;
+
+		$ev_img				= $data['ev_img']				= $post_data['coverPhoto'];
+		$ev_fee				= $data['ev_fee']				= $post_data['fees']['oneTimeFee'];
+		$ev_notes			= $data['ev_notes']			= $post_data['notes'];
+
+		$ev_created_by		= $data['ev_created_by']		= $post_data['organizedBy']['id'];
+		$ev_organizer		= $data['ev_organizer']			= $post_data['organizedBy']['name'];
+		$ev_org_contact	= $data['ev_org_contact']	= $post_data['organizedBy']['contact'];
+
+		//	 echo "<pre>"; print_r($data); exit;
+
+		$cr_event = $this->mevents->create_event($data);
+		
+		if($cr_event)
+			 $this->response(array('Success'), 200);
+		else
+			 $this->response(array('Something went wrong!'), 400);
+
+	}
+
+	public function imgUpload_post() {
+		 $filename = 'EventImage';  
+
+		 $config = array(
+			'upload_path'	=> "./events_pictures/",
+			'allowed_types' => "gif|jpg|png|jpeg",
+			'overwrite'			=> FALSE,
+			'max_size'			=> "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+			'max_height'		=> "5000",
+			'max_width'		=> "8000"
+		 );
+		
+		$this->load->library('upload', $config);
+		$data = $this->upload->data();
+		$this->upload->initialize($config);
+
+		if($this->upload->do_upload($filename)) {
+		    $data			= $this->upload->data();
+			$filename	= $data['file_name'];
+			$this->response(array('Filename' => $filename), 200);
+		}
+		else {
+			$this->response(array('Error: File not saved!'), 400);
+		}
+	}
+
 }

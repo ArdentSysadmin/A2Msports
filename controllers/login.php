@@ -301,7 +301,7 @@ $data['interests']	= $this->login->get_sports();
 $data['tournments'] = $this->login->get_all($data);
 $data['tourn_ids']  = $this->login->get_reg_tourn_ids();
 $data['past_tournments'] = $this->login->get_past($data['tourn_ids']);
-
+//echo $this->session->userdata('redirect_to'); exit;
 if(($this->session->userdata('redirect_to'))){
 redirect($this->session->userdata('redirect_to'));
 }
@@ -401,9 +401,12 @@ if($this->input->post('academy')){
 		redirect($this->input->post('shortcode'));
 }
 
-if(($this->session->userdata('redirect_to'))){
+if(($this->session->userdata('redirect_to')) and !$this->input->post('red_uri')){
 $exp = explode('.com', $this->session->userdata('redirect_to'));
 redirect($exp[1]);
+}
+else if($this->input->post('red_uri')){
+redirect($this->input->post('red_uri'));
 }
 else{
 redirect('Play', $data);
@@ -872,21 +875,26 @@ public function ajax_validate_login(){
 
 				$data['interests']		 = $this->login->get_sports();
 				$data['tournments'] = $this->login->get_all($data);
-
-				if($this->input->post('academy')) {
-					if($this->input->post('aca_page'))
-						redirect($this->input->post('shortcode')."/".$this->input->post('aca_page'));
-					else
-						redirect($this->input->post('shortcode'));
-				}
-
-				if(($this->session->userdata('redirect_to'))) {
-					$exp = explode('.com', $this->session->userdata('redirect_to'));
-					redirect($exp[1]);
-				}
-				else {
-					redirect('Play', $data);
-				}
+//echo "Test ".$this->session->userdata('ph_redirect_to'); exit;
+					if($this->input->post('academy')) {
+						if($this->input->post('aca_page'))
+							redirect($this->input->post('shortcode')."/".$this->input->post('aca_page'));
+						else
+							redirect($this->input->post('shortcode'));
+					}
+					else if($this->input->post('ph_redirect_to')) {
+						redirect($this->input->post('ph_redirect_to'));
+					}
+					else if($this->session->userdata('ph_redirect_to')) {
+						redirect($this->session->userdata('ph_redirect_to'));
+					}
+					else if(($this->session->userdata('redirect_to'))) {
+						$exp = explode('.com', $this->session->userdata('redirect_to'));
+						redirect($exp[1]);
+					}
+					else {
+						redirect('Play', $data);
+					}
 				}
 			}
 		}

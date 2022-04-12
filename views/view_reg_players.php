@@ -396,7 +396,9 @@ else
 			        }
 		        
 		   	}
-		    echo "<tr class='parent'><td><input type='checkbox' class='event_format get_occr' name='events[]' value='".$key."' /> ".$event.' '.$event_time."</td></tr>";
+		    echo "<tr class='parent'><td><input type='checkbox' class='event_format get_occr' name='events[]' value='".$key."' /> <label>".$event.' '.$event_time."</label></td></tr>";
+
+		    //echo "<tr class='parent'><td><input type='checkbox' class='event_format get_occr' name='events[]' value='".$key."' /> ".$event.' '.$event_time."&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee  lg_events' name='whole_lg_events[]' value='".$key."' autocomplete='off' />&nbsp;Select All Game Days"."</td></tr>";
 
 			 foreach($lg_occr[$key] as $occr){
 				echo "<tr class='tr_".$key."' style='display:block;'><td>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' class='get_occr_fee' id='occr_".$occr[0]."' name='occr_ids[]' value='".$occr[0].":".$key."' autocomplete='off' />&nbsp;"."<label for='occr_".$occr[0]."'>".date("M d, Y H:i", strtotime($occr[1]))."</label>"."</td></tr>";

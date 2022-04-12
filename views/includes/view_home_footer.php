@@ -74,10 +74,10 @@
        <div class="container-fluid">
          <div class="row">
            <div class="col-lg-5 d-flex align-items-center justify-content-center">
-             <p class="text-center text-light mb-0">&copy; <?=date('Y');?> A2M Sports. All Rights Reserved.</p>
+             <p class="text-center text-light mb-3">&copy; <?=date('Y');?> A2M Sports. All Rights Reserved.</p>
            </div>
-           <div class="col-lg-2 d-flex align-items-center justify-content-left">
-             <p class="text-left text-light mb-0"><a href="<?=base_url().'privacy';?>" target="_blank" style="color:#fff">Privacy Policy</a></p>
+           <div class="col-lg-2 d-flex align-items-center justify-content-center">
+             <p class="text-center text-light mb-3"><a href="<?=base_url().'privacy';?>" target="_blank" style="color:#fff">Privacy Policy</a></p>
            </div>
            <div class="col-lg-5 socil">
              <p class="text-center text-light mb-0">
@@ -185,7 +185,8 @@
       <!-- popup start end-->
 
 
-    <!-- Optional JavaScript; choose one of the two! -->
+
+   <!-- Optional JavaScript; choose one of the two! -->
 
        <!-- Option 1: Bootstrap Bundle with Popper -->
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
@@ -417,11 +418,8 @@
 
 
 <script>
-var baseURL = "<?php echo base_url(); ?>";
+var baseURL = "<?php echo base_url().$this->uri->segment(1); ?>";
 $('#log_btn').click(function(){
-window.location.replace(baseURL+"login");
-});
-$('#news_btn').click(function(){
-window.location.replace(baseURL+"news");
+	window.location.replace(baseURL+"login");
 });
 </script>

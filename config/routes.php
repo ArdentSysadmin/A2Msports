@@ -192,6 +192,7 @@ $route["Contact-Us"]							= "help/contactus";
 $route["Forgot-password"]					= "login/forgot_password";
 $route["Reset-password"]					= "login/reset_password";
 $route["reset/password/(:any)"]	= "login/reset_password_form/$1";
+$route["team/(:num)"]				= "teams/index/$1";
 $route["player/(:num)"]				= "search/player_details/$1";
 $route["coach/(:num)"]				= "search/player_details/$1";
 $route["league/(:num)"]				= "league/viewtournament/$1";
@@ -225,17 +226,25 @@ $route["privacy"]		= "home/priv_policy";
 $route["sports"]			= "league/view_more_sports";
 
 
-$route["badminton1"]			= "league/sport_page/3";
+$route["badminton1"]				= "league/sport_page/3";
 $route["badminton1/(:any)"]	= "league/sport_page_tab/3/$1";
 
 $route["pickleball1"]				= "league/sport_page/7";
+$route["pickleball1/login"]		= "login/index";
+$route["pickleball1/logout"]		= "logout/index";
+$route["pickleball1/logintest/check_phone"]	= "logintest/check_phone";
+$route["pickleball1/login/phone_login"]	= "login/phone_login";
+
+$route["pickleball1/team/(:num)"]	= "teams/index/$1";
 $route["pickleball1/(:any)"]	= "league/sport_page_tab/7/$1";
+
+$route["mytestpage"]	= "clubs/test2";
 
 $route["tt1"]							= "league/sport_page/2";
 $route["tt1/(:any)"]				= "league/sport_page_tab/2/$1";
 
 $route["tennis1"]					= "league/sport_page/1";
-$route["tennis1/(:any)"]			= "league/sport_page_tab/1/$1";
+$route["tennis1/(:any)"]		= "league/sport_page_tab/1/$1";
 
 $route["badminton2"]			= "league/sport_page2/3";
 
@@ -353,7 +362,6 @@ $route["(:any)/test/sess_store"]	 = "academy_ctrl/test/sess_store";
 $route["(:any)/league/check_sess"]	 = "academy_ctrl/league/check_sess";
 $route["(:any)/test/check_sess"]	 = "academy_ctrl/test/check_sess";
 
-$route["(:any)/logintest/check_phone"]				= "logintest/check_phone";
 $route["(:any)/league/get_tour_fee"]				= "academy_ctrl/league/get_tour_fee";
 $route["(:any)/league/drawresults_filter"]				= "academy_ctrl/league/drawresults_filter";
 $route["(:any)/league/upd_rr_players"]				= "academy_ctrl/league/upd_rr_players";

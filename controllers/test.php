@@ -1151,4 +1151,184 @@ echo "Total: ".$count."<br>";
 		else 
 			echo "Updation Failed!";
 	}
+
+	function parse_crontab($time, $crontab){
+		$time=explode(' ', date('i G j n w', strtotime($time)));
+          $crontab=explode(' ', $crontab);
+          foreach ($crontab as $k=>&$v)
+                  {$time[$k]=intval($time[$k]);
+                   $v=explode(',', $v);
+                   foreach ($v as &$v1)
+                           {$v1=preg_replace(array('/^\*$/', '/^\d+$/', '/^(\d+)\-(\d+)$/', '/^\*\/(\d+)$/'),
+                                             array('true', $time[$k].'===\0', '(\1<='.$time[$k].' and '.$time[$k].'<=\2)', $time[$k].'%\1===0'),
+                                             $v1
+                                            );
+                           }
+                   $v='('.implode(' or ', $v).')';
+                  }
+          $crontab=implode(' and ', $crontab);
+          return eval('return '.$crontab.';');
+   }
+
+		 public function test_crontab(){
+			//var_export($this->parse_crontab('2022-05-04 02:08:03', '*/2,3-5,9 2 3-5 */2 *'));
+			//var_export($this->parse_crontab('2022-05-04 02:08:03', '*/8 */2 */4 */5 *'));
+			//30 9   0
+			$config = array('i' => 30, 'H' => 9, 'd' => 0, 'm' => 0);
+			$x = $this->getNextRunTime($config);
+
+			echo date('Y-m-d H:i:s', strtotime($x));
+		 }
+
+
+function getNextRunTime($config) {
+    $minute = $config['i'];
+    $hour   = $config['H'];
+    $day    = $config['d'];
+    $month  = $config['m'];
+
+    // Get minute
+    switch($minute) {
+        case 90 :
+            $nextMinute = date('i', strtotime('now + 1 minute'));
+            break;
+        default :
+            $nextMinute = $minute;
+    }
+
+    // Get hour
+    switch($hour) {
+        case 90 :
+            if($minute == 90 || $nextMinute > date('i')) {
+                $nextHour = date('H');
+            } else {
+                $nextHour = date('H', strtotime('now + 1 hour'));
+            }
+            break;
+        default :
+            $nextHour = $hour;
+    }
+
+    // Get day
+    switch($day) {
+        case 90 :
+            if($hour == 90 && $nextHour > date('H')) {
+                $nextDay = date('d');
+            } elseif($hour <> 90 && $nextHour <= date('H')) {
+                $nextDay = date('d', strtotime('now + 1 day'));
+            } else {
+                if($nextHour > date('H')) {
+                    $nextDay = date('d');
+                } else {
+                    if ($nextMinute > date('i')) {
+                        $nextDay = date('d');
+                    } else {
+                        $nextDay = date('d', strtotime('now + 1 day'));
+                    }
+                }
+            }
+            break;
+        case 91 :
+            if(date('t') == date('d')) {
+                if($nextHour > date('H')) {
+                    $nextDay = date('d');
+                } elseif($nextHour == date('H') && $nextMinute > date('i')) {
+                    $nextDay = date('d');
+                } else {
+                    $nextDay = date('t', strtotime('now + 1 month'));
+                }
+            } else {
+                $nextDay = date('t');
+            }
+            break;
+        default :
+            $nextDay = $day;
+    }
+
+    // Get month
+    switch($month) {
+        case 90 :
+            if($day == 90 || $nextDay > date('d')) {
+                $nextMonth = date('m');
+            } elseif($nextDay == date('d')) {
+                if($hour == 90 || $nextHour > date('H')) {
+                    $nextMonth = date('m');
+                } elseif($nextHour == date('H')) {
+                    if($minute == 90 || $nextMinute > date('i')) {
+                        $nextMonth = date('m');
+                    } else {
+                        $nextMonth = date('m', strtotime('now + 1 month'));
+                    }
+                } else {
+                    $nextMonth = date('m', strtotime('now + 1 month'));
+                }
+            } else {
+                $nextMonth = date('m', strtotime('now + 1 month'));
+            }
+            break;
+        default :
+            $nextMonth = $month;
+    }
+
+    // Get year
+    if($month == 90 || $nextMonth > date('m')) {
+        $nextYear = date('Y');
+    } elseif($nextMonth == date('m')) {
+        if($day == 90 || $nextDay > date('d')) {
+            $nextYear = date('Y');
+        } elseif($nextDay == date('m')) {
+            if($hour == 90 || $nextHour > date('H')) {
+                $nextYear = date('Y');
+            } elseif($nextHour == date('H')) {
+                if($minute == 90 || $nextMinute > date('i')) {
+                    $nextYear = date('Y');
+                } else {
+                    $nextYear = date('Y') + 1;
+                }
+            } else {
+                $nextYear = date('Y') + 1;
+            }
+        } else {
+            $nextYear = date('Y') + 1;
+        }
+    } else {
+        $nextYear = date('Y') + 1;
+    }
+
+    // Create the timestamp for the 'Next Run Time'
+    $nextRunTime = mktime($nextHour, $nextMinute, 0, $nextMonth, $nextDay, $nextYear);
+
+    // Check if the job has to run every minute, maybe a reset to d-m-Y h:00 is possible
+    if($nextRunTime > time() && $minute == 90) {
+        $tempNextRunTime = mktime($nextHour, 0, 0, $nextMonth, $nextDay, $nextYear);
+
+        if($tempNextRunTime > time()) {
+            $nextMinute  = 0;
+            $nextRunTime = $tempNextRunTime;
+        }
+    }
+
+    // Check if the job has to run every hour, maybe a reset to d-m-Y 00:i is possible
+    if($nextRunTime > time() && $hour == 90) {
+        $tempNextRunTime = mktime(0, $nextMinute, 0, $nextMonth, $nextDay, $nextYear);
+
+        if($tempNextRunTime > time()) {
+            $nextHour    = 0;
+            $nextRunTime = $tempNextRunTime;
+        }
+    }
+
+    // Check if the job has to run every day, maybe a reset to 1-m-Y H:i is possible
+    if($nextRunTime > time() && $day == 90) {
+        $tempNextRunTime = mktime($nextHour, $nextMinute, 0, $nextMonth, 1, $nextYear);
+
+        if($tempNextRunTime > time()) {
+            $nextRunTime = $tempNextRunTime;
+        }
+    }
+
+    // Return the Next Run Time timestamp
+    return $nextRunTime;
+}
+
 }

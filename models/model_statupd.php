@@ -10,7 +10,7 @@
 		
 		public function get_users($offset_count)  // Get users offset_count (sent from task schedular reques)t to 300 count
 		{
-			$query	   = "SELECT * FROM Users ORDER BY Users_ID OFFSET {$offset_count} ROWS FETCH NEXT 300 ROWS ONLY";
+			$query	   = "SELECT * FROM Users ORDER BY Users_ID OFFSET {$offset_count} ROWS FETCH NEXT 200 ROWS ONLY";
 			$exe_query = $this->db->query($query);
 
 			return $exe_query->result();

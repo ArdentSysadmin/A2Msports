@@ -365,9 +365,22 @@ else
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
+
+<p class="txt-torn"><button class="league-form-submit1" id="Contact-details">Contact Player</button></p>
 <p>&nbsp;</p>
-<p class="txt-torn"><button class="league-form-submit1" id="Contact-details">Contact Player</button></p>      
+<p>&nbsp;</p>
 </div>
+
+
+<div class="app_imges" style="margin-top:10px;">
+<a href="https://apps.apple.com/in/app/a2m-sports/id1450412731" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Apple - App Store.png" />
+</a>
+<a href="https://play.google.com/store/apps/details?id=com.a2msports.a2msports3" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Google - Play Store.png" />
+</a>
+</div>
+
 </div>
 
 <div class="col-md-12 atp-single-player skill-content" id="user_details" >  <!-- switch user details dic start  -->
@@ -1309,8 +1322,8 @@ echo $get_sport['Sportname'];?>
     <!--Close Top Match-->
 <?php if(!$this->session->userdata('user')){
 ?>
-<div class="col-md-12 league-form-bg" id="login" style="margin-top:40px;display:none;">
-<p style="line-height:5px; font-size:13px">Please <a href="<?=base_url();?>login"><b>Login</b> </a>to contact player &nbsp; <a id="cancel">Back to Details</a></p> 
+<div class="col-md-12 league-form-bg" id="login" style="margin-top:40px;margin-bottom:40px;display:none;">
+<p style="line-height:5px; font-size:14px; font-weight: bold;">Please <a href="<?=base_url();?>login"><b>Login</b> </a>to contact player &nbsp; <a id="cancel" style="cursor:pointer;">Back to Details</a></p> 
 </div>
 
 <?php     
@@ -1353,9 +1366,8 @@ echo $get_sport['Sportname'];?>
 
 <!-- -----------------contact player section end ------------------------------------------------- -->          
 
-
 <!-- Google AdSense -->
-<div id='google' align='left'>
+<div id='google' align='left' style="margin-top:15px;">
 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <ins class="adsbygoogle"
 style="display:block"

@@ -32,7 +32,7 @@ if ($query !== FALSE)
     // Run your code
 	//return $query->row_array();
 	if($query->num_rows() > 0)
-		return $query->num_rows();
+		return $query->row_array();
 	else
 		return 0;
 }
@@ -47,6 +47,24 @@ else
 	return 0;
 }
 
+	}
+
+	public function check_user_mobile($mobile){
+		
+		$query = $this->db->query("SELECT * FROM Users where Mobilephone LIKE '".trim($mobile)."' OR  Mobilephone LIKE '%".trim($mobile)."'");
+
+		if ($query !== FALSE){
+			if($query->num_rows() > 0){
+				//echo "<br>".$this->db->last_query();
+				return $query->row_array();
+			}
+			else{
+				return 0;
+			}
+		}
+		else{
+			return 0;
+		}
 	}
 
 	public function get_user($email){

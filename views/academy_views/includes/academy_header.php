@@ -961,15 +961,15 @@ $('#div_mem_scr').hide();
 <input type='checkbox' name='terms_prv' id='terms_prv' style='margin-left: 40px;' value='1' required /> 
 <?php
 $terms_link		= "Terms & Conditions";
-$prv_pol_link	= "Privacy Policy";
+$prv_pol_link		= "Privacy Policy";
 //echo $aca_forms['terms_cond']; exit;
+
 if($aca_forms['terms_cond'] != ''){
-$terms_link = "<a href='".base_url().'/assets/club_facility/'.$org_details['Aca_ID']."/forms/".
-$aca_forms['terms_cond']."' target='_blank'>Terms & Conditions</a>";
+	$terms_link = "<a href='".base_url().'/assets/club_facility/'.$org_details['Aca_ID']."/forms/".$aca_forms['terms_cond']."' target='_blank'>Terms & Conditions</a>";
 }
+
 if($aca_forms['priv_polic'] != ''){
-$prv_pol_link = "<a href='".base_url().'/assets/club_facility/'.$org_details['Aca_ID']."/forms/".
-$aca_forms['priv_polic']."' target='_blank'>Privacy Policy</a>";
+	$prv_pol_link = "<a href='".base_url().'/assets/club_facility/'.$org_details['Aca_ID']."/forms/".$aca_forms['priv_polic']."' target='_blank'>Privacy Policy</a>";
 }
 ?>
 I Accept the club <?=$terms_link;?> and <?=$prv_pol_link;?>. 
@@ -986,8 +986,8 @@ I Accept the club <?=$terms_link;?> and <?=$prv_pol_link;?>.
 </div>
 
 </form>
-<input type='hidden' name='temp_uid'		id='temp_uid'	 value='' />
-<input type='hidden' name='temp_email'	id='temp_email' value='' />
+<input type='hidden' name='temp_uid'		  id='temp_uid'	 value='' />
+<input type='hidden' name='temp_email'	  id='temp_email' value='' />
 
 <!-- Register window content -->
 </div>

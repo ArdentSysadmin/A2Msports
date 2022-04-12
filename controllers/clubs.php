@@ -65,4 +65,8 @@ class Clubs extends CI_Controller {
 		echo $user_id." ".$mem_code; exit;
 	}
 
+	public function test2(){
+		$this->load->view('Raj2');
+	}
+
 }

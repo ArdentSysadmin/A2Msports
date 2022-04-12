@@ -240,5 +240,10 @@ public function contactMessage_pushNotif($message, $token, $from, $to, $from_nam
 			return $send_stat;
 	}
 
+	//public function test_post(){
+
+	//	echo "<pre>"; print_r($_POST);
+
+	//}
 
 }

@@ -465,6 +465,15 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 					$data['results'] = $this->model_news->get_news();
 					$data['optimum_users'] = $this->model_play->get_tourbased_users($tourn_id);
 
+					if($details->Is_League){
+						$lg_occr = $this->model_play->get_league_occr($tourn_id);
+						foreach($lg_occr as $ocr){
+							$ev_occr[$ocr->Event][] = array($ocr->OCR_ID, $ocr->Game_Date);
+						}
+						//echo "<pre>"; print_r($ev_occr);
+						$data['lg_occr'] = $ev_occr;
+					}
+
 					$this->load->view('includes/header');
 
 					if($details->Tournament_type == 'Flexible League')

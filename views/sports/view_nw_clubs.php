@@ -17,7 +17,63 @@ foreach($club_results as $i => $row){
 <div class="Active_box bg-white px-4 pt-4">
 <div class="club_img mb-3 d-flex justify-content-between" style="height: 117px;">
 <center><a href="<?php if($row->A2M_Proxy_URL) { echo $row->A2M_Proxy_URL; } else { echo base_url()."{$row->Aca_URL_ShortCode}"; } ?>">
+<?php
+if($row->Aca_logo){
+?>
 <img src="<?=base_url();?>/org_logos/<?=$row->Aca_logo;?>" style="width: 117px !important; height: auto !important;" /></a>
+<?php
+}
+else{
+switch($sport) {
+case 1:
+$club_logo_def = base_url()."tour_pictures/default_tennis_min.jpg";
+break;
+case 2:
+$club_logo_def = base_url()."tour_pictures/default_table_tennis_min.jpg";
+break;
+case 3:
+$club_logo_def = base_url()."tour_pictures/default_badminton_min.jpg";
+break;
+case 4:
+$club_logo_def = base_url()."tour_pictures/default_golf_min.jpg";
+break;
+case 5:
+$club_logo_def = base_url()."tour_pictures/default_racquet_ball_min.jpg";
+break;
+case 6:
+$club_logo_def = base_url()."tour_pictures/default_squash_min.jpg";
+break;
+case 7:
+$club_logo_def = base_url()."tour_pictures/default_pickleball_min.jpg";
+break;
+case 8:
+$club_logo_def = base_url()."tour_pictures/default_chess_min.jpg";
+break;
+case 9:
+$club_logo_def = base_url()."tour_pictures/default_carroms_min.jpg";
+break;
+case 10:
+$club_logo_def = base_url()."tour_pictures/default_volleyball_min.jpg";
+break;
+case 11:
+$club_logo_def =  base_url()."tour_pictures/default_fencing.jpg";
+break;
+case 12:
+$club_logo_def =  base_url()."tour_pictures/default_bowling.jpg";
+break;
+case 16:
+$club_logo_def =  base_url()."tour_pictures/default_cricket.jpg";
+break;
+
+default:
+$club_logo_def =   "";
+break;
+}
+?>
+<img src="<?=$club_logo_def;?>" style="width: 117px !important; height: auto !important;" /></a>
+<?php
+}
+?>
 </center>
 <h4 class="mt-2">
 <a href="<?php if($row->A2M_Proxy_URL) { echo $row->A2M_Proxy_URL; } else { echo base_url()."{$row->Aca_URL_ShortCode}"; } ?>" style="color:#000;"><?=$row->Aca_name;?></a></h4>
@@ -140,6 +196,11 @@ else{
 <div class="bg-white p-3">
 <div class="head d-flex justify-content-between align-items-center">
 <h4 class="gry mb-0">&nbsp;</h4>
+
+<div class="input-group w-30 mb-3 sreach_filter align-items-right">
+<input class="btn btn-outline-secondary border-orange bg-orange " type='button' name='btn_add_club' id='btn_add_club' value='Add Club' />
+</div>
+
 <div class="input-group w-30 mb-3 sreach_filter">
 <select name='search_filter' id='search_filter' class='form-control' style="width: 15%">
 <option value=''>All</option>
@@ -149,6 +210,8 @@ else{
 </select>
 <input style="width: 50%; background-color:white;" type="text" name="search_keywords" id="search_keywords" class="form-control" placeholder="Search Keyword" aria-label="Example text with button addon" aria-describedby="button-addon1"><input class="btn btn-outline-secondary border-orange bg-orange" type='button' name='btn_player_search' id='btn_player_search' value='Search' />
 </div>
+
+
 </div>
 <div class="middle d-flex justify-content-between align-items-center">
 <!-- <div class="Filter_middle_box d-flex align-items-center justify-content-start">
@@ -212,7 +275,210 @@ else{
 </ul>
 </div> -->
 </div>
-<div class="table_content relative">
+
+<div id='add_Clubs' class="col-md-12" style="display:none;">
+<div class="fromtitle">Add Club</div>
+<form method="post" id="addClubs" enctype="multipart/form-data" 
+action="<?php echo base_url();?><?php echo $sport_segment;?>#addClub">
+
+<input  id='sport' name='sport' type='hidden' value="<?php echo $sport;?>">
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Club Name: </label>
+	<input class='form-control' id='clubname' name='clubname' type='text' placeholder="Club Name"  required />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Country: </label>
+ <select class='form-control' id='clubcountry' name='clubcountry'>
+        <option value="">Select Country</option>
+	<?php
+	foreach($countries as $cntry)
+	{	
+	 echo "<option value='$cntry->Country'>$cntry->Country</option>";
+	}
+	?>
+    </select>	
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Address Line1: </label>
+	<input class='form-control' id='addr_line1' name='addr_line1' type='text' placeholder="Address"   />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Address Line2:  </label>
+	<input class='form-control' id='addr_line2' name='addr_line2' type='text' placeholder="Address"   />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>City: </label>
+	<input class='form-control' id='clubcity' name='clubcity' type='text' placeholder="City"   />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px" >
+<label>State: </label>
+<div id="addclubstates_div">
+
+<input class='form-control' list="addclubstates" name="addclub_state"  placeholder="State"/>
+<datalist id="addclubstates">
+<?php foreach ($states as $key => $stat) {
+		echo '<option value="'.$stat.'">';	
+} ?> 
+</datalist>
+</div>
+</div>
+
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>ZipCode:  </label>
+	<input class='form-control' id='zipcode' name='zipcode' type='text' placeholder="ZipCode"   />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Website: </label>
+	<input class='form-control' id='club_website' name='club_website' type='text' placeholder="Website"   />
+</div>
+
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Contact Name: </label>
+	<input class='form-control' id='contact_name' name='contact_name' type='text' placeholder="Contact Name"   />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Contact Email: </label>
+	<input class='form-control' id='contact_email' name='contact_email' type='text' placeholder="Contact Email"   />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Contact Phone: </label>
+	<input class='form-control' id='contact_phone' name='contact_phone' type='text' placeholder="Contact Phone"   />
+</div>
+
+
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>No Of Courts: </label>
+	<input class='form-control' id='no_of_courts' name='no_of_courts' type='text' placeholder="Number of Courts"   />
+</div>
+<div class='col-md-6 form-group internal' style="padding-left:0px">
+<label>Club Details: </label>
+<textarea class='form-control' id='club_details' name='club_details' placeholder="Club details"></textarea>
+</div>
+
+<div class='col-md-6 form-group internal' style="padding-left:0px;padding-bottom:50px">
+<label>Club Logo: </label>
+<input type="file" name="club_logo" id="club_logo" />
+</div>
+
+<div class='col-md-12 form-group internal' style="padding-left:0px; padding-bottom:15px;">
+<label>Sports: </label>
+	<div class='row'>
+	<?php 
+	$selected = '';
+	$i	  = 1;
+	$cols = 3;
+	foreach ($sports as $key => $sprt) {
+
+		if($sprt->SportsType_ID == $sport){
+		  $selected = 'checked';
+		}else{
+			$selected = '';
+		}
+			if($i == 1){
+			echo "<div class='col-md-2 col-xs-4'>";
+			}
+
+			echo '<input type="checkbox"  name="clubsport[]" value="'.$sprt->SportsType_ID.'" '.$selected.'/>';
+			echo "&nbsp".$sprt->Sportname;	
+			echo "<br>";
+
+			if($i == $cols) {
+			echo "</div>";
+			$i = 1;
+			}
+			else {			
+			$i++;
+			}
+
+	} ?>
+	</div>
+</div>
+
+
+<div class='col-md-12 form-group internal' style="padding-left:0px; padding-bottom:35px;">
+<label>Timings: </label>
+<?php
+$time_sel   = '';
+for($hours=0; $hours<24; $hours++)		// the interval for hours is '1'
+    for($mins=0; $mins<60; $mins+=30)	// the interval for mins is '30'
+     $time_sel .='<option>'.str_pad($hours,2,'0',STR_PAD_LEFT).':'.str_pad($mins,2,'0',STR_PAD_LEFT).'</option>';
+?>
+<div class='row' style='padding-bottom:20px;'>
+	<div class='col-md-3'>
+	<input type="checkbox"  name="clubTimings[]" class='ctime_chck' value="1" /> Monday <br />
+	<select name="club_time_from[]" id="club_time_from_1" class='ctime'>
+	<option value="">From</option><?=$time_sel;?></select>&nbsp;&nbsp;
+	<select name="club_time_to[]" id="club_time_to_1" class='ctime'><option value="">To</option><?=$time_sel;?></select>
+	</div>
+
+	<div class='col-md-3'>
+	<input type="checkbox"  name="clubTimings[]" class='ctime_chck' value="2" /> Tuesday <br />
+	<select name="club_time_from[]" id="club_time_from_2" name="club_time[]" id="club_time_1" class='ctime'>
+	<option value="">From</option><?=$time_sel;?></select>&nbsp;&nbsp;
+	<select name="club_time_to[]" id="club_time_to_2" class='ctime'><option value="">To</option><?=$time_sel;?></select>
+	</div>
+
+	<div class='col-md-3'>
+	<input type="checkbox"  name="clubTimings[]" class='ctime_chck' value="3" /> Wednesday <br />
+	<select name="club_time_from[]" id="club_time_from_3" class='ctime'><option value="">From</option><?=$time_sel;?></select>&nbsp;&nbsp;
+	<select name="club_time_to[]" id="club_time_to_3" class='ctime'><option value="">To</option><?=$time_sel;?></select>
+	</div>
+
+	<div class='col-md-3'>
+	<input type="checkbox"  name="clubTimings[]" class='ctime_chck' value="4" /> Thursday <br />
+	<select name="club_time_from[]" id="club_time_from_4" class='ctime'><option value="">From</option><?=$time_sel;?></select>&nbsp;&nbsp;
+	<select name="club_time_to[]" id="club_time_to_4" class='ctime'><option value="">To</option><?=$time_sel;?></select>
+	</div>
+</div>
+<div class='row'>
+	<div class='col-md-3'>
+	<input type="checkbox"  name="clubTimings[]" class='ctime_chck' value="5" /> Friday <br />
+	<select name="club_time_from[]" id="club_time_from_5" class='ctime'><option value="">From</option><?=$time_sel;?></select>&nbsp;&nbsp;
+	<select name="club_time_to[]" id="club_time_to_5" class='ctime'><option value="">To</option><?=$time_sel;?></select>
+	</div>
+
+	<div class='col-md-3'>
+	<input type="checkbox"  name="clubTimings[]" class='ctime_chck' value="6" /> Saturday <br />
+	<select name="club_time_from[]" id="club_time_from_6" class='ctime'><option value="">From</option><?=$time_sel;?></select>&nbsp;&nbsp;
+	<select name="club_time_to[]" id="club_time_to_6" class='ctime'><option value="">To</option><?=$time_sel;?></select>
+	</div>
+
+	<div class='col-md-3'>
+	<input type="checkbox"  name="clubTimings[]" class='ctime_chck' value="0" /> Sunday <br />
+	<select name="club_time_from[]" id="club_time_from_0" class='ctime'><option value="">From</option><?=$time_sel;?></select>&nbsp;&nbsp;
+	<select name="club_time_to[]" id="club_time_to_0" class='ctime'><option value="">To</option><?=$time_sel;?></select>
+	</div>
+</div>
+</div>
+<script>
+$(document).ready(function(){
+$('.ctime').prop('disabled',true);
+$('.ctime_chck').click(function(){
+	var id = $(this).val();
+	if($(this).prop("checked") == true){
+	$('#club_time_from_'+id).prop('disabled',false);
+	$('#club_time_to_'+id).prop('disabled',false);
+	}
+	else{
+	$('#club_time_from_'+id).val('');
+	$('#club_time_to_'+id).val('');
+	$('#club_time_from_'+id).prop('disabled',true);
+	$('#club_time_to_'+id).prop('disabled',true);
+	}
+});
+});
+</script>
+<div id="register-submit"  class='col-md-6 form-group internal' style="padding-left:0px">
+	<input  id='tab'   name='tab'	type='hidden' value="Clubs">
+	<input type="submit" name="addclub" id="addclub"  value="Add" />
+	<input type="button" id="clear-form" value="Cancel" />
+</div>
+
+</form>
+</div>
+
+
+<div class="table_content relative" id="search_results">
 <table class="table table-striped">
 <thead>
 <tr>
@@ -366,3 +632,41 @@ items: 4
 })
 })
 </script>
+<script>
+$('document').ready(function(){
+	var baseurl = "<?php echo base_url();?>";
+	var segment_1 = "<?php echo $this->uri->segment(1);?>";
+	var segment_2 = "<?php echo $this->uri->segment(2);?>";
+
+	//$("#search_keywords").on('keyup', function() {
+	$("#btn_player_search").on('click', function() {
+	search_val(baseurl, segment_1, segment_2);
+	});
+	$("#search_filter").change(function() {
+	search_val(baseurl, segment_1, segment_2);
+	});
+
+	$('#search_keywords').keypress(function (e) {
+	var code = e.keyCode || e.which;
+	if (code === 13){
+	e.preventDefault();
+	$("#btn_player_search").trigger('click'); /*add this, if you want to submit form by pressing `Enter`*/
+	}
+	});
+});
+
+function search_val(baseurl, segment_1, segment_2){
+	//$('#search_results').html("Please wait.....");
+
+	$.ajax({
+	type: 'POST',
+	url: baseurl+segment_1+'/'+segment_2,
+	data: {keywords:$('#search_keywords').val(), filter:$('#search_filter').val(), is_search:1},
+	success: function(res) {
+	//location.reload();
+	$('#search_results').html(res);
+	}
+	});
+}
+</script>
+<?php $this->load->view('includes/login_popup'); ?>

@@ -4,6 +4,41 @@
     padding : 5px;
 }
 </style>
+
+<?php
+$source = base_url().'assets_new/';
+?>
+
+<!--fourth banner start -->
+<div class="bg-blue1 pb-2" style="margin-top:100px;">
+<div class="banner_two  mx-3 pt-2 mb-0 ">
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-6">
+<div class="banner_two_content pl-30 pt-5 mx-3">
+<h1>Talk to your Teams!</h1>
+<p>No need to have a social media account or another app for Team Talk. <br> Team Communication is now part of A2M. <br> Just download our app, create your team and start chatting.</p>
+<div class="app_imges" style="margin-top:10px;">
+<a href="https://apps.apple.com/in/app/a2m-sports/id1450412731" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Apple - App Store.png" />
+</a>
+<a href="https://play.google.com/store/apps/details?id=com.a2msports.a2msports3" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Google - Play Store.png" />
+</a>
+</div>
+</div>
+</div>
+<div class="col-lg-6">
+<div class="banner_img text-center">
+<img src="<?=$source;?>images/TeamChat.jpeg" class="wc-40" style="width: 45%; height: auto;">
+</div>
+</div>
+</div>
+</div>
+</div>
+<!--fourth banner end -->
+
+
 <script>
 /* ------------------------- Collapse and Expand in Participants ---------------------- */
 $(".header22").click(function() {
@@ -23,10 +58,10 @@ $(".header22").click(function() {
 /* ------------------------- Collapse and Expand in Participants ---------------------- */
 </script>
 <!--active banner start -->
-<div class="bg-white bg-fig pb-2" style="margin-top: 100px;">
+<div class="bg-white bg-fig pb-2" style="margin-top: 25px;">
 <div class="container-fluid">
 <div class="row">
-<div class="heading text-center pt-5 pb-1">
+<div class="heading text-center pt-3 pb-1">
 <h1>Most Active Teams</h1>
 </div>
 </div>
@@ -46,14 +81,19 @@ $get_team_stats = league :: get_team_stats($unp->Team_ID);
 <div class="item  "><!-- d-flex justify-content-between -->
 <div class="players_box bg-white px-4 pt-2 pb-2">
 <div class="img mt-3  mb-4 d-flex align-items-center justify-content-between">
-<a href="<?php echo base_url()."player/".$row->Users_ID; ?>">
-<?php 
-$filename =  "C:\inetpub\wwwroot\a2msportssite\team_logos\cropped\'".$unp->Team_Logo;
+<a href="<?php echo $this->config->item('club_pr_url')."/team/".$unp->Team_ID; ?>">
+<?php
+if($unp->Team_Logo)
+$filename =  "C:\inetpub\wwwroot\a2msportssite\\team_logos\cropped\\".$unp->Team_Logo;
+$filename1 =  "C:\inetpub\wwwroot\a2msportssite\\team_logos\\".$unp->Team_Logo;
 
-if(file_exists($filename)){ ?>
+if(file_exists($filename) and $unp->Team_Logo){?>
 <img  src="<?php echo base_url(); ?>team_logos/cropped/<?php if($unp->Team_Logo != ""){ echo $unp->Team_Logo; } else { echo "&nbsp;";}?>" class="player_img" style="border-radius: 15px;" />
+<?php }
+else if(file_exists($filename1) and $unp->Team_Logo){?>
+<img  src="<?php echo base_url(); ?>team_logos/<?php if($unp->Team_Logo != ""){ echo $unp->Team_Logo; } else { echo "&nbsp;";}?>" class="player_img" style="border-radius: 15px;" />
 <?php } else { ?>
-<img  src="<?php echo base_url(); ?>team_logos/<?php if($unp->Team_Logo != ""){echo $unp->Team_Logo; } else { echo "default_team_logo.png";}?>" class="player_img" style="border-radius: 15px;" />
+<img  src="<?php echo base_url(); ?>team_logos/<?php if($unp->Team_Logo) { echo $unp->Team_Logo; } else { echo "default_team_logo.png"; } ?>" class="player_img" style="border-radius: 15px;" />
 <?php }  ?></a>
 
 <!-- <img src="<?=base_url()."assets_new/";?>images/player_1.png" class="player_img"> -->
@@ -68,7 +108,7 @@ if(file_exists($filename)){ ?>
 <div class="palyer_names d-flex justify-content-between">
 <div class="name">
 <p class="mb-0 gry">Team</p>
-<h6 class=""><a href="#">
+<h6 class=""><a href="<?php echo $this->config->item('club_pr_url')."/team/".$unp->Team_ID; ?>">
 <?php echo $unp->Team_name;?>
 </a>
 </h6>
@@ -161,7 +201,7 @@ else{
 <div class="middle d-flex justify-content-between align-items-center">
 <!-- Filters goes here -->
 </div>
-<div class="table_content relative">
+<div class="table_content relative" id="search_results">
 <table class="table table-striped">
 <thead>
 <tr>
@@ -182,6 +222,7 @@ foreach($teams_result as $key => $unp) {
 <tr>
 <td class="sp_team_acc">
 <div class="accordion-item header names_table align-items-center d-flex">
+<a href="<?php echo $this->config->item('club_pr_url')."/team/".$unp->Team_ID; ?>">
 <?php if($unp->Team_Logo != NULL || $unp->Team_Logo != ""){
 $team_logo = "<img style='object:contain;' src='".base_url()."/team_logos/cropped/$unp->Team_Logo' alt=''>";
 }
@@ -190,8 +231,12 @@ $team_logo = "<img style='object:contain;' src='".base_url()."/team_logos/defaul
 }
 echo $team_logo;
 ?>
+</a>
 <p class="mb-0 accordion-header" id="panelsStayOpen-heading<?=$unp->Team_ID;?>">
-<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse<?=$unp->Team_ID;?>" aria-expanded="false" aria-controls="panelsStayOpen-collapse<?=$unp->Team_ID;?>"><?php echo $unp->Team_name."&nbsp;"; ?></button>
+<a href="<?php echo $this->config->item('club_pr_url')."/team/".$unp->Team_ID; ?>">
+<?php echo $unp->Team_name."&nbsp;"; ?>
+</a>
+<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse<?=$unp->Team_ID;?>" aria-expanded="false" aria-controls="panelsStayOpen-collapse<?=$unp->Team_ID;?>" style="display: inline-flex; !important; width: 1%; !important;"></button>
 </p>
 </div>
     <div id="panelsStayOpen-collapse<?=$unp->Team_ID;?>" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading<?=$unp->Team_ID;?>">
@@ -294,3 +339,41 @@ items: 4
 });
 });
 </script>
+<script>
+$('document').ready(function(){
+	var baseurl = "<?php echo base_url();?>";
+	var segment_1 = "<?php echo $this->uri->segment(1);?>";
+	var segment_2 = "<?php echo $this->uri->segment(2);?>";
+
+	//$("#search_keywords").on('keyup', function() {
+	$("#btn_player_search").on('click', function() {
+	search_val(baseurl, segment_1, segment_2);
+	});
+	$("#search_filter").change(function() {
+	search_val(baseurl, segment_1, segment_2);
+	});
+
+	$('#search_keywords').keypress(function (e) {
+	var code = e.keyCode || e.which;
+	if (code === 13){
+	e.preventDefault();
+	$("#btn_player_search").trigger('click'); /*add this, if you want to submit form by pressing `Enter`*/
+	}
+	});
+});
+
+function search_val(baseurl, segment_1, segment_2){
+	//$('#search_results').html("Please wait.....");
+
+	$.ajax({
+	type: 'POST',
+	url: baseurl+segment_1+'/'+segment_2,
+	data: {keywords:$('#search_keywords').val(), filter:$('#search_filter').val(), is_search:1},
+	success: function(res) {
+	//location.reload();
+	$('#search_results').html(res);
+	}
+	});
+}
+</script>
+<?php $this->load->view('includes/login_popup'); ?>

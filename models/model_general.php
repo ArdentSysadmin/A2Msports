@@ -237,6 +237,11 @@
 			return $query->row_array();
 		}
 
+		public function get_sport_pom($sport){
+			$query = $this->db->query("SELECT * FROM SportsType WHERE SportsType_ID = {$sport}");
+			return $query->row_array();
+		}
+
 		public function check_user_emailoption($uid){
 			$qry_check = $this->db->query("SELECT * FROM Users WHERE Users_ID = '$uid' AND NotifySettings like '%2%' ");
 			return $qry_check->row_array();

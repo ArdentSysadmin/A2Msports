@@ -101,7 +101,7 @@ foreach($coaches_list as $row){
 <tr style="background-color:#eeefee">
 
 <td>
-	<a href="#"><img class="scale_image" src="<?php echo base_url(); ?>profile_pictures/<?php if($row->Profilepic!=''){ echo $row->Profilepic; } else { echo "default-profile.png"; } ?>" alt="img"width="150" height="150" style='margin-right:20px;' /></a>
+	<a href="#"><img class="scale_image" src="<?php echo base_url(); ?>profile_pictures/<?php if($row->Profilepic!=''){ echo $row->Profilepic; } else { echo "default-profile.png"; } ?>" alt="img"width="150" height="150" style="object-fit: cover; margin-right:20px;" /></a>
 </td>
 
 <td width="90%" style="vertical-align:top;">

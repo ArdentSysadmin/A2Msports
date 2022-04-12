@@ -1464,4 +1464,35 @@ if($search['city'] or $search['state']){
 		return $query->row_array();
 	}
 
+	public function check_is_user_exists($type, $value){
+		
+		switch($type){
+			case 'email':
+				$res = $this->db->query("SELECT * FROM Users WHERE EmailID = '{$value}'");
+			break;
+			case 'phone':
+				$v1 = substr($value, 2);
+				$v2 = substr($value, 1);
+				$v3 = substr($value, 0);
+				$v4 = substr($value, 3);
+
+			//var_dump($value);
+			/*echo "value = ".$value."<br>";
+			echo "v1 = ".$v1."<br>";
+			echo "v2 = ".$v2."<br>";
+			echo "v3 = ".$v3."<br>";
+			echo "v4 = ".$v4; 
+			exit;*/
+				$res = $this->db->query("SELECT * FROM Users WHERE (Mobilephone = '{$value}' OR Mobilephone LIKE '%{$value}' OR Mobilephone LIKE '%{$v1}' OR Mobilephone LIKE '%{$v2}' OR Mobilephone LIKE '%{$v3}' OR Mobilephone LIKE '%{$v4}')");
+			break;
+			default:
+				$res = '';
+		}
+
+		if($res->num_rows)
+			return true;
+		else
+			return false;
+	}
+
 }

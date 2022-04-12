@@ -110,15 +110,11 @@ public function csv_import(){
 
 public function csv_users(){
 //error_reporting(-1);
-	/*if($short_code == ''){
-		echo "Please mention the club short code after the csv_users/";
-		exit;
-	}*/
 
-	$today	  = date('mdY');
-	$now	  = date("Y-m-d H:i:s");
-	$fname	  = "ans_users_0924.csv";
-	$filename = "C:\inetpub\wwwroot\a2msportssite\csv_source\\".$fname;
+	$today		= date('mdY');
+	$now			= date("Y-m-d H:i:s");
+	$fname		= "pqueen_users_csv_v1.csv";
+	$filename	= "C:\inetpub\wwwroot\a2msportssite\csv_source\\".$fname;
 	if(file_exists($filename)){
 	  $count	 = 0;
 	  $dot_count = 0;
@@ -128,8 +124,8 @@ public function csv_users(){
 		   $res = '';
 			$fname = trim($importdata[0]);
 			$lname = trim($importdata[1]);
-			$pwd = 'Am9Q63t$';
-			$email = trim($importdata[2]);
+			$pwd = '@2m$port$202!';
+			$email = trim($importdata[3]);
 
 			/*$dob = NULL;
 			if($importdata[5] != NULL){
@@ -146,7 +142,7 @@ public function csv_users(){
 			//$zipcode = trim($importdata[12]);
 
 			//$phone = trim($importdata[13]);
-			//$mobile = trim($importdata[14]);
+			$mobile = trim($importdata[2]);
 
 			//$lat   = trim($importdata[37]);
 			//$long = trim($importdata[38]);
@@ -158,25 +154,30 @@ public function csv_users(){
 
 			$is_club_mem  = 1;
 
-
-
 			if($email != "" and $email != 'Email' and $email != 'E-mail') {
 
 //echo $email." ".$is_email_exist."<br>";
 
-			$code	   = md5($lname . $email);
-			$act_code = substr($code, 0, 16);
-		
+			$code			= md5($lname . $email);
+			$act_code	= substr($code, 0, 16);
+			$is_email_exist	  = '';
+			$is_mobile_exist = '';
+				
+				if($email)
 				$is_email_exist = $this->model_csv_import->check_user($email);
-echo $email." ".$is_email_exist."<br>";
 
+				$mobile = str_replace('(', '', $mobile);
+				$mobile = str_replace(') ', '', $mobile);
+				$mobile = str_replace('-', '', $mobile);
+
+				if($mobile)
+				//$is_mobile_exist = $this->model_csv_import->check_user_mobile($mobile);
+
+				$exist_user = '';
 				//if(count($is_email_exist) == 0 and $is_email_exist){
-				if(!$is_email_exist){
-//echo $dob;
-			/*echo "<br>".$dob;
-			echo "<br>".$mem_start;
-			echo "<br>".$mem_end;
-			exit;*/
+				if(!$is_email_exist and !$is_mobile_exist){
+
+				//echo $dob;  /*echo "<br>".$dob; echo "<br>".$mem_start;	echo "<br>".$mem_end;	exit;*/
 				$data = array(
 						'Firstname' => $fname,
 						'Lastname' => $lname,
@@ -191,7 +192,7 @@ echo $email." ".$is_email_exist."<br>";
 						//'City' => $city,
 						//'Zipcode' => $zipcode,
 						//'HomePhone' => $phone,
-						//'Mobilephone' => $mobile,
+						'Mobilephone' => $mobile,
 						'Issociallogin' => 0,
 						'RegistrationDtTm' => $now,
 						'ActivationCode' => $act_code,
@@ -210,11 +211,24 @@ echo $email." ".$is_email_exist."<br>";
 						//'Is_coach' => $is_coach
 						);
 
-//echo "<pre>";
-//print_r($data);
+//echo "<pre>"; print_r($data);
 
 						$res = $this->model_csv_import->insert_user($data);
-						echo "<br>User = ".$fname." ".$lname." ".$email."(".$res.")";
+						//echo "<br>User = " . $fname . " " . $lname . "&nbsp;&nbsp;&nbsp;" . $email . "(" . $res . ")";
+					}
+					else{
+						if($is_email_exist){
+						echo "<br>Duplicate User (Email)= " . $fname . " " . $lname . "&nbsp;&nbsp;&nbsp;" . $email . " ". $mobile . " - " . $is_email_exist['Users_ID'];
+
+						$exist_user = $is_email_exist['Users_ID'];
+						}
+						else if($is_mobile_exist){
+						echo "<br>Duplicate User (Mobile)= " . $fname . " " . $lname . "&nbsp;&nbsp;&nbsp;" . $email . " ". $mobile . " - " . $is_mobile_exist['Users_ID'];
+
+						$exist_user = $is_mobile_exist['Users_ID'];
+						}
+
+
 					}
 				}
 				/*else if($alt_email != '' and $alt_email != 'Alternate Email Address'){
@@ -274,11 +288,11 @@ echo $email." ".$is_email_exist."<br>";
 			
 			if($res){
 				$data1 = array(	
-					'Club_id'		=> 1187,
+					'Club_id'		=> 1215,
 					'Users_id'		=> $res,
 					//'Membership_ID' => $parent_id
 					'Member_Status' => 1,
-					'Related_Sport' => 6
+					'Related_Sport' => 7
 					//'StartDate' => $mem_start,
 					//'EndDate'   => $mem_end
 					);
@@ -287,8 +301,8 @@ echo $email." ".$is_email_exist."<br>";
 				$res3 = $this->model_csv_import->insert_club_member($data1);
 
 				$data2 = array(	
-					'Sport_id'  => 6,
-					'Level'		=> 17,
+					'Sport_id'  => 7,
+					'Level'		=> 22,
 					'users_id'  => $res
 					);
 //print_r($data2);
@@ -297,14 +311,25 @@ echo $email." ".$is_email_exist."<br>";
 
 				$data3 = array(	
 					'Users_ID'			=> $res,
-					'SportsType_ID'	=> 6,
-					'A2MScore'			=> 100,
-					'A2MScore_Doubles'	=> 100,
-					'A2MScore_Mixed'		=> 100
+					'SportsType_ID'	=> 7,
+					'A2MScore'			=> 3.0,
+					'A2MScore_Doubles'	=> 3.0,
+					'A2MScore_Mixed'		=> 3.0
 					);
 //print_r($data3);
 
 				$res5 = $this->model_csv_import->insert_a2mscore($data3);
+			}
+			else if($exist_user222){
+
+				$data1 = array(	
+					'Club_id'		=> 1215,
+					'Users_id'		=> $exist_user,
+					'Member_Status' => 1,
+					'Related_Sport' => 7
+					);
+
+				$res3 = $this->model_csv_import->insert_club_member($data1);
 			}
 
 //echo "<br> --------------------------------------------------";

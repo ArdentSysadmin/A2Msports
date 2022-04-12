@@ -22,7 +22,7 @@ class Clubs extends CI_Controller {
 		$this->session->set_userdata($last_url);
 
 		$data['sports']	 = $this->general->get_sports();
-		//$data['clubs']	 = $this->model_clubs->get_clubs();
+		$data['clubs']	 = $this->model_clubs->get_clubs();
 		$data['results'] = $this->news->get_news();
 
 		$this->load->view('includes/header');
@@ -63,6 +63,10 @@ class Clubs extends CI_Controller {
 		}
 
 		echo $user_id." ".$mem_code; exit;
+	}
+
+	public function test(){
+		$this->load->view('Raj2');
 	}
 
 }

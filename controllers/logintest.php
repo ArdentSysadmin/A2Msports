@@ -839,7 +839,7 @@ public function ajax_validate_login(){
 
 				$ph2			= substr($phone, 1);
 
-//echo $phone." , ".$ph;
+//echo $phone." , ".$ph; exit;
 			$validate_user = $this->login->validate_user_phone($phone, $ph, $ph2);
 			if($validate_user){
 				$res['status'] = "Login Successfull";

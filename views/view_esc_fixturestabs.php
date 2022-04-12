@@ -20,12 +20,25 @@ if(isset($esc_players)){
 if(count($esc_players) != 0){
 	$i = 1;
 	foreach($esc_players as $i => $row){
-		$user_det   = league::get_user($row['pl']);
+		$exp = explode('-', $row['pl']);
+		if($exp[0])
+		$user_det   = league::get_user($exp[0]);
+
+		if($exp[1])
+		$user_det2   = league::get_user($exp[1]);
+
 		?>
 		<tr>
 		<td style='display:none;'>
 		<input type='checkbox' class='user_select' name='users[]' id='seeded_<?=$row['pl']; ?>' value='<?=$row['pl']; ?>' checked /></td>
-		<td><a href="<?=base_url();?>player/<?=$row['pl']; ?>" target='_blank'><?php echo $user_det['Firstname'] . ' ' . $user_det['Lastname'];?></a></td>
+		<td>
+		<a href="<?=base_url();?>player/<?=$exp[0]; ?>" target='_blank'><?php echo $user_det['Firstname'] . ' ' . $user_det['Lastname'];?></a>
+		<?php if($user_det2){ ?>
+		<a href="<?=base_url();?>player/<?=$exp[1]; ?>" target='_blank'><?php echo $user_det2['Firstname'] . ' ' . $user_det2['Lastname'];?></a>		
+		<?php
+		}
+		?>
+		</td>
 		<td><?php echo $row['wp'];?> </td>
 		<!-- <td><?php echo $row->State;?> </td> -->
 		<!-- <td><?=$user_score; ?></td> -->

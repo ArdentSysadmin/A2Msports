@@ -569,7 +569,10 @@ if($loc['loc_country']) echo ",".$loc['loc_country'];
 <p><label>Organized By:</label> <?php $event_init = events::get_user_details($ev_det['Ev_Created_by']);
 echo $event_init['Firstname']." ".$event_init['Lastname'];?>
 </p>
-<p><label>Contact Number:</label> <?php echo $ev_det['Ev_Contact_Num'];?></p>
+<p><label>Contact Number:</label> <?php 
+$mobile = preg_replace("/([0-9]{3})([0-9]{3})([0-9]{4})/", "($1) $2-$3", $ev_det['Ev_Contact_Num']);
+echo $mobile;
+?></p>
 <?php if($ev_det['Fee']){ ?>
 <p><label>Fee:</label> <?php echo number_format($ev_det['Fee'], 2);?></p>
 <?php

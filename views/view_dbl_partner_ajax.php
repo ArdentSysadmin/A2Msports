@@ -25,7 +25,8 @@
 					data:{ tourn_id:Tourn_id, ttype:Tourn_type, partner:Partner, player:Player, event:Event },    //{pt:'7',rngstrt:range1, rngfin:range2},
 					success:function(html){
 						$('#dbl-load-users').html(html);
-						var cur_sel = $('.event_change').val();
+						//var cur_sel = $('.event_change').val();
+						var cur_sel = Event;
 						get_partners_jq(Tourn_id, cur_sel);
 						alert("Partner updated successfully.");
 					}
@@ -45,7 +46,7 @@
 					data:{ tourn_id:Tourn_id, ttype:Tourn_type, partner:Partner, player:Player, event:Event },    //{pt:'7',rngstrt:range1, rngfin:range2},
 					success:function(html){
 						$('#dbl-load-users').html(html);
-						var cur_sel = $('.event_change').val();
+						var cur_sel = Event;
 						get_partners_jq(Tourn_id, cur_sel);
 						alert("Partner updated successfully.");
 					}

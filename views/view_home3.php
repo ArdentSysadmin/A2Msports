@@ -316,6 +316,7 @@ if(!empty($row)) {
 					case 12: echo "bowling-icon.png";		break; 
 					case 16: echo "cricket-icon.png";			break; 
 					case 18: echo "basketball-icon.png";	break; 
+					case 19: echo "handball-icon.png";	break; 
 					} ?>" class="w-10" >
 					<h6 class="uppercase mb-0 mx-3">
 					<?php switch($row[0]->SportsType){
@@ -333,6 +334,7 @@ if(!empty($row)) {
 					case 12: echo "Bowling";			break;
 					case 16: echo "Cricket";			break;
 					case 18: echo "Basketball";		break;
+					case 19: echo "Handball";		break;
 					} ?></h6>
 					
 					</div>

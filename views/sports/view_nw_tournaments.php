@@ -1,3 +1,38 @@
+<?php
+$source = base_url().'assets_new/';
+?>
+
+<!--List Tournaments banner start -->
+<div class="bg-blue1 pb-2" style="margin-top:100px;">
+<div class="banner_two  mx-3 pt-2 mb-0 ">
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-6">
+<div class="banner_two_content pl-30 pt-5 mx-3">
+<h1>List your Tournaments & Leagues for FREE!</h1>
+<p>List all your tournaments and Leagues for Free! <br> Run them like a Pro! <br> Contact Us for setting you up. </p>
+<div class="app_imges" style="margin-top:10px;">
+<a href="https://apps.apple.com/in/app/a2m-sports/id1450412731" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Apple - App Store.png" />
+</a>
+<a href="https://play.google.com/store/apps/details?id=com.a2msports.a2msports3" target="_blank">
+<img src="<?=base_url()."assets_new/";?>images/Google - Play Store.png" />
+</a>
+</div>
+</div>
+</div>
+<div class="col-lg-6">
+<div class="banner_img text-center">
+<img src="<?=$source;?>images/ListTournament.png" class="wc-40" style="width: 45%; height: auto;">
+</div>
+</div>
+</div>
+</div>
+</div>
+<!--fourth banner end -->
+
+
+
 <div class="mt-5">
 <div class="col-lg-10 offset-lg-1">
 <div class="bg-white p-3">
@@ -75,12 +110,12 @@
 </div> -->
 </div>
 
-<div class="table_content relative">
+<div class="table_content relative" id='search_results'>
 
 <table class="table table-striped">
 <thead>
 <tr>
-<th scope="col" style="font-weight: bold !important; text-align: center;">Tournament</th>
+<th scope="col" style="font-weight: bold !important; text-align: center;">Tournament/ League</th>
 <th scope="col" style="font-weight: bold !important;">City</th>
 <th scope="col" style="font-weight: bold !important;">State</th>
 <th scope="col" style="font-weight: bold !important;">Date</th>
@@ -149,7 +184,7 @@ break;
 ?>">
 </a>
 <p class="mb-0">
-<a style="font-weight: 600; color:#0d6efd" href="<?=base_url();?>league/<?=$row->tournament_ID;?>">
+<a style="font-weight: 600; color:#0d6efd;" href="<?=base_url();?>league/<?=$row->tournament_ID;?>">
 <?=$row->tournament_title;?>
 </a></p>
 </div>
@@ -180,3 +215,45 @@ break;
 </div>
 </div>
 </div>
+
+<script>
+$('document').ready(function(){
+var baseurl = "<?php echo base_url();?>";
+var segment_1 = "<?php echo $this->uri->segment(1);?>";
+var segment_2 = "<?php echo $this->uri->segment(2);?>";
+
+//$("#search_keywords").on('keyup', function() {
+$("#btn_player_search").on('click', function() {
+search_val(baseurl, segment_1, segment_2);
+});
+$("#search_filter").change(function() {
+search_val(baseurl, segment_1, segment_2);
+});
+
+$('#search_keywords').keypress(function (e) {
+var code = e.keyCode || e.which;
+if (code === 13){
+e.preventDefault();
+$("#btn_player_search").trigger('click'); /*add this, if you want to submit form by pressing `Enter`*/
+}
+});
+
+
+});
+
+function search_val(baseurl, segment_1, segment_2){
+//$('#search_results').html("Please wait.....");
+
+$.ajax({
+type: 'POST',
+url: baseurl+segment_1+'/'+segment_2,
+data: {keywords:$('#search_keywords').val(), filter:$('#search_filter').val(), is_search:1},
+success: function(res) {
+//location.reload();
+$('#search_results').html(res);
+}
+});
+
+}
+</script>
+<?php $this->load->view('includes/login_popup'); ?>
