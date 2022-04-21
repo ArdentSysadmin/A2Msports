@@ -17,7 +17,7 @@ foreach($leagues as $j => $row) {
 <tr>
 <td >
 <div class="names_table align-items-center d-flex">
-<a href="<?=base_url();?>league/<?=$row->tournament_ID;?>">
+<a href="<?=base_url().$this->uri->segment(1).'/'.$row->tournament_ID;?>">
 <img src="<?php echo base_url(); ?>tour_pictures/
 <?php if($row->TournamentImage!=""){ echo $row->TournamentImage; }
 else{
@@ -70,7 +70,7 @@ break;
 ?>">
 </a>
 <p class="mb-0">
-<a style="font-weight: 600; color:#0d6efd;" href="<?=base_url();?>league/<?=$row->tournament_ID;?>">
+<a style="font-weight: 600; color:#0d6efd;" href="<?=base_url().$this->uri->segment(1).'/'.$row->tournament_ID;?>">
 <?=$row->tournament_title;?>
 </a></p>
 </div>

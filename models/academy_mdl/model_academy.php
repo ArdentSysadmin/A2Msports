@@ -645,6 +645,14 @@
 			return $qry_check->result();
 		}
 
+
+		public function get_event_classes($creator){
+			$qry_check = $this->db->query("SELECT * FROM Events WHERE Ev_Created_by = $creator AND Ev_Type_ID = 2 ORDER BY Ev_Start_Date DESC");
+	
+			return $qry_check->result();
+		}
+
+
 		public function get_members($org_id, $sport) {
 			/*$sport_cond = "";
 			if($sport) {

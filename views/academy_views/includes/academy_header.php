@@ -302,6 +302,11 @@ if(!in_array('1', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li>
 <?php
 }
+if(!in_array('14', $club_menu)){ 
+	?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/classes">Classes</a></li>
+<?php
+}
 if(!in_array('2', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/coaches">Coaches</a></li>
 <?php
@@ -625,6 +630,10 @@ else{
 }
 if(!in_array('1', $club_menu)){ ?>
 <li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/events">Events</a></li>
+<?php
+}
+if(!in_array('14', $club_menu)){ ?>
+<li><a href="<?php echo base_url().$org_details['Aca_URL_ShortCode']; ?>/classes">Classes</a></li>
 <?php
 }
 if(!in_array('2', $club_menu)){ ?>

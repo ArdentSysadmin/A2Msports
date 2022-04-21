@@ -152,6 +152,39 @@ $('#show_pay_info').click(function(){
 		}
 	});
 
+	$('.user_change_partner').change(function(){
+		var id  = $(this).attr('id');
+		var x   = id.split('_');
+		var Player   = x[4];
+		var Partner = $(this).val();
+		var Event	= $('#chp_event_'+x[0]).val();
+
+		//alert(x[0]);
+		//alert(x[4]);
+		//alert($(this).val())
+		if(Partner != ''){
+		if(confirm("Are you sure to update your event partner?")){
+			//alert(Event);
+			var Tourn_type = $('#tourn_type').val();
+			var Tourn_id		= $('#tourn_id').val();
+
+		$.ajax({
+			type:'POST',
+			url:baseurl+'league/double_players_change/',
+			data:{ tourn_id:Tourn_id, ttype:Tourn_type, partner:Partner, player:Player, event:Event },    //{pt:'7',rngstrt:range1, rngfin:range2},
+			success:function(html){
+				$('#dbl-load-users').html(html);
+				var cur_sel = $('.event_change').val();
+				//get_partners_jq(Tourn_id, cur_sel);
+				alert("Event Partner updated successfully. Refresh the page to view the updation.");
+				//location.reload();
+			}
+		});
+		}
+	}
+
+	});
+
 });
 </script>
 
@@ -187,7 +220,7 @@ $reg_users			= $res[0];
 $user_tsize			= $res[1];
 $user_partners		= $res[2];
 $user_names		= $res[3];
-//if($this->logged_user == 240 and $df){ echo "<pre>"; print_r($res); /*exit;*/ }
+//if($this->logged_user == 240 and $df){ echo "<pre>"; print_r($res); exit; }
 ?>
 
 <div class="col-md-12 league-form-bg" style="margin-top:15px; margin-bottom:0px;">
@@ -246,6 +279,7 @@ if($df){
 }
 
 //foreach ($events as $ages => $evnts) {
+	$p = 1;
    foreach ($event_format as $k => $evnt){
 
     $evntarr   = explode("-", $k);
@@ -291,6 +325,7 @@ else{
 ?>
 <tr class="header"  id="up_match_section">
 <td class="score-position" valign="center" style="text-align:left">
+<input type='hidden' name='chp_event_<?=$p;?>' id='chp_event_<?=$p;?>' value='<?=$k;?>' />
 <span style='color:blue;font-size:13px;font-weight:400;cursor:pointer;'>
 <?php
 echo $event_label." (<label id='$k'>".count($users)."</label>)";
@@ -485,6 +520,24 @@ $p2 = $player_partner;
 else{
 	echo " - <b>No Partner Assigned!</b>";
 }
+
+	/* ************************ */
+	if(/*$now <= $reg_close and*/ $this->logged_user == $tour_details->Usersid or $this->is_super_admin) {
+		//if($this->logged_user == 507){	echo "<pre>"; print_r($user_partners); 	}
+		echo "&nbsp;&nbsp;<select class='user_change_partner' name='user_change_partner' id='{$p}_user_change_partner_{$user}'>";
+		echo "<option value=''>Select Partner</option>";
+		foreach($users as $usr){
+			//if($usr != $this->logged_user and $usr != $user_partners[$usr][$k]){
+			//if($usr != $this->logged_user and $user_partners[$usr][$k] == ''){
+			if($usr != $user and $usr != $user_partners[$user][$k]){
+				$select_get_user= league::get_user($usr);
+				echo "<option value='$usr'>".$select_get_user['Firstname']." ".$select_get_user['Lastname']."</option>";
+			}
+		}
+		echo "</select>";
+	}
+	/* ************************ */
+
 ?>
 </td>
 <td class="score-position" valign="center" align="center"><?php 
@@ -683,7 +736,7 @@ $get_user_usatt_rating = league::get_user_usatt_rating($get_user_mem_details['Me
 </tr>
 <?php
 }
-
+$p++;
 }
 //echo "<pre>"; print_r($event_entry_count); 
 //}

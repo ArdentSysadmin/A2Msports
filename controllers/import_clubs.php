@@ -113,7 +113,7 @@ public function csv_users(){
 
 	$today		= date('mdY');
 	$now			= date("Y-m-d H:i:s");
-	$fname		= "pqueen_users_csv_v1.csv";
+	$fname		= "pqueen_users_csv_v2.csv";
 	$filename	= "C:\inetpub\wwwroot\a2msportssite\csv_source\\".$fname;
 	if(file_exists($filename)){
 	  $count	 = 0;
@@ -121,11 +121,11 @@ public function csv_users(){
 	  $file		 = fopen($filename, "r");
 
 	   while(($importdata = fgetcsv($file, 10000, ",")) !== FALSE) {
-		   $res = '';
-			$fname = trim($importdata[0]);
-			$lname = trim($importdata[1]);
-			$pwd = '@2m$port$202!';
-			$email = trim($importdata[3]);
+		   $res			= '';
+			$fname	= trim($importdata[0]);
+			$lname	= trim($importdata[1]);
+			$pwd		= 'PQueen0412@';
+			$email		= trim($importdata[2]);
 
 			/*$dob = NULL;
 			if($importdata[5] != NULL){
@@ -142,7 +142,7 @@ public function csv_users(){
 			//$zipcode = trim($importdata[12]);
 
 			//$phone = trim($importdata[13]);
-			$mobile = trim($importdata[2]);
+			$mobile = trim($importdata[3]);
 
 			//$lat   = trim($importdata[37]);
 			//$long = trim($importdata[38]);
@@ -170,7 +170,7 @@ public function csv_users(){
 				$mobile = str_replace(') ', '', $mobile);
 				$mobile = str_replace('-', '', $mobile);
 
-				if($mobile)
+				//if($mobile)
 				//$is_mobile_exist = $this->model_csv_import->check_user_mobile($mobile);
 
 				$exist_user = '';
@@ -181,8 +181,8 @@ public function csv_users(){
 				$data = array(
 						'Firstname' => $fname,
 						'Lastname' => $lname,
-						'Password' => md5($pwd),
-						'EmailID' => $email,
+						//'Password' => md5($pwd),
+						//'EmailID' => $email,
 						//'DOB' => $dob,
 						//'Gender' => $gender,
 						//'UserAddressline1' => $address1,
@@ -212,13 +212,20 @@ public function csv_users(){
 						);
 
 //echo "<pre>"; print_r($data);
+						
+						if($mobile){
+							$res = $this->model_csv_import->insert_user($data);
+							echo "<br>".$fname." ".$lname." ".$email." ".$mobile." Imported";
+						}
+						else{
+							echo "<br>".$fname." ".$lname." ".$email." ".$mobile." Failed(No-Mobile-Number)";
+						}
 
-						$res = $this->model_csv_import->insert_user($data);
 						//echo "<br>User = " . $fname . " " . $lname . "&nbsp;&nbsp;&nbsp;" . $email . "(" . $res . ")";
 					}
 					else{
 						if($is_email_exist){
-						echo "<br>Duplicate User (Email)= " . $fname . " " . $lname . "&nbsp;&nbsp;&nbsp;" . $email . " ". $mobile . " - " . $is_email_exist['Users_ID'];
+						echo "<br>" . $fname . " " . $lname . " " . $email . " ". $mobile . " Duplicate-User";
 
 						$exist_user = $is_email_exist['Users_ID'];
 						}
@@ -288,11 +295,11 @@ public function csv_users(){
 			
 			if($res){
 				$data1 = array(	
-					'Club_id'		=> 1215,
+					'Club_id'			=> 1215,
 					'Users_id'		=> $res,
 					//'Membership_ID' => $parent_id
-					'Member_Status' => 1,
-					'Related_Sport' => 7
+					'Member_Status'  => 1,
+					'Related_Sport'		=> 7
 					//'StartDate' => $mem_start,
 					//'EndDate'   => $mem_end
 					);
@@ -301,18 +308,18 @@ public function csv_users(){
 				$res3 = $this->model_csv_import->insert_club_member($data1);
 
 				$data2 = array(	
-					'Sport_id'  => 7,
-					'Level'		=> 22,
-					'users_id'  => $res
+					'Sport_id'	=> 7,
+					'Level'			=> 22,
+					'users_id'	=> $res
 					);
 //print_r($data2);
 
 				$res4 = $this->model_csv_import->insert_sports_intrests($data2);
 
 				$data3 = array(	
-					'Users_ID'			=> $res,
-					'SportsType_ID'	=> 7,
-					'A2MScore'			=> 3.0,
+					'Users_ID'						=> $res,
+					'SportsType_ID'				=> 7,
+					'A2MScore'					=> 3.0,
 					'A2MScore_Doubles'	=> 3.0,
 					'A2MScore_Mixed'		=> 3.0
 					);
@@ -323,10 +330,10 @@ public function csv_users(){
 			else if($exist_user222){
 
 				$data1 = array(	
-					'Club_id'		=> 1215,
-					'Users_id'		=> $exist_user,
-					'Member_Status' => 1,
-					'Related_Sport' => 7
+					'Club_id'					=> 1215,
+					'Users_id'				=> $exist_user,
+					'Member_Status'	=> 1,
+					'Related_Sport'		=> 7
 					);
 
 				$res3 = $this->model_csv_import->insert_club_member($data1);

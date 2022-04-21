@@ -48,15 +48,18 @@ $('#txt_login').focus();
 <form id="form-login" method="post" action='<?php echo base_url(); ?>login/verify_user'>            
 <div class="name">
 <label for="name_login">Username or Email:</label><div class="clear"></div>
-<input class='form-control' id="txt_login" name="name_login" type="text" style="margin-bottom:10px;" required/>
+<input class='form-control' id="txt_login" name="name_login" type="text" style="margin-bottom:10px;" required />
 </div>
 <div class="pwd">
 <label for="password_login">Password:</label><div class="clear"></div>
-<input class='form-control' id="password_login" name="password_login" type="password" required/>
+<input class='form-control' id="password_login" name="password_login" type="password" required />
 </div>
 <div class="hdn">
 <?php //echo "<pre>"; print_r($GLOBALS );?>
-<input class='form-control' id="red_uri" name="red_uri" type="hidden" value="<?=$this->config->item('club_pr_url');?>" />
+<input class='form-control' id="red_uri" name="red_uri" type="hidden" value="<?php
+if($this->config->item('club_pr_url') != 'https://a2msports.com/login')
+echo $this->config->item('club_pr_url');
+?>" />
 </div>
 <a href="<?php echo base_url();?>Forgot-password">Forgot Password?</a>
 <br />
@@ -87,8 +90,7 @@ Login with Mobile Number</a>
 </div>
 
 <a href="<?php echo $login; ?>"><img src="<?php echo base_url(); ?>icons/facebook.jpg" height="40px" width="245px"  /></a><br /><br />
-<a href="<?php echo $authUrl; ?>"><img src="<?php echo base_url(); ?>icons/google.jpg" 
-height="40px" width="245px" /></a><br /><br />
+<a href="<?php echo $authUrl; ?>"><img src="<?php echo base_url(); ?>icons/google.jpg" height="40px" width="245px" /></a><br /><br />
 <?php
 }
 ?>

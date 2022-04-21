@@ -15,7 +15,8 @@ class auto_notify_emails extends CI_Controller {
 	}
 
 	public function index(){
-		$get_tournaments = $this->auto_notify->get_tour_notifications();
+		//$get_tournaments = $this->auto_notify->get_tour_notifications();
+		$get_tournaments = array();
 
 		if(count($get_tournaments) > 0){
 			
@@ -36,18 +37,19 @@ class auto_notify_emails extends CI_Controller {
 
 					$data['range']	 = 80;
 					
-					$get_rel_users  = $this->auto_notify->get_sport_users($data);
+					//$get_rel_users  = $this->auto_notify->get_sport_users($data);
 					$tour_id		= $get_tour_det['tournament_ID'];
-                    
+                    $get_rel_users = array();
+
 					foreach($get_rel_users as $user_id){
-						$player			 = $user_id->Users_ID;
-						$user_details	 = $this->general->get_user($player);
-                        $notify_sports   = json_decode($user_details['NotifySports'], true);
+						$player			  = $user_id->Users_ID;
+						$user_details	  = $this->general->get_user($player);
+                        $notify_sports = json_decode($user_details['NotifySports'], true);
 
 						if(!in_array($sport_id, $notify_sports) || $sport_id < 0){
 							//echo $player."<br>";
-							$this->send_email_user($player, 'tournament', 'tournament_ID', $tour_id);
-						}					
+							//$this->send_email_user($player, 'tournament', 'tournament_ID', $tour_id);
+						}
 					}
 				}
 
@@ -57,7 +59,8 @@ class auto_notify_emails extends CI_Controller {
 		//---------------------------------------------
 		}
 
-		$get_news = $this->auto_notify->get_news_notifications();
+		//$get_news = $this->auto_notify->get_news_notifications();
+		$get_news = array();
 
 		if(count($get_news) > 0){
 			foreach($get_news as $news){
@@ -69,41 +72,41 @@ class auto_notify_emails extends CI_Controller {
 
 				if($news->is_academy == 1){
 					// if Academy
-					$get_aca_users = $this->auto_notify->get_aca_users($news->academy_id);
-           
+					//$get_aca_users = $this->auto_notify->get_aca_users($news->academy_id);
+					$get_aca_users = array();
+
 					foreach($get_aca_users as $user_id){	
 						$player = $user_id->Users_id;
                         $user_details = $this->general->get_user($player);
                         //$notify_settings = json_decode($user_details['NotifySettings'], true);
                         $notify_sports   = json_decode($user_details['NotifySports'], true);
 	                        if(!in_array($sport_id, $notify_sports) || $sport_id < 0){
-                               $this->send_email_user($player, 'Sports_News', 'News_id', $news_id);
+                             //  $this->send_email_user($player, 'Sports_News', 'News_id', $news_id);
 	                        }
 					}
 				}
 				else{
-					$get_rel_users = $this->auto_notify->get_rel_users($get_news_det['SportsType_id']);
-                   
+					//$get_rel_users = $this->auto_notify->get_rel_users($get_news_det['SportsType_id']);
+                   $get_rel_users = array();
 					foreach($get_rel_users as $user_id){	
 						$player		   = $user_id->users_id;
 						$user_details  = $this->general->get_user($player);
                         $notify_sports = json_decode($user_details['NotifySports'], true);
 
 						if(!in_array($sport_id, $notify_sports) || $sport_id < 0){
-						   $this->send_email_user($player, 'Sports_News', 'News_id', $news_id);
+						   //$this->send_email_user($player, 'Sports_News', 'News_id', $news_id);
 						}
 					}
 				}
 
 				$upd_notif = $this->auto_notify->update_notif_stat($news->nid);
-
 			}
 		}
 
-		 /* Start of Tournment Participants Notifications */
+	   /* Start of Tournment Participants Notifications */
 
        $get_trn_prt_notify  = $this->auto_notify->Get_tournmnetpartcpnts_Notfy();
-      //echo "<pre>"; print_r($get_trn_prt_notify); exit;
+       //echo "<pre>"; print_r($get_trn_prt_notify); exit;
         if(count($get_trn_prt_notify) > 0){
 			foreach($get_trn_prt_notify as $notify){
 				$players_arr	= json_decode($notify->players);	
@@ -541,6 +544,13 @@ $i = 1;
 				//echo $player. "test <br>";
 				if(filter_var($user_email, FILTER_VALIDATE_EMAIL)){
 					$s_email = $this->email->send();
+				//	echo "Email ".$user_email."<br>";
+					//		echo "<pre>";
+		//print_r($s_email);
+		//echo "<br>____________<br>";
+		//echo $this->email->print_debugger();
+		//exit;
+
 				}
 			$notified_players[] = $player;
 			}
@@ -563,13 +573,16 @@ $i = 1;
 	}
 
 	public function ReCaliculate_DOB(){
-     	$sql      = "SELECT Users_ID,DOB,UserAgegroup FROM Users WHERE DOB is not null";
+     	$sql			= "SELECT Users_ID,DOB,UserAgegroup FROM Users WHERE DOB is not null";
 		$query    = $this->db->query($sql);
-		$result   = $query->result();
+		$result	= $query->result();
 		$updated_users = array();
+
+//echo "<pre>test"; print_r($result); exit;
 
 		foreach ($result as $key => $value) 
 		{
+			//echo $value->DOB; exit;
 		  if($value->DOB != ""){
 		    //$user_dob = $value->DOB;
 
@@ -578,7 +591,7 @@ $i = 1;
 			$today		= new DateTime('today');
 			$user_age	= $birthdate->diff($today)->y;
 
-            switch (true) {
+            switch ($user_age) {
                 case $user_age <= 9:
                    $user_age_grp = "U9";
                    break;
@@ -619,7 +632,7 @@ $i = 1;
                    $user_age_grp = "Adults";
                    break;
 			}
-             
+
             if($user_age_grp != $value->UserAgegroup){
 				//echo $value->Users_ID." - ".$user_age." - ".$value->UserAgegroup." - ".$user_age_grp."<br>";
 			   $updated_users[] = $value->Users_ID;
@@ -629,9 +642,9 @@ $i = 1;
 		  }
 		}
 		
-		/*echo 'Success';
-		echo '<pre>';
-		print_r($updated_users);*/
+		echo 'Success';
+		//echo '<pre>';
+		//print_r($updated_users);
 	}
 
 	public function insertUsers(){

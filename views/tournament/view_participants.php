@@ -263,11 +263,11 @@ echo "<a href='".base_url()."player/$user'>".$player['Firstname'] . " " .$player
 //echo "<a>".$player['Firstname'] . " " .$player['Lastname']."</a> $repeated";
 //echo '$user_partners[$user][$k] '.var_dump($user_partners[$user][$k]).'<br />';
 if($user_partners[$user][$k] and $user_partners[$user][$k] != ""){
-	$player_partner	= league::get_username($user_partners[$user][$k]);
-	$is_pp_reg			= league::user_reg_or_not($user_partners[$user][$k], $tour_details->tournament_ID);
+	$player_partner = league::get_username($user_partners[$user][$k]);
+	$is_pp_reg			 = league::user_reg_or_not($user_partners[$user][$k], $tour_details->tournament_ID);
 
-$user_score			= $user_a2msocre['A2MScore_Doubles'];
-		$avg_score = $user_score;
+	$user_score	= $user_a2msocre['A2MScore_Doubles'];
+	$avg_score		= $user_score;
 
 
 		$partner_score			= 0;
@@ -317,13 +317,13 @@ else{
 	/* ************************ */
 	if($now <= $reg_close and ($this->logged_user == $user or $this->logged_user == $user_partners[$user][$k]) and $this->logged_user) {
 		//if($this->logged_user == 507){	echo "<pre>"; print_r($user_partners); 	}
-		echo "<select class='user_change_partner' name='user_change_partner' id='{$p}_user_change_partner_{$this->logged_user}'>";
+		echo "&nbsp;&nbsp;<select class='user_change_partner' name='user_change_partner' id='{$p}_user_change_partner_{$this->logged_user}'>";
 		echo "<option value=''>Select Partner</option>";
 		foreach($users as $usr){
 			//if($usr != $this->logged_user and $usr != $user_partners[$usr][$k]){
 			if($usr != $this->logged_user and $user_partners[$usr][$k] == ''){
 				$select_get_user= league::get_user($usr);
-			echo "<option value='$usr'>".$select_get_user['Firstname']."".$select_get_user['Lastname']."</option>";
+				echo "<option value='$usr'>".$select_get_user['Firstname']." ".$select_get_user['Lastname']."</option>";
 			}
 		}
 		echo "</select>";

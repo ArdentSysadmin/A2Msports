@@ -376,7 +376,8 @@ echo $currency."0.00";
 		<div id="comments_div" class="col-md-12">
 		<?php
 		$tourn_comments = league :: get_tourn_comments($tour_details->tournament_ID);
-		//echo "<pre>"; print_r($tourn_comments[0]['messages']); 
+
+		//echo "<pre>"; echo $tour_details->tournament_ID; print_r($tourn_comments); 
 		if($tourn_comments[0]['messages']){
 
 		$tourn_cmts = array_reverse($tourn_comments[0]['messages']);

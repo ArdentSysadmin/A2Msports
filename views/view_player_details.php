@@ -1367,7 +1367,7 @@ echo $get_sport['Sportname'];?>
 <!-- -----------------contact player section end ------------------------------------------------- -->          
 
 <!-- Google AdSense -->
-<div id='google' align='left' style="margin-top:15px;">
+<!-- <div id='google' align='left' style="margin-top:15px;">
 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 <ins class="adsbygoogle"
 style="display:block"
@@ -1377,7 +1377,7 @@ data-ad-format="auto"></ins>
 <script>
 (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
-</div>
+</div> -->
 <!-- Google AdSense -->
 
 

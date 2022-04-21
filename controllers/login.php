@@ -892,6 +892,10 @@ public function ajax_validate_login(){
 						$exp = explode('.com', $this->session->userdata('redirect_to'));
 						redirect($exp[1]);
 					}
+					else if( ($get_data['EmailID'] == NULL or $get_data['EmailID'] == '') OR ($get_data['Password'] == NULL or $get_data['Password'] == '') ){
+						//echo $get_data['EmailID'] . " - " . $get_data['Password']; exit;
+						redirect('Profile');
+					}
 					else {
 						redirect('Play', $data);
 					}

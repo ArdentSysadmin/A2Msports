@@ -144,7 +144,11 @@ else
 	}
 
 	public function insert_club_member($data){
+		$check_is_member = $this->db->query("SELECT * FROM User_memberships WHERE Users_id = {$data['Users_id']} AND Club_id = {$data['Club_id']}");
+
+		if($check_is_member->num_rows() == 0){
 		$res = $this->db->insert('User_memberships', $data);
+		}
 	}
 
 	public function insert_reg_league($data){

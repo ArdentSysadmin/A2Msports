@@ -411,54 +411,55 @@
 			*/
 			$user_dob = NULL;
 			if($this->input->post('txt_dob')){
-			$dob		= $this->input->post('txt_dob');
-			$user_dob = date('Y-m-d', strtotime($dob));
-			$birthdate	= new DateTime($dob);
-			$today		= new DateTime('today');
-			$age			= $birthdate->diff($today)->y;
+				$dob			= $this->input->post('txt_dob');
+				$user_dob = date('Y-m-d', strtotime($dob));
+				$birthdate	= new DateTime($dob);
+				$today		= new DateTime('today');
+				$age			= $birthdate->diff($today)->y;
 
-						switch ($age) {
-                case $age <= 9:
-                   $age_group = "U9";
-                   break;
-                case $age == 10:
-                   $age_group = "U10";
-                   break;
-                case $age == 11:
-                   $age_group = "U11";
-                   break;
-                case $age == 12:
-                   $age_group = "U12";
-                   break;
-                case $age == 13:
-                   $age_group = "U13";
-                   break;
-                case $age == 14:
-                   $age_group = "U14";
-                   break;
-                case $age == 15:
-                   $age_group = "U15";
-                   break;
-                case $age == 16:
-	               $age_group = "U16";
-	               break;
-                case $age == 17:
-                   $age_group = "U17";
-                   break;
-                case $age == 18:
-                   $age_group = "U18";
-                   break;
-                case $age == 19:
-                   $age_group = "U19";
-                   break;
-				case $age == 21:
-                   $age_group = "U21";
-                   break;
-                default:
-                   $age_group = "Adults";
-                   break;
+				switch ($age) {
+					case $age <= 9:
+					   $age_group = "U9";
+					   break;
+					case $age == 10:
+					   $age_group = "U10";
+					   break;
+					case $age == 11:
+					   $age_group = "U11";
+					   break;
+					case $age == 12:
+					   $age_group = "U12";
+					   break;
+					case $age == 13:
+					   $age_group = "U13";
+					   break;
+					case $age == 14:
+					   $age_group = "U14";
+					   break;
+					case $age == 15:
+					   $age_group = "U15";
+					   break;
+					case $age == 16:
+					   $age_group = "U16";
+					   break;
+					case $age == 17:
+					   $age_group = "U17";
+					   break;
+					case $age == 18:
+					   $age_group = "U18";
+					   break;
+					case $age == 19:
+					   $age_group = "U19";
+					   break;
+					case $age == 21:
+					   $age_group = "U21";
+					   break;
+					case $age > 21:
+					   $age_group = "Adults";
+					   break;
+				}
 			}
-			}
+
 			$school = "";
 
 			if($this->input->post('txt_school')){
@@ -630,8 +631,7 @@
 			}
 		}
 
-		public function save_newPass($new_pass)
-		{
+		public function save_newPass($new_pass) {
 		    $user_id = $this->session->userdata('users_id');
 			$data = array('Password' =>$new_pass);
 
@@ -639,10 +639,18 @@
 			$result = $this->db->update('Users', $data); 
 			
 			return $result;
-			
 		}
 
-		
+		public function save_newEmail($new_email) {
+		    $user_id = $this->session->userdata('users_id');
+			$data = array('EmailID' =>$new_email);
+
+			$this->db->where('Users_ID', $user_id);
+			$result = $this->db->update('Users', $data); 
+			
+			return $result;
+		}
+	
 		public function add_membership_details()
 		{
 		    $user_id = $this->session->userdata('users_id');

@@ -373,8 +373,8 @@ $sess_id = $this->session->userdata('users_id');
 print_r($bracket_matches_cd->result());
 exit;*/
 ?>
-<div>
-<h4 style="color:#f59123"><b><?php echo $get_bracket_details['Draw_Title']; ?></b></h4>
+<div style='margin-top: 20px;'>
+<h4 style="color:#4d6119"><b><?php echo $get_bracket_details['Draw_Title']; ?></b></h4>
 </div>
 
 <div class="tab-content">
@@ -972,7 +972,7 @@ $(function() {
 ?>
 
 <table>
-<tr><td valign="center" align="center"><br /><h4>Consolation Draw</h4><br /></td></tr>
+<tr><td valign="center" align="center"><br /><h4 style="color:#4d6119"><b>Consolation Draw</b></h4><br /></td></tr>
 </table>
 
 <?php
@@ -1065,7 +1065,7 @@ $player2 = "";
 $get = league::getonerow($round_matches[$m]->Tourn_ID);
 $tourn_admin = $get->Usersid;
 
-	if($sess_id == $round_matches[$m]->Player1 or $sess_id == $round_matches[$m]->Player1_Partner or $sess_id == $round_matches[$m]->Player2 or $sess_id == $round_matches[$m]->Player2_Partner or $tourn_admin == $sess_id){ ?>
+	if($sess_id == $round_matches[$m]->Player1 or $sess_id == $round_matches[$m]->Player1_Partner or $sess_id == $round_matches[$m]->Player2 or $sess_id == $round_matches[$m]->Player2_Partner or $tourn_admin == $sess_id or $this->is_super_admin){ ?>
 
 <td valign="center" style="padding-left:15px;"><b>
 <?php if($player1){

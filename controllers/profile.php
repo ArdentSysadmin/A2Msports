@@ -23,9 +23,12 @@ class Profile extends CI_Controller {
 	}
 
 	// Profile default page...
-	public function index()
+	public function index($stat = '')
 	{
 			$logged_user = $this->session->userdata('users_id');
+
+			if($stat)
+				$data = $stat;
 
 			$data['sports_details'] = $sports_details = $this->profile->get_intrests();
 			$user_sports_intrests			= $this->profile->get_user_sport_intrests();
@@ -624,6 +627,10 @@ class Profile extends CI_Controller {
 			$result = 1;
 
 			if($result){
+				if($this->input->post('email2')){
+				$update = $this->profile->save_newEmail($this->input->post('email2'));
+				}
+
 				$update = $this->profile->save_newPass(md5($this->input->post('new_password')));
 				$data['pass'] = "Password Updated Successfully.";
 			}
@@ -631,7 +638,7 @@ class Profile extends CI_Controller {
 			    $data['pass_error'] = "Current Password is wrong";
 			}
 
-					$data['user_details'] = $this->profile->get_user_id();
+					/*$data['user_details'] = $this->profile->get_user_id();
 					$data['sports_details'] = $this->profile->get_intrests();
 					$data['user_sports_intrests'] = $this->profile->get_user_sport_intrests();
 					$data['results'] = $this->model_news->get_news();
@@ -642,7 +649,8 @@ class Profile extends CI_Controller {
 					$this->load->view('includes/header');
 					$this->load->view('view_profile',$data);
 					$this->load->view('includes/view_right_column');
-					$this->load->view('includes/footer');
+					$this->load->view('includes/footer');*/
+					$this->index($data);
 
 		}
 		

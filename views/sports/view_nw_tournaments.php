@@ -31,12 +31,15 @@ $source = base_url().'assets_new/';
 </div>
 <!--fourth banner end -->
 
-
-
 <div class="mt-5">
 <div class="col-lg-10 offset-lg-1">
 <div class="bg-white p-3">
-<div class="head d-flex justify-content-between align-items-center" style="margin-top: 55px;">
+
+<div class="row">
+	<div class="heading text-center pt-4 pb-2"><h1>Featured Tournaments</h1></div>
+</div>
+
+<div class="head d-flex justify-content-between align-items-center" style="margin-top: 0px;">
 <h4 class="gry mb-0"><!-- Filter --></h4>
 <div class="input-group w-30 mb-3 sreach_filter">
 <select name='search_filter' id='search_filter' class='form-control' style="width: 15%">
@@ -131,7 +134,7 @@ foreach($leagues as $j => $row) {
 <tr>
 <td >
 <div class="names_table align-items-center d-flex">
-<a href="<?=base_url();?>league/<?=$row->tournament_ID;?>">
+<a href="<?=base_url().'league/'.$row->tournament_ID;?>">
 <img src="<?php echo base_url(); ?>tour_pictures/
 <?php if($row->TournamentImage!=""){ echo $row->TournamentImage; }
 else{
@@ -184,7 +187,7 @@ break;
 ?>">
 </a>
 <p class="mb-0">
-<a style="font-weight: 600; color:#0d6efd;" href="<?=base_url();?>league/<?=$row->tournament_ID;?>">
+<a style="font-weight: 600; color:#0d6efd;" href="<?=base_url().'league/'.$row->tournament_ID;?>">
 <?=$row->tournament_title;?>
 </a></p>
 </div>

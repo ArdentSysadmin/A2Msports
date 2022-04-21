@@ -211,7 +211,7 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 			return $bulk_reg;
 		}
 
-		public function get_reg_tourn_participants($tourn_id, $sport = ''){
+		/*public function get_reg_tourn_participants($tourn_id, $sport = ''){
 			$reg_status = "WithDrawn";
 			if($sport != ''){
 			$qry_check = $this->db->query("select rt.* from RegisterTournament as rt join A2MScore as a on rt.Users_ID = a.Users_ID where rt.Tournament_ID = {$tourn_id} and a.SportsType_ID = {$sport} and (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) order by a.A2MScore DESC");
@@ -221,7 +221,22 @@ where rt.Tournament_ID = $tourn_id AND (rt.Reg_Status != '$reg_status' OR rt.Reg
 			
 			}
 			return $qry_check->result();
+		}*/
+
+		public function get_reg_tourn_participants($tourn_id, $sport = ''){
+			$reg_status = "WithDrawn";
+			if($sport != ''){
+				$qry_check = $this->db->query("SELECT rt.*,u.Users_ID, u.Firstname,u.Lastname, u.Gender, u.DOB, u.UserAgegroup, a.* FROM RegisterTournament as rt INNER JOIN A2MScore as a on rt.Users_ID = a.Users_ID AND a.SportsType_ID = {$sport} INNER JOIN Users as u on rt.Users_ID = u.Users_ID WHERE rt.Tournament_ID = {$tourn_id}  AND (rt.Reg_Status != '$reg_status' OR rt.Reg_Status IS NULL) order by a.A2MScore DESC");
+			}
+			else{	
+				$qry_check = $this->db->query("SELECT rt.*, u.Users_ID, u.Firstname, u.Lastname, u.Gender, u.DOB, u.UserAgegroup FROM RegisterTournament as rt INNER JOIN Users as u ON rt.Users_ID = u.Users_ID WHERE Tournament_ID = $tourn_id AND (Reg_Status != '$reg_status' OR Reg_Status IS NULL)");
+			}
+
+			//if($this->logged_user == 240)
+			//echo $this->db->last_query(); exit;
+			return $qry_check->result();
 		}
+
 
 		public function get_reg_tourn_event_players($tourn_id, $types, $sport = '', $is_checkin = ''){
 			$reg_status = "WithDrawn";

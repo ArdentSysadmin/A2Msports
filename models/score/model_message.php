@@ -59,7 +59,13 @@ class model_message extends CI_Model {
 					$msg_res = $msg_qry->row_array();
 					$msg['mid'] = $msg_res['mid'];
 					$msg['content'] = $msg_res['content'];
-					$msg['image'] = $msg_res['image'];
+					//$msg['image'] = $msg_res['image'];
+
+					if($msg_res['image'])
+						$msg['image'] = base_url()."messages_imgs/".$msg_res['image'];
+					else
+						$msg['image'] =NULL;
+
 					$msg['created_on'] = intval($msg_res['created_on']);
 					$msg['sender'] = $conv->sender;
 					$msg['username'] = $this->get_username($conv->sender);
@@ -114,10 +120,19 @@ class model_message extends CI_Model {
 				foreach($conversations as $conv){
 					$mid = $conv->mid;
 					$msg_qry = $this->db->query("SELECT * FROM Messages WHERE mid = {$mid}");
+
+
+				if($msg_qry){
 					$msg_res = $msg_qry->row_array();
 					$msg['mid'] = $msg_res['mid'];
 					$msg['content'] = $msg_res['content'];
-					$msg['image'] = $msg_res['image'];
+					//$msg['image'] = $msg_res['image'];
+
+					if($msg_res['image'])
+						$msg['image'] = base_url()."messages_imgs/".$msg_res['image'];
+					else
+						$msg['image'] =NULL;
+
 					$msg['created_on'] = intval($msg_res['created_on']);
 					$msg['sender'] = $conv->sender;
 					$msg['username'] = $this->get_username($conv->sender);
@@ -130,6 +145,8 @@ class model_message extends CI_Model {
 
 					$msg['repliedTo'] = $msg2;
 					}
+			  }
+
 					//$msg['title'] = $grp_title;
 					//$msg['img'] = $grp_img;
 
@@ -175,7 +192,12 @@ class model_message extends CI_Model {
 					$msg_res = $msg_qry->row_array();
 					$msg['mid'] = $msg_res['mid'];
 					$msg['content'] = $msg_res['content'];
-					$msg['image'] = $msg_res['image'];
+
+					if($msg_res['image'])
+						$msg['image'] = base_url()."messages_imgs/".$msg_res['image'];
+					else
+						$msg['image'] =NULL;
+
 					$msg['created_on'] = intval($msg_res['created_on']);
 					$msg['sender'] = $conv->sender;
 					$msg['username'] = $this->get_username($conv->sender);
@@ -216,11 +238,12 @@ class model_message extends CI_Model {
 	}
 
 	public function insert_message($data){
-		$sender	= $data['sender'];
-		$type		= $data['type'];
+		$sender		= $data['sender'];
+		$type			= $data['type'];
 		$recipient	= $data['recipient'];
 		$reply_to	= $data['reply_to'];
-		$content	= $data['content'];
+		$content		= $data['content'];
+		$image		= $data['image'];
 
 		$data2['msg'] = null;
 
@@ -287,27 +310,39 @@ class model_message extends CI_Model {
 
 		//echo $gid; exit;
 				$now = strtotime(date('Y-m-d H:i:s'));
-				$data3 = array('content'		=> $content,
-										'created_on' => $now);
+				//$data3 = array('content' => $content, 'created_on' => $now);
+				///$ins  = $this->db->insert('Messages', $data3);	
+				$content = str_replace("'","''", $content);
 
-				$ins  = $this->db->insert('Messages', $data3);	
+				if($image != ''){
+				$this->db->query("INSERT INTO Messages (image, created_on) VALUES ('$image', $now)");
+				}
+				else{
+				$this->db->query("INSERT INTO Messages (content, created_on) VALUES (N'$content', $now)");
+				}
+
 				$mid = $this->db->insert_id();
 
 				$data3 = array(
-							'mid'				=> $mid,
-							'reply_to'		=> $reply_to,
-							'recipient'		=> $gid,
+							'mid'			=> $mid,
+							'reply_to'	=> $reply_to,
+							'recipient'	=> $gid,
 							'sender'		=> $sender
 							);
 
-				$ins  = $this->db->insert('Conversations', $data3);	
-				$cid = $this->db->insert_id();
+				if($mid){  // Some of the rows is missing mid values in conversation table. 
+					$ins  = $this->db->insert('Conversations', $data3);	
+					$cid = $this->db->insert_id();
+				}
+
 		//print_r($data3); exit;
 		//return $mid;	
-
+		
+		if($image)
+			$image = base_url()."messages_imgs/".$image;
 		return array("mid"				 => intval($mid),
 							"content"		 => $content,
-							"image"			 => null,
+							"image"			 => $image,
 							"created_on" => $now,
 							"sender"		 => $sender);
 	}
@@ -729,6 +764,12 @@ public function sortByOrder($a, $b) {
 // -------------------------- Tournament ---------------------------------------
 
 		return $data;
+	}
+
+	public function insert_test2($msg){
+				//$ins  = $this->db->insert('tab2', $data3);
+				$this->db->query("INSERT INTO tab3 (col) VALUES (N'$msg')");
+				//echo $this->db->last_query();
 	}
 
 }

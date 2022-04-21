@@ -46,6 +46,33 @@ class model_event extends CI_Model {
 		return $res;
 	}
 
+
+	public function get_eventsNew($club_id = '', ){
+		if($club_id){
+			$get_club = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID = {$club_id}");
+			$club_det = $get_club->row_array();
+
+				if($club_det['Aca_User_id']){
+					$query = $this->db->query("SELECT ev.Ev_ID AS ID, et.Ev_Type AS Type, ev.Ev_Title AS Title, ev.Ev_Location AS Location,el.loc_title AS Location_Title, el.loc_address AS Location_Address, el.loc_city AS Location_City, el.loc_state AS Location_State, el.loc_country AS Location_Country, el.loc_zipcode AS Location_ZipCode, ev.Ev_Organizer AS Organizer, ev.Ev_Contact_Num AS Organizer_ContactNum, ev.Ev_Schedule AS Schedule, ev.Ev_Start_Date AS StartDate, ev.Ev_End_Date AS EndDate, ev.Ev_Created_by AS Created_by, ev.Ev_Created_Date AS Created_Date, ev.Ev_Desc AS Description, CONCAT('".base_url()."events_pictures/', ev.EventImage) AS Image,ev.Ev_Sport AS Sport_ID,st.Sportname AS SportTitle,ev.Is_Private, ev.Fee,ev.Fee_Type,ev.Ev_Reg_Limit as Reg_Limit,ev.Show_Guests FROM Events ev JOIN Events_Type et ON ev.Ev_Type_ID = et.Ev_Type_ID 
+					JOIN SportsType st ON ev.Ev_Sport = st.SportsType_ID 
+					LEFT JOIN Events_Locations el ON ev.Ev_Location = el.loc_id WHERE Ev_Created_by = {$club_det['Aca_User_id']}");
+					$res = $query->result();
+				}
+				else{
+					$res = null;
+				}
+		}
+		else{
+			$query = $this->db->query("SELECT ev.Ev_ID AS ID, et.Ev_Type AS Type, ev.Ev_Title AS Title, ev.Ev_Location AS Location,el.loc_title AS Location_Title, el.loc_address AS Location_Address, el.loc_city AS Location_City, el.loc_state AS Location_State, el.loc_country AS Location_Country, el.loc_zipcode AS Location_ZipCode, ev.Ev_Organizer AS Organizer, ev.Ev_Contact_Num AS Organizer_ContactNum, ev.Ev_Schedule AS Schedule, ev.Ev_Start_Date AS StartDate, ev.Ev_End_Date AS EndDate, ev.Ev_Created_by AS Created_by, ev.Ev_Created_Date AS Created_Date, ev.Ev_Desc AS Description, CONCAT('".base_url()."events_pictures/', ev.EventImage) AS Image,ev.Ev_Sport AS Sport_ID,st.Sportname AS SportTitle,ev.Is_Private, ev.Fee,ev.Fee_Type,ev.Ev_Reg_Limit as Reg_Limit,ev.Show_Guests 
+			FROM Events ev JOIN Events_Type et ON ev.Ev_Type_ID = et.Ev_Type_ID 
+			JOIN SportsType st ON ev.Ev_Sport = st.SportsType_ID 
+			LEFT JOIN Events_Locations el ON ev.Ev_Location = el.loc_id");
+			$res = $query->result();
+		}
+		return $res;
+	}
+
+
 	public function event_details($event_id = ''){
 		$event_det = '';
 

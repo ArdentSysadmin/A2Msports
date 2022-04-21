@@ -278,7 +278,7 @@ if($this->logged_user == 240){
 </form> -->
 
 <!--Make sure the form has the autocomplete function switched off:-->
-<form autocomplete="off" method='post' action='<?=base_url()."league/update_pom"; ?>'>
+<form autocomplete="off" method='post' action='<?=$this->config->item('club_pr_url')."/update_pom"; ?>'>
 <div class="autocomplete" style="width:300px;">
 <input id="myInput" type="text" name="myCountry" placeholder="Type in user name" style="margin-bottom: 20px;margin-top: 18px;border-radius: 0.5em;">
 <input id='pom_user_id' name='pom_user_id' type='hidden' value='' />

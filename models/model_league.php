@@ -906,14 +906,13 @@
 
 		if($this->input->post('txt_dob'))
 		{
-			$dob		= $this->input->post('txt_dob');
+			$dob			= $this->input->post('txt_dob');
 
 			$birthdate	= new DateTime($dob);
 			$today		= new DateTime('today');
-			$age		= $birthdate->diff($today)->y;
-			
-			
-			switch (true) {
+			$age			= $birthdate->diff($today)->y;
+
+			switch ($age) {
                 case $age <= 9:
                    $age_group = "U9";
                    break;
@@ -950,13 +949,13 @@
 				case $age == 21:
                    $age_group = "U21";
                    break;
-                default:
-                   $age_group = "Adults";
+				case $age > 21:
+				   $age_group = "Adults";
                    break;
 			}
 
 			$data = array (
-					'DOB'				=> date('Y-m-d', strtotime($dob)),
+					'DOB'					=> date('Y-m-d', strtotime($dob)),
 					'UserAgegroup'	=> $age_group
 					);
 		}
@@ -9536,7 +9535,7 @@ $mformat = $this->calculate_match_format($player1_user, $player1_partner);
 				// ------- Player section ---------------------
 
 				$data				= array('Users_ID' => $player, 'Tournament_ID' => $tourn_id);
-				$exec_qry1			= $this->db->get_where('RegisterTournament', $data);
+				$exec_qry1		= $this->db->get_where('RegisterTournament', $data);
 				$get_player_partner = $exec_qry1->row_array();
 
 				if($get_player_partner['Partners']){
@@ -13776,7 +13775,7 @@ return $data;
 		}
 
 		public function is_draw_complete($bid) {
-				$qry = $this->db->query("SELECT * from Tournament_Matches tm WHERE tm.BracketID = {$bid} AND (tm.Winner is null or tm.Winner ='' or tm.Winner = 0)");
+				$qry = $this->db->query("SELECT * from Tournament_Matches tm WHERE tm.BracketID = {$bid} AND (tm.Winner is null or tm.Winner ='' or tm.Winner = 0) AND Player1 != -1 AND Player2 != -1");
 
 				return $qry->num_rows();
 		}

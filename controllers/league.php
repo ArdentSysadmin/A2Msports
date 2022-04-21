@@ -7430,8 +7430,10 @@ exit;*/
 		}
 
 
-		public function sport_page_tab($sport, $tab){
+		public function sport_page_tab($sport, $tab=''){
             $data['sport'] = $sport;
+			if($tab == '')
+				$tab = 'tournaments';
 
 			if(!$this->input->post('is_search')){
 			$this->load->view('includes/view_sports_header');
@@ -13706,7 +13708,11 @@ return  json_decode($response, true);
 	
 		if($this->logged_user == 240 and $user){
 			$this->model_league->update_pom($user, $sport);
-			redirect($_SERVER['HTTP_REFERER']);
+
+			if($this->config->item('club_pr_url'))
+				redirect($this->config->item('club_pr_url'));
+			else
+				redirect($_SERVER['HTTP_REFERER']);
 		}
 		else{
 			echo "Invalid Access!"; exit;

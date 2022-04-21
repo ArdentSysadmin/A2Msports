@@ -130,13 +130,16 @@ $route["$cl_short_code/opponent/create"]	 = "academy_ctrl/opponent/create/{$row[
 $route["$cl_short_code/play/reg_players/(:num)"]	= "academy_ctrl/play/reg_players/$1/{$row['Aca_ID']}";
 $route["$cl_short_code/play/invite/(:num)"]		= "academy_ctrl/play/invite/$1/{$row['Aca_ID']}";
 $route["$cl_short_code/play/invite_email"]		= "academy_ctrl/play/invite_email/{$row['Aca_ID']}";
-$route["$cl_short_code/events/add"]			 = "academy_ctrl/events/add/{$row['Aca_ID']}";
+$route["$cl_short_code/events/add"]					= "academy_ctrl/events/add/{$row['Aca_ID']}";
 $route["$cl_short_code/events/view/(:num)/(:num)"] = "academy_ctrl/events/view/$1/$1/{$row['Aca_ID']}";
-$route["$cl_short_code/events/view/(:num)"]	 = "academy_ctrl/events/view/$1/{$row['Aca_ID']}";
-$route["$cl_short_code/events"]			  = "academy_ctrl/events/index/{$row['Aca_ID']}";
-$route["$cl_short_code/events/autocomplete"]	 = "academy_ctrl/events/autocomplete/{$row['Aca_ID']}";
-$route["$cl_short_code/events/add_fields"]		 = "academy_ctrl/events/add_fields/{$row['Aca_ID']}";
+$route["$cl_short_code/events/view/(:num)"]			 = "academy_ctrl/events/view/$1/{$row['Aca_ID']}";
+$route["$cl_short_code/events"]									 = "academy_ctrl/events/index/{$row['Aca_ID']}";
+$route["$cl_short_code/events/autocomplete"]			 = "academy_ctrl/events/autocomplete/{$row['Aca_ID']}";
+$route["$cl_short_code/events/add_fields"]				 = "academy_ctrl/events/add_fields/{$row['Aca_ID']}";
 $route["$cl_short_code/events/add_fields_weekly"]	 = "academy_ctrl/events/add_fields_weekly/{$row['Aca_ID']}";
+
+$route["$cl_short_code/classes"]						 = "academy_ctrl/classes/index/{$row['Aca_ID']}";
+
 $route["$cl_short_code/news"]							 = "academy_ctrl/news/index";
 $route["$cl_short_code/news/add"]					 = "academy_ctrl/news/add";
 $route["$cl_short_code/news/add_news"]		 = "academy_ctrl/news/add_news";
@@ -234,6 +237,7 @@ $route["pickleball1/login"]		= "login/index";
 $route["pickleball1/logout"]		= "logout/index";
 $route["pickleball1/logintest/check_phone"]	= "logintest/check_phone";
 $route["pickleball1/login/phone_login"]	= "login/phone_login";
+$route["pickleball1/update_pom"]	= "league/update_pom";
 
 $route["pickleball1/team/(:num)"]	= "teams/index/$1";
 $route["pickleball1/(:any)"]	= "league/sport_page_tab/7/$1";
@@ -260,9 +264,21 @@ $route["tt"]				= "league/league_list/2";
 $route["tt#(:any)"]	= "league/league_list/$1";
 $route["tt/(:num)"]	= "league/viewtournament/$1";
 
-$route["pickleball"]			= "league/league_list/7";
+/*$route["pickleball"]			= "league/league_list/7";
 $route["pickleball#(:any)"]	= "league/league_list/$1";
+$route["pickleball/(:num)"]	= "league/viewtournament/$1";*/
+
+//$route["pickleball"]				= "league/sport_page/7";		//disabling the pickleball landing page temporarily
+$route["pickleball"]				= "league/sport_page_tab/7";
+$route["pickleball/login"]		= "login/index";
+$route["pickleball/logout"]		= "logout/index";
+$route["pickleball/logintest/check_phone"]	= "logintest/check_phone";
+$route["pickleball/login/phone_login"]	= "login/phone_login";
+
+$route["pickleball/team/(:num)"]	= "teams/index/$1";
 $route["pickleball/(:num)"]	= "league/viewtournament/$1";
+$route["pickleball/(:any)"]	= "league/sport_page_tab/7/$1";
+
 
 $route["basketball"]			= "league/league_list/18";
 $route["basketball#(:any)"] = "league/league_list/$1";

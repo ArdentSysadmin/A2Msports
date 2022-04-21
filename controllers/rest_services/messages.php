@@ -146,6 +146,104 @@ else if($type == 'Tournament' or $type == 'tournament'){
 		$this->response($res);
 	}
 
+// -----------------------------------------------------------------------------------
+
+	public function sendImgMsg_post() {
+
+		 $filename = 'image';  
+
+		 $config = array(
+			'upload_path'	=> "./messages_imgs/",
+			'allowed_types' => "gif|jpg|png|jpeg",
+			'overwrite'			=> FALSE,
+			'max_size'			=> "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+			'max_height'		=> "5000",
+			'max_width'		=> "8000"
+		 );
+		
+		$this->load->library('upload', $config);
+		$data = $this->upload->data();
+		$this->upload->initialize($config);
+
+		if($this->upload->do_upload($filename)) {
+		    $data			= $this->upload->data();
+			$filename1	= $data['file_name'];
+			//$this->response(array('Filename' => $filename), 200);
+		}
+		else {
+			$this->response(array('Error: File not saved!'), 400);
+			exit;
+		}
+
+		$image			= $data['image']	  = $filename1;
+		$from_user	= $data['sender']	  = trim($_POST['sender'], '"');
+		$type				= $data['type']		  = trim($_POST['type'], '"');
+		$to_user			= $data['recipient'] = trim($_POST['recipient'], '"');
+		$content			= $data['content']	  = '';
+
+		$reply_to  = $data['reply_to']	= NULL;
+		if($_POST['repliedTo'])
+		$reply_to  = $data['reply_to']	= trim($_POST['repliedTo'], '"');
+
+		//$image  = $post_data['image']		= trim($post_data['image'], '"');
+		if(!$from_user or !$to_user or !$type){
+			$res = array('Error: ' . "Some inputs are missing!", 400);
+			$this->response($res);
+			exit;
+		}
+
+		if($content or $image){
+			$ins_msg  = $this->message->insert_message($data);
+			//$ins_msg  = 1;
+
+			if($ins_msg) {
+				$res = $ins_msg;
+
+// --- push notifications
+
+		$tokens_arr = array();
+		$get_from_user    = $this->muser->get_user_details($from_user);
+		$from_name			= $get_from_user['Firstname']." ".$get_from_user['Lastname'];
+
+if($type == 'One2One' or $type == 'one2one'){
+		$get_user_token = $this->muser->get_userToken_a2m($to_user);
+
+		if($get_user_token){
+			foreach($get_user_token as $i => $ut){
+				$tokens_arr[] = $ut->token;
+			}
+		}
+}
+else if($type == 'Team' or $type == 'team'){
+		$tokens_arr = $this->muser->get_userToken_team($to_user);
+}
+else if($type == 'Tournament' or $type == 'tournament'){
+		$tokens_arr = $this->muser->get_userToken_tournament($to_user);
+}
+//echo "<pre>"; print_r($tokens_arr); exit;
+				if(count($tokens_arr) > 0){
+						$mobile_notif	= $this->contactMessage_pushNotif($content, $tokens_arr, $from_user, $to_user, $from_name, $type);
+						//$r						= json_decode($mobile_notif);
+						//if($mobile_notif){
+						//	$is_mob_alert_send = 1;
+						//}	
+				}
+// --- push notifications
+
+			}
+			else {
+				$res = array('Error: ' . "Something went wrong!", 400);
+			}
+		}
+		else {
+			$res = array('Error: ' . "Message content empty!", 400);
+		}
+
+		$this->response($res);
+	}
+
+// -----------------------------------------------------------------------------------
+
 	public function getAll_get(){
 		
 		$user_id	= $this->input->get('user_id');
@@ -240,10 +338,21 @@ public function contactMessage_pushNotif($message, $token, $from, $to, $from_nam
 			return $send_stat;
 	}
 
-	//public function test_post(){
+	public function test_post(){
 
-	//	echo "<pre>"; print_r($_POST);
+	echo "<pre>"; print_r($_POST);
 
-	//}
+	}
+
+	public function test2_post(){
+
+		$post_data = json_decode(file_get_contents('php://input'), true);
+
+		$x = $post_data['msg'];
+		$ins_msg  = $this->message->insert_test2($x);
+
+		$this->response(array('success'));
+
+	}
 
 }

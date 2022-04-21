@@ -134,12 +134,36 @@ if(email_id!=""){
 }
 });
 
+$('#email2').blur(function(){
+var baseurl	= "<?php echo base_url();?>";
+var email_id = $(this).val();
+
+if(email_id!=""){
+	$.ajax({
+	type:'POST',
+	url:baseurl+'register/ajax_email_verify/',
+	data:'email_id='+email_id,
+	success:function(html){
+		var stat = html;
+		if(stat != ""){
+			var sp = stat.split('-');
+			$('#email_stat2').html(sp[1] + " already exists! <br />Please choose another.");
+			$("#email_stat2").css("text-transform", "lowercase");
+			$('#email2').val("");
+		}
+		else {
+			$('#email_stat2').html("");
+		}
+	}
+	}); 
+}
+});
 
 
 });
 
 $(document).ready(function(){
-$('input[name=conf_password]').blur(function() {
+/*$('input[name=conf_password]').blur(function() {
 	var pass   = $('input[name=new_password]').val();
 	var repass = $('input[name=conf_password]').val();
 	if(($('input[name=new_password]').val().length == '') || ($('input[name=conf_password]').val().length == '')) {
@@ -152,7 +176,7 @@ $('input[name=conf_password]').blur(function() {
 	else {
 		$( ".err" ).hide();
 	}
-});
+});*/
 });
 </script>
 
@@ -336,6 +360,16 @@ $('.sport_intr').click(function(){
 });
 
 });
+
+function showPassword() {
+  var x = document.getElementById("npass");
+  if (x.type === "password") {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+
 </script>
 
 <style>
@@ -525,14 +559,12 @@ if(isset($pic)) { ?>
 <div class="name" align='left'>
 <label for="name_login" style="color:green"><?php //echo $pic; ?></label>
 </div>
-<?php } ?>
-<?php 
+<?php }
 if(isset($pass)) { ?>
 <div class="name" align='left'>
 <label for="name_login" style="color:green"><?php echo $pass; ?></label>
 </div>
-<?php } ?>
-<?php 
+<?php }
 if(isset($pass_error)) { ?>
 <div class="name" align='left'>
 <label for="name_login" style="color:red"><?php echo $pass_error; ?></label>
@@ -600,13 +632,23 @@ if(!empty($user_details['Club_Name'])){
 <p>&nbsp;</p>
 <p class="txt-torn"><button class="league-form-submit1" id="password">Set / Change Password</button></p>
 
-<form  method="post"  action="<?php echo base_url(); ?>profile/change_password" role='form'>
-<div id="change_pass" style="Display:none">
+<form  method="post"  action="<?php echo base_url(); ?>profile/change_password" role='form' autocomplete="off">
+<div id="change_pass" style="display:none">
 <label>Set / Change Password</label>
 <!-- <input class='form-control' id='opass' type='password' name="old_password" placeholder='Current Password' required> <br /> -->
-<input class='form-control' id='npass' type='password' name="new_password" placeholder='New Password' required> <br />
-<input class='form-control' id='id="confirm_password"' type='password' name="conf_password" placeholder='Retype Password' required> <br />
-<div class="err" style="display: none; color:red">Passwords are mismatch</div>
+<?php
+if($user_details['EmailID'] == NULL or $user_details['EmailID'] == '' or $user_details['EmailID'] == 'NULL' or $user_details['EmailID'] == 'null'){
+?>
+<input class='form-control' id='email2' type='text' name="email2" style="width:92%" value="" required autocomplete="off" />
+<span id='email_stat2' style='text-transform: lowercase !important; color:red;'></span>
+<?php
+}
+?>
+<input class='form-control' id='npass' type='password' name="new_password" placeholder='New Password' required autocomplete="off"> 
+<input type='checkbox' name='show_pwd' id='show_pwd' value='1' onclick="showPassword();" /> Show Password?
+<!-- <input class='form-control' id='id="confirm_password"' type='password' name="conf_password" placeholder='Retype Password' required> --> 
+<br /><br />
+<!-- <div class="err" style="display: none; color:red">Passwords are mismatch</div> -->
 <input type="submit" value="Update" style="margin-top:10px" class="league-form-submit1" />
 <input type="button" value="Cancel" id="cancel_pass" style="margin-top:10px" class="league-form-submit1" />
 </div>

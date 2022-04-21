@@ -8052,10 +8052,12 @@ function compareOrder4($a, $b) {
 		}
 
 		public function get_reg_tourn_participants_withGender($tourn_id, $sport = ''){
+			//echo "<pre>";print_r($sport);exit();
         	$res = $this->model_league->get_reg_tourn_participants($tourn_id, $sport);
-		  // echo "<pre>";print_r($res);exit();
+		  
  				$reg_users  = array();
 				$user_tsize = array();
+				$user_names = array();
 
 		    foreach($res as $r){
 				$event_partners = array();
@@ -8067,6 +8069,14 @@ function compareOrder4($a, $b) {
                     $multi_events = json_decode($r->Reg_Events);
 	                    foreach ($multi_events as $key => $value){
 	                        $reg_users[$r->Users_ID][] = $value;
+	                        $user_names[$r->Users_ID]['Firstname'] = ucfirst($r->Firstname);
+	                        $user_names[$r->Users_ID]['Lastname'] = ucfirst($r->Lastname);
+	                        $user_names[$r->Users_ID]['Gender'] = $r->Gender;
+	                        $user_names[$r->Users_ID]['DOB'] = $r->DOB;
+	                        $user_names[$r->Users_ID]['UserAgegroup'] = $r->UserAgegroup;
+	                        $user_names[$r->Users_ID]['A2MScore'] = $r->A2MScore;
+	                        $user_names[$r->Users_ID]['A2MScore_Doubles'] = $r->A2MScore_Doubles;
+	                        $user_names[$r->Users_ID]['A2MScore_Mixed'] = $r->A2MScore_Mixed;
 							if(!empty($event_partners)){
 								$user_partners[$r->Users_ID][$value] = $event_partners[$value];
 							}
@@ -8080,17 +8090,26 @@ function compareOrder4($a, $b) {
 						foreach($formats as $i => $fr){
 						    foreach($ag_group[$i] as $j => $ag){
 							    foreach($sp_levels[$i][$j] as $lv){
-								    
-								    $player = $this->general->get_user($r->Users_ID);
+								    //$player = $this->general->get_user($r->Users_ID);
 								    
 								    if($fr == 'Singles' || $fr == 'Doubles'){
-		                               $gender = $player['Gender'];
-									}else
-									{
+		                               //$gender = $player['Gender'];
+		                               $gender = $r->Gender;
+									}
+									else{
 									   $gender = 2;
 									}
 								
 	      						    $reg_users[$r->Users_ID][] = $ag."-".$gender."-".$fr."-".$lv;
+	                        $user_names[$r->Users_ID]['Firstname'] = ucfirst($r->Firstname);
+	                        $user_names[$r->Users_ID]['Lastname'] = ucfirst($r->Lastname);
+	                        $user_names[$r->Users_ID]['Gender'] = $r->Gender;
+	                        $user_names[$r->Users_ID]['DOB'] = $r->DOB;
+	                        $user_names[$r->Users_ID]['UserAgegroup'] = $r->UserAgegroup;
+	                        $user_names[$r->Users_ID]['A2MScore'] = $r->A2MScore;
+	                        $user_names[$r->Users_ID]['A2MScore_Doubles'] = $r->A2MScore_Doubles;
+	                        $user_names[$r->Users_ID]['A2MScore_Mixed'] = $r->A2MScore_Mixed;
+
 							    }
 						    }
 					    }
@@ -8103,8 +8122,11 @@ function compareOrder4($a, $b) {
 				$user_tsize[$r->Users_ID] = $r->TShirt_Size;
 			}
 
-			$res = array($reg_users, $user_tsize, $user_partners);
+			$res = array($reg_users, $user_tsize, $user_partners, $user_names);
 
+//if($this->logged_user == 240){
+//echo "<pre>"; print_r($res); exit;
+//}
 			return $res;
 		 }
 

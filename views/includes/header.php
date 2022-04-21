@@ -317,7 +317,7 @@ header("Pragma: no-cache");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 */
 
-switch($this->uri->segment(1)){
+switch($this->uri->segment(1)) {
 
 case 'tt': 
 case 'tabletennis': 
@@ -355,10 +355,11 @@ case 'carroms':
 case 'default':
 	$bck_img_class = 'back-img-match';
 	break;
+
 }
 ?>
 <section class="drawer">
-<div class="col-md-12 hidden-xs size-img <?=$bck_img_class;?>">
+<div class="hidden-xs size-img <?=$bck_img_class;?>">
 	<div class="effect-cover" style='background:#744af4'>
 	<h3 class="txt-advert animated">Amateurs 2 Masters</h3>
 	<p class="txt-advert-sub"><?=BANNER_TEXT;?></p>

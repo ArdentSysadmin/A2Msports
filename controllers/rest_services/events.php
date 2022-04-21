@@ -38,6 +38,16 @@ class Events extends REST_Controller {
 		$this->response($data);
 	}
 
+	public function listNew_get(){
+		$club_id	= $this->input->get('club_id');
+		$user_id   = $this->input->get('user_id');
+
+		$get_events = $this->mevents->get_eventsNew($club_id);
+		$data['events'] = $get_events;
+
+		$this->response($data);
+	}
+
 	public function details_get(){
 		$event_id	= $this->input->get('event_id');
 		$user_id   = $this->input->get('user_id');
