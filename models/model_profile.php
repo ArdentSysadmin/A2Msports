@@ -997,4 +997,11 @@
 		return $qr_check->num_rows();
 	}
 
+	public function change_account_stat($user_id, $status){
+		$qry_upd = $this->db->query("UPDATE Users SET IsUserActivation={$status} WHERE Users_ID={$user_id}");
+		//echo $this->db->last_query(); exit;
+		return $qry_upd;
+	}
+
+
 }

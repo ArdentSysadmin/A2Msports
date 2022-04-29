@@ -1,0 +1,153 @@
+<style>
+ .course-item .course-body .course-desc {
+    min-height: 70px;
+}
+
+@media (max-width: 767px){
+.course-item .course-body .course-desc {
+    padding: 10px 10px;
+    min-height: 60px;
+}
+}
+</style>
+<section class="inner-page-wrapper course-list-wrapper tournaments-bg1">
+<!-- form -->
+	<div class="container">
+		<div class="row">
+			<div class="contact-form">
+				<!-- <form action="#">
+					<div class="col-md-2">&nbsp;</div>
+					<div class="col-md-3">
+					  <div class="form-group">
+						<input class="form-control" id="nameId" required name="name" placeholder="Search Event" type="text">
+					  </div>
+					</div>
+					<div class="col-md-3">
+					  <div class="form-group">
+						<select name="match_format" id="match_format" class="form-control" required="">
+							<option value="">Sport</option>
+							<option value="Singles">Tennis</option>
+							<option value="Doubles">Table Tennis</option>
+							<option value="Mixed">Badminton</option>
+						</select>
+					  </div>
+					</div>
+					<div class="col-md-1">
+					  <div class="form-group">
+						<button type="submit" class="btn btn-default">Submit</button>
+					  </div>
+					</div> 
+					<div class="col-md-2">&nbsp;</div> -->
+
+					<form method="post" id="coach_form"  action="<?php echo base_url().$org_details['Aca_URL_ShortCode'];?>/search_members"> 
+
+<div class='col-md-3 form-group internal' style="padding-left:0px">
+<input class='form-control' id='name' name='name' type='text' placeholder="Player Name" value="<?php echo $search_fname; ?>"  size="25" />
+</div>
+
+<div class='col-md-2 form-group internal' style="padding-left:0px">
+<?php
+/*$get_sport = json_decode($org_details['Aca_sport']);
+$sport = $get_sport[0];*/
+
+if($this->input->post('user_sport')){
+$sport = $this->input->post('user_sport');
+}
+?>
+<select name="user_sport"  id="user_sport" class='form-control'>
+<option value="">Sport</option>
+<option value="1" <?php if($sport=="1"){ echo "selected=selected"; } ?>>Tennis</option>
+<option value="2" <?php if($sport=="2"){ echo "selected=selected"; } ?>>Table Tennis</option>
+<option value="3" <?php if($sport=="3"){ echo "selected=selected"; } ?>>Badminton</option>
+<option value="4" <?php if($sport=="4"){ echo "selected=selected"; } ?>>Golf</option>
+<option value="5" <?php if($sport=="5"){ echo "selected=selected"; } ?>>Racquetball</option>
+<option value="6" <?php if($sport=="6"){ echo "selected=selected"; } ?>>Squash</option>
+<option value="7" <?php if($sport=="7"){ echo "selected=selected"; } ?>>Pickleball</option>
+</select>
+
+</div>
+
+<!-- <div id='sport_levels_div' class='col-md-3 form-group internal'>
+<?php
+$sp_level = "";
+if($this->input->post('level'))	{
+$sp_level = $this->input->post('level');
+}
+?>
+<select name="level" id="level" class='form-control'>
+<option value="">Level</option>
+<?php foreach($sport_levels as $row){ ?>
+<option value="<?php echo $row->SportsLevel_ID;?>" <?php if($sp_level == $row->SportsLevel_ID){ echo "selected=selected"; } ?>>
+<?php  echo $row->SportsLevel; ?> 
+</option>
+<?php } ?>
+</select>
+</div> -->
+
+<div id='ag_grp_div' class='col-md-3 form-group internal'>
+<?php
+$sel_ag = "";
+if($this->input->post('ag_grp')) {
+	$sel_ag = $this->input->post('ag_grp');
+}
+?>
+<select name="ag_grp" id="ag_grp" class='form-control'>
+<option value="">Age Group</option>
+<?php
+foreach($ag_grp_list as $i => $row) {
+?>
+<option value="<?php echo $i;?>" <?php if($sel_ag == $i){ echo "selected=selected"; } ?>>
+<?php  echo $row; ?> 
+</option>
+<?php } ?>
+</select>
+</div>
+
+<input class='form-control'  name='org_id' id='org_id' type='hidden' value="<?php echo $org_details['Aca_ID'];?>"  />
+<input type="checkbox" id="academy_status"  name="academy_status" style='display:none;' checked  value="1" />
+
+<div id="register-submit" class="col-md-2 form-group internal" style="padding-left:0px">
+<input type="submit"  class="league-form-submit1" name="search_mem" value=" Search " />
+</div>
+
+</form>
+
+		</div><!-- contact-form -->
+	</div>
+</div><!-- form -->
+
+
+  <div id='events' class="container">
+    <div class="row">
+<?php 
+if(count($query) == 0) {
+?>
+    <div class="col-md-12 col-sm-12">
+		 No Events are listed yet!
+	</div><!-- col-md-4 -->
+<?php
+}
+else {
+foreach($query as $row) { 
+?>
+	<div class="col-md-2 col-xs-6">
+		 <div class="course-item">
+			<div class="course-img">
+			<img src="<?php echo base_url(); ?>profile_pictures/<?php if($row->Profilepic!=''){ echo $row->Profilepic; } else { echo "default-profile.png"; } ?>" alt="" style="width:163px; height:156px;" />
+			</div>
+			<div class="course-body">
+				<div class="course-desc">
+					<b><h5><a href="<?php echo base_url();?>player/<?php echo $row->Users_ID;?>"><?php echo ucfirst($row->Firstname).' '.ucfirst($row->Lastname); ?></a></h5></b>
+				</div>
+			</div>
+		</div><!-- Tournaments-item -->
+	</div><!-- col-md-4 -->
+
+<?php
+}
+}
+?>
+
+    </div><!-- row -->
+  </div>
+</section>

@@ -250,7 +250,25 @@ else if($is_logged_user_reg and !array_key_exists($this->logged_user, $team_capt
 	if($tour_details->tournament_format != 'Teams'){
      	/*echo "<a href='".base_url()."league/register_more/".$tour_details->tournament_ID."' style='cursor:pointer;'><img src=".base_url()."icons/my_events.png alt='My Events' title='My Events' width='40px' /></a>&nbsp;";*/
     }
-			echo "<option value ='" . base_url() .$org_url_key. "play/invite//$tour_details->tournament_ID'> Invite Friends</option>";
+
+
+	$now	 = time();
+	$oneday	 = 86400;
+
+	if($tour_details->Tournament_type == "Challenge Ladder"){
+	$reg_close	= strtotime($tour_details->EndDate);
+	}
+	else{
+	$reg_close  = strtotime(date('Y-m-d H:i:s',strtotime($tour_details->Registrationsclosedon)));
+	}
+
+	if($now <= $reg_close){
+			echo "<option value ='" . base_url() .$org_url_key. "league/register_more/$tour_details->tournament_ID'> Invite Friends</option>";
+			echo "<option value ='" . base_url() .$org_url_key. "league/register_more/$tour_details->tournament_ID'> Select Partner</option>";
+			echo "<option value ='" . base_url() .$org_url_key. "league/register_more/$tour_details->tournament_ID'> Change Event</option>";
+			echo "<option value ='" . base_url() .$org_url_key. "league/register_more/$tour_details->tournament_ID'> Add More Events</option>";
+			//echo "<option value ='" . base_url() .$org_url_key. "league/register_more/$tour_details->tournament_ID'> Withdraw</option>";
+	}
 }
 else if(array_key_exists($this->logged_user, $team_captains)){		// Team Captains Block
 	if($this->is_team_league){
@@ -367,6 +385,7 @@ if($this->is_team_league and $cdate <= $exp_date){?>
 ?>
 <li role="presentation"><a href="#EditWithdraw" id="ShowAdmEditWithdraw" aria-controls="messages" role="tab" data-toggle="tab">
 Edit / WithDraw</a></li>
+<!-- <li role="presentation"><a href="#ShowAdminMsgs" id="AdminMsgs" aria-controls="profile" role="tab" data-toggle="tab">Admin Messages</a></li> -->
 <?php
 }
 
@@ -419,6 +438,8 @@ if(!$this->is_team_league){
 		echo '<li role="presentation"><a href="#WithDraw" aria-controls="profile" role="tab" data-toggle="tab">WithDraw</a></li>';
 
 	}
+		//echo '<li role="presentation"><a href="#ShowAdminMsgs" id="AdminMsgs" aria-controls="profile" role="tab" data-toggle="tab">Admin Messages</a></li>';
+
 }
 else if($this->is_team_league){
 ?>
@@ -534,9 +555,12 @@ if(!$this->is_team_league){
 
 <div role="tabpanel" class="tab-pane fade" id="Gallery"></div>
 
-<div role="tabpanel" class="tab-pane fade" id="EditWithdraw"><?php
+<div role="tabpanel" class="tab-pane fade" id="EditWithdraw">
+<?php
 //$this->load->view('tournament/view_adm_withdrawnew', $data);  // Load Team Participants view 
-?></div>
+?>
+</div>
+<div role="tabpanel" class="tab-pane fade" id="ShowAdminMsgs"></div>
 <?php
 if($logged_user_role == 'RegPlayer'){
 ?>
@@ -548,6 +572,7 @@ if(!$this->is_team_league){
 }
 ?>
 </div>
+<div role="tabpanel" class="tab-pane fade" id="ShowAdminMsgs"></div>
 <?php
 }
 ?>

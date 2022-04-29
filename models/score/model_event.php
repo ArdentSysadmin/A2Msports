@@ -47,7 +47,7 @@ class model_event extends CI_Model {
 	}
 
 
-	public function get_eventsNew($club_id = '', ){
+	public function get_eventsNew($club_id = ''){
 		if($club_id){
 			$get_club = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID = {$club_id}");
 			$club_det = $get_club->row_array();

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="https://www.w3.org/1999/xhtml">
+<head>
+<?php 
+$url = $_SERVER["REQUEST_URI"];
+$title = "A2msports - Sports Club";  
+
+?>
+<title><?php if(isset($tr_det)) { echo $tr_det->tournament_title; }else{ echo $title;}?></title>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<meta property='fb:app_id' content='792863394192570' />
+<meta property="og:title" content="<?php if(isset($tr_det)) { echo $tr_det->tournament_title; } ?>" />
+<meta property="og:type" content="Website" />
+<meta property="og:url" content="<?php  if(isset($tr_det)) { echo base_url(); ?>league/view/<?php echo $tr_det->tournament_ID; } ?>" />
+<meta property="og:description" content="<?php if(isset($tr_det) and $tr_det->TournamentDescription != "") { echo strip_tags(html_entity_decode($tr_det->TournamentDescription)); } ?>" /> 
+
+<meta property="og:image" content="<?php echo base_url()."tour_pictures/"; 
+if(isset($tr_det)){
+if(isset($tr_det) and $tr_det->TournamentImage!=""){ echo $tr_det->TournamentImage; }
+else if($tr_det->SportsType == 1){echo "sp-tennis.jpg"; }
+else if($tr_det->SportsType == 2){echo "sp-tabletennis.jpg"; }
+else if($tr_det->SportsType == 3 and $tr_det->tournament_ID != 1129){echo "sp-badminton.jpg"; }
+else if($tr_det->SportsType == 3 and $tr_det->tournament_ID == 1129){echo "sp-battle.jpg"; }
+else if($tr_det->SportsType == 4){echo "default_golf.jpg"; }
+else if($tr_det->SportsType == 5){echo "default_racquet_ball.jpg"; }
+else if($tr_det->SportsType == 6){echo "default_squash.jpg"; }
+} ?>" />
+
+<meta property="og:image:width" content="200" />
+<meta property="og:image:height" content="200" />
+
+
+<meta name="description" content="<?php if(isset($tr_det) and $tr_det->TournamentDescription != "") { echo substr(strip_tags(html_entity_decode($tr_det->TournamentDescription)),0,100); } ?>" />
+
+<meta name="keywords" content="<?php 
+if(isset($tr_det) && $tr_det->Keywords != "") 
+{ 
+$keywords=$tr_det->Keywords; 
+}
+else
+{
+$keywords='Tennis, club, events, football, golf, non-profit, betting assistant, football, tennis, sport, soccer, goal, sports, volleyball, basketball,	charity, club, cricket, football, hockey, magazine, non profit, rugby, soccer, sport, sports, tennis';
+} echo $keywords?>" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="index,follow">
+
+<link href="<?php echo base_url();?>css/bootstrap.css" rel="stylesheet" type="text/css"/>
+<!--<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />-->
+
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,700,600,300' rel='stylesheet' type='text/css' />
+<link href='https://fonts.googleapis.com/css?family=Raleway:400,100,300,200,500,600,700,800,900' rel='stylesheet' type='text/css' />
+<link href='https://fonts.googleapis.com/css?family=Oswald:400,300,700' rel='stylesheet' type='text/css' />
+<link href='https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,100italic,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css' />
+<link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Acme" rel="stylesheet">
+
+<link href="<?php echo base_url();?>css/fonts/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<!--Clients-->
+<link href="<?php echo base_url();?>css/own/owl.carousel.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css/own/owl.theme.css" rel="stylesheet" type="text/css" />
+
+<link href="<?php echo base_url();?>css/jquery.bxslider.css" rel="stylesheet" type="text/css" />
+<!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/bxslider/4.2.15/jquery.bxslider.css" rel="stylesheet" type="text/css" /> -->
+
+<link href="<?php echo base_url();?>css/jquery.jscrollpane.css" rel="stylesheet" type="text/css" />
+
+<link href="<?php echo base_url();?>css/minislide/flexslider.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css/component.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css/prettyPhoto.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css1/style_dir.css" rel="stylesheet" type="text/css" />
+<link rel="shortcut icon" type="image/png" href="<?php echo base_url();?>images/favicon.png" />
+<link href="<?php echo base_url();?>css1/responsive.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css/animate.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css/tabs.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url(); ?>css/jquery.datepick.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
+<link href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" />
+<link href="<?php echo base_url();?>css/grid.css" rel="stylesheet" />
+<link href="<?=base_url();?>css1/landing7.css" rel="stylesheet" type="text/css" />
+
+
+<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> -->
+<script src="https://jqueryvalidation.org/files/dist/jquery.validate.min.js"></script>
+<script src="https://jqueryvalidation.org/files/dist/additional-methods.min.js"></script>
+<style type="text/css">
+.waiting { cursor: wait; }
+</style>
+<!--  Fancy Box JS--> 
+
+<link rel="stylesheet" type="text/css" href="<?=base_url();?>assets/fancybox/jquery.fancybox.css?v=2.1.5" media="screen" />
+<!-- Add Button helper (this is optional) -->
+<link rel="stylesheet" type="text/css" href="<?=base_url();?>assets/fancybox/helpers/jquery.fancybox-buttons.css?v=1.0.5" />
+
+<!-- Add Thumbnail helper (this is optional) -->
+<link rel="stylesheet" type="text/css" href="<?=base_url();?>assets/fancybox/helpers/jquery.fancybox-thumbs.css?v=1.0.7" />
+<!-- End Fancy BOX-->
+</head>
+
+<body>
+<div id="fb-root"></div>
+
+<script>(function(d, s, id) {
+var js, fjs = d.getElementsByTagName(s)[0];
+if (d.getElementById(id)) return;
+js = d.createElement(s); js.id = id;
+js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
+//js.src="https://connect.facebook.net/en_US/all.js";
+fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114329843-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-114329843-1');
+</script> -->
+
+<section class="box-logo1">
+<header>
+<div class="content-logo">
+<div class="logo"> <a href="<?php echo base_url();?>"><img src="images/logo.png" alt="" /></a>
+</div>
+
+<div class="bt-menu"><a href="#" class="menu"><span>&equiv;</span> Menu</a></div>
+<div class="box-menu box-menu1">
+<nav id="cbp-hrmenu" class="cbp-hrmenu">
+<ul id="menu">    
+<?php
+if($tr_det->tournament_format == "Teams" or $tr_det->tournament_format == "TeamSport"){?>
+<li><a class="lnk-menu" href="#teams">Teams</a></li>
+<?php }
+if($tr_det->tournament_format != "TeamSport"){
+?>
+<li><a class="lnk-menu" href="#players">Players</a></li>
+<?php
+}
+if(!empty($get_images)){
+?>
+<li><a class="lnk-menu" href='#gallery'>Gallery</a></a></li>
+<?php
+}
+if(count($brackets) > 0)
+{ 
+?>
+<li><a class="lnk-menu" href='#draws'>Draws</a></a></li>
+<?php
+}
+if(count($brackets) > 0 and $tr_det->tournament_format == "Teams")
+{ 
+?>
+<li><a class="lnk-menu" href='#standings'>Standings</a></a></li>
+<?php
+}
+$sponsorsjson=$tr_det->Sponsors;
+if($sponsorsjson!=""){
+?>
+<li><a class="lnk-menu" href='#sponsors'>Sponsors</a></a></li>
+<?php
+}
+?>
+<li><a class="lnk-menu" href="#social_wall">Social Wall</a></li>
+<li><a class="lnk-menu" href='#contact_us'>Contact us</a></a></li>
+<?php
+if(!$is_logged_user_reg and $tr_det->Usersid != $this->logged_user){
+$now =  strtotime("now"); $oneday = 86400;
+$reg_close = strtotime($tr_det->Registrationsclosedon) + $oneday;
+
+if($now < $reg_close){
+?>
+<li><a class="lnk-menu" href="<?=base_url()."league/register_match/".$tr_det->tournament_ID?>">Register</a></a></li>
+<?php 
+}
+}
+?>
+<li><a class="land-txt-btn" href="<?php echo base_url();?>league/<?php echo $tr_det->tournament_ID;?>">More Details</a></li>
+</ul>
+</nav>
+</div>
+</div>
+</header>
+</section>
+<section class="drawer">

@@ -43,7 +43,8 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 */
 
 define('FROM_EMAIL', 'admin@a2msports.com');
-define('TEST_FINT_EMAIL', 'hr@fintinc.com');
+//define('FROM_EMAIL', 'info@a2msports.com');
+//define('TEST_FINT_EMAIL', 'hr@fintinc.com');
 define('FB_APPID', '201602263551845');
 define('FB_KEY', '2e07275226a7aa868e13179d8f449b40');
 define('FB_REDIRECT', 'https://a2msports.com/login/validate_login');

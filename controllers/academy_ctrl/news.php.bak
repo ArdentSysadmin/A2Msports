@@ -1,0 +1,282 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+	//League controller ..
+	class News extends CI_Controller {
+
+		public $header_tpl	   = "academy_views/includes/academy_header";
+		public $right_col_tpl  = "academy_views/includes/academy_right_column";
+		public $footer_tpl	   = "academy_views/includes/academy_footer";
+
+		public $logged_user;
+		public $short_code;
+		public $academy_admin;
+		public $org_id;
+	
+		public function __construct()
+		{
+			parent:: __construct();
+			$this->load->model('academy_mdl/model_news', 'model_news');
+			$this->load->model('academy_mdl/model_general', 'general');
+			$this->load->model('academy_mdl/model_academy', 'model_academy');
+
+			$this->short_code   = $this->uri->segment(1);
+			$this->org_id	    = $this->general->get_orgid($this->short_code);
+
+			$this->academy_admin = $this->general->get_org_admin($this->short_code);
+			$this->logged_user	 = $this->session->userdata('users_id');
+
+			$this->admin_menu_items = array('0'=>'');
+			 if($this->logged_user != $this->academy_admin)
+			$this->admin_menu_items = array('0'=>'8');
+		
+					if(!$this->logged_user){
+			$this->load->library('facebook' ,  array("appId" => FB_APPID, "secret" => FB_KEY, "redirect_url" => FB_REDIRECT));
+			}
+		}
+		
+		public function get_fb_login(){
+			$login  = $this->facebook->getLoginUrl();
+			return $login;
+		}
+
+		public function get_google_login(){
+
+		// Store values in variables from project created in Google Developer Console
+		$client_id			= '170374605326-p02hhgiia6fqncck0982i401madv6n72.apps.googleusercontent.com';
+		$client_secret		= 'XyOwkQkScXXca0wG4paTUx6A';
+		$redirect_uri		= 'https://a2msports.com/login/auth_check';
+		$simple_api_key = 'AIzaSyC0JNMWyyW6t1fSNyrprBJC2bWKG4btytc';
+
+		include_once APPPATH."libraries/google_login_api_HRWNdR/src/Google_Client.php";
+		include_once APPPATH."libraries/google_login_api_HRWNdR/src/contrib/Google_Oauth2Service.php";
+        
+        // Google Project API Credentials
+        $clientId	   = $client_id;
+        $clientSecret = $client_secret;
+        $redirectUrl   = $redirect_uri;
+        
+        // Google Client Configuration
+        $gClient = new Google_Client();
+        $gClient->setApplicationName('A2MSports');
+        $gClient->setClientId($clientId);
+        $gClient->setClientSecret($clientSecret);
+        $gClient->setRedirectUri($redirectUrl);
+
+		//$gclient->setDefaultOption('verify', false); // Can be removed
+        $google_oauthV2 = new Google_Oauth2Service($gClient);
+        $token				 = $this->session->userdata('token');
+
+       // if (!empty($token)) {
+        if ($token != "") {
+            $gClient->setAccessToken($token);
+        }
+
+        $data['authUrl'] = $gClient->createAuthUrl();
+      
+			return $data['authUrl'];
+		}
+
+		public function get_club_menu($org_id){
+			$get_menu = $this->general->get_club_menu($org_id);
+			$club_menu = array();
+
+			if($get_menu)
+				$club_menu = json_decode($get_menu['Active_Menu_Ids'], TRUE);
+			return $club_menu;
+		}
+
+		public function get_onerow($table, $column, $val){
+			return $this->general->get_onerow($table, $column, $val);
+		}
+
+		// viewing league page ...
+		public function index($org_id = '')
+		{
+			$data = $this->get_org_details($this->org_id);
+
+			//$data['results']   = $this->model_news->get_news($this->org_id);
+			$data['news_list'] = $this->model_news->get_all_news($this->org_id);
+			//echo "<pre>"; print_r($data); exit;
+			$this->load->view($this->header_tpl, $data);
+			$this->load->view('academy_views/view_list_news', $data); 
+			$this->load->view($this->right_col_tpl,$data);
+			$this->load->view($this->footer_tpl);	
+	    }
+
+		public function get_org_details($org_id)
+		{
+			$org_details			= $this->model_academy->get_academy_details($org_id); 
+			$data['org_details']	= $org_details; 
+
+			$data['creator']		= $org_details['Users_ID'];
+
+			$data['menu_list']		= $this->model_academy->get_menu_list();
+			$data['act_menu_list']	= $this->model_academy->get_act_menu_list($org_id);
+			$data['results']		= $this->model_academy->get_news($org_id);
+			$data['sport_levels']	= $this->model_academy->get_tennis_levels();
+
+			return $data;
+		}
+
+		public function get_news_detail($news_id = '', $org_id = '') {
+
+			$data = $this->get_org_details($this->org_id);
+
+			$data['news_id_det'] = $this->model_news->get_news_detail($news_id);
+			//$data['results']	 = $this->model_news->get_news();
+
+			$this->load->view($this->header_tpl, $data);
+			$this->load->view('academy_views/view_latest_news', $data); 
+			$this->load->view($this->right_col_tpl,$data);
+			$this->load->view($this->footer_tpl);	
+		}
+
+		public function add()	{
+			
+		  // $admin_users = array(214,215);
+		    $user_id = $this->session->userdata('users_id'); 
+			$data	 = $this->get_org_details($this->org_id);
+	
+		   //if(in_array($user_id, $admin_users)){
+			$admin_sess_user = $this->session->userdata('role');
+			if($user_id == $this->academy_admin){
+
+			//$data['results'] = $this->model_news->get_news();
+
+			$path = '../js/ckfinder';
+			$width = '780px';
+			$this->editor($path, $width);
+
+			$data['sports'] = $this->model_news->get_all_aports();
+
+
+			$this->load->view($this->header_tpl, $data);
+			$this->load->view('academy_views/view_add_news', $data); 
+			$this->load->view($this->right_col_tpl,$data);
+			$this->load->view($this->footer_tpl);	
+
+			/*$this->load->view('includes/header');
+			$this->load->view('academy_views/view_add_news',$data);
+			$this->load->view('includes/view_right_column',$data);
+			$this->load->view('includes/footer');*/
+
+		   }
+		   else
+		   {
+				echo "<h4>Unauthorized Access</h4>";
+		   }
+
+		}
+
+		public function editor($path,$width){
+			
+			//Loading Library For Ckeditor
+			$this->load->library('ckeditor');
+			$this->load->library('ckFinder');
+			//configure base path of ckeditor folder 
+			$this->ckeditor->basePath = base_url().'js/ckeditor/';
+			$this->ckeditor->config['toolbar'] = 'Full';
+			$this->ckeditor->config['language'] = 'en';
+			$this->ckeditor->config['width'] = $width;
+			//configure ckfinder with ckeditor config 
+			$this->ckfinder->SetupCKEditor($this->ckeditor,$path); 
+		}
+
+		public function add_news()
+		{
+			if($this->input->post('add_news'))
+			{
+				$res = $this->model_news->insert_news();
+				if($res)
+				{
+					$user_id = $this->session->userdata('users_id'); 
+					
+					if($user_id == $this->academy_admin){
+						$data = $this->get_org_details($this->org_id);
+
+						//$data['results'] = $this->model_news->get_news();
+
+						$path = '../js/ckfinder';
+						$width = '780px';
+						$this->editor($path, $width);
+
+						$data['add_news'] = "News Successfully added.";
+						$data['sports'] = $this->model_news->get_all_aports();
+
+						$this->load->view($this->header_tpl, $data);
+						$this->load->view('academy_views/view_add_news', $data); 
+						$this->load->view($this->right_col_tpl,$data);
+						$this->load->view($this->footer_tpl);	
+					 }
+					 else{
+						echo "<h4>Unauthorized Access</h4>";
+					 }
+				}
+			}
+			else
+			{
+					 echo "<h4>Invalid Access</h4>";
+
+			}
+		}
+
+		
+		public function edit($news_id)
+		{
+			
+			//$admin_users = array(214,215);
+		    $user_id = $this->session->userdata('users_id'); 
+				
+			//$admin_sess_user = $this->session->userdata('role');
+			if($user_id == $this->academy_admin){
+
+				$path = '../js/ckfinder';
+				$width = '780px';
+				$this->editor($path, $width);
+				
+				$data = $this->get_org_details($this->org_id);
+				$data['news_id_edit'] = $this->model_news->edit_news_detail($news_id);
+
+				//$data['results'] = $this->model_news->get_news();
+				$data['sports']  = $this->model_news->get_all_aports();
+
+
+				$this->load->view($this->header_tpl, $data);
+				$this->load->view('academy_views/view_news_edit', $data); 
+				$this->load->view($this->right_col_tpl,$data);
+				$this->load->view($this->footer_tpl);	
+
+				/*$this->load->view('includes/header');
+				$this->load->view('view_news_edit' ,$data);
+				$this->load->view('includes/view_right_column',$data);
+				$this->load->view('includes/footer');*/
+			}
+			else
+			 {
+				 echo "Unauthorized Access";
+			 }
+		
+		}
+
+
+		public function update_news($news_id)
+		{
+
+			$res = $this->model_news->update_news($news_id);
+
+			if($res)
+			{
+				$data = $this->get_org_details($this->org_id);
+				$data['news_id_det'] = $this->model_news->get_news_detail($news_id);
+
+				$this->load->view($this->header_tpl, $data);
+				$this->load->view('academy_views/view_latest_news', $data); 
+				$this->load->view($this->right_col_tpl,$data);
+				$this->load->view($this->footer_tpl);	
+			}
+			else
+			{
+				echo "Something went wrong! Please contact admin@a2msports.com. Thank you.";
+			}
+		}
+	}

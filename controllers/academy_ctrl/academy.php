@@ -1832,6 +1832,23 @@ if ($err) {
 		}
 
 		public function club_contact_us() {
+
+			if(strpos($this->config->item('club_pr_url'), 'a2msports.com')){
+			$secretKey = '6LcmImgdAAAAAB3Dy1yC_4D_dt7VNdFQ-fFzbiP2';
+			$responseKey = $this->input->post('g-recaptcha-response');
+			$userIP = $_SERVER['REMOTE_ADDR'];
+			$url = "https://www.google.com/recaptcha/api/siteverify?secret=$secretKey&response=$responseKey&remoteip=$userIP";
+
+			$response = file_get_contents($url);
+			$response = json_decode($response);
+				$status = $response->success;
+			}
+			else{
+				$status = 1;
+			}
+
+			if($status){
+
 			$org_id		= $this->academy_id;
 			$adm_det	= $this->model_academy->get_user($this->academy_admin);
 			$org_details = $this->model_academy->get_academy_details($org_id); 
@@ -1878,8 +1895,13 @@ if ($err) {
 			else{
 				$this->session->set_flashdata('contact_success', 'Something went wrong! Please try after sometime. Thank you.');
 			}
-
-			redirect($this->input->post('contact_redirect'));
+		}
+		else {
+			$success_msg = "<font color='red'>Verification failed.</font>";
+			$this->session->set_flashdata('contact_status', $success_msg);
+		}
+			
+				redirect($this->input->post('contact_redirect'));
 		}
 
 		public function send_epf(){

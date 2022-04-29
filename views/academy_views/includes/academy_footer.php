@@ -42,6 +42,17 @@
     <input class="form-control" id="subjectId" required name="contactus_subject" placeholder="Subject" type="text">
   </div>
   <textarea class="form-control text-area" rows="3" placeholder="Message" name="contactus_msg"></textarea>
+
+<?php 
+//echo "url: ". $this->config->item('club_pr_url');
+if(strpos($this->config->item('club_pr_url'), 'a2msports.com')){ ?>
+                        <div class="form-group">
+							<div class="g-recaptcha" data-sitekey="6LcmImgdAAAAAB70ZsDd9SBMA5JXNlFGwcttZv76"></div>
+                            <!-- <input name='recaptcha' class="form-control d-none" data-recaptcha="true" required data-error="Please complete the Captcha">
+                            <div class="help-block with-errors"></div> -->
+                        </div>
+<?php } ?>
+
   <button type="submit" class="btn btn-default">Submit</button>
 
 </form>
@@ -221,6 +232,7 @@ $(document).ready(function(){
 });
 
 </script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 
 </body>
 </html>

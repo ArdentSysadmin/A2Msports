@@ -113,10 +113,14 @@ class auto_notify_emails extends CI_Controller {
                 $message     = html_entity_decode($notify->message);
                 $subject		= $notify->subject;
 				$exist_notified_players = array();
+				$exist_failed_players	 = array();
 				//echo var_dump($notify->notified_to_players);
 				//exit;
 				if($notify->notified_to_players and $notify->notified_to_players != 'null')
 				$exist_notified_players = json_decode($notify->notified_to_players, TRUE);
+
+				if($notify->notify_failed and $notify->notify_failed != 'null')
+				$exist_failed_players	 = json_decode($notify->notify_failed, TRUE);
 				
 				$is_academy = 0;
 				$academy_id = '';
@@ -127,8 +131,9 @@ class auto_notify_emails extends CI_Controller {
 
 				$notified_players = $this->tm_send_email_user_attachments($players_arr, $subject, $message, $notify->attachments_file, $notify->tourn_id, $is_academy, $academy_id);
 				
-				$tobe_notified		 = array_diff($players_arr, $notified_players);
-				$new_notified_plrs  = array_merge($exist_notified_players, $notified_players);
+				$tobe_notified			= array_diff($players_arr, $notified_players['notified']);
+				$new_notified_plrs   = array_merge($exist_notified_players, $notified_players['notified']);
+				$new_failed_plrs		= array_merge($exist_failed_players, $notified_players['failed']);
 
 				if($tobe_notified){
 					$tobe_notified_temp = array_values($tobe_notified);
@@ -137,6 +142,10 @@ class auto_notify_emails extends CI_Controller {
 				else{
 					$upd_notif   = $this->auto_notify->update_tm_prtcpnts_notif_stat($notify->mid, $new_notified_plrs);
 				}
+//echo "<pre>"; print_r($notified_players); print_r($exist_failed_players); print_r($new_failed_plrs); exit;
+					if($new_failed_plrs)
+					$upd_failed_users   = $this->auto_notify->update_tm_prtcpnts_failed_stat($notify->mid, $new_failed_plrs);
+
 			}
 		}
 		 /* End of Tournment Participants Notifications */
@@ -471,11 +480,11 @@ class auto_notify_emails extends CI_Controller {
         $this->load->library('email');
 		$this->email->clear();
 
-        $page = 'Admin Notification';
-		$failed_players = array();
-		$tobe_notified = array();
-		$notified_players = array();
-$i = 1;
+        $page						= 'Admin Notification';
+		$failed_players		= array();
+		$tobe_notified		= array();
+		$notified_players	= array();
+		$i = 1;
 
        foreach($player_arr as $key => $player){
 
@@ -532,7 +541,7 @@ $i = 1;
 				$body = $this->load->view('academy_views/view_email_template', $data, TRUE);
 			}
 			else{
-				$this->email->from(FROM_EMAIL, 'A2MSports');
+				$this->email->from(FROM_EMAIL, 'A2M Sports');
 				$body = $this->load->view('view_email_template', $data, TRUE);
 			}
 
@@ -544,32 +553,34 @@ $i = 1;
 				//echo $player. "test <br>";
 				if(filter_var($user_email, FILTER_VALIDATE_EMAIL)){
 					$s_email = $this->email->send();
-				//	echo "Email ".$user_email."<br>";
-					//		echo "<pre>";
+					//echo "Email ".$user_email."<br>";
+							//echo "<pre>";
 		//print_r($s_email);
 		//echo "<br>____________<br>";
 		//echo $this->email->print_debugger();
 		//exit;
 
 				}
-			$notified_players[] = $player;
-			}
-			//$s_email = 1;
+				$notified_players[] = $player;
 
-			if($s_email){ 
-				echo $player." - Success<br/>";
-				//$notified_players[] = $player;
+				if($s_email){ 
+					echo $player." - Success<br/>";
+					//$notified_players[] = $player;
+				}
+				else{ 
+					//echo $this->email->print_debugger();
+					echo $player." - Fail<br/>";
+					$failed_players[] = $player;
+				}
 			}
-			else{ 
-				//echo $this->email->print_debugger();
-				echo $player." - Fail<br/>";
-				//$failed_players[] = $player;
-			}
+
+
 
 			$i++;
         }		// end of for
 
-	return $notified_players;
+//echo "<pre>"; print_r($failed_players); exit;
+	return array('notified' => $notified_players, 'failed' => $failed_players);
 	}
 
 	public function ReCaliculate_DOB(){

@@ -286,12 +286,20 @@
 			return $query->result();
 		}
 
+		public function update_tm_prtcpnts_failed_stat($mid, $new_failed_plrs){
+			$data = array('notify_failed' => json_encode($new_failed_plrs));
+							$this->db->where('mid', $mid);
+			$result = $this->db->update('TAdmin_Messages_Players', $data);
+
+			//echo $this->db->last_query();
+		}
+
 		public function update_tm_prtcpnts_notif_stat($mid, $new_notified_plrs){
 			$cur_date = date('Y-m-d H:i');
 			$data = array('is_notified'				=> 1,
-								  'players'					=> NULL,
-								  'notified_to_players' => json_encode($new_notified_plrs),
-								  'notified_on'				=> $cur_date);
+								  'players'						=> NULL,
+								  'notified_to_players'	=> json_encode($new_notified_plrs),
+								  'notified_on'					=> $cur_date);
 
 			$this->db->where('mid', $mid);
 			$result = $this->db->update('TAdmin_Messages_Players', $data); 

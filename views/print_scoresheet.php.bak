@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>A2MSports</title>
+<link href="<?php echo base_url();?>css/bootstrap.css" rel="stylesheet" type="text/css" />
+ <style>
+.blank_row {
+    height: 10px !important; 
+    background-color: #FFFFFF;
+}
+</style>
+<body>
+<br>
+	<div class="scoretable-mob">
+		<table border="0" cellspacing="0" cellpadding="0" width='80%' align="center">
+		<tr>
+				<td align="left"><img src='<?php echo base_url(); ?>images/logo.png' alt='Print' title='Print' width='70px'/></td>
+				<td align="left" class="underline"> <h4>
+				<?php echo ucfirst($res_result1[0][0]->tournament_title)." - ".ucfirst($res_result1[0][0]->Draw_Title); ?></h4></td>
+			</tr>
+		</table>
+<br>
+		<table class="score-cont" border= "0" width='80%' cellspacing = "3" cellpadding = "3" align="center">
+			<tr>
+				<td>#&nbsp;&nbsp;</td>
+				<?php if($res_result1[0][0]->Match_DueDate != ""){ ?>
+				<td>&nbsp;</td>
+				<?php } ?>
+				<td>Player</td>
+				<td>Scores</td>
+			</tr>
+		<?php $i = 1; 
+			foreach($res_result1 as $index => $res_result_1) {	
+			foreach($res_result_1 as $drawresult) {
+
+					$player1 = league::get_user($drawresult->Player1);
+					$player2 = league::get_user($drawresult->Player2); 
+
+					if($drawresult->Player1_Partner){
+						$player1_partner = league::get_user($drawresult->Player1_Partner);
+						$player2_partner = league::get_user($drawresult->Player2_Partner);
+
+						$p1_name =  ucfirst($player1['Firstname']).'.'.$player1['Lastname']
+								."; ".ucfirst($player1_partner['Firstname']).'.'.$player1_partner['Lastname'];
+
+						$p2_name =  ucfirst($player2['Firstname']).'.'.$player2['Lastname']
+								."; ".ucfirst($player2_partner['Firstname']).'.'.$player2_partner['Lastname'];
+
+						$user_a2msocre1		= league::get_a2mscore($drawresult->Player1, $res_result1[0][0]->SportsType);
+
+						$user_a2msocre2		= league::get_a2mscore($drawresult->Player2, $res_result1[0][0]->SportsType);
+
+						$partner_a2msocre1  = league::get_a2mscore($drawresult->Player1_Partner, $res_result1[0][0]->SportsType);
+
+						$partner_a2msocre2  = league::get_a2mscore($drawresult->Player2_Partner, $res_result1[0][0]->SportsType);
+	
+						$user_score1		= max($user_a2msocre1['A2MScore'], $user_a2msocre1['A2MScore_Doubles'], $user_a2msocre1['A2MScore_Mixed'],$partner_a2msocre1['A2MScore'], $partner_a2msocre1['A2MScore_Doubles'], $partner_a2msocre1['A2MScore_Mixed']);
+
+						$user_score2		= max($user_a2msocre2['A2MScore'], $user_a2msocre2['A2MScore_Doubles'], $user_a2msocre2['A2MScore_Mixed'], $partner_a2msocre2['A2MScore'], $partner_a2msocre2['A2MScore_Doubles'], $partner_a2msocre2['A2MScore_Mixed']);
+
+					}
+					else{
+						$p1_name =  ucfirst($player1['Firstname']).' '.ucfirst($player1['Lastname']);
+						$p2_name =  ucfirst($player2['Firstname']).' '.ucfirst($player2['Lastname']);
+
+						$user_a2msocre1  = league::get_a2mscore($drawresult->Player1, $res_result1[0][0]->SportsType);
+						$user_score1		= max($user_a2msocre1['A2MScore'], $user_a2msocre1['A2MScore_Doubles'], $user_a2msocre1['A2MScore_Mixed']);
+						$user_a2msocre2  = league::get_a2mscore($drawresult->Player2, $res_result1[0][0]->SportsType);
+						$user_score2		= max($user_a2msocre2['A2MScore'], $user_a2msocre2['A2MScore_Doubles'], $user_a2msocre2['A2MScore_Mixed']);
+					}
+
+						//$p1_name =  ucfirst($player1['Firstname']).' '.ucfirst($player1['Lastname']);
+						//$p2_name =  ucfirst($player2['Firstname']).' '.ucfirst($player2['Lastname']);
+
+						//echo $user_score1; exit;
+						/*if($i%2 == 0){ $bgcolor = '#ccc'; }
+						else		 { $bgcolor = '#ececec'; }*/
+					?>		
+			<!-- <tr bgcolor="<?//=$bgcolor;?>"> -->
+			<tr>
+				<td><?=$i;?>&nbsp;&nbsp;</td>
+				<?php
+				if($drawresult->Match_DueDate or $drawresult->Court_Info){
+				?>
+				<td><?php
+				if($drawresult->Court_Info) echo "<b style='background-color:#ffdc5b; padding:3px;'><i>".$drawresult->Court_Info."</i></b><br>";
+				if($drawresult->Match_DueDate) {
+					if(date('H:i', strtotime($drawresult->Match_DueDate)) != '00:00')
+						echo date('M d, Y H:i', strtotime($drawresult->Match_DueDate));
+					else
+						echo date('M d, Y', strtotime($drawresult->Match_DueDate));
+					}
+				?>
+				</td>
+				<?php
+				}
+				?>
+				<td>
+					<table cellspacing = "3" cellpadding = "3" >
+					<tr>
+						<td style="font-size: 14px;"><?=$p1_name;?><?php echo ' ('. $user_score1.')'; ?></td>
+					</tr>
+					<tr>
+						<td style="font-size: 14px;"><?=$p2_name;?><?php echo ' ('. $user_score2.')'; ?></td>
+					</tr>
+					</table>
+				</td>
+
+				<td>
+				<table border="1" cellspacing = "2" cellpadding = "3">
+				<?php
+					$num_sets = 5;
+				if($res_result1[0][0]->Tot_Sets)
+					$num_sets = $res_result1[0][0]->Tot_Sets;
+				?>
+				<tr>
+				<?php
+				for($i = 1; $i <= $num_sets; $i++){
+					echo "<td width='50'>&nbsp;</td>";
+				}
+				?>
+				</tr>
+				<tr>
+				<?php
+				for($i = 1; $i <= $num_sets; $i++){
+					echo "<td>&nbsp;</td>";
+				}
+				?>
+				</tr>
+				</table>
+				</td>
+			</tr>
+		<?php $i++;
+			}
+			} ?>
+		</table>
+	</div>
+
+</body>
+</html>

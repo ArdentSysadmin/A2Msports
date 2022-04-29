@@ -1,0 +1,182 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class model_club extends CI_Model {
+
+	public $req_method;
+
+	public function __construct(){
+		parent:: __construct();
+		$this->load->database();
+
+		if($this->input->server('REQUEST_METHOD') == 'GET'){
+			$this->req_method = 'get';
+		}
+		else if($this->input->server('REQUEST_METHOD') == 'POST'){
+			$this->req_method = 'post';
+		}
+	}
+
+	public function AddClub($data){
+		$ins = $this->db->insert('Academy_Info', $data);			
+		return $ins;		
+	}
+
+	public function reserve_court($data){
+		$res = $this->db->insert('Academy_Court_Reservations', $data);
+		//echo $this->db->last_query();
+		return $res;
+	}
+
+	public function get_clubs($user_id=''){
+
+		if($user_id){
+		$get_user =	$this->db->query("SELECT Country FROM Users WHERE Users_ID = {$user_id}");
+		$det	  = $get_user->row_array();
+		}
+
+		if($user_id and $det['Country']){
+			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = '{$det['Country']}'");
+		}
+		else{
+			$query = $this->db->query("SELECT * FROM Academy_Info");
+		}
+		return $query->result();
+	}
+
+	public function get_clubs_having_courts($user_id = ''){
+
+		if($user_id){
+		$get_user =	$this->db->query("SELECT Country FROM Users WHERE Users_ID = {$user_id}");
+		$det	  = $get_user->row_array();
+		}
+
+		if($user_id and $det['Country']){
+			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_country = '{$det['Country']}' AND Aca_URL_ShortCode IS NOT NULL AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations)");
+		}
+		else{
+			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND Aca_ID IN (SELECT org_id FROM Academy_Court_Locations)");
+		}
+
+		//echo $this->db->last_query();
+		return $query->result();
+	}
+
+	public function is_clubs_having_courts($club_id){
+			$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_URL_ShortCode IS NOT NULL AND Aca_ID = {$club_id}");
+
+			return $query->num_rows();
+	}
+
+	public function get_clubs_locations($club_id){
+		$query = $this->db->query("SELECT * FROM Academy_Court_Locations WHERE org_id = {$club_id} AND status = 1");
+		return $query->result();
+	}
+
+	public function get_club($club_id){
+		$query = $this->db->query("SELECT * FROM Academy_Info WHERE Aca_ID = {$club_id}");
+		return $query->row_array();
+	}
+
+	public function get_club_ratings($club_id){
+		$query = $this->db->query("SELECT * FROM Club_Ratings WHERE Club_ID = {$club_id}");
+		return $query->result();
+	}
+
+	public function get_loc_courts($loc_id){
+		$query = $this->db->query("SELECT * FROM Academy_Courts WHERE loc_id = {$loc_id} AND status = 1");
+		return $query->result();
+	}
+
+	public function get_member_discount($loc_id){
+		$query = $this->db->query("SELECT * FROM Academy_Court_Locations WHERE loc_id = {$loc_id}");
+		return $query->row_array();
+	}
+
+	public function get_court_info($court_id){
+		$query = $this->db->query("SELECT * FROM Academy_Courts WHERE court_id = {$court_id} AND status = 1");
+		return $query->row_array();
+	}
+
+	public function get_court_prices($court_id){
+		$query = $this->db->query("SELECT * FROM Academy_Courts_Price WHERE Aca_Court_ID = {$court_id}");
+		//echo $this->db->last_query();
+		return $query->result();
+	}
+
+	public function get_court_bookings($court_id){
+		$today = date('Y-m-d');
+		$time  = date('H:i:s');
+		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE court_id = {$court_id} 
+		AND res_date >= '".$today."' AND from_time >= '".$time."'");
+		//echo $this->db->last_query();
+		return $query->result();
+	}
+
+	public function get_user_court_bookings($court_id, $user_id){
+		$today = date('Y-m-d');
+		$time  = date('H:i:s');
+		$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE court_id = {$court_id} 
+		AND reserved_by = {$user_id} AND res_date >= '".$today."' AND from_time >= '".$time."'");
+		//echo $this->db->last_query();
+		return $query->result();
+	}
+
+	public function get_user_bookings($user_id){
+		$today = date('Y-m-d');
+		$time  = date('H');
+		$time = $time.':00:00';
+		/*$query = $this->db->query("SELECT * FROM Academy_Court_Reservations WHERE reserved_by = {$user_id} 
+		AND res_date >= '".$today."' AND from_time >= '".$time."'");*/
+
+$query = $this->db->query("SELECT ac.court_name,acl.location,acl.address,acl.city,acl.state,acl.country,acr.* FROM 
+Academy_Court_Reservations as acr 
+JOIN 
+Academy_Court_Locations as acl 
+ON 
+acr.loc_id = acl.loc_id 
+JOIN Academy_Courts as ac
+ON 
+acr.court_id = ac.court_id
+WHERE acr.reserved_by = {$user_id} 
+AND acr.res_date >= '".$today."' AND res_status != 'Canceled' ORDER BY
+acr.res_date ASC");
+
+		//echo $this->db->last_query();
+		return $query->result();
+	}
+
+	public function is_club_member($user_id, $club_id){
+		$query1 = $this->db->query("SELECT * FROM Academy_Court_Locations WHERE loc_id = {$club_id}");
+		$res	= $query1->row_array();
+		if($res){
+			$org_id = $res['org_id'];
+			$query2 = $this->db->query("SELECT * FROM User_memberships WHERE Club_id = {$org_id} AND Users_id = {$user_id}");
+			return $query2->num_rows();
+		}
+		else{
+			return 0;
+		}
+	}
+
+	public function cancel_res($booking_id){
+		$query = $this->db->query("UPDATE Academy_Court_Reservations SET res_status = 'Canceled' WHERE res_id = {$booking_id}");
+		//echo $this->db->last_query();
+		return $query;
+	}
+
+	public function get_club_members($club_id){
+		$query = $this->db->query("SELECT * FROM User_memberships as um JOIN Users as u ON um.Users_id = u.Users_ID WHERE um.Club_id = {$club_id}");
+		return $query->result_array();
+	}
+
+	public function get_club_coaches($club_id){
+		$query = $this->db->query("SELECT * FROM Users as u JOIN SportsType as st on u.coach_sport = st.SportsType_ID WHERE u.coach_academy = {$club_id}");
+		return $query->result();
+	}
+
+	public function is_enrolled($user_id, $club_id){
+		$query = $this->db->query("SELECT * FROM User_memberships WHERE Users_id = {$user_id} AND Club_id = {$club_id}");
+		return $query->row_array();
+	}
+
+}

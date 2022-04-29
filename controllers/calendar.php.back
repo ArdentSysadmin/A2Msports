@@ -1,0 +1,46 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+	
+	class Calendar extends CI_Controller {
+		
+		public function __construct()
+		{
+			parent:: __construct();
+			$this->load->model('model_calendar');
+			$this->load->model('model_news');
+			$this->load->model('model_general', 'general');
+
+			$this->load->library('session');
+		}
+	
+		public function index()
+		{
+		    $data['results'] = $this->model_news->get_news();
+		    $this->load->model('model_calendar');
+		    $this->load->view('view_calendar',$data);
+		}
+			
+		public function process()
+		{
+			$events = array();
+
+			$query = $this->model_calendar->get_tournaments();
+
+			foreach($query as $fetch)
+			{
+				$e = array();
+
+				$e['id'] = $fetch->tournament_ID;
+				$e['title'] = $fetch->tournament_title;
+				$e['start'] = $fetch->StartDate;
+				$e['end'] = $fetch->EndDate;
+
+				$allday = ($fetch->Visibility == "public") ? "true" : "false";
+				$e['allDay'] = $allday;
+
+				array_push($events, $e);
+			}
+			echo json_encode($events);
+		}
+	}
+
+?>

@@ -848,9 +848,25 @@ return false;
 
 <div class="col-md-12" style="padding-top:10px">
 <label for="Sportsintrests">* Interested in:</label><div class="clear"></div>
-<?php foreach($intrests as $row) { ?> 
-<input type="checkbox" class="sport_class" name="Sportsintrests[]" value="<?php echo $row->SportsType_ID;?>"> <?php echo $row->Sportname;?> &nbsp;
-<?php } ?>
+<div class='row'>
+	<div class='col-md-4'>
+
+<?php 
+$x=1;
+foreach($intrests as $row) { 
+?> 
+<input type="checkbox" id="sp<?php echo $row->SportsType_ID;?>" class="sport_class" name="Sportsintrests[]" value="<?php echo $row->SportsType_ID;?>"> &nbsp;<label for="sp<?php echo $row->SportsType_ID;?>"><?php echo $row->Sportname;?> &nbsp;</label><br>
+<?php 
+if($x%7 == 0)
+	echo "	</div>	<div class='col-md-4'>";
+
+$x++;
+} ?>
+	</div>
+</div>
+
+
+
 </div>
 
 <!-- <div class="col-md-12" style="margin-bottom: 25px;">

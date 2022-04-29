@@ -29,7 +29,10 @@
     <script src="<?=base_url(); ?>assets_new/js/jquery.min.js"></script>
     <script src="<?=base_url(); ?>assets_new/js/owl.carousel.js"></script>
     <style type="text/css">
-
+.itemactive {
+	color: #744af4 !important;
+	font-weight: bold !important;
+}
     </style>
   </head>
 
@@ -44,15 +47,15 @@
 
 		<div class="collapse navbar-collapse" id="main_nav" style="font-size: 1.1rem !important;">
           <ul class="navbar-nav mx-4">
-		   <li class="nav-item"><a  id="vtournaments_mn" class="nav-link show_all <?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/tournaments";?>">Tournaments</a></li>
+		   <li class="nav-item"><a  id="vtournaments_mn" class="nav-link show_all <?php if(strpos(current_url(), 'tournaments')) { echo "itemactive"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/tournaments";?>">Tournaments</a></li>
 
-<li class="nav-item"><a  id="vplayers_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/players";?>">Players</a></li>
+			<li class="nav-item"><a  id="vplayers_mn" class="nav-link show_all <?php if(strpos(current_url(), 'players')) { echo "itemactive"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/players";?>">Players</a></li>
 
-<li class="nav-item"><a  id="vteams_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/teams";?>">Teams</a></li>
+			<li class="nav-item"><a  id="vteams_mn" class="nav-link show_all <?php if(strpos(current_url(), 'teams')) { echo "itemactive"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/teams";?>">Teams</a></li>
 
-<li class="nav-item"><a  id="vclubs_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/clubs";?>">Clubs</a></li>
+			<li class="nav-item"><a  id="vclubs_mn" class="nav-link show_all <?php if(strpos(current_url(), 'clubs')) { echo "itemactive"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/clubs";?>">Clubs</a></li>
 
-<li class="nav-item"><a  id="vcoaches_mn" class="nav-link show_all<?php //if($url_seg == 'calendar'){ echo "active"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/coaches";?>">Coaches</a></li>
+			<li class="nav-item"><a  id="vcoaches_mn" class="nav-link show_all <?php if(strpos(current_url(), 'coaches')) { echo "itemactive"; } ?>" href="<?php echo base_url().$this->uri->segment(1)."/coaches";?>">Coaches</a></li>
 
 <?php //echo "<pre>"; print_r($_SESSION); 
 if($this->session->userdata('user') != "") {?>
@@ -90,13 +93,13 @@ if(!$child) { ?>
 </div>
 </li>
 			  <?php } else { ?>
-              <li class="nav-item">
+              <!-- <li class="nav-item"> -->
                 <!-- Button trigger modal -->
                 <!-- <button type="button" id="log_btn" class="btn log_btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
                  Login
                 </button> -->
-				<a href="#login" class="btn log_btn">Login</a>
-              </li>
+				<!-- <a href="#login" class="btn log_btn">Login</a>
+              </li> -->
 			  <?php } ?>
             </ul>
         </div>

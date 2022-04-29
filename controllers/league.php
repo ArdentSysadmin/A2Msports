@@ -426,7 +426,7 @@ else if($this->logged_user == 240){
 			}
 	/* ***************** Code to upload Tournment Image Form Starts Here. *********************** */
 			$config = array(
-				'upload_path'	=> $_SERVER['DOCUMENT_ROOT'].'\a2msports\tour_pictures',
+				'upload_path'	=> $_SERVER['DOCUMENT_ROOT'].'\tour_pictures\\',
 				'allowed_types' => "gif|jpg|png|jpeg",
 				'overwrite'		=> FALSE,
 				'max_size'		=> "10000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
@@ -511,7 +511,7 @@ else if($this->logged_user == 240){
 					$fileName = 'spnsr_file_name';
 
 					$config = array(
-									'upload_path'	=> "./tour_pictures/$tourn_id/sponsors/",
+									'upload_path'	=> $spnsr_folder,
 									'allowed_types' => "gif|jpg|png|jpeg",
 									'overwrite'			=> TRUE,
 									'max_size'			=> "10000", 
@@ -934,7 +934,7 @@ else if($this->logged_user == 240){
 						$fileName = 'spnsr_file_name';
 
 						$config = array(
-						'upload_path'	=> "./tour_pictures/$tourn_id/sponsors/",
+						'upload_path'	=> $spnsr_folder,
 						'allowed_types' => "gif|jpg|png|jpeg",
 						'overwrite'		=> TRUE,
 						'max_size'		=> "10000", // Can be set to particular file size , here it is ~10 MB(2048 Kb)
@@ -993,18 +993,18 @@ else if($this->logged_user == 240){
 				$this->email->to($player_email);
 
 				$subject = $title."Tournament - A2MSports";
-				
+
 				$this->email->subject($subject);
 
 				$data = array(
-				 'name' => $player_name,
-				 'title'=> $title,
+				 'name'	=> $player_name,
+				 'title'		=> $title,
 				 'tourn_id' => $tourn_id,
-				 'page'=> 'Update Tournament'
+				 'page'		=> 'Update Tournament'
 				);
 
 				$body = $this->load->view('view_email_template.php',$data,TRUE);
-				$this->email->message($body);   
+				$this->email->message($body);
 				$status = $this->email->send();
 			}
 	
@@ -1013,24 +1013,29 @@ else if($this->logged_user == 240){
 
 		public function get_lang_latt()
 		{
-			 // $address1 = $this->input->post('UserAddressline1');
+			// $address1 = $this->input->post('UserAddressline1');
 			if($this->input->post('addr2')==""){
 			 $address2 = $this->input->post('addr1');
-			} else {
+			}
+			else {
 			 $address2 = $this->input->post('addr2');
 			}
-			 $country = $this->input->post('country');
+			 
+				$country = $this->input->post('country');
 
 				if($country == 'United States of America') {
 					$state = $this->input->post('state');
-				} else {
+				}
+				else {
 					$state = $this->input->post('state1');
 				}
 
-			 $city = $this->input->post('city');
+				$city = $this->input->post('city');
+
 			 if($address2 != ""){
 				 $address =  $address2 . ' ' .  $country . ' ' .  $state . ' ' .  $city;
-			 } else {
+			 }
+			 else {
 				 $address =  $country . ' ' .  $state . ' ' .  $city;
 			 }
 
@@ -1060,7 +1065,7 @@ else if($this->logged_user == 240){
 			$output1 = json_decode($geocodeFromAddr);
 			//echo "<pre>"; print_r($geocodeFromAddr); 
 	
-			$latitude  = 0.00; 
+			$latitude    = 0.00; 
 			$longitude = 0.00;
 
 		/*echo "<pre>"; 
@@ -1068,13 +1073,12 @@ else if($this->logged_user == 240){
 		print_r($output1);
 		exit;*/
 			//Get latitude and longitute from json data
-			$latitude  = $output1->results[0]->geometry->location->lat; 
+			$latitude    = $output1->results[0]->geometry->location->lat; 
 			$longitude = $output1->results[0]->geometry->location->lng;
 
 			return  $latitude  . '@' . $longitude ;
 			} 
-			else 
-			{
+			else {
 				return false;
 			}
 	  }
@@ -8445,7 +8449,7 @@ exit;*/
 		
 				if($res==1){
 					foreach ($sponsor as $key => $spnsr) {
-						$path = $_SERVER['DOCUMENT_ROOT'].'\a2msports\tour_pictures\\'.$tourn_id.'\sponsors\\'.$spnsr;
+						$path = $_SERVER['DOCUMENT_ROOT'].'\tour_pictures\\'.$tourn_id.'\sponsors\\'.$spnsr;
 						//$path = $_SERVER['tour_pictures/'.$tourn_id.'/sponsers/'.$spnsr;
 						//echo $path;
 						unlink($path);  
@@ -8915,7 +8919,12 @@ exit;*/
 			}
 			//echo "<pre>"; print_r($new_arr); 
 //exit;
+			$new_arr[] = $this->logged_user;  // pushing tourn admin id to the end of the queue
+
 		 	$player_id_arr  = array_values(array_unique($new_arr));
+
+
+
 		 	$player_ids_jsn = json_encode($player_id_arr);
 			//echo $player_ids_jsn; exit;
 		    $subject        = $_POST['sub'];
@@ -9513,6 +9522,7 @@ exit;*/
 
 		public function viewtournament($tid, $stat = '', $org_id = '')
 		{
+			// echo $_SERVER['DOCUMENT_ROOT']; exit;
 			$this->session->unset_userdata('draw');
 			
 			$data['org_url_key'] = "";
@@ -13721,6 +13731,11 @@ return  json_decode($response, true);
 
 	public function is_club_haveCourts($club_id){
 		return $this->model_league->is_clubs_having_courts($club_id);
+	}
+
+	public function load_adm_msgs(){
+
+		echo "Testing";
 	}
 
 }

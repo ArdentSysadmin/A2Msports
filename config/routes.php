@@ -155,21 +155,21 @@ $route["$cl_short_code/send_notifications"]		= "academy_ctrl/academy/send_mob_no
 
 $route["default_controller"]				= "home/a2m_new";
 
-$route["tournament"]		= "league/index";
-$route["league"]			= "league/new_league";
+$route["tournament"]			= "league/index";
+$route["league"]					= "league/new_league";
 $route["contact/submit"]	=  "home/contact_submit";
 
-$route["login"]									= "login/index";
-$route["logintest"]								= "logintest/index";
-$route["logintest/check_phone"]			= "logintest/check_phone";
-$route["search"]									= "search/index";
-$route["(:any)/login/verify_user"]			= "login/verify_user";
-$route["(:any)/login/send_activation"]	= "academy_ctrl/login/send_activation";
+$route["login"]												= "login/index";
+$route["logintest"]										= "logintest/index";
+$route["logintest/check_phone"]				= "logintest/check_phone";
+$route["search"]											= "search/index";
+$route["(:any)/login/verify_user"]				= "login/verify_user";
+$route["(:any)/login/send_activation"]		= "academy_ctrl/login/send_activation";
 $route["(:any)/login/reset/(:any)"]			= "academy_ctrl/login/reset_password_form/$1/$2";
 $route["(:any)/login/update_password"] = "academy_ctrl/login/update_password/$1";
 
-$route["Table-Tennis/(:num)"]		  = "league/viewtournament/$1";
-$route["calendar/process/(:num)"] = "calendar/process/$1";
+$route["Table-Tennis/(:num)"]					= "league/viewtournament/$1";
+$route["calendar/process/(:num)"]			= "calendar/process/$1";
 
 $route["academy"]			 = "academy";
 $route["a2mteams"]		 = "teams/view/";
@@ -177,43 +177,43 @@ $route["teams"]				 = "teams/view/";
 
 
 $route["register/save_user_data"]	= "register/save_user_data";
-$route["help/content"]						= "help/help_content";
+$route["help/content"]					= "help/help_content";
 
 $route["m/league/(:num)"]				= "help/mob_share/$1";
 
 $route["test/rewrite_routes/(:any)/(:num)"]	 = "test/rewrite_routes/$1/$1";
 
 $route["help/demo"]			 = "help/req_demo";
-$route["news/(:num)"]			 = "news/get_news_detail/$1";
+$route["news/(:num)"]		 = "news/get_news_detail/$1";
 $route["News/(:num)"]		 = "news/get_news_detail/$1";
-$route["terms_conditions"]	 = "league/terms_conditions";
-$route["league/get_tour_fee/"]				= "league/get_tour_fee/";
+$route["terms_conditions"] = "league/terms_conditions";
+$route["league/get_tour_fee/"]					= "league/get_tour_fee/";
 $route["league/drop_line_matchscore"]	= "league/drop_line_matchscore";
-$route["league/age_group_users/"]		= "league/age_group_users/";
+$route["league/age_group_users/"]			= "league/age_group_users/";
 $route["medical_form"]						= "league/medical_form";
 $route["Contact-Us"]							= "help/contactus";
 $route["Forgot-password"]					= "login/forgot_password";
 $route["Reset-password"]					= "login/reset_password";
 $route["reset/password/(:any)"]	= "login/reset_password_form/$1";
-$route["team/(:num)"]				= "teams/index/$1";
-$route["player/(:num)"]				= "search/player_details/$1";
-$route["coach/(:num)"]				= "search/player_details/$1";
-$route["league/(:num)"]				= "league/viewtournament/$1";
+$route["team/(:num)"]					= "teams/index/$1";
+$route["player/(:num)"]					= "search/player_details/$1";
+$route["coach/(:num)"]					= "search/player_details/$1";
+$route["league/(:num)"]					= "league/viewtournament/$1";
 $route["league2/(:num)"]				= "league/viewtournament2/$1";
 $route["league/(:num)/(:num)"]	= "league/viewtournament/$1";
 $route["league/view/(:num)"]		= "league/viewtournament/$1";
-$route["league/view/(:any)"]		= "league/viewtournament/$1";
+$route["league/view/(:any)"]			= "league/viewtournament/$1";
 $route["league/view/(:num)/(:num)"]	= "league/viewtournament/$1";
-$route["unsubscribe/(:any)"]			= "register/unsubscribe/$1";
+$route["unsubscribe/(:any)"]				= "register/unsubscribe/$1";
 $route["league/update_payment"]	= "league/update_team_player_payment";
 $route["ratings/import"]  = "usatt_ratings/csv_import";
 $route["clubs/import"]    = "import_clubs/csv_import";
 
-$route["events/(:num)"]			= "events/view/$1";
+$route["events/(:num)"]				= "events/view/$1";
 $route["events/(:num)/(:any)"]	= "events/view/$1";
 
 $route["sponsor/(:num)"]	= "donate/sponsor/$1";
-$route["sponsor"]			= "donate/sponsor_now";
+$route["sponsor"]					= "donate/sponsor_now";
 $route["sponsor/success"]	= "donate/sponsor_success";
 $route["sponsor/sp_success"]= "donate/sp_success";
 $route["sponsor/cancel"]	= "donate/cancel";
@@ -225,7 +225,7 @@ $route["translate_uri_dashes"]	= TRUE;
 $route["scores/add"]	= "rest_services/scores/add";
 $route["brackets"]		= "league/bracket_generator";
 $route["ladder"]			= "league/ladder";
-$route["privacy"]		= "home/priv_policy";
+$route["privacy"]			= "home/priv_policy";
 $route["sports"]			= "league/view_more_sports";
 
 

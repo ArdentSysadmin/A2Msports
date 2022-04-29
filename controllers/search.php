@@ -614,7 +614,8 @@
 			$mes = $this->input->post('mes');
 
 			if($this->input->post('send_email') && $mes != ''){
-				$from_email = "admin@a2msports.com";
+				$from_email = FROM_EMAIL;
+				//$from_email = "info@a2msports.com";
 				//$from_email = "test@a2msports.com";
 				$from_name  = $this->session->userdata('user');
 				$from_id	= $this->session->userdata('users_id');
@@ -639,7 +640,7 @@
 				$this->load->library('email');
 				$this->email->set_newline("\r\n");
 				$this->email->from($from_email, $from_name);
-				$this->email->reply_to($sender_email);
+				//$this->email->reply_to($sender_email);
 				$this->email->to($to_email);				
 				$this->email->subject('New Contact Message - '.$from_name.'/A2MSports');
 

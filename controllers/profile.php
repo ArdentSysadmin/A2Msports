@@ -4,6 +4,9 @@ session_start();
 //Player Profile controller ..
 class Profile extends CI_Controller {
 
+		public $logged_user;
+		public $is_super_admin;
+
 	public function __construct()
 	{
 		parent:: __construct();
@@ -16,9 +19,16 @@ class Profile extends CI_Controller {
 			$this->load->model('model_general', 'general');
 			$this->load->model('model_news');
 
-		if(!$this->session->userdata('users_id'))
-		{
+		if(!$this->session->userdata('users_id')){
 			redirect('login');
+		}
+		else{
+				$this->logged_user = $this->session->userdata('users_id');
+
+				$this->is_super_admin = 0;
+				if($this->session->userdata('users_id') == 240){
+				$this->is_super_admin = 1;
+				}
 		}
 	}
 
@@ -952,6 +962,20 @@ echo $opt;
 	public function basketball_matches($user_id){
 		$bskball_mtches = $this->profile->basketball_matches($user_id);
 		return $bskball_mtches;
+	}
+
+	public function change_account_stat(){
+
+		if($this->is_super_admin){
+			$user_id = $this->input->post('pid');
+			$status	= $this->input->post('stat');
+			$upd = $this->profile->change_account_stat($user_id, $status);
+			echo "Updation Done.";
+		}
+		else{
+			echo "Unauthorised Access!"; 
+		}
+		exit;
 	}
 
 }

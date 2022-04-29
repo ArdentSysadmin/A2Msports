@@ -149,11 +149,36 @@ $(".rate").click(function(){
   $(this).hide();
   $("#coachdiv").show();
 });
-$(".change_status").click(function(){
-  /*$(this).hide();
-  $("#coachdiv").show();*/
-  alert('test');
+
+$(document).on('click', '.change_status', function(){
+	var baseurl = "<?php echo base_url(); ?>";
+	var bval = $('.change_status').text();
+	var pid  =  $('#uid').val();
+	var stat = -1;
+
+	if(bval == 'Activate')	stat = 1;
+	else if(bval == 'Deactivate')	stat = 0;
+
+		if(stat > -1){
+		$.ajax({
+			type:'POST',
+			url:baseurl+'profile/change_account_stat/',
+			data:{pid:pid, stat:stat},
+			success:function(html){
+			 alert(html);
+			 $('#user_status').html('<b>Status: </b> '+bval);
+			 if(bval == 'Activate')
+			 $('#user_status').append("&nbsp;<button class='league-form-submit1 change_status'>Deactivate</button>");
+			 else if(bval == 'Deactivate')
+			 $('#user_status').append("&nbsp;<button class='league-form-submit1 change_status'>Activate</button>");
+			}
+		});
+		}
+		else{
+			alert("Invalid!");
+		}
 });
+
 $('.rating input').click(function () {
         $('.rating span').removeClass('checked');
         $(this).parent().addClass('checked');
@@ -350,12 +375,12 @@ if($user_details['bio']){ echo $user_details['bio']; }
 <?php
 if($this->is_super_admin){
 ?>
-<p><b>Status:</b> <?php 
-echo ($user_details['IsUserAccoutBlock'] == 1) ? "Blocked" : "Active"; 
-if($user_details['IsUserAccoutBlock'] == 1)
-	echo "<button class='league-form-submit1' class='change_status'>Activate</button>";
+<p id='user_status'><b>Status:</b> <?php 
+echo ($user_details['IsUserActivation'] == 1) ? "Activate" : "Deactivate"; 
+if($user_details['IsUserActivation'] == 1)
+	echo "&nbsp;<button class='league-form-submit1 change_status'>Deactivate</button>";
 else
-	echo "<button class='league-form-submit1' class='change_status'>Block</button>";
+	echo "&nbsp;<button class='league-form-submit1 change_status'>Activate</button>";
 ?></p>
 <?php
 }?>

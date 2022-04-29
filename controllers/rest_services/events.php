@@ -411,6 +411,7 @@ class Events extends REST_Controller {
 	}
 
 	public function imgUpload_post() {
+
 		 $filename = 'EventImage';  
 
 		 $config = array(
